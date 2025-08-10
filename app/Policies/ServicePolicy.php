@@ -14,4 +14,11 @@ class ServicePolicy
     {
         return $user->id === $service->prestataire->user_id;
     }
+
+    public function update(User $user, Service $service)
+    {
+        return $user->hasRole('prestataire') && 
+               $user->prestataire !== null && 
+               $user->prestataire->id === $service->prestataire_id;
+    }
 }

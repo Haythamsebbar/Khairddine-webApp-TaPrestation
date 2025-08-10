@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Skill;
 use App\Models\Booking;
+use App\Models\UrgentSale;
 
 class DashboardController extends Controller
 {
@@ -39,7 +40,12 @@ class DashboardController extends Controller
             ->whereYear('completed_at', now()->year)
             ->sum('total_amount');
         
-
+        // Statistiques pour les ventes urgentes
+        $urgentSalesCount = UrgentSale::where('prestataire_id', $prestataire->id)
+            ->where('status', 'active')
+            ->count();
+        $urgentProductsCount = UrgentSale::where('prestataire_id', $prestataire->id)
+            ->count();
         
         // Calcul du pourcentage de completion du profil
         $profileCompletion = $this->calculateProfileCompletion($prestataire);
@@ -102,7 +108,10 @@ class DashboardController extends Controller
             'equipmentCount' => $equipmentCount,
             'equipmentRentalRequestsCount' => $equipmentRentalRequestsCount,
             'activeRentalsCount' => $activeRentalsCount,
-            'monthlyEquipmentRevenue' => $monthlyEquipmentRevenue
+            'monthlyEquipmentRevenue' => $monthlyEquipmentRevenue,
+            
+            'urgentSalesCount' => $urgentSalesCount,
+            'urgentProductsCount' => $urgentProductsCount
         ]);
     }
     

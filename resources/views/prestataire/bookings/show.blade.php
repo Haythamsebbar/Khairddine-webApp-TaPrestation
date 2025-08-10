@@ -102,11 +102,11 @@
                         </div>
                         <div>
                             <p class="text-gray-600 font-medium">Date de réservation:</p>
-                            <p class="text-lg font-bold text-blue-900">{{ $booking->booking_date->format('d/m/Y') }}</p>
+                            <p class="text-lg font-bold text-blue-900">{{ $booking->start_datetime->format('d/m/Y') }}</p>
                         </div>
                         <div>
                             <p class="text-gray-600 font-medium">Heure:</p>
-                            <p class="text-lg font-bold text-blue-900">{{ $booking->booking_time }}</p>
+                            <p class="text-lg font-bold text-blue-900">{{ $booking->start_datetime->format('H:i') }}</p>
                         </div>
                     </div>
                     @if($booking->service->description)
@@ -192,20 +192,21 @@
                     </div>
                 </div>
 
-                <!-- Contact rapide -->
+                <!-- Messagerie interne -->
                 <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6">
-                    <h3 class="text-xl font-bold text-blue-800 mb-4">Contact rapide</h3>
+                    <h3 class="text-xl font-bold text-blue-800 mb-4">Communication</h3>
                     <div class="space-y-3">
+                        <a href="{{ route('messaging.conversation', $booking->client->user->id) }}?message=Bonjour {{ $booking->client->user->name }}, concernant votre réservation {{ $booking->booking_number }} du {{ $booking->start_datetime->format('d/m/Y à H:i') }}, je vous contacte pour..." 
+                           class="flex items-center p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition duration-200">
+                            <i class="fas fa-comments text-blue-600 mr-3"></i>
+                            <span class="text-blue-800 font-medium">Envoyer un message</span>
+                        </a>
                         @if($booking->client->user->phone)
                         <a href="tel:{{ $booking->client->user->phone }}" class="flex items-center p-3 bg-green-50 hover:bg-green-100 rounded-lg transition duration-200">
                             <i class="fas fa-phone text-green-600 mr-3"></i>
-                            <span class="text-green-800 font-medium">Appeler</span>
+                            <span class="text-green-800 font-medium">Appeler (urgence)</span>
                         </a>
                         @endif
-                        <a href="mailto:{{ $booking->client->user->email }}" class="flex items-center p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition duration-200">
-                            <i class="fas fa-envelope text-blue-600 mr-3"></i>
-                            <span class="text-blue-800 font-medium">Envoyer un email</span>
-                        </a>
                     </div>
                 </div>
             </div>

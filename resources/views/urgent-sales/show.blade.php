@@ -115,8 +115,8 @@
                 </div>
                 
                 <!-- Description détaillée -->
-                <div class="bg-white rounded-lg shadow-sm p-6 mt-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Description</h2>
+                <div class="bg-white rounded-lg shadow-sm p-6 mt-6 border border-red-100">
+                    <h2 class="text-xl font-semibold text-red-800 mb-4">Description</h2>
                     <div class="prose max-w-none text-gray-700">
                         {!! nl2br(e($urgentSale->description)) !!}
                     </div>
@@ -156,8 +156,8 @@
                     </div>
                     
                     <!-- Informations du vendeur -->
-                    <div class="border-t border-gray-200 pt-6 mb-6">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Vendeur</h3>
+                    <div class="border-t border-red-200 pt-6 mb-6">
+                        <h3 class="text-lg font-semibold text-red-800 mb-3">Vendeur</h3>
                         <div class="flex items-center mb-4">
                             <div class="w-12 h-12 bg-gray-300 rounded-full mr-3 flex items-center justify-center">
                                 @if($urgentSale->prestataire->user->avatar)
@@ -194,16 +194,16 @@
                         </div>
 
                         @if ($urgentSale->latitude && $urgentSale->longitude)
-                            <div class="border-t border-gray-200 pt-6">
-                                <h3 class="text-lg font-semibold text-gray-900 mb-3">Localisation sur carte</h3>
+                            <div class="border-t border-red-200 pt-6">
+                                <h3 class="text-lg font-semibold text-red-800 mb-3">Localisation sur carte</h3>
                                 <div id="map" style="height: 250px;" class="rounded-lg z-10"></div>
                             </div>
                         @endif
                     </div>
                     
                     <!-- Détails du produit -->
-                    <div class="border-t border-gray-200 pt-6 mb-6">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Détails</h3>
+                    <div class="border-t border-red-200 pt-6 mb-6">
+                        <h3 class="text-lg font-semibold text-red-800 mb-3">Détails</h3>
                         <div class="space-y-3 text-sm">
                             <div class="flex justify-between">
                                 <span class="text-gray-600">État:</span>
@@ -242,7 +242,7 @@
                             </a>
                         @endauth
                         
-                        <button onclick="shareProduct()" class="w-full bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition duration-200 font-medium">
+                        <button onclick="shareProduct()" class="w-full bg-red-100 text-red-700 px-6 py-3 rounded-lg hover:bg-red-200 transition duration-200 font-medium">
                             Partager
                         </button>
                         
@@ -257,7 +257,7 @@
         <!-- Ventes similaires -->
         @if($similarSales && $similarSales->count() > 0)
             <div class="mt-12">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">Ventes similaires</h2>
+                <h2 class="text-2xl font-bold text-red-800 mb-6">Ventes similaires</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     @foreach($similarSales as $sale)
                         <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition duration-200 overflow-hidden">

@@ -235,7 +235,7 @@ class Prestataire extends Model
      */
     public function followers(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'client_prestataire_follows', 'prestataire_id', 'client_id')
+        return $this->belongsToMany(Client::class, 'client_prestataire_follows', 'prestataire_id', 'client_id')
                     ->withTimestamps();
     }
 

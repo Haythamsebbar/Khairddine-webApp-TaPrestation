@@ -3,236 +3,188 @@
 @section('title', 'Mon Agenda - Prestataire')
 
 @section('content')
-<div class="container mx-auto py-8 px-4">
-    <!-- En-tête -->
-    <div class="mb-8">
-        <div class="flex justify-between items-center">
-            <div>
-                <h1 class="text-3xl font-bold text-gray-900">Mon Agenda</h1>
-                <p class="text-gray-600 mt-2">Gérez vos réservations et planifiez vos prestations</p>
-            </div>
-            <div class="flex space-x-3">
-                <!-- Boutons de vue -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-1 flex">
-                    <button onclick="changeView('month')" class="view-btn px-3 py-2 text-sm font-medium rounded-md {{ $view === 'month' ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:text-gray-700' }}">
-                        Mois
-                    </button>
-                    <button onclick="changeView('week')" class="view-btn px-3 py-2 text-sm font-medium rounded-md {{ $view === 'week' ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:text-gray-700' }}">
-                        Semaine
-                    </button>
-                    <button onclick="changeView('list')" class="view-btn px-3 py-2 text-sm font-medium rounded-md {{ $view === 'list' ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:text-gray-700' }}">
-                        Liste
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Statistiques rapides -->
-    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
-        <div class="bg-white overflow-hidden shadow rounded-lg">
-            <div class="p-5">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <svg class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<div class="min-h-screen bg-blue-50">
+    <div class="container mx-auto py-8 px-4">
+        <!-- En-tête amélioré -->
+        <div class="mb-8">
+            <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl shadow-lg">
+                        <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 8a2 2 0 100-4 2 2 0 000 4zm6-6V7a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-3" />
                         </svg>
                     </div>
-                    <div class="ml-5 w-0 flex-1">
-                        <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">Total</dt>
-                            <dd class="text-2xl font-bold text-gray-900">{{ $stats['total'] }}</dd>
-                        </dl>
+                    <div>
+                        <h1 class="text-4xl font-extrabold text-blue-900 mb-2">
+                            Mon Agenda
+                        </h1>
+                        <p class="text-lg text-blue-700">Gérez vos réservations et planifiez vos prestations</p>
+                    </div>
+                </div>
+                
+                <!-- Navigation et boutons de vue -->
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <!-- Boutons de navigation -->
+                    <div class="flex items-center bg-white rounded-xl shadow-lg border border-blue-200 p-1">
+                        <button onclick="navigateCalendar('prev')" class="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition duration-200">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                        <button onclick="navigateCalendar('today')" class="px-3 py-2 text-sm font-bold text-blue-800 hover:text-blue-900 hover:bg-blue-50 rounded-lg transition duration-200">
+                            Aujourd'hui
+                        </button>
+                        <button onclick="navigateCalendar('next')" class="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition duration-200">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Sélecteur de vue (onglets arrondis) -->
+                    <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-1 flex">
+                        <button onclick="changeView('month')" class="view-btn px-4 py-2 text-sm font-bold rounded-lg transition duration-200 {{ $view === 'month' ? 'bg-blue-600 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5' : 'text-blue-800 hover:text-blue-900 hover:bg-blue-50' }}">
+                            Mois
+                        </button>
+                        <button onclick="changeView('week')" class="view-btn px-4 py-2 text-sm font-bold rounded-lg transition duration-200 {{ $view === 'week' ? 'bg-blue-600 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5' : 'text-blue-800 hover:text-blue-900 hover:bg-blue-50' }}">
+                            Semaine
+                        </button>
+                        <button onclick="changeView('day')" class="view-btn px-4 py-2 text-sm font-bold rounded-lg transition duration-200 {{ $view === 'day' ? 'bg-blue-600 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5' : 'text-blue-800 hover:text-blue-900 hover:bg-blue-50' }}">
+                            Jour
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white overflow-hidden shadow rounded-lg">
-            <div class="p-5">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <svg class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
+        <!-- Légende des couleurs -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                🎨 Code couleur des événements
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="flex items-center gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <div class="w-4 h-4 bg-blue-500 rounded-full"></div>
+                    <div>
+                        <span class="text-sm font-medium text-blue-800">🛠️ Services</span>
+                        <p class="text-xs text-blue-600">Prestations de services</p>
                     </div>
-                    <div class="ml-5 w-0 flex-1">
-                        <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">Confirmées</dt>
-                            <dd class="text-2xl font-bold text-green-600">{{ $stats['confirmed'] }}</dd>
-                        </dl>
+                </div>
+                <div class="flex items-center gap-3 p-3 bg-green-50 rounded-lg border border-green-200">
+                    <div class="w-4 h-4 bg-green-500 rounded-full"></div>
+                    <div>
+                        <span class="text-sm font-medium text-green-800">⚙️ Équipements</span>
+                        <p class="text-xs text-green-600">Locations d'équipements</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 p-3 bg-red-50 rounded-lg border border-red-200">
+                    <div class="w-4 h-4 bg-red-500 rounded-full"></div>
+                    <div>
+                        <span class="text-sm font-medium text-red-800">⚡ Ventes urgentes</span>
+                        <p class="text-xs text-red-600">Ventes à traiter rapidement</p>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="bg-white overflow-hidden shadow rounded-lg">
-            <div class="p-5">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <svg class="h-8 w-8 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
+        
+        <!-- Disposition responsive : Desktop (liste à gauche, calendrier à droite) / Mobile (liste en haut, calendrier en dessous) -->
+        <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
+            <!-- Liste des demandes récentes (Desktop: gauche, Mobile: haut) -->
+            <div class="xl:col-span-1 order-1 xl:order-1">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-4">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                            📋 Demandes récentes
+                        </h3>
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                            {{ $recentBookings->count() }}
+                        </span>
                     </div>
-                    <div class="ml-5 w-0 flex-1">
-                        <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">En attente</dt>
-                            <dd class="text-2xl font-bold text-orange-600">{{ $stats['pending'] }}</dd>
-                        </dl>
+                    
+                    <!-- Filtre de recherche -->
+                    <div class="mb-4">
+                        <div class="relative">
+                            <input type="text" id="quickSearch" placeholder="Rechercher..." 
+                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white overflow-hidden shadow rounded-lg">
-            <div class="p-5">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <svg class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                    <div class="ml-5 w-0 flex-1">
-                        <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">Terminées</dt>
-                            <dd class="text-2xl font-bold text-indigo-600">{{ $stats['completed'] }}</dd>
-                        </dl>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Section supprimée : Informations financières -->
-        <!-- Les revenus ont été supprimés pour des raisons de confidentialité -->
-    </div>
-
-    <!-- Filtres et recherche -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <!-- Recherche -->
-            <div>
-                <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Rechercher</label>
-                <div class="relative">
-                    <input type="text" id="search" name="search" value="{{ $search }}" 
-                           placeholder="Client, service, numéro..." 
-                           class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Filtre par service -->
-            <div>
-                <label for="service_filter" class="block text-sm font-medium text-gray-700 mb-2">Service</label>
-                <select id="service_filter" name="service" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    <option value="">Tous les services</option>
-                    @foreach($services as $service)
-                        <option value="{{ $service->id }}" {{ $serviceFilter == $service->id ? 'selected' : '' }}>
-                            {{ $service->title }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Filtre par statut -->
-            <div>
-                <label for="status_filter" class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
-                <select id="status_filter" name="status" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    <option value="">Tous les statuts</option>
-                    <option value="pending" {{ $statusFilter === 'pending' ? 'selected' : '' }}>En attente</option>
-                    <option value="confirmed" {{ $statusFilter === 'confirmed' ? 'selected' : '' }}>Confirmé</option>
-                    <option value="completed" {{ $statusFilter === 'completed' ? 'selected' : '' }}>Terminé</option>
-                    <option value="cancelled" {{ $statusFilter === 'cancelled' ? 'selected' : '' }}>Annulé</option>
-                </select>
-            </div>
-
-            <!-- Actions -->
-            <div class="flex items-end space-x-2">
-                <button onclick="applyFilters()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
-                    Filtrer
-                </button>
-                <button onclick="clearFilters()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-50 transition-colors">
-                    Effacer
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Contenu principal -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-        @if($view === 'list')
-            <!-- Vue liste -->
-            <div class="p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Prochaines réservations</h3>
-                @if($bookings->count() > 0)
-                    <div class="space-y-4">
-                        @foreach($bookings as $booking)
-                            <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer" onclick="showBookingDetails({{ $booking->id }})">
-                                <div class="flex justify-between items-start">
-                                    <div class="flex-1">
-                                        <div class="flex items-center space-x-3">
-                                            <h4 class="text-lg font-medium text-gray-900">{{ $booking->service->title ?? 'Service' }}</h4>
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                                @if($booking->status === 'confirmed') bg-green-100 text-green-800
-                                                @elseif($booking->status === 'pending') bg-orange-100 text-orange-800
-                                                @elseif($booking->status === 'completed') bg-indigo-100 text-indigo-800
-                                                @else bg-red-100 text-red-800 @endif">
-                                                {{ ucfirst($booking->status) }}
-                                            </span>
-                                        </div>
-                                        <div class="mt-2 space-y-1">
-                                            <p class="text-sm text-gray-600">
-                                                <svg class="inline h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                                </svg>
-                                                Client: {{ $booking->client->user->name ?? 'N/A' }}
-                                            </p>
-                                            <p class="text-sm text-gray-600">
-                                                <svg class="inline h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 8a2 2 0 100-4 2 2 0 000 4zm6-6V7a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-3" />
-                                                </svg>
-                                                {{ $booking->start_datetime->format('d/m/Y à H:i') }} - {{ $booking->end_datetime->format('H:i') }}
-                                            </p>
-                                            <!-- Informations financières supprimées -->
-                                        </div>
+                    
+                    <!-- Liste des demandes -->
+                    <div class="space-y-3 max-h-96 overflow-y-auto">
+                        @forelse($recentBookings as $booking)
+                            <div class="p-3 border border-blue-200 rounded-lg hover:border-blue-400 hover:shadow-md transition-all duration-200 cursor-pointer bg-blue-50 hover:bg-blue-100" 
+                                 onclick="showBookingDetails({{ $booking->id }})">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1 min-w-0">
+                                        <h4 class="text-sm font-bold text-blue-900 truncate">
+                                            {{ $booking->service->title ?? 'Service' }}
+                                        </h4>
+                                        <p class="text-xs text-blue-700 mt-1">
+                                             {{ $booking->client->user->name ?? 'N/A' }}
+                                         </p>
+                                         <p class="text-xs text-blue-600 mt-1">
+                                             {{ $booking->start_datetime->format('d/m H:i') }}
+                                         </p>
                                     </div>
-                                    <div class="text-right">
-                                        <p class="text-sm font-medium text-gray-900">#{{ $booking->booking_number }}</p>
-                                        <p class="text-xs text-gray-500 mt-1">{{ $booking->start_datetime->diffForHumans() }}</p>
-                                    </div>
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold
+                                        @if($booking->status === 'confirmed') bg-green-100 text-green-800
+                                        @elseif($booking->status === 'pending') bg-orange-100 text-orange-800
+                                        @elseif($booking->status === 'completed') bg-blue-100 text-blue-800
+                                        @else bg-red-100 text-red-800 @endif">
+                                        {{ ucfirst($booking->status) }}
+                                    </span>
                                 </div>
                             </div>
-                        @endforeach
+                        @empty
+                            <div class="text-center py-8">
+                                <svg class="mx-auto h-12 w-12 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 8a2 2 0 100-4 2 2 0 000 4zm6-6V7a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-3" />
+                                </svg>
+                                <h3 class="mt-2 text-sm font-bold text-blue-900">Aucune demande</h3>
+                                <p class="mt-1 text-sm text-blue-600">Aucune demande récente trouvée.</p>
+                            </div>
+                        @endforelse
                     </div>
-                @else
-                    <div class="text-center py-12">
-                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 8a2 2 0 100-4 2 2 0 000 4zm6-6V7a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-3" />
-                        </svg>
-                        <h3 class="mt-2 text-sm font-medium text-gray-900">Aucune réservation</h3>
-                        <p class="mt-1 text-sm text-gray-500">Aucune réservation trouvée pour les critères sélectionnés.</p>
+                    
+                    <!-- Lien vers toutes les demandes -->
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <a href="{{ route('prestataire.bookings.index') }}" 
+                           class="w-full inline-flex items-center justify-center px-4 py-2 border border-blue-300 text-sm font-medium rounded-lg text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors">
+                            Voir toutes les demandes
+                            <svg class="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </a>
                     </div>
-                @endif
+                </div>
             </div>
-        @else
-            <!-- Vue calendrier -->
-            <div class="p-6">
-                <div id="calendar"></div>
+            
+            <!-- Calendrier principal (Desktop: droite, Mobile: dessous) -->
+            <div class="xl:col-span-3 order-2 xl:order-2">
+                <div class="bg-white rounded-xl shadow-lg border border-blue-200 overflow-hidden">
+                    <div class="p-6">
+                        <div id="calendar"></div>
+                    </div>
+                </div>
             </div>
-        @endif
+        </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 
 <!-- Modal pour les détails de réservation -->
-<div id="bookingModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+<div id="bookingModal" class="fixed inset-0 bg-blue-900 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-5 border border-blue-200 w-11/12 md:w-3/4 lg:w-1/2 shadow-2xl rounded-xl bg-white">
         <div class="mt-3">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-medium text-gray-900" id="modalTitle">Détails de la réservation</h3>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                <h3 class="text-lg font-bold text-blue-900" id="modalTitle">Détails de la réservation</h3>
+                <button onclick="closeModal()" class="text-blue-400 hover:text-blue-600 transition duration-200">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -240,6 +192,32 @@
             </div>
             <div id="modalContent">
                 <!-- Le contenu sera chargé dynamiquement -->
+                <div class="space-y-3">
+                    <div>
+                        <span class="font-semibold text-blue-800">Client:</span>
+                        <span id="modal-client-name" class="text-blue-700"></span>
+                    </div>
+                    <div id="modal-service-section">
+                        <span class="font-semibold text-blue-800">Service:</span>
+                        <span id="modal-service-name" class="text-blue-700"></span>
+                    </div>
+                    <div id="modal-equipment-section" style="display: none;">
+                        <span class="font-semibold text-blue-800">Équipement:</span>
+                        <span id="modal-equipment-name" class="text-blue-700"></span>
+                    </div>
+                    <div id="modal-time-section">
+                        <span class="font-semibold text-blue-800">Heure:</span>
+                        <span id="modal-start-time" class="text-blue-700"></span>
+                    </div>
+                    <div id="modal-date-section" style="display: none;">
+                        <span class="font-semibold text-blue-800">Période:</span>
+                        <span id="modal-date-range" class="text-blue-700"></span>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-blue-800">Statut:</span>
+                        <span id="modal-status" class="px-2 py-1 rounded text-sm font-medium"></span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -250,11 +228,263 @@
 @push('styles')
 <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css' rel='stylesheet' />
 <style>
-    .fc-event {
-        cursor: pointer;
+    /* Calendrier principal */
+    #calendar {
+        background: white;
+        border-radius: 12px;
+        font-family: 'Inter', sans-serif;
     }
+    
+    /* En-tête du calendrier */
+    .fc-header-toolbar {
+        padding: 1rem 0;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 1rem !important;
+    }
+    
+    .fc-toolbar-title {
+        font-size: 1.5rem !important;
+        font-weight: 700 !important;
+        color: #1f2937;
+    }
+    
+    /* Boutons de navigation */
+    .fc-button {
+        background: #f3f4f6 !important;
+        border: 1px solid #d1d5db !important;
+        color: #374151 !important;
+        border-radius: 8px !important;
+        padding: 0.5rem 1rem !important;
+        font-weight: 500 !important;
+        transition: all 0.2s ease !important;
+    }
+    
+    .fc-button:hover {
+        background: #e5e7eb !important;
+        border-color: #9ca3af !important;
+    }
+    
+    .fc-button:focus {
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    }
+    
+    .fc-button-active {
+        background: #3b82f6 !important;
+        border-color: #3b82f6 !important;
+        color: white !important;
+    }
+    
+    /* Grille du calendrier */
+    .fc-scrollgrid {
+        border: 1px solid #e5e7eb !important;
+        border-radius: 12px !important;
+        overflow: hidden;
+    }
+    
+    .fc-col-header {
+        background: #f9fafb !important;
+        border-bottom: 1px solid #e5e7eb !important;
+    }
+    
+    .fc-col-header-cell {
+        padding: 0.75rem 0.5rem !important;
+        font-weight: 600 !important;
+        color: #374151 !important;
+        text-transform: uppercase !important;
+        font-size: 0.75rem !important;
+        letter-spacing: 0.05em !important;
+    }
+    
+    /* Cellules des jours */
+    .fc-daygrid-day {
+        border: 1px solid #f3f4f6 !important;
+        min-height: 120px !important;
+        background: white !important;
+        transition: background-color 0.2s ease !important;
+    }
+    
+    .fc-daygrid-day:hover {
+        background: #f8fafc !important;
+    }
+    
+    /* Weekends grisés */
+    .fc-day-sat, .fc-day-sun {
+        background: #f9fafb !important;
+    }
+    
+    /* Date du jour mise en avant */
+    .fc-day-today {
+        background: #eff6ff !important;
+        border: 2px solid #3b82f6 !important;
+    }
+    
+    .fc-day-today .fc-daygrid-day-number {
+        background: #3b82f6 !important;
+        color: white !important;
+        border-radius: 50% !important;
+        width: 28px !important;
+        height: 28px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-weight: 700 !important;
+        margin: 4px !important;
+    }
+    
+    /* Numéros des jours */
+    .fc-daygrid-day-number {
+        padding: 4px 8px !important;
+        font-weight: 600 !important;
+        color: #374151 !important;
+        text-decoration: none !important;
+    }
+    
+    /* Événements */
+    .fc-event {
+        border: none !important;
+        border-radius: 6px !important;
+        padding: 4px 8px !important;
+        margin: 2px 4px !important;
+        font-size: 11px !important;
+        font-weight: 600 !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+    }
+    
     .fc-event:hover {
-        opacity: 0.8;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    /* Couleurs des événements par type */
+    .fc-event.event-service {
+        background: #dbeafe !important;
+        color: #1e40af !important;
+        border-left: 4px solid #3b82f6 !important;
+    }
+    
+    .fc-event.event-equipment {
+        background: #dcfce7 !important;
+        color: #166534 !important;
+        border-left: 4px solid #22c55e !important;
+    }
+    
+    .fc-event.event-urgent_sale {
+        background: #fee2e2 !important;
+        color: #991b1b !important;
+        border-left: 4px solid #ef4444 !important;
+    }
+    
+    /* Titre des événements */
+    .fc-event-title {
+        font-weight: 700 !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+    
+    .fc-event-time {
+        font-weight: 800 !important;
+        margin-right: 4px !important;
+    }
+    
+    /* Tooltip personnalisé */
+    .event-tooltip {
+        position: absolute;
+        z-index: 1000;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        max-width: 300px;
+        font-size: 13px;
+        line-height: 1.4;
+    }
+    
+    .event-tooltip h4 {
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+    
+    .event-tooltip p {
+        margin: 4px 0;
+        color: #6b7280;
+    }
+    
+    .event-tooltip .tooltip-type {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    
+    .tooltip-type.service {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+    
+    .tooltip-type.equipment {
+        background: #dcfce7;
+        color: #166534;
+    }
+    
+    .tooltip-type.urgent_sale {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+    
+    .event-tooltip .tooltip-link {
+        display: inline-block;
+        margin-top: 8px;
+        padding: 6px 12px;
+        background: #3b82f6;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        transition: background-color 0.2s ease;
+    }
+    
+    .event-tooltip .tooltip-link:hover {
+        background: #2563eb;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .fc-toolbar {
+            flex-direction: column !important;
+            gap: 1rem !important;
+        }
+        
+        .fc-toolbar-title {
+            font-size: 1.25rem !important;
+        }
+        
+        .fc-daygrid-day {
+            min-height: 80px !important;
+        }
+        
+        .fc-event {
+            font-size: 10px !important;
+            padding: 2px 4px !important;
+        }
+    }
+    
+    /* Focus pour l'accessibilité */
+    .fc-event:focus {
+        outline: 2px solid #3b82f6 !important;
+        outline-offset: 2px !important;
+    }
+    
+    .fc-daygrid-day:focus-within {
+        background: #f0f9ff !important;
     }
 </style>
 @endpush
@@ -286,7 +516,59 @@
             height: 'auto',
             events: '{{ route("prestataire.agenda.events") }}',
             eventClick: function(info) {
-                showBookingDetails(info.event.id);
+                const event = info.event;
+                const props = event.extendedProps;
+                
+                // Remplir la modal avec les informations de l'événement
+                document.getElementById('modal-client-name').textContent = props.clientName;
+                
+                // Gérer l'affichage selon le type d'événement
+                if (props.itemType === 'equipment_rental') {
+                    // Afficher les sections équipement
+                    document.getElementById('modal-service-section').style.display = 'none';
+                    document.getElementById('modal-equipment-section').style.display = 'block';
+                    document.getElementById('modal-time-section').style.display = 'none';
+                    document.getElementById('modal-date-section').style.display = 'block';
+                    
+                    document.getElementById('modal-equipment-name').textContent = props.equipmentName;
+                    document.getElementById('modal-date-range').textContent = props.startDate + ' - ' + props.endDate;
+                } else {
+                    // Afficher les sections service
+                    document.getElementById('modal-service-section').style.display = 'block';
+                    document.getElementById('modal-equipment-section').style.display = 'none';
+                    document.getElementById('modal-time-section').style.display = 'block';
+                    document.getElementById('modal-date-section').style.display = 'none';
+                    
+                    document.getElementById('modal-service-name').textContent = props.serviceName;
+                    document.getElementById('modal-start-time').textContent = props.startTime;
+                }
+                
+                document.getElementById('modal-status').textContent = props.status;
+                
+                // Styliser le statut
+                const statusElement = document.getElementById('modal-status');
+                statusElement.className = 'px-2 py-1 rounded text-sm font-medium';
+                
+                switch(props.status.toLowerCase()) {
+                    case 'pending':
+                        statusElement.classList.add('bg-yellow-100', 'text-yellow-800');
+                        break;
+                    case 'confirmed':
+                    case 'active':
+                        statusElement.classList.add('bg-green-100', 'text-green-800');
+                        break;
+                    case 'completed':
+                        statusElement.classList.add('bg-blue-100', 'text-blue-800');
+                        break;
+                    case 'cancelled':
+                        statusElement.classList.add('bg-red-100', 'text-red-800');
+                        break;
+                    default:
+                        statusElement.classList.add('bg-gray-100', 'text-gray-800');
+                }
+                
+                // Afficher la modal
+                 document.getElementById('eventModal').classList.remove('hidden');
             },
             eventDidMount: function(info) {
                 // Ajouter des tooltips
@@ -399,27 +681,27 @@
                         <div class="flex justify-end space-x-3 pt-4 border-t">
                             ${data.canConfirm ? `
                                 <button onclick="updateBookingStatus(${booking.id}, 'confirmed')" 
-                                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                                        class="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded-lg text-sm transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                                     Confirmer
                                 </button>
                             ` : ''}
                             
                             ${data.canCancel ? `
                                 <button onclick="cancelBooking(${booking.id})" 
-                                        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                                        class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-lg text-sm transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                                     Annuler
                                 </button>
                             ` : ''}
                             
                             ${data.canComplete ? `
                                 <button onclick="updateBookingStatus(${booking.id}, 'completed')" 
-                                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-lg text-sm transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                                     Marquer terminé
                                 </button>
                             ` : ''}
                             
                             <button onclick="closeModal()" 
-                                    class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-md text-sm font-medium">
+                                    class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold px-4 py-2 rounded-lg text-sm transition duration-200">
                                 Fermer
                             </button>
                         </div>

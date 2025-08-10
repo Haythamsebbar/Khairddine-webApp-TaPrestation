@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'client' => \App\Http\Middleware\ClientMiddleware::class,
             'refresh.csrf' => \App\Http\Middleware\RefreshCsrfToken::class,
+            'check.file.upload' => \App\Http\Middleware\CheckFileUploadSize::class,
         ]);
         
         // Use custom CSRF middleware with register route exception

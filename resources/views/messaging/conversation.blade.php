@@ -137,7 +137,7 @@
                                         placeholder="Tapez votre message..." 
                                         rows="1"
                                         required
-                                        maxlength="1000"></textarea>
+                                        maxlength="1000">{{ request('message', '') }}</textarea>
                                 </div>
                                 
                                 <div class="message-send-actions">

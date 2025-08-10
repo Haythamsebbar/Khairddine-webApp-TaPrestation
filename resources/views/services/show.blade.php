@@ -8,7 +8,7 @@
 @section('title', $service->title . ' - Service - TaPrestation')
 
 @section('content')
-<div class="min-h-screen bg-blue-50">
+<div class="bg-blue-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Breadcrumb -->
         <nav class="flex mb-8" aria-label="Breadcrumb">
@@ -78,8 +78,8 @@
                 </div>
                 
                 <!-- Description détaillée -->
-                <div class="bg-white rounded-lg shadow-sm p-6 mt-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Description</h2>
+                <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6 mt-6">
+                    <h2 class="text-2xl font-bold text-blue-800 mb-4">Description</h2>
                     <div class="prose max-w-none text-gray-700">
                         {!! nl2br(e($service->description)) !!}
                     </div>
@@ -99,8 +99,8 @@
                     
                     <!-- Informations du vendeur -->
                     <div class="border-t border-gray-200 pt-6 mb-6">
-                        <h3 class="text-lg font-semibold text-blue-800 mb-3">Prestataire</h3>
-                        <div class="flex items-center mb-4">
+                        <h3 class="text-2xl font-bold text-blue-800 mb-4">Prestataire</h3>
+                        <div class="flex items-center mb-4 cursor-pointer hover:bg-blue-50 p-3 rounded-lg transition-colors duration-200" onclick="window.location.href='{{ route('prestataires.show', $service->prestataire) }}'">
                             <div class="relative w-12 h-12 mr-3">
                                 @if($service->prestataire->photo)
                                     <img src="{{ Storage::url($service->prestataire->photo) }}" alt="{{ $service->prestataire->user->name }}" class="w-12 h-12 rounded-full object-cover">
@@ -121,9 +121,9 @@
                                     </div>
                                 @endif
                             </div>
-                            <div>
+                            <div class="flex-1">
                                 <div class="flex items-center">
-                                    <span class="font-medium text-gray-900">{{ $service->prestataire->user->name }}</span>
+                                    <span class="font-medium text-gray-900 hover:text-blue-600 transition-colors duration-200">{{ $service->prestataire->user->name }}</span>
                                     @if($service->prestataire->isVerified())
                                         <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                             <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -136,6 +136,7 @@
                                 @if($service->prestataire->company_name)
                                     <div class="text-sm text-gray-600">{{ $service->prestataire->company_name }}</div>
                                 @endif
+                                <div class="text-xs text-blue-600 mt-1">Cliquez pour voir le profil</div>
                             </div>
                         </div>
                         
@@ -210,26 +211,22 @@
                         @auth
                             @if(auth()->user()->role === 'client' && auth()->user()->id !== $service->prestataire->user_id)
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                    <a href="{{ route('bookings.create', $service) }}" class="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition duration-200 font-semibold text-center flex items-center justify-center">
-                                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 00-1 1v1a1 1 0 002 0V3a1 1 0 00-1-1zM4 6a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 9a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1zm16 3a1 1 0 10-2 0v4a1 1 0 001 1h1a1 1 0 100-2h-1v-3zM4 12a1 1 0 10-2 0v5a1 1 0 001 1h1a1 1 0 100-2h-1v-4zM8 12a1 1 0 10-2 0v5a1 1 0 001 1h1a1 1 0 100-2h-1v-4zm4 0a1 1 0 10-2 0v5a1 1 0 001 1h1a1 1 0 100-2h-1v-4z"></path></svg>
-                                        Réserver
-                                    </a>
-                                    <a href="{{ route('client.messaging.show', ['user' => $service->prestataire->user->id, 'service_id' => $service->id]) }}" class="w-full bg-blue-100 text-blue-800 px-4 py-3 rounded-lg hover:bg-blue-200 transition duration-200 font-semibold text-center flex items-center justify-center">
-                                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>
-                                        Contacter
-                                    </a>
+                                    <a href="{{ route('bookings.create', $service) }}" class="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition duration-200 font-bold text-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                                         Réserver
+                                     </a>
+                                     <a href="{{ route('client.messaging.show', ['user' => $service->prestataire->user->id, 'service_id' => $service->id]) }}" class="w-full bg-blue-100 text-blue-800 px-4 py-3 rounded-lg hover:bg-blue-200 transition duration-200 font-bold text-center shadow-lg">
+                                         Contacter
+                                     </a>
                                 </div>
                             @elseif(auth()->user()->id === $service->prestataire->user_id)
-                                <a href="{{ route('prestataire.services.edit', $service) }}" class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-200 font-semibold text-center flex items-center justify-center">
-                                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg>
-                                    Modifier mon service
-                                </a>
+                                <a href="{{ route('prestataire.services.edit', $service) }}" class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-200 font-bold text-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                                     Modifier mon service
+                                 </a>
                             @endif
                         @else
-                            <a href="{{ route('login') }}" class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-200 font-semibold text-center flex items-center justify-center">
-                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
-                                Se connecter pour réserver
-                            </a>
+                            <a href="{{ route('login') }}" class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-200 font-bold text-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                                 Se connecter pour réserver
+                             </a>
                         @endauth
                     </div>
                 </div>

@@ -35,17 +35,17 @@
 
         <!-- Breadcrumb -->
         <nav class="flex mb-8" aria-label="Breadcrumb">
-            <ol class="inline-flex items-center space-x-1 md:space-x-3 bg-white rounded-lg shadow-sm px-4 py-2 border border-gray-200">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3 bg-white rounded-lg shadow-sm px-4 py-2 border border-green-200">
                 <li class="inline-flex items-center">
-                    <a href="{{ route('client.dashboard') }}" class="inline-flex items-center text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors duration-200">
-                        <i class="fas fa-home mr-2 text-blue-600"></i>
+                    <a href="{{ route('client.dashboard') }}" class="inline-flex items-center text-sm font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200">
+                        <i class="fas fa-home mr-2 text-green-600"></i>
                         Accueil
                     </a>
                 </li>
                 <li>
                     <div class="flex items-center">
                         <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                        <a href="{{ route('client.equipment-rental-requests.index') }}" class="text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors duration-200">Mes demandes</a>
+                        <a href="{{ route('client.equipment-rental-requests.index') }}" class="text-sm font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200">Mes demandes</a>
                     </div>
                 </li>
                 <li aria-current="page">
@@ -58,25 +58,25 @@
         </nav>
 
         <!-- En-tête -->
-        <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-8 mb-8">
+        <div class="bg-white rounded-xl shadow-lg border border-green-200 p-8 mb-8">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                 <div class="flex-1">
                     <div class="flex items-center mb-4">
-                        <div class="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full mr-4 shadow-lg">
-                            <i class="fas fa-clipboard-list text-2xl text-blue-600"></i>
+                        <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-full mr-4 shadow-lg">
+                            <i class="fas fa-clipboard-list text-2xl text-green-600"></i>
                         </div>
                         <div>
-                            <h1 class="text-3xl font-bold text-gray-900">Demande #{{ $request->id }}</h1>
-                            <p class="text-gray-600 font-medium">Demande de location d'équipement</p>
+                            <h1 class="text-3xl font-bold text-green-900">Demande #{{ $request->id }}</h1>
+                            <p class="text-green-700 font-medium">Demande de location d'équipement</p>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                        <div class="flex items-center text-gray-600">
-                            <i class="fas fa-calendar-plus mr-2 text-blue-600"></i>
+                        <div class="flex items-center text-green-700">
+                            <i class="fas fa-calendar-plus mr-2 text-green-600"></i>
                             <span class="font-medium">Créée le {{ $request->created_at->format('d/m/Y à H:i') }}</span>
                         </div>
-                        <div class="flex items-center text-gray-600">
-                            <i class="fas fa-clock mr-2 text-blue-600"></i>
+                        <div class="flex items-center text-green-700">
+                            <i class="fas fa-clock mr-2 text-green-600"></i>
                             <span class="font-medium">Mise à jour le {{ $request->updated_at->format('d/m/Y à H:i') }}</span>
                         </div>
                     </div>
@@ -117,7 +117,7 @@
                         
                         @if($request->status === 'accepted')
                             <a href="{{ route('client.equipment-rentals.index') }}" 
-                               class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
+                               class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
                                 <i class="fas fa-eye mr-2"></i>
                                 Voir mes locations
                             </a>
@@ -131,12 +131,12 @@
             <!-- Colonne principale -->
             <div class="lg:col-span-2 space-y-6">
                 <!-- Détails de l'équipement demandé -->
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-8 mb-8">
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-8 mb-8">
                     <div class="flex items-center mb-6">
                         <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-full mr-4 shadow-lg">
                             <i class="fas fa-tools text-xl text-green-600"></i>
                         </div>
-                        <h2 class="text-2xl font-bold text-gray-900">Équipement demandé</h2>
+                        <h2 class="text-2xl font-bold text-green-900">Équipement demandé</h2>
                     </div>
                     
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -183,48 +183,48 @@
                         <!-- Informations de l'équipement -->
                         <div class="space-y-6">
                             <div>
-                                <h3 class="text-3xl font-bold text-gray-900 mb-4">
+                                <h3 class="text-3xl font-bold text-green-900 mb-4">
                                     <a href="{{ route('equipment.show', $request->equipment) }}" 
-                                       class="hover:text-blue-600 transition-colors">
+                                       class="hover:text-green-600 transition-colors">
                                         {{ $request->equipment->name }}
                                     </a>
                                 </h3>
                                 <div class="grid grid-cols-1 gap-4">
                                     @if($request->equipment->brand || $request->equipment->model)
-                                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4 border border-gray-200">
+                                    <div class="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
                                         <div class="flex items-center mb-2">
-                                            <i class="fas fa-tag text-blue-600 mr-2"></i>
-                                            <span class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Marque/Modèle</span>
+                                            <i class="fas fa-tag text-green-600 mr-2"></i>
+                                            <span class="text-sm font-semibold text-green-700 uppercase tracking-wide">Marque/Modèle</span>
                                         </div>
-                                        <p class="text-lg font-semibold text-gray-900">{{ $request->equipment->brand }} {{ $request->equipment->model }}</p>
+                                        <p class="text-lg font-semibold text-green-900">{{ $request->equipment->brand }} {{ $request->equipment->model }}</p>
                                     </div>
                                     @endif
                                     
-                                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4 border border-gray-200">
+                                    <div class="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
                                         <div class="flex items-center mb-2">
-                                            <i class="fas fa-star text-blue-600 mr-2"></i>
-                                            <span class="text-sm font-semibold text-gray-600 uppercase tracking-wide">État</span>
+                                            <i class="fas fa-star text-green-600 mr-2"></i>
+                                            <span class="text-sm font-semibold text-green-600 uppercase tracking-wide">État</span>
                                         </div>
-                                        <p class="text-lg font-semibold text-gray-900">{{ $request->equipment->formatted_condition }}</p>
+                                        <p class="text-lg font-semibold text-green-900">{{ $request->equipment->formatted_condition }}</p>
                                     </div>
                                     
-                                    <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+                                    <div class="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
                                         <div class="flex items-center mb-2">
-                                            <i class="fas fa-euro-sign text-blue-600 mr-2"></i>
-                                            <span class="text-sm font-semibold text-blue-700 uppercase tracking-wide">Tarif journalier</span>
+                                            <i class="fas fa-euro-sign text-green-600 mr-2"></i>
+                                            <span class="text-sm font-semibold text-green-700 uppercase tracking-wide">Tarif journalier</span>
                                         </div>
-                                        <p class="text-2xl font-bold text-blue-600">{{ number_format($request->equipment->daily_rate, 0) }}€</p>
+                                        <p class="text-2xl font-bold text-green-600">{{ number_format($request->equipment->daily_rate, 0) }}€</p>
                                     </div>
                                 </div>
                             </div>
                             
                             @if($request->equipment->description)
-                                <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4 border border-gray-200">
+                                <div class="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
                                     <div class="flex items-center mb-3">
-                                        <i class="fas fa-info-circle text-blue-600 mr-2"></i>
-                                        <h4 class="font-semibold text-gray-900">Description</h4>
+                                        <i class="fas fa-info-circle text-green-600 mr-2"></i>
+                                        <h4 class="font-semibold text-green-900">Description</h4>
                                     </div>
-                                    <p class="text-gray-700 leading-relaxed">{{ $request->equipment->description }}</p>
+                                    <p class="text-green-700 leading-relaxed">{{ $request->equipment->description }}</p>
                                 </div>
                             @endif
                         </div>
@@ -232,12 +232,12 @@
                 </div>
                 
                 <!-- Période de location -->
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-8">
                     <div class="flex items-center mb-6">
-                        <div class="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full mr-4 shadow-lg">
-                            <i class="fas fa-calendar-alt text-xl text-blue-600"></i>
+                        <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-full mr-4 shadow-lg">
+                            <i class="fas fa-calendar-alt text-xl text-green-600"></i>
                         </div>
-                        <h2 class="text-2xl font-bold text-gray-900">Période de location</h2>
+                        <h2 class="text-2xl font-bold text-green-900">Période de location</h2>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -261,12 +261,12 @@
                     </div>
                     
                     <div class="mt-6 pt-6 border-t border-gray-200">
-                        <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+                        <div class="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
                             <div class="flex items-center">
-                                <i class="fas fa-clock text-blue-600 mr-3"></i>
+                                <i class="fas fa-clock text-green-600 mr-3"></i>
                                 <div>
-                                    <p class="text-sm font-semibold text-blue-700 uppercase tracking-wide mb-1">Durée totale</p>
-                                    <p class="text-xl font-bold text-blue-600">{{ $request->duration_days }} jour{{ $request->duration_days > 1 ? 's' : '' }}</p>
+                                    <p class="text-sm font-semibold text-green-700 uppercase tracking-wide mb-1">Durée totale</p>
+                                    <p class="text-xl font-bold text-green-600">{{ $request->duration_days }} jour{{ $request->duration_days > 1 ? 's' : '' }}</p>
                                 </div>
                             </div>
                         </div>
@@ -274,25 +274,25 @@
                 </div>
 
                 <!-- Options de livraison -->
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-8">
                     <div class="flex items-center mb-6">
-                        <div class="p-3 bg-gradient-to-br from-purple-100 to-purple-200 rounded-full mr-4 shadow-lg">
-                            <i class="fas fa-truck text-xl text-purple-600"></i>
+                        <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-full mr-4 shadow-lg">
+                            <i class="fas fa-truck text-xl text-green-600"></i>
                         </div>
-                        <h2 class="text-2xl font-bold text-gray-900">Options de livraison</h2>
+                        <h2 class="text-2xl font-bold text-green-900">Options de livraison</h2>
                     </div>
                     
                     <div class="space-y-6">
-                        <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-6 border border-gray-200">
+                        <div class="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-6 border border-green-200">
                             <div class="flex items-center mb-3">
                                 @if($request->delivery_required)
-                                    <i class="fas fa-shipping-fast text-purple-600 mr-2"></i>
+                                    <i class="fas fa-shipping-fast text-green-600 mr-2"></i>
                                 @else
-                                    <i class="fas fa-store text-purple-600 mr-2"></i>
+                                    <i class="fas fa-store text-green-600 mr-2"></i>
                                 @endif
-                                <label class="text-sm font-semibold text-purple-700 uppercase tracking-wide">Mode de livraison</label>
+                                <label class="text-sm font-semibold text-green-700 uppercase tracking-wide">Mode de livraison</label>
                             </div>
-                            <p class="text-xl font-bold text-gray-900">
+                            <p class="text-xl font-bold text-green-900">
                                 @if($request->delivery_required)
                                     Livraison demandée
                                 @else
@@ -302,25 +302,25 @@
                         </div>
                         
                         @if($request->delivery_required && $request->delivery_address)
-                            <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-6 border border-gray-200">
-                                <div class="flex items-center mb-3">
-                                    <i class="fas fa-map-marker-alt text-purple-600 mr-2"></i>
-                                    <label class="text-sm font-semibold text-purple-700 uppercase tracking-wide">Adresse de livraison</label>
-                                </div>
-                                <p class="text-lg font-semibold text-gray-900">{{ $request->delivery_address }}</p>
+                            <div class="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-6 border border-green-200">
+                            <div class="flex items-center mb-3">
+                                <i class="fas fa-map-marker-alt text-green-600 mr-2"></i>
+                                <label class="text-sm font-semibold text-green-700 uppercase tracking-wide">Adresse de livraison</label>
                             </div>
+                            <p class="text-lg font-semibold text-gray-900">{{ $request->delivery_address }}</p>
+                        </div>
                         @endif
                     </div>
                 </div>
                 
                 @if($request->message)
                 <!-- Message -->
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-8">
                     <div class="flex items-center mb-6">
-                        <div class="p-3 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-full mr-4 shadow-lg">
-                            <i class="fas fa-comment text-xl text-indigo-600"></i>
+                        <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-full mr-4 shadow-lg">
+                            <i class="fas fa-comment text-xl text-green-600"></i>
                         </div>
-                        <h2 class="text-2xl font-bold text-gray-900">Message</h2>
+                        <h2 class="text-2xl font-bold text-green-900">Message</h2>
                     </div>
                     <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-6 border border-gray-200">
                         <p class="text-gray-700 leading-relaxed">{{ $request->message }}</p>
@@ -330,7 +330,7 @@
                 
                 <!-- Réponse du prestataire -->
                 @if($request->status !== 'pending')
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-8">
                     <div class="flex items-center mb-6">
                         <div class="p-3 bg-gradient-to-br from-{{ $request->status === 'accepted' ? 'green' : 'red' }}-100 to-{{ $request->status === 'accepted' ? 'green' : 'red' }}-200 rounded-full mr-4 shadow-lg">
                             @if($request->status === 'accepted')
@@ -339,7 +339,7 @@
                                 <i class="fas fa-times text-xl text-red-600"></i>
                             @endif
                         </div>
-                        <h2 class="text-2xl font-bold text-gray-900">Réponse du prestataire</h2>
+                        <h2 class="text-2xl font-bold text-green-900">Réponse du prestataire</h2>
                     </div>
                     
                     <div class="space-y-6">
@@ -393,31 +393,31 @@
                 @endif
                 
                 <!-- Historique -->
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-8">
                     <div class="flex items-center mb-6">
-                        <div class="p-3 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full mr-4 shadow-lg">
-                            <i class="fas fa-history text-xl text-gray-600"></i>
+                        <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-full mr-4 shadow-lg">
+                            <i class="fas fa-history text-xl text-green-600"></i>
                         </div>
-                        <h2 class="text-2xl font-bold text-gray-900">Historique</h2>
+                        <h2 class="text-2xl font-bold text-green-900">Historique</h2>
                     </div>
                     
                     <div class="relative">
                         <!-- Timeline line -->
-                        <div class="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-400 to-gray-300"></div>
+                        <div class="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-green-400 to-gray-300"></div>
                         
                         <div class="space-y-8">
                             <!-- Création de la demande -->
                             <div class="relative flex items-start">
-                                <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center shadow-lg border-4 border-white">
-                                    <i class="fas fa-plus text-blue-600"></i>
+                                <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center shadow-lg border-4 border-white">
+                                    <i class="fas fa-plus text-green-600"></i>
                                 </div>
-                                <div class="ml-6 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200 flex-1">
+                                <div class="ml-6 bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4 border border-green-200 flex-1">
                                     <div class="flex items-center justify-between">
                                         <div>
                                             <p class="font-bold text-gray-900">Demande créée</p>
-                                            <p class="text-sm text-blue-600 font-medium">{{ $request->created_at->format('d/m/Y à H:i') }}</p>
+                                            <p class="text-sm text-green-600 font-medium">{{ $request->created_at->format('d/m/Y à H:i') }}</p>
                                         </div>
-                                        <i class="fas fa-file-plus text-blue-600 text-xl"></i>
+                                        <i class="fas fa-file-plus text-green-600 text-xl"></i>
                                     </div>
                                 </div>
                             </div>
@@ -457,33 +457,33 @@
             <!-- Sidebar -->
             <div class="space-y-8">
                 <!-- Récapitulatif financier -->
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-8">
                     <div class="flex items-center mb-6">
                         <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-full mr-4 shadow-lg">
                             <i class="fas fa-calculator text-xl text-green-600"></i>
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-900">Récapitulatif</h3>
+                        <h3 class="text-2xl font-bold text-green-900">Récapitulatif</h3>
                     </div>
                     
                     <div class="space-y-4">
-                        <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+                        <div class="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
                             <div class="flex justify-between items-center">
                                 <div class="flex items-center">
-                                    <i class="fas fa-calendar-day text-blue-600 mr-2"></i>
-                                    <span class="text-sm font-semibold text-blue-700">Location ({{ $request->duration_days }} jour{{ $request->duration_days > 1 ? 's' : '' }})</span>
+                                    <i class="fas fa-calendar-day text-green-600 mr-2"></i>
+                                    <span class="text-sm font-semibold text-green-700">Location ({{ $request->duration_days }} jour{{ $request->duration_days > 1 ? 's' : '' }})</span>
                                 </div>
-                                <span class="font-bold text-blue-600">{{ number_format($request->rental_amount, 0) }}€</span>
+                                <span class="font-bold text-green-600">{{ number_format($request->rental_amount, 0) }}€</span>
                             </div>
                         </div>
                         
                         @if($request->delivery_required && $request->delivery_cost > 0)
-                        <div class="bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
+                        <div class="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
                             <div class="flex justify-between items-center">
                                 <div class="flex items-center">
-                                    <i class="fas fa-truck text-purple-600 mr-2"></i>
-                                    <span class="text-sm font-semibold text-purple-700">Livraison</span>
+                                    <i class="fas fa-truck text-green-600 mr-2"></i>
+                                    <span class="text-sm font-semibold text-green-700">Livraison</span>
                                 </div>
-                                <span class="font-bold text-purple-600">{{ number_format($request->delivery_cost, 0) }}€</span>
+                                <span class="font-bold text-green-600">{{ number_format($request->delivery_cost, 0) }}€</span>
                             </div>
                         </div>
                         @endif
@@ -524,18 +524,18 @@
                 </div>
                 
                 <!-- Informations du prestataire -->
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-8">
                     <div class="flex items-center mb-6">
-                        <div class="p-3 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-full mr-4 shadow-lg">
-                            <i class="fas fa-user-tie text-xl text-indigo-600"></i>
+                        <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-full mr-4 shadow-lg">
+                            <i class="fas fa-user-tie text-xl text-green-600"></i>
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-900">Prestataire</h3>
+                        <h3 class="text-2xl font-bold text-green-900">Prestataire</h3>
                     </div>
                     
                     <div class="text-center">
                         <div class="relative inline-block mb-6">
-                            <div class="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center shadow-lg border-4 border-white">
-                                <span class="text-blue-600 font-bold text-2xl">
+                            <div class="w-20 h-20 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center shadow-lg border-4 border-white">
+                                <span class="text-green-600 font-bold text-2xl">
                                     {{ substr($request->equipment->prestataire->company_name ?? $request->equipment->prestataire->first_name, 0, 1) }}
                                 </span>
                             </div>
@@ -559,7 +559,7 @@
                         
                         <div class="grid grid-cols-1 gap-3">
                             <a href="mailto:{{ $request->equipment->prestataire->email }}" 
-                               class="inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg font-semibold shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105">
+                               class="inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg font-semibold shadow-lg hover:from-green-600 hover:to-green-700 transition-all duration-300 transform hover:scale-105">
                                 <i class="fas fa-envelope mr-2"></i>
                                 Contacter par email
                             </a>
@@ -576,23 +576,23 @@
                 </div>
                 
                 <!-- Actions rapides -->
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-8">
                     <div class="flex items-center mb-6">
-                        <div class="p-3 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-full mr-4 shadow-lg">
-                            <i class="fas fa-bolt text-xl text-yellow-600"></i>
+                        <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-full mr-4 shadow-lg">
+                            <i class="fas fa-bolt text-xl text-green-600"></i>
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-900">Actions rapides</h3>
+                        <h3 class="text-2xl font-bold text-green-900">Actions rapides</h3>
                     </div>
                     
                     <div class="space-y-4">
                         <a href="{{ route('equipment.show', $request->equipment) }}" 
-                           class="w-full inline-flex items-center justify-center px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105">
+                           class="w-full inline-flex items-center justify-center px-6 py-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl font-semibold shadow-lg hover:from-green-600 hover:to-green-700 transition-all duration-300 transform hover:scale-105">
                             <i class="fas fa-eye mr-3"></i>
                             Voir l'équipement
                         </a>
                         
                         <a href="{{ route('equipment.index') }}" 
-                           class="w-full inline-flex items-center justify-center px-6 py-4 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-xl font-semibold shadow-lg hover:from-gray-600 hover:to-gray-700 transition-all duration-300 transform hover:scale-105">
+                           class="w-full inline-flex items-center justify-center px-6 py-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl font-semibold shadow-lg hover:from-green-600 hover:to-green-700 transition-all duration-300 transform hover:scale-105">
                             <i class="fas fa-search mr-3"></i>
                             Parcourir le matériel
                         </a>

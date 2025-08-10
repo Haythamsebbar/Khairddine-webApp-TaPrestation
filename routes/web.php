@@ -488,7 +488,7 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
         Route::post('services/{service}/availabilities', [\App\Http\Controllers\Prestataire\AvailabilityController::class, 'store'])->name('availabilities.store');
         Route::delete('availabilities/{availability}', [\App\Http\Controllers\Prestataire\AvailabilityController::class, 'destroy'])->name('availabilities.destroy');
           Route::delete('/services/images/{image}', [ServiceImageController::class, 'destroy'])->name('services.images.destroy');
-        Route::get('/bookings', [BookingController::class, 'prestataireBookings'])->name('bookings.index');
+        Route::get('/bookings', [\App\Http\Controllers\Prestataire\BookingController::class, 'index'])->name('bookings.index');
         // Routes pour la gestion des disponibilités
         Route::prefix('availability')->name('availability.')->group(function () {
             Route::get('/', [\App\Http\Controllers\Prestataire\AvailabilityController::class, 'index'])->name('index');
@@ -566,9 +566,9 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
         Route::prefix('videos')->name('videos.')->group(function () {
             Route::get('/', [\App\Http\Controllers\Prestataire\VideoController::class, 'index'])->name('index');
             Route::get('/create', [\App\Http\Controllers\Prestataire\VideoController::class, 'create'])->name('create');
-            Route::post('/', [\App\Http\Controllers\Prestataire\VideoController::class, 'store'])->name('store');
+            Route::post('/', [\App\Http\Controllers\Prestataire\VideoController::class, 'store'])->name('store')->middleware('check.file.upload');
             Route::get('/{video}/edit', [\App\Http\Controllers\Prestataire\VideoController::class, 'edit'])->name('edit');
-            Route::put('/{video}', [\App\Http\Controllers\Prestataire\VideoController::class, 'update'])->name('update');
+            Route::put('/{video}', [\App\Http\Controllers\Prestataire\VideoController::class, 'update'])->name('update')->middleware('check.file.upload');
             Route::delete('/{video}', [\App\Http\Controllers\Prestataire\VideoController::class, 'destroy'])->name('destroy');
         });
 

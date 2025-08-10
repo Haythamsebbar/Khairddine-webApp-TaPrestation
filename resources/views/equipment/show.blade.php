@@ -14,7 +14,7 @@
         <nav class="flex mb-8" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
                 <li class="inline-flex items-center">
-                    <a href="{{ route('home') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-green-600">
+                    <a href="{{ route('home') }}" class="inline-flex items-center text-sm font-medium text-green-700 hover:text-green-600">
                         <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
                         </svg>
@@ -26,7 +26,7 @@
                         <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                         </svg>
-                        <a href="{{ route('equipment.index') }}" class="ml-1 text-sm font-medium text-gray-700 hover:text-green-600 md:ml-2">Matériel à louer</a>
+                        <a href="{{ route('equipment.index') }}" class="ml-1 text-sm font-medium text-green-700 hover:text-green-600 md:ml-2">Matériel à louer</a>
                     </div>
                 </li>
                 <li aria-current="page">
@@ -34,7 +34,7 @@
                         <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                         </svg>
-                        <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">{{ Str::limit($equipment->name, 50) }}</span>
+                        <span class="ml-1 text-sm font-medium text-green-500 md:ml-2">{{ Str::limit($equipment->name, 50) }}</span>
                     </div>
                 </li>
             </ol>
@@ -43,7 +43,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Image and details -->
             <div class="lg:col-span-2">
-                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-green-100">
                     @if($equipment->main_photo)
                         <div class="relative">
                             <div class="aspect-w-16 aspect-h-12">
@@ -66,79 +66,79 @@
                 </div>
 
                 <!-- Description -->
-                <div class="bg-white rounded-lg shadow-sm p-6 mt-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Description</h2>
-                    <div class="prose max-w-none text-gray-700">
+                <div class="bg-white rounded-lg shadow-sm p-6 mt-6 border border-green-100">
+                    <h2 class="text-xl font-semibold text-green-900 mb-4">Description</h2>
+                    <div class="prose max-w-none text-green-700">
                         {!! nl2br(e($equipment->description)) !!}
                     </div>
                 </div>
 
                 <!-- Informations détaillées -->
-                <div class="bg-white rounded-lg shadow-sm p-6 mt-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Informations détaillées</h2>
+                <div class="bg-white rounded-lg shadow-sm p-6 mt-6 border border-green-100">
+                    <h2 class="text-xl font-semibold text-green-900 mb-4">Informations détaillées</h2>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         @if($equipment->brand)
                             <div>
-                                <span class="font-medium text-gray-900">Marque :</span>
-                                <span class="text-gray-700">{{ $equipment->brand }}</span>
+                                <span class="font-medium text-green-900">Marque :</span>
+                                <span class="text-green-700">{{ $equipment->brand }}</span>
                             </div>
                         @endif
                         
                         @if($equipment->model)
                             <div>
-                                <span class="font-medium text-gray-900">Modèle :</span>
-                                <span class="text-gray-700">{{ $equipment->model }}</span>
+                                <span class="font-medium text-green-900">Modèle :</span>
+                                <span class="text-green-700">{{ $equipment->model }}</span>
                             </div>
                         @endif
                         
                         @if($equipment->condition)
                             <div>
-                                <span class="font-medium text-gray-900">État :</span>
-                                <span class="text-gray-700">{{ $equipment->formatted_condition }}</span>
+                                <span class="font-medium text-green-900">État :</span>
+                                <span class="text-green-700">{{ $equipment->formatted_condition }}</span>
                             </div>
                         @endif
                         
                         @if($equipment->weight)
                             <div>
-                                <span class="font-medium text-gray-900">Poids :</span>
-                                <span class="text-gray-700">{{ $equipment->weight }} kg</span>
+                                <span class="font-medium text-green-900">Poids :</span>
+                                <span class="text-green-700">{{ $equipment->weight }} kg</span>
                             </div>
                         @endif
                         
                         @if($equipment->dimensions)
                             <div>
-                                <span class="font-medium text-gray-900">Dimensions :</span>
-                                <span class="text-gray-700">{{ $equipment->dimensions }}</span>
+                                <span class="font-medium text-green-900">Dimensions :</span>
+                                <span class="text-green-700">{{ $equipment->dimensions }}</span>
                             </div>
                         @endif
                         
                         @if($equipment->power_requirements)
                             <div>
-                                <span class="font-medium text-gray-900">Alimentation :</span>
-                                <span class="text-gray-700">{{ $equipment->power_requirements }}</span>
+                                <span class="font-medium text-green-900">Alimentation :</span>
+                                <span class="text-green-700">{{ $equipment->power_requirements }}</span>
                             </div>
                         @endif
                         
                         @if($equipment->minimum_age)
                             <div>
-                                <span class="font-medium text-gray-900">Âge minimum :</span>
-                                <span class="text-gray-700">{{ $equipment->minimum_age }} ans</span>
+                                <span class="font-medium text-green-900">Âge minimum :</span>
+                                <span class="text-green-700">{{ $equipment->minimum_age }} ans</span>
                             </div>
                         @endif
                         
                         @if($equipment->requires_license)
                             <div>
-                                <span class="font-medium text-gray-900">Permis requis :</span>
+                                <span class="font-medium text-green-900">Permis requis :</span>
                                 <span class="text-red-600">{{ $equipment->required_license_type ?? 'Oui' }}</span>
                             </div>
                         @endif
                     </div>
                     
                     @if($equipment->minimum_rental_duration || $equipment->maximum_rental_duration)
-                        <div class="border-t pt-4 mb-4">
-                            <h3 class="font-medium text-gray-900 mb-2">Durée de location</h3>
-                            <div class="space-y-1 text-sm text-gray-700">
+                        <div class="border-t border-green-200 pt-4 mb-4">
+                            <h3 class="font-medium text-green-900 mb-2">Durée de location</h3>
+                            <div class="space-y-1 text-sm text-green-700">
                                 @if($equipment->minimum_rental_duration)
                                     <div>Durée minimum : {{ $equipment->minimum_rental_duration }} jour(s)</div>
                                 @endif
@@ -152,9 +152,9 @@
                 
                 <!-- Spécifications techniques -->
                 @if($equipment->technical_specifications)
-                    <div class="bg-white rounded-lg shadow-sm p-6 mt-6">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Spécifications techniques</h2>
-                        <div class="prose max-w-none text-gray-700">
+                    <div class="bg-white rounded-lg shadow-sm p-6 mt-6 border border-green-100">
+                        <h2 class="text-xl font-semibold text-green-900 mb-4">Spécifications techniques</h2>
+                        <div class="prose max-w-none text-green-700">
                             {!! nl2br(e($equipment->technical_specifications)) !!}
                         </div>
                     </div>
@@ -162,13 +162,13 @@
                  
                  <!-- Accessoires -->
                  @if($equipment->included_accessories || $equipment->optional_accessories)
-                     <div class="bg-white rounded-lg shadow-sm p-6 mt-6">
-                         <h2 class="text-xl font-semibold text-gray-900 mb-4">Accessoires</h2>
+                     <div class="bg-white rounded-lg shadow-sm p-6 mt-6 border border-green-100">
+                         <h2 class="text-xl font-semibold text-green-900 mb-4">Accessoires</h2>
                          
                          @if($equipment->included_accessories && count($equipment->included_accessories) > 0)
                              <div class="mb-4">
-                                 <h3 class="font-medium text-gray-900 mb-2">Inclus dans la location</h3>
-                                 <ul class="list-disc list-inside space-y-1 text-gray-700">
+                                 <h3 class="font-medium text-green-900 mb-2">Inclus dans la location</h3>
+                                 <ul class="list-disc list-inside space-y-1 text-green-700">
                                      @foreach($equipment->included_accessories as $accessory)
                                          <li>{{ $accessory }}</li>
                                      @endforeach
@@ -178,8 +178,8 @@
                          
                          @if($equipment->optional_accessories && count($equipment->optional_accessories) > 0)
                              <div>
-                                 <h3 class="font-medium text-gray-900 mb-2">Accessoires optionnels</h3>
-                                 <ul class="list-disc list-inside space-y-1 text-gray-700">
+                                 <h3 class="font-medium text-green-900 mb-2">Accessoires optionnels</h3>
+                                 <ul class="list-disc list-inside space-y-1 text-green-700">
                                      @foreach($equipment->optional_accessories as $accessory)
                                          <li>{{ $accessory }}</li>
                                      @endforeach
@@ -191,9 +191,9 @@
                  
                  <!-- Conditions de location -->
                  @if($equipment->rental_conditions)
-                     <div class="bg-white rounded-lg shadow-sm p-6 mt-6">
-                         <h2 class="text-xl font-semibold text-gray-900 mb-4">Conditions de location</h2>
-                         <div class="prose max-w-none text-gray-700">
+                     <div class="bg-white rounded-lg shadow-sm p-6 mt-6 border border-green-100">
+                         <h2 class="text-xl font-semibold text-green-900 mb-4">Conditions de location</h2>
+                         <div class="prose max-w-none text-green-700">
                              {!! nl2br(e($equipment->rental_conditions)) !!}
                          </div>
                      </div>

@@ -3,46 +3,52 @@
 @section('title', $equipment->name)
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-6xl mx-auto">
-        <!-- En-tête -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <a href="{{ route('prestataire.equipment.index') }}" 
-                       class="text-gray-600 hover:text-gray-900 transition-colors duration-200">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                        </svg>
-                    </a>
-                    <div>
-                        <h1 class="text-2xl font-bold text-gray-900">{{ $equipment->name }}</h1>
-                        <p class="text-gray-600">{{ $equipment->brand }} {{ $equipment->model }}</p>
+<div class="bg-green-50">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-6xl mx-auto">
+            <!-- En-tête -->
+            <div class="mb-8 text-center">
+                <h1 class="text-4xl font-extrabold text-green-900 mb-2">{{ $equipment->name }}</h1>
+                <p class="text-lg text-green-700">{{ $equipment->brand }} {{ $equipment->model }}</p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6 mb-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <a href="{{ route('prestataire.equipment.index') }}" 
+                           class="text-green-600 hover:text-green-900 transition-colors duration-200">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </a>
+                        <div>
+                            <h2 class="text-xl font-bold text-green-900">Détails de l'équipement</h2>
+                            <p class="text-green-700">Informations complètes sur cet équipement</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <span class="px-3 py-1 rounded-full text-sm font-medium
+                            @if($equipment->availability_status === 'available') bg-green-100 text-green-800
+                            @elseif($equipment->availability_status === 'rented') bg-yellow-100 text-yellow-800
+                            @elseif($equipment->availability_status === 'maintenance') bg-red-100 text-red-800
+                            @else bg-gray-100 text-gray-800 @endif">
+                            {{ $equipment->formatted_availability_status }}
+                        </span>
+                        <a href="{{ route('prestataire.equipment.edit', $equipment) }}" 
+                           class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors duration-200">
+                            Modifier
+                        </a>
                     </div>
                 </div>
-                <div class="flex items-center space-x-3">
-                    <span class="px-3 py-1 rounded-full text-sm font-medium
-                        @if($equipment->availability_status === 'available') bg-green-100 text-green-800
-                        @elseif($equipment->availability_status === 'rented') bg-yellow-100 text-yellow-800
-                        @elseif($equipment->availability_status === 'maintenance') bg-red-100 text-red-800
-                        @else bg-gray-100 text-gray-800 @endif">
-                        {{ $equipment->formatted_availability_status }}
-                    </span>
-                    <a href="{{ route('prestataire.equipment.edit', $equipment) }}" 
-                       class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors duration-200">
-                        ✏️ Modifier
-                    </a>
-                </div>
             </div>
-        </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Colonne principale -->
             <div class="lg:col-span-2 space-y-6">
                 <!-- Main Photo -->
                 @if($equipment->main_photo)
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">🖼️ Image principale</h2>
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6">
+                    <h2 class="text-xl font-bold text-green-900 mb-4 border-b border-green-200 pb-2">Image principale</h2>
                     <div class="aspect-w-16 aspect-h-9 bg-gray-100 rounded-lg overflow-hidden">
                         <img src="{{ Storage::url($equipment->main_photo) }}" alt="{{ $equipment->name }}" 
                              class="w-full h-full object-cover">
@@ -52,8 +58,8 @@
 
                 <!-- Photos -->
                 @if($equipment->photos && count($equipment->photos) > 0)
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">📸 Photos</h2>
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6">
+                    <h2 class="text-xl font-bold text-green-900 mb-4 border-b border-green-200 pb-2">Photos</h2>
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                         @foreach($equipment->photos as $photo)
                         <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden">
@@ -67,59 +73,59 @@
                 @endif
                 
                 <!-- Description -->
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">📋 Description</h2>
-                    <p class="text-gray-700 leading-relaxed">{{ $equipment->description }}</p>
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6">
+                    <h2 class="text-xl font-bold text-green-900 mb-4 border-b border-green-200 pb-2">Description</h2>
+                    <p class="text-green-700 leading-relaxed">{{ $equipment->description }}</p>
                 </div>
                 
                 <!-- Détails techniques -->
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">🔧 Détails techniques</h2>
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6">
+                    <h2 class="text-xl font-bold text-green-900 mb-4 border-b border-green-200 pb-2">Détails techniques</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         @if($equipment->brand)
-                        <div class="flex justify-between py-2 border-b border-gray-100">
-                            <span class="font-medium text-gray-600">Marque:</span>
-                            <span class="text-gray-900">{{ $equipment->brand }}</span>
+                        <div class="flex justify-between py-2 border-b border-green-100">
+                            <span class="font-medium text-green-600">Marque:</span>
+                            <span class="text-green-900">{{ $equipment->brand }}</span>
                         </div>
                         @endif
                         
                         @if($equipment->model)
-                        <div class="flex justify-between py-2 border-b border-gray-100">
-                            <span class="font-medium text-gray-600">Modèle:</span>
-                            <span class="text-gray-900">{{ $equipment->model }}</span>
+                        <div class="flex justify-between py-2 border-b border-green-100">
+                            <span class="font-medium text-green-600">Modèle:</span>
+                            <span class="text-green-900">{{ $equipment->model }}</span>
                         </div>
                         @endif
                         
-                        <div class="flex justify-between py-2 border-b border-gray-100">
-                            <span class="font-medium text-gray-600">État:</span>
-                            <span class="text-gray-900">{{ $equipment->formatted_condition }}</span>
+                        <div class="flex justify-between py-2 border-b border-green-100">
+                            <span class="font-medium text-green-600">État:</span>
+                            <span class="text-green-900">{{ $equipment->formatted_condition }}</span>
                         </div>
                         
                         @if($equipment->weight)
-                        <div class="flex justify-between py-2 border-b border-gray-100">
-                            <span class="font-medium text-gray-600">Poids:</span>
-                            <span class="text-gray-900">{{ $equipment->weight }} kg</span>
+                        <div class="flex justify-between py-2 border-b border-green-100">
+                            <span class="font-medium text-green-600">Poids:</span>
+                            <span class="text-green-900">{{ $equipment->weight }} kg</span>
                         </div>
                         @endif
                         
                         @if($equipment->dimensions)
-                        <div class="flex justify-between py-2 border-b border-gray-100">
-                            <span class="font-medium text-gray-600">Dimensions:</span>
-                            <span class="text-gray-900">{{ $equipment->dimensions }}</span>
+                        <div class="flex justify-between py-2 border-b border-green-100">
+                            <span class="font-medium text-green-600">Dimensions:</span>
+                            <span class="text-green-900">{{ $equipment->dimensions }}</span>
                         </div>
                         @endif
                         
                         @if($equipment->power_requirements)
-                        <div class="flex justify-between py-2 border-b border-gray-100">
-                            <span class="font-medium text-gray-600">Alimentation:</span>
-                            <span class="text-gray-900">{{ $equipment->power_requirements }}</span>
+                        <div class="flex justify-between py-2 border-b border-green-100">
+                            <span class="font-medium text-green-600">Alimentation:</span>
+                            <span class="text-green-900">{{ $equipment->power_requirements }}</span>
                         </div>
                         @endif
                         
                         @if($equipment->serial_number)
-                        <div class="flex justify-between py-2 border-b border-gray-100">
-                            <span class="font-medium text-gray-600">N° de série:</span>
-                            <span class="text-gray-900">{{ $equipment->serial_number }}</span>
+                        <div class="flex justify-between py-2 border-b border-green-100">
+                            <span class="font-medium text-green-600">N° de série:</span>
+                            <span class="text-green-900">{{ $equipment->serial_number }}</span>
                         </div>
                         @endif
                     </div>
@@ -235,55 +241,55 @@
             <!-- Sidebar -->
             <div class="space-y-6">
                 <!-- Tarification -->
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">💰 Tarification</h2>
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6">
+                    <h2 class="text-xl font-bold text-green-900 mb-4 border-b border-green-200 pb-2">Tarification</h2>
                     <div class="space-y-3">
                         <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Prix/jour:</span>
-                            <span class="font-bold text-lg text-green-600">{{ number_format($equipment->price_per_day, 2) }}€</span>
+                            <span class="font-medium text-green-600">Prix/jour:</span>
+                            <span class="font-bold text-lg text-green-700">{{ number_format($equipment->price_per_day, 2) }}€</span>
                         </div>
                         
                         @if($equipment->price_per_week)
                         <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Prix/semaine:</span>
-                            <span class="font-medium text-green-600">{{ number_format($equipment->price_per_week, 2) }}€</span>
+                            <span class="font-medium text-green-600">Prix/semaine:</span>
+                            <span class="font-medium text-green-700">{{ number_format($equipment->price_per_week, 2) }}€</span>
                         </div>
                         @endif
                         
                         @if($equipment->price_per_month)
                         <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Prix/mois:</span>
-                            <span class="font-medium text-green-600">{{ number_format($equipment->price_per_month, 2) }}€</span>
+                            <span class="font-medium text-green-600">Prix/mois:</span>
+                            <span class="font-medium text-green-700">{{ number_format($equipment->price_per_month, 2) }}€</span>
                         </div>
                         @endif
                         
-                        <div class="flex justify-between items-center pt-3 border-t border-gray-200">
-                            <span class="text-gray-600">Caution:</span>
-                            <span class="font-medium text-gray-900">{{ number_format($equipment->security_deposit, 2) }}€</span>
+                        <div class="flex justify-between items-center pt-3 border-t border-green-200">
+                            <span class="font-medium text-green-600">Caution:</span>
+                            <span class="font-medium text-green-900">{{ number_format($equipment->security_deposit, 2) }}€</span>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Conditions -->
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">📝 Conditions</h2>
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6">
+                    <h2 class="text-xl font-bold text-green-900 mb-4 border-b border-green-200 pb-2">Conditions</h2>
                     <div class="space-y-3">
                         <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Durée min:</span>
-                            <span class="text-gray-900">{{ $equipment->minimum_rental_duration }} jour(s)</span>
+                            <span class="font-medium text-green-600">Durée min:</span>
+                            <span class="text-green-900">{{ $equipment->minimum_rental_duration }} jour(s)</span>
                         </div>
                         
                         @if($equipment->maximum_rental_duration)
                         <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Durée max:</span>
-                            <span class="text-gray-900">{{ $equipment->maximum_rental_duration }} jour(s)</span>
+                            <span class="font-medium text-green-600">Durée max:</span>
+                            <span class="text-green-900">{{ $equipment->maximum_rental_duration }} jour(s)</span>
                         </div>
                         @endif
                         
                         @if($equipment->minimum_age)
                         <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Âge min:</span>
-                            <span class="text-gray-900">{{ $equipment->minimum_age }} ans</span>
+                            <span class="font-medium text-green-600">Âge min:</span>
+                            <span class="text-green-900">{{ $equipment->minimum_age }} ans</span>
                         </div>
                         @endif
                         
@@ -305,8 +311,8 @@
                 
                 <!-- Livraison -->
                 @if($equipment->delivery_included)
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">🚚 Livraison</h2>
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6">
+                    <h2 class="text-xl font-bold text-green-900 mb-4 border-b border-green-200 pb-2">Livraison</h2>
                     <div class="space-y-3">
                         <div class="flex items-center space-x-2 text-green-600">
                             <span>✅</span>
@@ -315,15 +321,15 @@
                         
                         @if($equipment->delivery_radius)
                         <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Rayon:</span>
-                            <span class="text-gray-900">{{ $equipment->delivery_radius }} km</span>
+                            <span class="font-medium text-green-600">Rayon:</span>
+                            <span class="text-green-900">{{ $equipment->delivery_radius }} km</span>
                         </div>
                         @endif
                         
                         @if($equipment->delivery_fee)
                         <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Coût:</span>
-                            <span class="text-gray-900">{{ number_format($equipment->delivery_fee, 2) }}€</span>
+                            <span class="font-medium text-green-600">Coût:</span>
+                            <span class="text-green-900">{{ number_format($equipment->delivery_fee, 2) }}€</span>
                         </div>
                         @endif
                     </div>
@@ -332,8 +338,8 @@
                 
                 <!-- Catégories -->
                 @if($equipment->categories->count() > 0)
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">🏷️ Catégories</h2>
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6">
+                    <h2 class="text-xl font-bold text-green-900 mb-4 border-b border-green-200 pb-2">Catégories</h2>
                     <div class="flex flex-wrap gap-2">
                         @foreach($equipment->categories as $category)
                         <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
@@ -345,40 +351,40 @@
                 @endif
                 
                 <!-- Statistiques -->
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">📊 Statistiques</h2>
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6">
+                    <h2 class="text-xl font-bold text-green-900 mb-4 border-b border-green-200 pb-2">Statistiques</h2>
                     <div class="space-y-3">
                         <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Locations:</span>
-                            <span class="font-medium text-gray-900">{{ $equipment->rentals->count() }}</span>
+                            <span class="font-medium text-green-600">Locations:</span>
+                            <span class="font-medium text-green-900">{{ $equipment->rentals->count() }}</span>
                         </div>
                         
                         <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Demandes:</span>
-                            <span class="font-medium text-gray-900">{{ $equipment->rentalRequests->count() }}</span>
+                            <span class="font-medium text-green-600">Demandes:</span>
+                            <span class="font-medium text-green-900">{{ $equipment->rentalRequests->count() }}</span>
                         </div>
                         
                         @if($equipment->reviews->count() > 0)
                         <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Note moyenne:</span>
-                            <span class="font-medium text-gray-900">{{ number_format($equipment->average_rating, 1) }}/5</span>
+                            <span class="font-medium text-green-600">Note moyenne:</span>
+                            <span class="font-medium text-green-900">{{ number_format($equipment->average_rating, 1) }}/5</span>
                         </div>
                         @endif
                         
                         <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Créé le:</span>
-                            <span class="text-gray-900">{{ $equipment->created_at->format('d/m/Y') }}</span>
+                            <span class="font-medium text-green-600">Créé le:</span>
+                            <span class="text-green-900">{{ $equipment->created_at->format('d/m/Y') }}</span>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Actions rapides -->
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">⚡ Actions rapides</h2>
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6">
+                    <h2 class="text-xl font-bold text-green-900 mb-4 border-b border-green-200 pb-2">Actions rapides</h2>
                     <div class="space-y-3">
                         <a href="{{ route('prestataire.equipment.edit', $equipment) }}" 
-                           class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200 text-center block">
-                            ✏️ Modifier
+                           class="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors duration-200 text-center block">
+                            Modifier l'équipement
                         </a>
                         
                         @if($equipment->is_active)
@@ -387,7 +393,7 @@
                             @method('PATCH')
                             <button type="submit" 
                                     class="w-full px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg font-medium transition-colors duration-200">
-                                ⏸️ Désactiver
+                                Désactiver
                             </button>
                         </form>
                         @else
@@ -396,15 +402,20 @@
                             @method('PATCH')
                             <button type="submit" 
                                     class="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors duration-200">
-                                ▶️ Activer
+                                Activer
                             </button>
                         </form>
                         @endif
                         
-                        <button onclick="confirmDelete()" 
-                                class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors duration-200">
-                            🗑️ Supprimer
-                        </button>
+                        <form action="{{ route('prestataire.equipment.destroy', $equipment) }}" method="POST" 
+                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet équipement ?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" 
+                                    class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors duration-200">
+                                Supprimer
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>

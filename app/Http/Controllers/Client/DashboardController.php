@@ -50,12 +50,6 @@ class DashboardController extends Controller
                 'description' => 'Gérez vos demandes de matériel.',
                 'icon' => 'fas fa-tools',
                 'url' => route('client.equipment-rental-requests.index')
-            ],
-            [
-                'name' => 'Messagerie',
-                'description' => 'Discutez avec les prestataires.',
-                'icon' => 'fas fa-comments',
-                'url' => url('/messaging')
             ]
         ];
 

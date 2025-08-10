@@ -13,7 +13,7 @@
                     <p class="text-gray-600">Gérez les demandes de location de vos équipements</p>
                 </div>
                 <a href="{{ route('prestataire.equipment.index') }}" 
-                   class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200">
+                   class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors duration-200">
                     🔧 Mes équipements
                 </a>
             </div>
@@ -84,13 +84,13 @@
                 <div>
                     <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Recherche</label>
                     <input type="text" id="search" name="search" value="{{ request('search') }}"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           class="w-full px-3 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                            placeholder="Client, équipement...">
                 </div>
                 
                 <div>
                     <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
-                    <select id="status" name="status" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select id="status" name="status" class="w-full px-3 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
                         <option value="">Tous les statuts</option>
                         <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>En attente</option>
                         <option value="accepted" {{ request('status') == 'accepted' ? 'selected' : '' }}>Acceptées</option>
@@ -100,7 +100,7 @@
                 
                 <div>
                     <label for="equipment_id" class="block text-sm font-medium text-gray-700 mb-2">Équipement</label>
-                    <select id="equipment_id" name="equipment_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select id="equipment_id" name="equipment_id" class="w-full px-3 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
                         <option value="">Tous les équipements</option>
                         @foreach($equipments as $equipment)
                             <option value="{{ $equipment->id }}" {{ request('equipment_id') == $equipment->id ? 'selected' : '' }}>
@@ -111,7 +111,7 @@
                 </div>
                 
                 <div class="flex items-end">
-                    <button type="submit" class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200">
+                    <button type="submit" class="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors duration-200">
                         🔍 Filtrer
                     </button>
                 </div>
@@ -139,8 +139,8 @@
                         <tr class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
-                                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                        <span class="text-blue-600 font-medium text-sm">
+                                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                        <span class="text-green-600 font-medium text-sm">
                                             {{ substr($request->client->first_name, 0, 1) }}{{ substr($request->client->last_name, 0, 1) }}
                                         </span>
                                     </div>
@@ -190,7 +190,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex items-center space-x-2">
                                     <a href="{{ route('prestataire.equipment-rental-requests.show', $request) }}" 
-                                       class="text-blue-600 hover:text-blue-900 transition-colors duration-200">
+                                       class="text-green-600 hover:text-green-900 transition-colors duration-200">
                                         👁️
                                     </a>
                                     
@@ -240,7 +240,7 @@
             <h3 class="text-lg font-medium text-gray-900 mb-2">Aucune demande de location</h3>
             <p class="text-gray-600 mb-6">Vous n'avez pas encore reçu de demandes de location pour vos équipements.</p>
             <a href="{{ route('prestataire.equipment.index') }}" 
-               class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200">
+               class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors duration-200">
                 🔧 Gérer mes équipements
             </a>
         </div>

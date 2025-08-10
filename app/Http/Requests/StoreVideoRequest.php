@@ -36,7 +36,7 @@ class StoreVideoRequest extends FormRequest
                 'required',
                 'file',
                 'mimetypes:video/mp4,video/quicktime,video/webm',
-                'max:51200', // 50MB
+                'max:102400', // 100MB
             ];
         }
 

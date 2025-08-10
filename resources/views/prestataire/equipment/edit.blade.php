@@ -1,58 +1,70 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-2xl mx-auto py-10 sm:px-6 lg:px-8">
-    <div class="flex items-center mb-6">
-        <a href="{{ route('prestataire.equipment.show', $equipment) }}" class="text-gray-600 hover:text-gray-800 mr-4">
-            <i class="fas fa-arrow-left text-xl"></i>
-        </a>
-        <div>
-            <h1 class="text-2xl font-semibold text-gray-900">Modifier l'équipement</h1>
-            <p class="mt-1 text-sm text-gray-600">Modifiez les informations de votre équipement</p>
-        </div>
-    </div>
+<div class="bg-green-50">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- En-tête -->
+            <div class="mb-8 text-center">
+                <h1 class="text-4xl font-extrabold text-green-900 mb-2">Modifier l'équipement</h1>
+                <p class="text-lg text-green-700">Modifiez les informations de votre équipement</p>
+            </div>
 
-    @if ($errors->any())
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4" role="alert">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <form action="{{ route('prestataire.equipment.update', $equipment) }}" method="POST" enctype="multipart/form-data" class="mt-8">
-        @csrf
-        @method('PUT')
-
-        <!-- Formulaire d'édition -->
-        <div class="bg-white shadow sm:rounded-lg">
-            <div class="px-4 py-5 sm:p-6">
-                <div class="space-y-6">
-                    <!-- Nom de l'équipement -->
-                    <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700">Nom de l'équipement *</label>
-                        <input type="text" name="name" id="name" value="{{ old('name', $equipment->name) }}" required 
-                               placeholder="Ex: Perceuse sans fil Bosch" 
-                               class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+            <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6 mb-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <a href="{{ route('prestataire.equipment.show', $equipment) }}" class="text-green-600 hover:text-green-900 transition-colors duration-200">
+                            <i class="fas fa-arrow-left text-xl"></i>
+                        </a>
+                        <div>
+                            <h2 class="text-xl font-bold text-green-900">Modification de l'équipement</h2>
+                            <p class="text-green-700">Mettez à jour les informations de votre équipement</p>
+                        </div>
                     </div>
+                </div>
+            </div>
+
+            @if ($errors->any())
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form action="{{ route('prestataire.equipment.update', $equipment) }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+
+                <!-- Informations de base -->
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6 mb-6">
+                    <h2 class="text-xl font-bold text-green-900 mb-4 border-b border-green-200 pb-2">Informations de base</h2>
+                    <div class="space-y-6">
+                        <!-- Nom de l'équipement -->
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-green-700">Nom de l'équipement *</label>
+                            <input type="text" name="name" id="name" value="{{ old('name', $equipment->name) }}" required 
+                                   placeholder="Ex: Perceuse sans fil Bosch" 
+                                   class="mt-1 block w-full shadow-sm sm:text-sm border-green-300 rounded-md focus:ring-green-500 focus:border-green-500">
+                        </div>
 
                     <!-- Catégories -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Catégories *</label>
-                        <div class="space-y-2 max-h-48 overflow-y-auto border border-gray-300 rounded-md p-3">
+                        <label class="block text-sm font-medium text-green-700 mb-2">Catégories *</label>
+                        <div class="space-y-2 max-h-48 overflow-y-auto border border-green-300 rounded-md p-3">
                             @foreach ($categories as $category)
                                 <div>
-                                    <label class="font-medium text-gray-800">{{ $category->name }}</label>
+                                    <label class="font-medium text-green-800">{{ $category->name }}</label>
                                     @if($category->children->count() > 0)
                                         <div class="ml-4 space-y-1 mt-1">
                                             @foreach ($category->children as $child)
                                                 <label class="flex items-center">
                                                     <input type="checkbox" name="categories[]" value="{{ $child->id }}" 
                                                            {{ in_array($child->id, old('categories', $equipment->categories->pluck('id')->toArray())) ? 'checked' : '' }}
-                                                           class="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
-                                                    <span class="ml-2 text-sm text-gray-700">{{ $child->name }}</span>
+                                                           class="h-4 w-4 text-green-600 border-green-300 rounded focus:ring-green-500">
+                                                    <span class="ml-2 text-sm text-green-700">{{ $child->name }}</span>
                                                 </label>
                                             @endforeach
                                         </div>
@@ -61,8 +73,8 @@
                                             <label class="flex items-center">
                                                 <input type="checkbox" name="categories[]" value="{{ $category->id }}" 
                                                        {{ in_array($category->id, old('categories', $equipment->categories->pluck('id')->toArray())) ? 'checked' : '' }}
-                                                       class="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
-                                                <span class="ml-2 text-sm text-gray-700">{{ $category->name }}</span>
+                                                       class="h-4 w-4 text-green-600 border-green-300 rounded focus:ring-green-500">
+                                                <span class="ml-2 text-sm text-green-700">{{ $category->name }}</span>
                                             </label>
                                         </div>
                                     @endif
@@ -73,10 +85,10 @@
 
                     <!-- Description -->
                     <div>
-                        <label for="description" class="block text-sm font-medium text-gray-700">Description courte *</label>
+                        <label for="description" class="block text-sm font-medium text-green-700">Description courte *</label>
                         <textarea id="description" name="description" rows="3" required 
                                   placeholder="Décrivez brièvement votre équipement, son état et ses caractéristiques principales" 
-                                  class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500">{{ old('description', $equipment->description) }}</textarea>
+                                  class="mt-1 block w-full shadow-sm sm:text-sm border-green-300 rounded-md focus:ring-green-500 focus:border-green-500">{{ old('description', $equipment->description) }}</textarea>
                     </div>
 
                     <!-- Spécifications techniques -->
@@ -130,60 +142,76 @@
                         <p class="mt-1 text-xs text-gray-500">Ajoutez de nouvelles photos (les anciennes seront conservées)</p>
                     </div>
 
-                    <!-- Prix par jour -->
-                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        <div>
-                            <label for="daily_rate" class="block text-sm font-medium text-gray-700">Prix par jour (€) *</label>
-                            <input type="number" name="daily_rate" id="daily_rate" value="{{ old('daily_rate', $equipment->daily_rate) }}" required 
-                                   min="0" step="0.01" placeholder="50" 
-                                   class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500">
-                        </div>
-                        <div>
-                            <label for="deposit_amount" class="block text-sm font-medium text-gray-700">Caution (€) *</label>
-                            <input type="number" name="deposit_amount" id="deposit_amount" value="{{ old('deposit_amount', $equipment->deposit_amount) }}" required 
-                                   min="0" step="0.01" placeholder="100" 
-                                   class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500">
-                        </div>
                     </div>
+                </div>
 
-                    <!-- Autres prix -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label for="price_per_hour" class="block text-sm font-medium text-gray-700">Prix par heure (€)</label>
-                            <input type="number" name="price_per_hour" id="price_per_hour" step="0.01" min="0" 
-                                   class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                                   placeholder="10.00" value="{{ old('price_per_hour', $equipment->price_per_hour) }}">
+                <!-- Tarification -->
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6 mb-6">
+                    <h2 class="text-xl font-bold text-green-900 mb-4 border-b border-green-200 pb-2">Tarification</h2>
+                    <div class="space-y-6">
+                        <!-- Prix par jour -->
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <div>
+                                <label for="daily_rate" class="block text-sm font-medium text-green-700">Prix par jour (€) *</label>
+                                <input type="number" name="daily_rate" id="daily_rate" value="{{ old('daily_rate', $equipment->daily_rate) }}" required 
+                                       min="0" step="0.01" placeholder="50" 
+                                       class="mt-1 block w-full shadow-sm sm:text-sm border-green-300 rounded-md focus:ring-green-500 focus:border-green-500">
+                            </div>
+                            <div>
+                                <label for="deposit_amount" class="block text-sm font-medium text-green-700">Caution (€) *</label>
+                                <input type="number" name="deposit_amount" id="deposit_amount" value="{{ old('deposit_amount', $equipment->deposit_amount) }}" required 
+                                       min="0" step="0.01" placeholder="100" 
+                                       class="mt-1 block w-full shadow-sm sm:text-sm border-green-300 rounded-md focus:ring-green-500 focus:border-green-500">
+                            </div>
                         </div>
-                        <div>
-                            <label for="price_per_week" class="block text-sm font-medium text-gray-700">Prix par semaine (€)</label>
-                            <input type="number" name="price_per_week" id="price_per_week" step="0.01" min="0" 
-                                   class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                                   placeholder="300.00" value="{{ old('price_per_week', $equipment->price_per_week) }}">
-                        </div>
-                        <div>
-                            <label for="price_per_month" class="block text-sm font-medium text-gray-700">Prix par mois (€)</label>
-                            <input type="number" name="price_per_month" id="price_per_month" step="0.01" min="0" 
-                                   class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                                   placeholder="1000.00" value="{{ old('price_per_month', $equipment->price_per_month) }}">
-                        </div>
-                    </div>
 
-                    <!-- Livraison disponible -->
-                    <div>
-                        <div class="flex items-center">
-                            <input id="delivery_available" name="delivery_available" type="checkbox" value="1" {{ old('delivery_available', $equipment->delivery_available) ? 'checked' : '' }} 
-                                   class="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
-                            <label for="delivery_available" class="ml-2 block text-sm text-gray-900">Livraison disponible</label>
+                        <!-- Autres prix -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label for="price_per_hour" class="block text-sm font-medium text-green-700">Prix par heure (€)</label>
+                                <input type="number" name="price_per_hour" id="price_per_hour" step="0.01" min="0" 
+                                       class="mt-1 block w-full shadow-sm sm:text-sm border-green-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                       placeholder="10.00" value="{{ old('price_per_hour', $equipment->price_per_hour) }}">
+                            </div>
+                            <div>
+                                <label for="price_per_week" class="block text-sm font-medium text-green-700">Prix par semaine (€)</label>
+                                <input type="number" name="price_per_week" id="price_per_week" step="0.01" min="0" 
+                                       class="mt-1 block w-full shadow-sm sm:text-sm border-green-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                       placeholder="300.00" value="{{ old('price_per_week', $equipment->price_per_week) }}">
+                            </div>
+                            <div>
+                                <label for="price_per_month" class="block text-sm font-medium text-green-700">Prix par mois (€)</label>
+                                <input type="number" name="price_per_month" id="price_per_month" step="0.01" min="0" 
+                                       class="mt-1 block w-full shadow-sm sm:text-sm border-green-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                       placeholder="1000.00" value="{{ old('price_per_month', $equipment->price_per_month) }}">
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Coût de livraison -->
-                    <div>
-                        <label for="delivery_cost" class="block text-sm font-medium text-gray-700">Coût de livraison (€)</label>
-                        <input type="number" name="delivery_cost" id="delivery_cost" step="0.01" min="0" 
-                               class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                               placeholder="0.00" value="{{ old('delivery_cost', $equipment->delivery_cost) }}">
-                    </div>
+                        <!-- Livraison disponible -->
+                        <div>
+                            <div class="flex items-center">
+                                <input id="delivery_available" name="delivery_available" type="checkbox" value="1" {{ old('delivery_available', $equipment->delivery_available) ? 'checked' : '' }} 
+                                       class="h-4 w-4 text-green-600 border-green-300 rounded focus:ring-green-500">
+                                <label for="delivery_available" class="ml-2 block text-sm text-green-900">Livraison disponible</label>
+                            </div>
+                        </div>
+
+                        <!-- Rayon de livraison -->
+                        <div id="delivery-radius-section" style="{{ old('delivery_available', $equipment->delivery_available) ? '' : 'display: none;' }}">
+                            <label for="delivery_radius" class="block text-sm font-medium text-green-700">Rayon de livraison (km)</label>
+                            <input type="number" name="delivery_radius" id="delivery_radius" min="0" 
+                                   value="{{ old('delivery_radius', $equipment->delivery_radius) }}" 
+                                   placeholder="Ex: 20" 
+                                   class="mt-1 block w-full shadow-sm sm:text-sm border-green-300 rounded-md focus:ring-green-500 focus:border-green-500">
+                        </div>
+
+                        <!-- Coût de livraison -->
+                        <div>
+                            <label for="delivery_cost" class="block text-sm font-medium text-green-700">Coût de livraison (€)</label>
+                            <input type="number" name="delivery_cost" id="delivery_cost" step="0.01" min="0" 
+                                   class="mt-1 block w-full shadow-sm sm:text-sm border-green-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                                   placeholder="0.00" value="{{ old('delivery_cost', $equipment->delivery_cost) }}">
+                        </div>
 
                     <!-- Disponibilité -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -256,106 +284,70 @@
                         </div>
                     </div>
 
-                    <!-- État et statut -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label for="condition" class="block text-sm font-medium text-gray-700 mb-2">
-                                État de l'équipement
-                            </label>
-                            <select name="condition" id="condition" 
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                                <option value="">Sélectionner l'état</option>
-                                <option value="excellent" {{ old('condition', $equipment->condition) == 'excellent' ? 'selected' : '' }}>Excellent</option>
-                                <option value="very_good" {{ old('condition', $equipment->condition) == 'very_good' ? 'selected' : '' }}>Très bon</option>
-                                <option value="good" {{ old('condition', $equipment->condition) == 'good' ? 'selected' : '' }}>Bon</option>
-                                <option value="fair" {{ old('condition', $equipment->condition) == 'fair' ? 'selected' : '' }}>Correct</option>
-                                <option value="poor" {{ old('condition', $equipment->condition) == 'poor' ? 'selected' : '' }}>Mauvais</option>
-                            </select>
-                            @error('condition')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
+                <!-- Détails techniques -->
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6 mb-6">
+                    <h2 class="text-xl font-bold text-green-900 mb-4 border-b border-green-200 pb-2">Détails techniques</h2>
+                    <div class="space-y-6">
+                        <!-- État et statut -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="condition" class="block text-sm font-medium text-green-700 mb-2">
+                                    État de l'équipement
+                                </label>
+                                <select name="condition" id="condition" 
+                                        class="w-full px-3 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                    <option value="">Sélectionner l'état</option>
+                                    <option value="excellent" {{ old('condition', $equipment->condition) == 'excellent' ? 'selected' : '' }}>Excellent</option>
+                                    <option value="very_good" {{ old('condition', $equipment->condition) == 'very_good' ? 'selected' : '' }}>Très bon</option>
+                                    <option value="good" {{ old('condition', $equipment->condition) == 'good' ? 'selected' : '' }}>Bon</option>
+                                    <option value="fair" {{ old('condition', $equipment->condition) == 'fair' ? 'selected' : '' }}>Correct</option>
+                                    <option value="poor" {{ old('condition', $equipment->condition) == 'poor' ? 'selected' : '' }}>Mauvais</option>
+                                </select>
+                                @error('condition')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div>
+                                <label for="status" class="block text-sm font-medium text-green-700 mb-2">
+                                    Statut
+                                </label>
+                                <select name="status" id="status" 
+                                        class="w-full px-3 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                    <option value="active" {{ old('status', $equipment->status) == 'active' ? 'selected' : '' }}>Actif</option>
+                                    <option value="inactive" {{ old('status', $equipment->status) == 'inactive' ? 'selected' : '' }}>Inactif</option>
+                                    <option value="maintenance" {{ old('status', $equipment->status) == 'maintenance' ? 'selected' : '' }}>En maintenance</option>
+                                    <option value="rented" {{ old('status', $equipment->status) == 'rented' ? 'selected' : '' }}>Loué</option>
+                                </select>
+                                @error('status')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
                         </div>
+                        <!-- Localisation détaillée -->
                         <div>
-                            <label for="status" class="block text-sm font-medium text-gray-700 mb-2">
-                                Statut
+                            <label for="address" class="block text-sm font-medium text-green-700 mb-2">
+                                Adresse complète
                             </label>
-                            <select name="status" id="status" 
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                                <option value="active" {{ old('status', $equipment->status) == 'active' ? 'selected' : '' }}>Actif</option>
-                                <option value="inactive" {{ old('status', $equipment->status) == 'inactive' ? 'selected' : '' }}>Inactif</option>
-                                <option value="maintenance" {{ old('status', $equipment->status) == 'maintenance' ? 'selected' : '' }}>En maintenance</option>
-                                <option value="rented" {{ old('status', $equipment->status) == 'rented' ? 'selected' : '' }}>Loué</option>
-                            </select>
-                            @error('status')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <!-- Localisation détaillée -->
-                    <div class="mb-4">
-                        <label for="address" class="block text-sm font-medium text-gray-700 mb-2">
-                            Adresse complète
-                        </label>
-                        <input type="text" name="address" id="address" 
-                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                               placeholder="123 Rue de la République" value="{{ old('address', $equipment->address) }}">
-                        @error('address')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                        <div>
-                            <label for="city" class="block text-sm font-medium text-gray-700 mb-2">
-                                Ville <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" name="city" id="city" 
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                   placeholder="Paris" value="{{ old('city', $equipment->city) }}" required>
-                            @error('city')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div>
-                            <label for="postal_code" class="block text-sm font-medium text-gray-700 mb-2">
-                                Code postal
-                            </label>
-                            <input type="text" name="postal_code" id="postal_code" 
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                   placeholder="75001" value="{{ old('postal_code', $equipment->postal_code) }}">
-                            @error('postal_code')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div>
-                            <label for="country" class="block text-sm font-medium text-gray-700 mb-2">
-                                Pays <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" name="country" id="country" 
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                   placeholder="France" value="{{ old('country', $equipment->country) }}" required>
-                            @error('country')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
+                            <input type="text" name="address" id="address" 
+                                   class="w-full px-3 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                   placeholder="123 Rue de la République" value="{{ old('address', $equipment->address) }}">
                         </div>
                     </div>
-
                 </div>
-            </div>
-        </div>
 
-        <!-- Boutons d'action -->
-        <div class="flex justify-end space-x-3 pt-6">
-            <a href="{{ route('prestataire.equipment.show', $equipment) }}" 
-               class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                Annuler
-            </a>
-            <button type="submit" 
-                    class="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                Mettre à jour
-            </button>
+                <!-- Boutons d'action -->
+                <div class="flex justify-end space-x-3 pt-6">
+                    <a href="{{ route('prestataire.equipment.show', $equipment) }}" 
+                       class="bg-white py-2 px-4 border border-green-300 rounded-md shadow-sm text-sm font-medium text-green-700 hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        Annuler
+                    </a>
+                    <button type="submit" 
+                            class="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        Mettre à jour
+                    </button>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 </div>
 @endsection

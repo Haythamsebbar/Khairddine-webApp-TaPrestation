@@ -26,18 +26,18 @@
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <!-- Filtres de recherche -->
             <div class="lg:col-span-1">
-                <div class="bg-gray-50 rounded-xl shadow-md p-6 sticky top-4">
+                <div class="bg-white rounded-xl shadow-md p-6 sticky top-4 border border-red-100">
                     <div class="flex items-center gap-3 mb-5">
                         <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
                         </svg>
-                        <h3 class="text-xl font-bold text-gray-800">Filtres</h3>
+                        <h3 class="text-xl font-bold text-red-800">Filtres</h3>
                     </div>
                     
                     <form method="GET" action="{{ route('urgent-sales.index') }}" class="space-y-5">
                         <!-- Mot-clé -->
                         <div>
-                            <label for="search" class="block text-sm font-semibold text-gray-600 mb-2">Mot-clé</label>
+                            <label for="search" class="block text-sm font-semibold text-red-700 mb-2">Mot-clé</label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -52,7 +52,7 @@
 
                         <!-- Ville -->
                         <div>
-                            <label for="city" class="block text-sm font-semibold text-gray-600 mb-2">Ville</label>
+                            <label for="city" class="block text-sm font-semibold text-red-700 mb-2">Ville</label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,7 +68,7 @@
 
                         <!-- État -->
                         <div>
-                            <label for="condition" class="block text-sm font-semibold text-gray-600 mb-2">État</label>
+                            <label for="condition" class="block text-sm font-semibold text-red-700 mb-2">État</label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4M17 3v4m-2-2h4m2 12v4m-2-2h4M12 3v18"></path></svg>
@@ -86,7 +86,7 @@
 
                         <!-- Prix maximum -->
                         <div>
-                            <label class="block text-sm font-semibold text-gray-600 mb-2">Prix maximum</label>
+                            <label class="block text-sm font-semibold text-red-700 mb-2">Prix maximum</label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H9a2 2 0 00-2 2v2m4 4h.01M17 13.75V21a2 2 0 01-2 2H9a2 2 0 01-2-2v-7.25A2.25 2.25 0 019.25 11h5.5A2.25 2.25 0 0117 13.75z"></path></svg>
@@ -103,7 +103,7 @@
 
                         <!-- Trier par -->
                         <div>
-                            <label class="block text-sm font-semibold text-gray-600 mb-2">Trier par</label>
+                            <label class="block text-sm font-semibold text-red-700 mb-2">Trier par</label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9M3 12h9m5-4v10l4-5-4-5z"></path></svg>

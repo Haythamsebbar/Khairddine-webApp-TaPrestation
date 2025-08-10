@@ -3,35 +3,30 @@
 @section('title', 'Tous les services - TaPrestation')
 
 @section('content')
-<!-- Bannière d'en-tête -->
-<div class="bg-blue-600 text-white relative overflow-hidden">
-    <div class="absolute inset-0 opacity-10 bg-grid-pattern"></div>
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <div class="text-center">
-            <div class="inline-flex items-center justify-center bg-white bg-opacity-25 rounded-full w-16 h-16 mb-4">
-                <i class="fas fa-briefcase text-3xl text-white"></i>
+<div class="bg-blue-50">
+    <!-- Bannière d'en-tête -->
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-8 text-center">
+                <h1 class="text-4xl font-extrabold text-blue-900 mb-2">
+                    Services Professionnels
+                </h1>
+                <p class="text-lg text-blue-700">
+                    Découvrez l'expertise de nos prestataires qualifiés pour tous vos besoins.
+                </p>
             </div>
-            <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight">
-                Services Professionnels
-            </h1>
-            <p class="mt-4 text-xl text-blue-100 max-w-2xl mx-auto">
-                Découvrez l'expertise de nos prestataires qualifiés pour tous vos besoins.
-            </p>
         </div>
     </div>
-</div>
                         
-<!-- Section des filtres -->
-<div class="bg-blue-50 py-6">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-white rounded-xl shadow-sm border border-blue-100 p-6">
+        <!-- Section des filtres -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6 mb-8">
             <div class="mb-4 flex items-center justify-between">
                 <div>
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Filtres de recherche</h3>
-                    <p class="text-sm text-gray-600">Affinez votre recherche pour trouver le service parfait</p>
+                    <h3 class="text-2xl font-bold text-blue-800 mb-2">Filtres de recherche</h3>
+                    <p class="text-lg text-blue-700">Affinez votre recherche pour trouver le service parfait</p>
                 </div>
-                <button type="button" id="toggleFilters" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 ease-in-out flex items-center">
-                    <i class="fas fa-filter mr-2"></i>
+                <button type="button" id="toggleFilters" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center">
                     <span id="filterButtonText">Afficher les filtres</span>
                     <i class="fas fa-chevron-down ml-2" id="filterChevron"></i>
                 </button>
@@ -121,20 +116,17 @@
                 </div>
                 
                 <!-- Boutons d'action -->
-                <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-200">
-                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition duration-200 ease-in-out flex items-center justify-center">
-                        <i class="fas fa-search mr-2"></i>
+                <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t-2 border-blue-200">
+                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center">
                         Appliquer les filtres
                     </button>
                     
-                    <button type="button" onclick="clearFilters()" class="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-800 font-medium py-3 px-6 rounded-lg transition duration-200 ease-in-out flex items-center justify-center">
-                        <i class="fas fa-eraser mr-2"></i>
+                    <button type="button" onclick="clearFilters()" class="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
                         Effacer tout
                     </button>
                     
                     @if(request()->anyFilled(['search', 'category', 'price_min', 'price_max', 'location', 'availability', 'premium', 'with_portfolio']))
-                        <a href="{{ route('services.index') }}" class="bg-white hover:bg-gray-50 text-blue-600 border border-blue-200 font-medium py-3 px-6 rounded-lg transition duration-200 ease-in-out flex items-center justify-center">
-                            <i class="fas fa-undo mr-2"></i>
+                        <a href="{{ route('services.index') }}" class="bg-white hover:bg-gray-50 text-blue-600 border border-blue-200 font-bold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
                             Réinitialiser
                         </a>
                     @endif
@@ -142,22 +134,21 @@
             </form>
             
             <!-- Affichage des résultats -->
-            <div class="flex items-center justify-between pt-4 border-t border-gray-200 mt-6">
+            <div class="flex items-center justify-between pt-4 border-t-2 border-blue-200 mt-6">
                 <div class="flex items-center gap-2">
-                    <span class="text-sm text-gray-500">Résultats :</span>
-                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                    <span class="text-sm font-semibold text-blue-800">Résultats :</span>
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-bold">
                         {{ $services->total() }} service(s)
                     </span>
                 </div>
                 @if($services->total() > 0)
-                    <div class="text-sm text-gray-500">
+                    <div class="text-sm font-semibold text-blue-700">
                         {{ $services->pluck('prestataire_id')->unique()->count() }} prestataires actifs
                     </div>
                 @endif
             </div>
+            </div>
         </div>
-    </div>
-</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -182,8 +173,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<!-- Section des résultats --><div class="bg-blue-50 py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Section des résultats -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         @if($services->count() > 0)
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 @foreach($services as $service)
@@ -234,10 +225,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="p-6">
                             <!-- En-tête avec titre et prestataire -->
                             <div class="mb-4">
-                                <h3 class="text-xl font-bold text-gray-800 mb-2 line-clamp-2">
-                                    <i class="fas fa-briefcase text-blue-500 mr-2"></i>
-                                    {{ $service->title }}
-                                </h3>
+                                <h3 class="text-xl font-bold text-blue-900 mb-2 line-clamp-2">
+                                {{ $service->title }}
+                            </h3>
                                 <div class="flex items-center text-gray-600 text-sm">
                                     <div class="relative mr-2">
                                         @if($service->prestataire->photo)
@@ -284,42 +274,31 @@ document.addEventListener('DOMContentLoaded', function() {
                             @endif
                             
                             <!-- Informations complémentaires -->
-                            <div class="flex items-center justify-between text-sm text-gray-500 mb-6 pt-4 border-t border-gray-100">
-                                <span class="flex items-center">
-                                    <i class="fas fa-map-marker-alt mr-1 text-red-400"></i>
+                            <div class="flex items-center justify-between text-sm text-gray-600 mb-6 pt-4 border-t border-gray-100">
+                                <span class="flex items-center font-medium">
                                     {{ $service->address ? $service->address . ', ' : '' }}{{ $service->postal_code ? $service->postal_code . ' ' : '' }}{{ $service->city ? $service->city : ($service->prestataire->ville ?? 'Non spécifié') }}
                                 </span>
-                                <span class="flex items-center">
-                                    <i class="fas fa-clock mr-1 text-blue-400"></i>
+                                <span class="flex items-center font-medium">
                                     {{ $service->created_at->diffForHumans() }}
                                 </span>
                             </div>
                             
                             <!-- Actions -->
                             <div class="flex flex-col space-y-3 mt-auto pt-4">
-                                <a href="{{ route('services.show', $service) }}" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200 ease-in-out flex items-center justify-center">
-                                    <i class="fas fa-eye mr-2"></i>
+                                <a href="{{ route('services.show', $service) }}" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-center flex items-center justify-center">
                                     Voir les détails
-                                </a>
-                                <a href="{{ route('prestataires.show', $service->prestataire) }}" 
-                                   class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-all duration-200 w-full">
-                                    <i class="fas fa-user-tie mr-2"></i>
-                                    Voir le prestataire
                                 </a>
                                 
                                 @auth
-                                    @if(auth()->user()->isClient())
-                                        <a href="{{ route('services.show', $service) }}" 
-                                           class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 transition-all duration-200 w-full">
-                                            <i class="fas fa-envelope mr-2"></i>
-                                            Contacter
+                                    @if(auth()->user()->role === 'client')
+                                        <a href="{{ route('bookings.create', $service) }}" class="w-full bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-3 px-4 rounded-lg transition duration-200 text-center flex items-center justify-center">
+                                            Réserver maintenant
                                         </a>
                                     @endif
                                 @else
-                                    <span class="inline-flex items-center justify-center px-4 py-2 text-sm text-gray-600 opacity-80 border border-gray-200 rounded-md w-full">
-                                        <i class="fas fa-lock mr-2"></i>
-                                        Se connecter pour contacter
-                                    </span>
+                                    <a href="{{ route('login') }}" class="w-full bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-3 px-4 rounded-lg transition duration-200 text-center flex items-center justify-center">
+                                        Se connecter pour réserver
+                                    </a>
                                 @endauth
                             </div>
                         </div>
@@ -330,30 +309,27 @@ document.addEventListener('DOMContentLoaded', function() {
             <!-- Message d'état vide harmonisé -->
             <div class="bg-white rounded-xl shadow-md p-12 text-center border border-blue-100">
                 <div class="w-24 h-24 mx-auto mb-6 bg-blue-100 rounded-full flex items-center justify-center">
-                    <i class="fas fa-search-minus text-3xl text-blue-600"></i>
+                    <div class="text-3xl text-blue-600">🔍</div>
                 </div>
-                <h3 class="text-xl font-semibold text-gray-900 mb-3">Aucun service trouvé</h3>
-                <p class="text-gray-600 mb-2">Nous n'avons trouvé aucun service correspondant à vos critères de recherche.</p>
-                <p class="text-gray-500 mb-6">Essayez de modifier vos filtres ou explorez tous nos services.</p>
+                <h3 class="text-xl font-bold text-blue-900 mb-3">Aucun service trouvé</h3>
+                <p class="text-blue-700 mb-2">Nous n'avons trouvé aucun service correspondant à vos critères de recherche.</p>
+                <p class="text-blue-600 mb-6">Essayez de modifier vos filtres ou explorez tous nos services.</p>
                 
                 <div class="flex flex-col sm:flex-row gap-3 justify-center">
                     @if(request()->anyFilled(['search', 'category', 'price_min', 'price_max', 'location', 'availability', 'premium', 'with_portfolio']))
                         <a href="{{ route('services.index') }}" 
-                           class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
-                            <i class="fas fa-redo mr-2"></i>
+                           class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                             Réinitialiser les filtres
                         </a>
                     @else
                         <a href="{{ route('services.index') }}" 
-                           class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
-                            <i class="fas fa-list mr-2"></i>
+                           class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                             Voir tous les services
                         </a>
                     @endif
                     
                     <a href="{{ route('home') }}" 
-                       class="inline-flex items-center px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors duration-200">
-                        <i class="fas fa-home mr-2"></i>
+                       class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-3 px-6 rounded-lg transition duration-200">
                         Retour à l'accueil
                     </a>
                 </div>
@@ -362,10 +338,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
         <!-- Pagination -->
         @if($services->hasPages())
-            <div class="mt-8">
-                {{ $services->withQueryString()->links() }}
+            <div class="mt-12 flex justify-center">
+                {{ $services->appends(request()->query())->links() }}
             </div>
         @endif
+        </div>
     </div>
 </div>
 @endsection

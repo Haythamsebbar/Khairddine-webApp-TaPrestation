@@ -59,20 +59,27 @@ document.addEventListener('DOMContentLoaded', function() {
     function handleFileUpload(event) {
         const file = event.target.files[0];
         const videoPreview = document.getElementById('video-preview');
+        const submitUploadBtn = document.getElementById('submit-upload-btn');
+        
         if (file) {
             fileNameDisplay.textContent = file.name;
             const objectURL = URL.createObjectURL(file);
             videoPreview.src = objectURL;
             videoPreview.style.display = 'block';
+            
             videoPreview.onloadedmetadata = function() {
-                if (videoPreview.duration > 60) {
-                    alert('La vidéo ne doit pas dépasser 60 secondes.');
-                    videoInput.value = ''; // Reset file input
+                if (videoPreview.duration > 300) { // 5 minutes max
+                    alert('La vidéo ne doit pas dépasser 5 minutes.');
+                    videoInput.value = '';
                     videoPreview.style.display = 'none';
                     fileNameDisplay.textContent = '';
-                } 
-
+                    submitUploadBtn.disabled = true;
+                } else {
+                    submitUploadBtn.disabled = false;
+                }
             };
+        } else {
+            submitUploadBtn.disabled = true;
         }
     }
 
@@ -84,6 +91,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const recordedVideoPreview = document.getElementById('recorded-video-preview');
     const timerDiv = document.getElementById('recording-timer');
     const recordedVideoDataInput = document.getElementById('recorded_video_data');
+    const videoPlaceholder = document.getElementById('video-placeholder');
+    const submitRecordBtn = document.getElementById('submit-record-btn');
 
     let mediaRecorder;
     let recordedChunks = [];
@@ -171,6 +180,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
                 liveVideo.srcObject = stream;
+                liveVideo.style.display = 'block';
+                videoPlaceholder.style.display = 'none';
                 mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
 
                 mediaRecorder.ondataavailable = (event) => {
@@ -205,6 +216,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     recordedVideoPreview.style.display = 'block';
                     useBtn.style.display = 'block';
                     liveVideo.style.display = 'none';
+                    videoPlaceholder.style.display = 'none';
                     liveVideo.srcObject.getTracks().forEach(track => track.stop());
                 };
 
@@ -377,6 +389,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     alert('La vidéo enregistrée a été ajoutée au formulaire.');
                     useBtn.disabled = true;
                     useBtn.innerHTML = '<i class="fas fa-check"></i> Vidéo ajoutée';
+                    useBtn.style.background = 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)';
+                    submitRecordBtn.disabled = false;
 
                     // Clear the file input if a recorded video is used
                     videoInput.value = '';

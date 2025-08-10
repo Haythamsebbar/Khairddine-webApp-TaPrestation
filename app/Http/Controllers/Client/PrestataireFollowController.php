@@ -91,9 +91,9 @@ class PrestataireFollowController extends Controller
             ->with(['user', 'skills', 'services']);
         
         if ($sort === 'oldest') {
-            $query->orderBy('prestataire_follows.created_at', 'asc');
+            $query->orderBy('client_prestataire_follows.created_at', 'asc');
         } else {
-            $query->orderBy('prestataire_follows.created_at', 'desc');
+            $query->orderBy('client_prestataire_follows.created_at', 'desc');
         }
         
         $prestataires = $query->paginate(12);

@@ -75,73 +75,87 @@ class EquipmentRentalRequestController extends Controller
     /**
      * Accepte une demande de location
      */
-    public function accept(Request $request, EquipmentRentalRequest $rentalRequest)
+    public function accept(Request $request, $requestId)
     {
+        // Récupérer explicitement la demande de location
+        $equipmentRentalRequest = EquipmentRentalRequest::findOrFail($requestId);
+        
         // $this->authorize('update', $rentalRequest);
         
         // Charger la relation equipment si elle n'est pas déjà chargée
-        $rentalRequest->load('equipment');
+        $equipmentRentalRequest->load('equipment');
         
         // Vérifier que l'équipement existe
-        if (!$rentalRequest->equipment) {
-            return back()->with('error', 'Équipement introuvable.');
+        if (!$equipmentRentalRequest->equipment) {
+            return redirect()->route('prestataire.equipment-rental-requests.index')
+                            ->with('error', 'Équipement introuvable.');
         }
         
         // Vérifier la disponibilité
-        if (!$rentalRequest->equipment->isAvailableForPeriod($rentalRequest->start_date, $rentalRequest->end_date)) {
-            return back()->with('error', 'L\'équipement n\'est plus disponible pour cette période.');
+        if (!$equipmentRentalRequest->equipment->isAvailableForPeriod($equipmentRentalRequest->start_date, $equipmentRentalRequest->end_date)) {
+            return redirect()->route('prestataire.equipment-rental-requests.show', $equipmentRentalRequest->id)
+                            ->with('error', 'L\'équipement n\'est plus disponible pour cette période.');
         }
         
-        DB::transaction(function () use ($rentalRequest) {
-            // Accepter la demande
-            $rentalRequest->accept();
-            
-            // Créer la location
-            $rental = EquipmentRental::create([
+        try {
+            DB::transaction(function () use ($equipmentRentalRequest) {
+                // Accepter la demande
+                $equipmentRentalRequest->accept();
+                
+                // Créer la location
+                $rental = EquipmentRental::create([
                 'rental_number' => 'LOC-' . strtoupper(uniqid()),
-                'rental_request_id' => $rentalRequest->id,
-                'equipment_id' => $rentalRequest->equipment_id,
-                'client_id' => $rentalRequest->client_id,
-                'prestataire_id' => $rentalRequest->prestataire_id,
-                'start_date' => $rentalRequest->start_date,
-                'end_date' => $rentalRequest->end_date,
-                'planned_duration_days' => $rentalRequest->duration_days ?? 1,
-                'unit_price' => $rentalRequest->unit_price ?? 0,
-                'base_amount' => $rentalRequest->total_amount ?? 0,
-                'security_deposit' => $rentalRequest->security_deposit ?? 0,
-                'delivery_fee' => $rentalRequest->delivery_fee ?? 0,
-                'total_amount' => $rentalRequest->total_amount ?? 0,
-                'final_amount' => $rentalRequest->final_amount ?? ($rentalRequest->total_amount + ($rentalRequest->delivery_fee ?? 0)),
-                'delivery_address' => $rentalRequest->delivery_address,
-                'pickup_address' => $rentalRequest->pickup_address,
+                'rental_request_id' => $equipmentRentalRequest->id,
+                'equipment_id' => $equipmentRentalRequest->equipment_id,
+                'client_id' => $equipmentRentalRequest->client_id,
+                'prestataire_id' => $equipmentRentalRequest->prestataire_id,
+                'start_date' => $equipmentRentalRequest->start_date,
+                'end_date' => $equipmentRentalRequest->end_date,
+                'planned_duration_days' => $equipmentRentalRequest->duration_days ?? 1,
+                'unit_price' => $equipmentRentalRequest->unit_price ?? 0,
+                'base_amount' => $equipmentRentalRequest->total_amount ?? 0,
+                'security_deposit' => $equipmentRentalRequest->security_deposit ?? 0,
+                'delivery_fee' => $equipmentRentalRequest->delivery_fee ?? 0,
+                'total_amount' => $equipmentRentalRequest->total_amount ?? 0,
+                'final_amount' => $equipmentRentalRequest->final_amount ?? ($equipmentRentalRequest->total_amount + ($equipmentRentalRequest->delivery_fee ?? 0)),
+                'delivery_address' => $equipmentRentalRequest->delivery_address,
+                'pickup_address' => $equipmentRentalRequest->pickup_address,
                 'status' => 'confirmed',
                 'payment_status' => 'pending'
             ]);
             
-            // Mettre à jour le statut de l'équipement si nécessaire
-            if ($rentalRequest->equipment->status === 'active') {
-                $rentalRequest->equipment->update(['status' => 'rented']);
-            }
-        });
+                // Mettre à jour le statut de l'équipement si nécessaire
+                if ($equipmentRentalRequest->equipment->status === 'active') {
+                    $equipmentRentalRequest->equipment->update(['status' => 'rented']);
+                }
+            });
+        } catch (\Exception $e) {
+            \Log::error('Error accepting equipment rental request: ' . $e->getMessage());
+            return redirect()->route('prestataire.equipment-rental-requests.index')
+                            ->with('error', 'Une erreur est survenue lors de l\'acceptation de la demande.');
+        }
         
         // TODO: Envoyer notification au client
         
-        return redirect()->route('prestataire.equipment-rental-requests.show', $rentalRequest)
+        return redirect()->route('prestataire.equipment-rental-requests.show', $equipmentRentalRequest->id)
                         ->with('success', 'Demande acceptée avec succès! La location a été créée.');
     }
     
     /**
      * Rejette une demande de location
      */
-    public function reject(Request $request, EquipmentRentalRequest $rentalRequest)
+    public function reject(Request $request, $requestId)
     {
-        // $this->authorize('update', $rentalRequest);
+        // Récupérer explicitement la demande de location
+        $equipmentRentalRequest = EquipmentRentalRequest::findOrFail($requestId);
         
-        $rentalRequest->reject($request->input('rejection_reason'));
+        // $this->authorize('update', $equipmentRentalRequest);
+        
+        $equipmentRentalRequest->reject($request->input('rejection_reason'));
         
         // TODO: Envoyer notification au client
         
-        return redirect()->route('prestataire.equipment-rental-requests.show', $rentalRequest)
+        return redirect()->route('prestataire.equipment-rental-requests.show', $equipmentRentalRequest->id)
                         ->with('success', 'Demande rejetée.');
     }
     

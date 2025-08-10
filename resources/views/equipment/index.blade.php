@@ -24,10 +24,10 @@
 
 <div class="container mx-auto px-4 py-8">
     <!-- Filtres avancés -->
-    <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-8">
+    <div class="bg-green-50 border border-green-200 rounded-lg p-6 mb-8 shadow-sm">
         <div class="mb-4">
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Filtres de recherche</h3>
-            <p class="text-sm text-gray-600">Affinez votre recherche pour trouver l'équipement parfait</p>
+            <h3 class="text-lg font-semibold text-green-900 mb-2">Filtres de recherche</h3>
+            <p class="text-sm text-green-600">Affinez votre recherche pour trouver l'équipement parfait</p>
         </div>
         
         <form method="GET" action="{{ route('equipment.index') }}" class="space-y-6">
@@ -42,8 +42,8 @@
             <!-- Première ligne de filtres -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Catégorie</label>
-                    <select name="category_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <label class="block text-sm font-medium text-green-700 mb-2">Catégorie</label>
+                    <select name="category_id" class="w-full px-3 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
                         <option value="">Toutes les catégories</option>
                         @foreach($categories as $category)
                         <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
@@ -54,8 +54,8 @@
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Prix maximum/jour</label>
-                    <select name="max_price" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <label class="block text-sm font-medium text-green-700 mb-2">Prix maximum/jour</label>
+                    <select name="max_price" class="w-full px-3 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
                         <option value="">Tous les prix</option>
                         <option value="50" {{ request('max_price') == '50' ? 'selected' : '' }}>Jusqu'à 50€</option>
                         <option value="100" {{ request('max_price') == '100' ? 'selected' : '' }}>Jusqu'à 100€</option>
@@ -65,8 +65,8 @@
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Disponibilité</label>
-                    <select name="availability" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <label class="block text-sm font-medium text-green-700 mb-2">Disponibilité</label>
+                    <select name="availability" class="w-full px-3 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
                         <option value="">Toutes les disponibilités</option>
                         <option value="available" {{ request('availability') == 'available' ? 'selected' : '' }}>Disponible maintenant</option>
                         <option value="delivery" {{ request('availability') == 'delivery' ? 'selected' : '' }}>Avec livraison</option>
@@ -74,8 +74,8 @@
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Trier par</label>
-                    <select name="sort" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <label class="block text-sm font-medium text-green-700 mb-2">Trier par</label>
+                    <select name="sort" class="w-full px-3 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
                         <option value="relevance" {{ request('sort') == 'relevance' ? 'selected' : '' }}>Pertinence</option>
                         <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Prix croissant</option>
                         <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Prix décroissant</option>
@@ -88,12 +88,12 @@
             <!-- Deuxième ligne de filtres -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Localisation</label>
+                    <label class="block text-sm font-medium text-green-700 mb-2">Localisation</label>
                     <input type="text" 
                            name="location" 
                            value="{{ request('location') }}"
                            placeholder="Ville ou code postal"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                           class="w-full px-3 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 </div>
                 
                 <div class="flex items-center">
@@ -102,8 +102,8 @@
                                name="urgent" 
                                value="1" 
                                {{ request('urgent') ? 'checked' : '' }}
-                               class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                        <span class="ml-2 text-sm font-medium text-gray-700">Équipements urgents uniquement</span>
+                               class="rounded border-green-300 text-green-600 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50">
+                        <span class="ml-2 text-sm font-medium text-green-700">Équipements urgents uniquement</span>
                     </label>
                 </div>
                 
@@ -113,13 +113,13 @@
                                name="with_delivery" 
                                value="1" 
                                {{ request('with_delivery') ? 'checked' : '' }}
-                               class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                        <span class="ml-2 text-sm font-medium text-gray-700">Avec livraison</span>
+                               class="rounded border-green-300 text-green-600 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50">
+                        <span class="ml-2 text-sm font-medium text-green-700">Avec livraison</span>
                     </label>
                 </div>
             </div>
             
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-4 border-t border-gray-200">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-4 border-t border-green-200">
                 <div class="flex flex-wrap items-center gap-3">
                     <button type="submit" 
                             class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors duration-200 shadow-sm">
@@ -128,7 +128,7 @@
                     
                     @if(request()->hasAny(['category_id', 'max_price', 'availability', 'sort', 'urgent', 'with_delivery']))
                     <a href="{{ route('equipment.index', request()->only(['search'])) }}" 
-                       class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors duration-200 border border-gray-300">
+                       class="px-6 py-3 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg font-medium transition-colors duration-200 border border-green-300">
                         Réinitialiser les filtres
                     </a>
                     @endif
@@ -188,7 +188,7 @@
                     @endif
                     
                     @if($equipment->delivery_available)
-                    <span class="inline-flex items-center gap-1 bg-blue-500 text-white text-xs font-medium px-2.5 py-1 rounded-full shadow-sm">
+                    <span class="inline-flex items-center gap-1 bg-green-500 text-white text-xs font-medium px-2.5 py-1 rounded-full shadow-sm">
                         Livraison
                     </span>
                     @endif
@@ -222,8 +222,8 @@
                 
                 <!-- Prestataire avec design amélioré -->
                 @if($equipment->prestataire)
-                <div class="flex items-center gap-3 mb-4 p-2 bg-gray-50 rounded-lg">
-                    <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                <div class="flex items-center gap-3 mb-4 p-2 bg-green-50 rounded-lg">
+                    <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
                         {{ strtoupper(substr($equipment->prestataire->company_name ?? ($equipment->prestataire->first_name ?? ''), 0, 1)) }}
                     </div>
                     <div class="flex-1">
@@ -236,7 +236,7 @@
                 @endif
                 
                 <!-- Prix en évidence -->
-                <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-3 mb-4 border border-blue-100">
+                <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-3 mb-4 border border-green-100">
                     <div class="flex items-center justify-between">
                         <div>
                             <span class="text-2xl font-bold text-gray-900">{{ number_format($equipment->price_per_day, 0) }}€</span>
@@ -256,7 +256,7 @@
                 @if($equipment->categories && $equipment->categories->count() > 0)
                 <div class="flex flex-wrap gap-1.5 mb-4">
                     @foreach($equipment->categories->take(2) as $category)
-                    <span class="inline-flex items-center bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">
+                    <span class="inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-1 rounded-full">
                         {{ $category->name }}
                     </span>
                     @endforeach

@@ -32,7 +32,9 @@ class EquipmentRentalRequest extends Model
         'total_amount',
         'security_deposit',
         'final_amount',
-        'pickup_address'
+        'pickup_address',
+        'rejection_reason',
+        'responded_at'
     ];
 
     /**
@@ -50,7 +52,7 @@ class EquipmentRentalRequest extends Model
         'delivery_required' => 'boolean',
         'insurance_accepted' => 'boolean',
         'terms_accepted' => 'boolean',
-        'prestataire_response_date' => 'datetime',
+        'responded_at' => 'datetime',
         'cancelled_at' => 'datetime',
         'total_days' => 'integer',
         'special_requirements' => 'array'
@@ -182,7 +184,7 @@ class EquipmentRentalRequest extends Model
         $this->update([
             'status' => self::STATUS_ACCEPTED,
             'prestataire_response' => $response,
-            'prestataire_response_date' => now()
+            'responded_at' => now()
         ]);
     }
 
@@ -193,8 +195,8 @@ class EquipmentRentalRequest extends Model
     {
         $this->update([
             'status' => self::STATUS_REJECTED,
-            'prestataire_response' => $reason,
-            'prestataire_response_date' => now()
+            'rejection_reason' => $reason,
+            'responded_at' => now()
         ]);
     }
 

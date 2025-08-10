@@ -3,18 +3,18 @@
 @section('title', 'Mes demandes de location')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
+<div class="bg-green-50">
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-6xl mx-auto">
         <!-- Header -->
-        <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl shadow-lg border border-blue-200 p-6 md:p-8 mb-8">
+        <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6 md:p-8 mb-8">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
                 <div class="text-center md:text-left">
-                    <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Mes demandes de location</h1>
-                    <p class="text-gray-600 text-base md:text-lg">Gérez et consultez l'ensemble de vos demandes de location de matériel</p>
+                    <h1 class="text-2xl md:text-3xl font-extrabold text-green-900 mb-2">Mes demandes de location</h1>
+                    <p class="text-lg text-green-700">Gérez et consultez l'ensemble de vos demandes de location de matériel</p>
                 </div>
                 <div class="flex justify-center md:justify-end">
-                    <a href="{{ route('equipment.index') }}" class="bg-blue-600 text-white px-6 py-3 md:px-6 md:py-3 rounded-xl hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl border border-blue-700 font-semibold text-base md:text-lg flex items-center justify-center w-full md:w-auto" style="min-height: 44px;">
+                    <a href="{{ route('equipment.index') }}" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 md:px-6 md:py-3 rounded-lg transition duration-200 shadow-lg hover:shadow-xl font-bold text-base md:text-lg flex items-center justify-center w-full md:w-auto" style="min-height: 44px;">
                         <i class="fas fa-plus mr-3"></i>
                         Nouvelle demande
                     </a>
@@ -36,77 +36,77 @@
         
         <!-- Statistiques -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
-            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300">
+            <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6 hover:shadow-xl transition-all duration-300">
                 <div class="flex items-center">
-                    <div class="p-3 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 text-blue-600 shadow-lg">
+                    <div class="p-3 rounded-full bg-gradient-to-br from-green-100 to-green-200 text-green-600 shadow-lg">
                         <i class="fas fa-clipboard-list text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-semibold text-gray-600">Total</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ $stats['total'] }}</p>
+                        <p class="text-sm font-semibold text-green-700">Total</p>
+                        <p class="text-2xl font-bold text-green-900">{{ $stats['total'] }}</p>
                     </div>
                 </div>
             </div>
             
-            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300">
+            <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6 hover:shadow-xl transition-all duration-300">
                 <div class="flex items-center">
                     <div class="p-3 rounded-full bg-gradient-to-br from-yellow-100 to-yellow-200 text-yellow-600 shadow-lg">
                         <i class="fas fa-clock text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-semibold text-gray-600">En attente</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ $stats['pending'] }}</p>
+                        <p class="text-sm font-semibold text-green-700">En attente</p>
+                        <p class="text-2xl font-bold text-green-900">{{ $stats['pending'] }}</p>
                     </div>
                 </div>
             </div>
             
-            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300">
+            <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6 hover:shadow-xl transition-all duration-300">
                 <div class="flex items-center">
                     <div class="p-3 rounded-full bg-gradient-to-br from-green-100 to-green-200 text-green-600 shadow-lg">
                         <i class="fas fa-check-circle text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-semibold text-gray-600">Acceptées</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ $stats['accepted'] }}</p>
+                        <p class="text-sm font-semibold text-green-700">Acceptées</p>
+                        <p class="text-2xl font-bold text-green-900">{{ $stats['accepted'] }}</p>
                     </div>
                 </div>
             </div>
             
-            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300">
+            <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6 hover:shadow-xl transition-all duration-300">
                 <div class="flex items-center">
                     <div class="p-3 rounded-full bg-gradient-to-br from-red-100 to-red-200 text-red-600 shadow-lg">
                         <i class="fas fa-times-circle text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-semibold text-gray-600">Refusées</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ $stats['rejected'] }}</p>
+                        <p class="text-sm font-semibold text-green-700">Refusées</p>
+                        <p class="text-2xl font-bold text-green-900">{{ $stats['rejected'] }}</p>
                     </div>
                 </div>
             </div>
         </div>
         
         <!-- Filtres -->
-        <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-8">
+        <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6 mb-8">
             <form method="GET" action="{{ route('client.equipment-rental-requests.index') }}" class="space-y-4 md:space-y-0 md:flex md:items-end md:space-x-4">
                 <div class="flex-1">
-                    <label for="search" class="block text-sm font-semibold text-gray-700 mb-2">
-                        <i class="fas fa-search mr-2 text-blue-600"></i>Rechercher
+                    <label for="search" class="block text-sm font-semibold text-green-700 mb-2">
+                        <i class="fas fa-search mr-2 text-green-600"></i>Rechercher
                     </label>
                     <input type="text" 
                            id="search" 
                            name="search" 
                            value="{{ request('search') }}"
                            placeholder="Nom de l'équipement, prestataire..."
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200">
                 </div>
                 
                 <div class="md:w-48">
-                    <label for="status" class="block text-sm font-semibold text-gray-700 mb-2">
-                        <i class="fas fa-filter mr-2 text-blue-600"></i>Statut
+                    <label for="status" class="block text-sm font-semibold text-green-700 mb-2">
+                        <i class="fas fa-filter mr-2 text-green-600"></i>Statut
                     </label>
                     <select id="status" 
                             name="status"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200">
                         <option value="">Tous les statuts</option>
                         <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>En attente</option>
                         <option value="accepted" {{ request('status') === 'accepted' ? 'selected' : '' }}>Acceptée</option>
@@ -115,19 +115,19 @@
                 </div>
                 
                 <div class="md:w-48">
-                    <label for="date_from" class="block text-sm font-semibold text-gray-700 mb-2">
-                        <i class="fas fa-calendar-alt mr-2 text-blue-600"></i>Date de début
+                    <label for="date_from" class="block text-sm font-semibold text-green-700 mb-2">
+                        <i class="fas fa-calendar-alt mr-2 text-green-600"></i>Date de début
                     </label>
                     <input type="date" 
                            id="date_from" 
                            name="date_from" 
                            value="{{ request('date_from') }}"
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200">
                 </div>
                 
                 <div class="flex space-x-2">
                     <button type="submit" 
-                            class="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center">
+                            class="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center">
                         <i class="fas fa-search mr-2"></i>
                         Filtrer
                     </button>
@@ -142,7 +142,10 @@
         
         <!-- Liste des demandes -->
         @if($requests->count() > 0)
-        <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        <div class="bg-white rounded-xl shadow-lg border border-green-200 overflow-hidden">
+            <div class="p-6 border-b border-green-200">
+                <h3 class="text-lg font-semibold text-green-900">Mes demandes de location ({{ $requests->total() }})</h3>
+            </div>
             <!-- Vue Desktop -->
             <div class="hidden lg:block overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
@@ -250,7 +253,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex items-center justify-end space-x-2">
                                     <a href="{{ route('client.equipment-rental-requests.show', $request) }}" 
-                                       class="inline-flex items-center px-3 py-2 text-sm font-semibold text-blue-600 hover:text-white hover:bg-blue-600 border border-blue-600 rounded-lg transition-all duration-200 hover:shadow-lg">
+                                       class="inline-flex items-center px-3 py-2 text-sm font-semibold text-green-600 hover:text-white hover:bg-green-600 border border-green-600 rounded-lg transition-all duration-200 hover:shadow-lg">
                                         <i class="fas fa-eye mr-1"></i>
                                         Voir
                                     </a>
@@ -384,7 +387,7 @@
                         <!-- Actions -->
                         <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200">
                             <a href="{{ route('client.equipment-rental-requests.show', $request) }}" 
-                               class="flex-1 inline-flex items-center justify-center px-4 py-3 text-sm font-semibold text-blue-600 hover:text-white hover:bg-blue-600 border border-blue-600 rounded-lg transition-all duration-200 hover:shadow-lg">
+                               class="flex-1 inline-flex items-center justify-center px-4 py-3 text-sm font-semibold text-green-600 hover:text-white hover:bg-green-600 border border-green-600 rounded-lg transition-all duration-200 hover:shadow-lg">
                                 <i class="fas fa-eye mr-2"></i>
                                 Voir les détails
                             </a>
@@ -432,14 +435,14 @@
                 </p>
                 <div class="space-y-3">
                     <a href="{{ route('equipment.index') }}" 
-                       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
+                       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
                         <i class="fas fa-search mr-2"></i>
                         Parcourir les équipements
                     </a>
                     @if(request()->hasAny(['search', 'status', 'date_from']))
                     <div>
                         <a href="{{ route('client.equipment-rental-requests.index') }}" 
-                           class="inline-flex items-center px-4 py-2 text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200">
+                           class="inline-flex items-center px-4 py-2 text-green-600 hover:text-green-800 font-medium transition-colors duration-200">
                             <i class="fas fa-redo mr-2"></i>
                             Réinitialiser les filtres
                         </a>

@@ -22,60 +22,63 @@
         <nav class="flex mb-6" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
                 <li class="inline-flex items-center">
-                    <a href="{{ route('equipment.index') }}" class="text-gray-700 hover:text-green-600">
-                        Location de matériel
+                    <a href="{{ route('equipment.index') }}" class="inline-flex items-center text-sm font-medium text-green-700 hover:text-green-600">
+                        <svg class="w-3 h-3 mr-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z"/>
+                        </svg>
+                        Équipements
                     </a>
                 </li>
                 <li>
                     <div class="flex items-center">
-                        <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                        <svg class="w-3 h-3 text-green-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
                         </svg>
-                        <a href="{{ route('equipment.show', $equipment) }}" class="ml-1 text-gray-700 hover:text-green-600 md:ml-2">{{ $equipment->name }}</a>
+                        <a href="{{ route('equipment.show', $equipment) }}" class="ml-1 text-sm font-medium text-green-700 hover:text-green-600 md:ml-2">{{ $equipment->name }}</a>
                     </div>
                 </li>
-                 <li>
+                <li aria-current="page">
                     <div class="flex items-center">
-                        <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                        <svg class="w-3 h-3 text-green-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
                         </svg>
-                        <span class="ml-1 text-gray-500 md:ml-2">Réservation</span>
+                        <span class="ml-1 text-sm font-medium text-green-500 md:ml-2">Réserver</span>
                     </div>
                 </li>
             </ol>
         </nav>
 
-        <h1 class="text-3xl font-bold text-gray-900 mb-6">Réserver "{{ $equipment->name }}"</h1>
+        <h1 class="text-3xl font-bold text-green-900 mb-6">Réserver "{{ $equipment->name }}"</h1>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <!-- Colonne de gauche : Formulaire de réservation -->
-            <div class="bg-white p-6 rounded-lg shadow-md">
+            <div class="bg-white p-6 rounded-lg shadow-md border border-green-100">
                 <form action="{{ route('equipment.rent', $equipment) }}" method="POST">
                     @csrf
                     <div class="mb-4">
-                        <label for="start_date" class="block text-sm font-medium text-gray-700">Date de début</label>
-                        <input type="text" id="start_date" name="start_date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm" placeholder="Sélectionnez une date">
+                        <label for="start_date" class="block text-sm font-medium text-green-700">Date de début</label>
+                        <input type="text" id="start_date" name="start_date" class="mt-1 block w-full rounded-md border-green-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm" placeholder="Sélectionnez une date">
                     </div>
 
                     <div class="mb-4">
-                        <label for="end_date" class="block text-sm font-medium text-gray-700">Date de fin</label>
-                        <input type="text" id="end_date" name="end_date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm" placeholder="Sélectionnez une date">
+                        <label for="end_date" class="block text-sm font-medium text-green-700">Date de fin</label>
+                        <input type="text" id="end_date" name="end_date" class="mt-1 block w-full rounded-md border-green-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm" placeholder="Sélectionnez une date">
                     </div>
 
-                    <div class="bg-gray-50 p-4 rounded-lg my-6">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Résumé de la location</h3>
+                    <div class="bg-green-50 p-4 rounded-lg my-6 border border-green-100">
+                        <h3 class="text-lg font-semibold text-green-800 mb-2">Résumé de la location</h3>
                         <div class="space-y-2">
                             <div class="flex justify-between">
-                                <span class="text-gray-600">Prix par jour:</span>
-                                <span class="font-medium text-gray-900">{{ number_format($equipment->price_per_day, 2) }} €</span>
+                                <span class="text-green-600">Prix par jour:</span>
+                                <span class="font-medium text-green-900">{{ number_format($equipment->price_per_day, 2) }} €</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-gray-600">Nombre de jours:</span>
-                                <span id="rental_days" class="font-medium text-gray-900">0</span>
+                                <span class="text-green-600">Nombre de jours:</span>
+                                <span id="rental_days" class="font-medium text-green-900">0</span>
                             </div>
-                            <div class="flex justify-between border-t pt-2 mt-2">
-                                <span class="text-lg font-bold text-gray-800">Total estimé:</span>
-                                <span id="total_price" class="text-lg font-bold text-gray-900">0.00 €</span>
+                            <div class="flex justify-between border-t border-green-200 pt-2 mt-2">
+                                <span class="text-lg font-bold text-green-800">Total estimé:</span>
+                                <span id="total_price" class="text-lg font-bold text-green-900">0.00 €</span>
                             </div>
                         </div>
                     </div>
@@ -88,11 +91,11 @@
 
             <!-- Colonne de droite : Infos sur l'équipement -->
             <div class="space-y-6">
-                <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="bg-white p-6 rounded-lg shadow-md border border-green-100">
                     <div class="flex items-start">
                         <img src="{{ $equipment->main_photo ? Storage::url($equipment->main_photo) : 'https://via.placeholder.com/150' }}" alt="{{ $equipment->name }}" class="w-32 h-32 object-cover rounded-lg mr-6">
                         <div>
-                            <h2 class="text-xl font-bold text-gray-900">{{ $equipment->name }}</h2>
+                            <h2 class="text-xl font-bold text-green-900">{{ $equipment->name }}</h2>
                             @if($equipment->prestataire && $equipment->prestataire->user)
 <p class="text-sm text-gray-500">Loué par <a href="#" class="text-green-600 hover:underline">{{ $equipment->prestataire->user->name }}</a></p>
 @endif
@@ -104,8 +107,8 @@
                         </div>
                     </div>
                 </div>
-                 <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Calendrier des disponibilités</h3>
+                 <div class="bg-white p-6 rounded-lg shadow-md border border-green-100">
+                    <h3 class="text-lg font-semibold text-green-900 mb-4">Calendrier des disponibilités</h3>
                     
                     <!-- Affichage des dates de disponibilité -->
                     @if($availabilityPeriod['available_from'] || $availabilityPeriod['available_until'])
