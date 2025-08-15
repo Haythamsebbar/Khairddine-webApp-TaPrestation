@@ -134,8 +134,8 @@
                                     <p class="text-gray-600 text-sm">Inscrivez-vous et complétez votre profil professionnel.</p>
                                 </div>
                                 <div class="border-l-4 border-green-500 pl-4">
-                                    <h3 class="font-semibold text-gray-800">Comment publier une demande ?</h3>
-                                    <p class="text-gray-600 text-sm">Créez un compte client et décrivez votre projet.</p>
+                                    <h3 class="font-semibold text-gray-800">Comment publier une demande de prestation?</h3>
+                                    <p class="text-gray-600 text-sm">Créez un compte client, cliquez sur "Publier une demande de prestation", décrivez votre projet et recevez des propositions de prestataires qualifiés.</p>
                                 </div>
                                 <div class="border-l-4 border-purple-500 pl-4">
                                     <h3 class="font-semibold text-gray-800">Quels sont les frais ?</h3>

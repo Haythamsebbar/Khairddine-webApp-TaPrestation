@@ -44,31 +44,33 @@ class ServiceController extends Controller
             });
         }
         
-        // Filtrage par prix
+        // Filtrer par prix minimum
         if ($request->filled('price_min')) {
             $query->where('price', '>=', $request->price_min);
+        }
+        
+        // Filtrer par prix maximum
+        if ($request->filled('price_max')) {
+            $query->where('price', '<=', $request->price_max);
         }
 
         // Filtrage par localisation
         if ($request->filled('location')) {
-            $query->where('location', 'like', '%' . $request->location . '%');
+            $query->where(function($q) use ($request) {
+                $q->where('city', 'like', '%' . $request->location . '%')
+                  ->orWhere('postal_code', 'like', '%' . $request->location . '%')
+                  ->orWhere('address', 'like', '%' . $request->location . '%');
+            });
         }
 
-        // Filtrage par disponibilité
-        if ($request->filled('availability')) {
-            // This is a placeholder for availability logic. 
-            // You would need a more complex query based on how availability is stored.
-        }
 
-        // Filtrage pour les services premium
-        if ($request->has('premium')) {
-            $query->where('is_premium', true);
-        }
 
-        // Filtrage pour les prestataires avec portfolio
-        if ($request->has('with_portfolio')) {
+
+
+        // Filtrage pour les prestataires certifiés
+        if ($request->has('verified_only')) {
             $query->whereHas('prestataire', function ($q) {
-                $q->whereNotNull('portfolio_url');
+                $q->where('is_verified', true);
             });
         }
 

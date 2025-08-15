@@ -54,23 +54,20 @@
                         <label for="price_min" class="block text-sm font-medium text-gray-700 mb-2">Prix minimum</label>
                         <div class="relative">
                             <i class="fas fa-euro-sign absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                            <input type="number" name="price_min" id="price_min" value="{{ request('price_min') }}" placeholder="Tous les prix" min="0" class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                            <input type="number" name="price_min" id="price_min" value="{{ request('price_min') }}" placeholder="Prix min" min="0" class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                         </div>
                     </div>
                     
-                    <!-- Disponibilité -->
+                    <!-- Prix maximum -->
                     <div>
-                        <label for="availability" class="block text-sm font-medium text-gray-700 mb-2">Disponibilité</label>
+                        <label for="price_max" class="block text-sm font-medium text-gray-700 mb-2">Prix maximum</label>
                         <div class="relative">
-                            <i class="fas fa-calendar-check absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                            <select name="availability" id="availability" class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                                <option value="">Toutes les disponibilités</option>
-                                <option value="immediate" {{ request('availability') == 'immediate' ? 'selected' : '' }}>Disponible immédiatement</option>
-                                <option value="week" {{ request('availability') == 'week' ? 'selected' : '' }}>Dans la semaine</option>
-                                <option value="month" {{ request('availability') == 'month' ? 'selected' : '' }}>Dans le mois</option>
-                            </select>
+                            <i class="fas fa-euro-sign absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <input type="number" name="price_max" id="price_max" value="{{ request('price_max') }}" placeholder="Prix max" min="0" class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                         </div>
                     </div>
+                    
+
                     
                     <!-- Tri par -->
                     <div>
@@ -92,25 +89,25 @@
                     <!-- Localisation -->
                     <div>
                         <label for="location" class="block text-sm font-medium text-gray-700 mb-2">Localisation</label>
-                        <div class="relative">
-                            <i class="fas fa-map-marker-alt absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                            <input type="text" name="location" id="location" value="{{ request('location') }}" placeholder="Ville ou code postal" class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                        <div class="flex gap-2">
+                            <div class="relative flex-1">
+                                <i class="fas fa-map-marker-alt absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" name="location" id="location" value="{{ request('location') }}" placeholder="Ville ou code postal" class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                            </div>
+                            <button type="button" id="getLocationBtn" onclick="getMyLocation()" class="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-200 flex items-center justify-center min-w-[120px]" title="Utiliser ma position">
+                                <i class="fas fa-crosshairs mr-2"></i>
+                                <span class="hidden sm:inline">Ma position</span>
+                            </button>
                         </div>
                     </div>
                     
-                    <!-- Services premium -->
-                    <div class="flex items-center">
-                        <label class="flex items-center cursor-pointer">
-                            <input type="checkbox" name="premium" value="1" {{ request('premium') ? 'checked' : '' }} class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                            <span class="ml-2 text-sm text-gray-700">Services premium uniquement</span>
-                        </label>
-                    </div>
+
                     
-                    <!-- Avec portfolio -->
+                    <!-- Prestataire certifié -->
                     <div class="flex items-center">
                         <label class="flex items-center cursor-pointer">
-                            <input type="checkbox" name="with_portfolio" value="1" {{ request('with_portfolio') ? 'checked' : '' }} class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                            <span class.ml-2 text-sm text-gray-700">Avec portfolio</span>
+                            <input type="checkbox" name="verified_only" value="1" {{ request('verified_only') ? 'checked' : '' }} class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                            <span class="ml-2 text-sm text-gray-700">Prestataires certifiés uniquement</span>
                         </label>
                     </div>
                 </div>
@@ -125,7 +122,7 @@
                         Effacer tout
                     </button>
                     
-                    @if(request()->anyFilled(['search', 'category', 'price_min', 'price_max', 'location', 'availability', 'premium', 'with_portfolio']))
+                    @if(request()->anyFilled(['search', 'category', 'price_min', 'price_max', 'location', 'verified_only']))
                         <a href="{{ route('services.index') }}" class="bg-white hover:bg-gray-50 text-blue-600 border border-blue-200 font-bold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
                             Réinitialiser
                         </a>
@@ -171,12 +168,100 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+function clearFilters() {
+    document.getElementById('filtersForm').reset();
+    window.location.href = '{{ route('services.index') }}';
+}
+
+// Fonction pour obtenir la géolocalisation
+function getMyLocation() {
+    const btn = document.getElementById('getLocationBtn');
+    const locationInput = document.getElementById('location');
+    
+    if (!navigator.geolocation) {
+        alert('La géolocalisation n\'est pas supportée par ce navigateur.');
+        return;
+    }
+    
+    // Changer l'état du bouton pendant le chargement
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i><span class="hidden sm:inline">Localisation...</span>';
+    
+    navigator.geolocation.getCurrentPosition(
+        function(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            
+            // Utiliser l'API de géocodage inverse gratuite de Nominatim (OpenStreetMap)
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=fr`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.address) {
+                        const address = data.address;
+                        const city = address.city || address.town || address.village || address.municipality || '';
+                        const postcode = address.postcode || '';
+                        
+                        if (city) {
+                            locationInput.value = postcode ? `${city}, ${postcode}` : city;
+                        } else if (data.display_name) {
+                            // Extraire les parties pertinentes de l'adresse complète
+                            const parts = data.display_name.split(',');
+                            locationInput.value = parts.slice(0, 2).join(',').trim();
+                        } else {
+                            locationInput.value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                        }
+                    } else {
+                        // Fallback: utiliser les coordonnées
+                        locationInput.value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur de géocodage:', error);
+                    // Fallback: utiliser les coordonnées
+                    locationInput.value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                })
+                .finally(() => {
+                    // Restaurer l'état du bouton
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-crosshairs mr-2"></i><span class="hidden sm:inline">Ma position</span>';
+                });
+        },
+        function(error) {
+            let errorMessage = 'Erreur de géolocalisation: ';
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    errorMessage += 'Permission refusée.';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    errorMessage += 'Position indisponible.';
+                    break;
+                case error.TIMEOUT:
+                    errorMessage += 'Délai d\'attente dépassé.';
+                    break;
+                default:
+                    errorMessage += 'Erreur inconnue.';
+                    break;
+            }
+            alert(errorMessage);
+            
+            // Restaurer l'état du bouton
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-crosshairs mr-2"></i><span class="hidden sm:inline">Ma position</span>';
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 300000
+        }
+    );
+}
 </script>
 
         <!-- Section des résultats -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         @if($services->count() > 0)
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 @foreach($services as $service)
                     <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-blue-100 service-card">
                         <!-- Images du service -->
@@ -316,7 +401,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p class="text-blue-600 mb-6">Essayez de modifier vos filtres ou explorez tous nos services.</p>
                 
                 <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                    @if(request()->anyFilled(['search', 'category', 'price_min', 'price_max', 'location', 'availability', 'premium', 'with_portfolio']))
+                    @if(request()->anyFilled(['search', 'category', 'price_min', 'price_max', 'location', 'premium', 'with_portfolio']))
                         <a href="{{ route('services.index') }}" 
                            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                             Réinitialiser les filtres

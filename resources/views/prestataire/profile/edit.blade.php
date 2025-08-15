@@ -3,285 +3,325 @@
 @section('title', 'Mon Profil Professionnel')
 
 @section('content')
-<div class="py-10">
-    <header>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-3xl font-bold leading-tight text-gray-900">Mon Profil Professionnel</h1>
-                    <p class="mt-2 text-sm text-gray-600">Gérez vos informations professionnelles et votre présentation</p>
+<div class="min-h-screen bg-purple-50">
+    <div class="container mx-auto py-4 sm:py-6 md:py-8 px-2 sm:px-4">
+        <!-- En-tête amélioré -->
+        <div class="mb-6 md:mb-8">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                    <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-purple-700 rounded-xl shadow-lg">
+                        <svg class="h-5 w-5 sm:h-6 sm:w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-purple-900 mb-1 sm:mb-2">
+                            Mon Profil Professionnel
+                        </h1>
+                        <p class="text-sm sm:text-base md:text-lg text-purple-700">Gérez vos informations professionnelles et votre présentation</p>
+                    </div>
                 </div>
                 <div class="flex space-x-3">
-                    <a href="{{ route('prestataire.profile.preview') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                        <i class="fas fa-eye mr-2"></i>
+                    <a href="{{ route('prestataire.profile.preview') }}" class="inline-flex items-center px-3 sm:px-4 py-2 border border-transparent text-xs sm:text-sm font-bold rounded-xl text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
+                        <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
                         Aperçu du profil public
                     </a>
                 </div>
             </div>
         </div>
-    </header>
     
-    <main>
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="px-4 py-6 sm:px-0">
-                <!-- Indicateur de complétion -->
-                <div class="mb-6 bg-white shadow rounded-lg p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-medium text-gray-900">Complétion du profil</h3>
-                        <span class="text-2xl font-bold text-indigo-600">{{ $completion_percentage ?? 0 }}%</span>
+        <!-- Indicateur de complétion -->
+        <div class="mb-6 md:mb-8 bg-white rounded-xl shadow-lg border border-purple-100 p-4 sm:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-xl">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
                     </div>
-                    <div class="w-full bg-gray-200 rounded-full h-3">
-                        <div class="bg-indigo-600 h-3 rounded-full transition-all duration-300" style="width: {{ $completion_percentage ?? 0 }}%"></div>
-                    </div>
-                    <p class="mt-2 text-sm text-gray-600">
-                        @if(($completion_percentage ?? 0) < 70)
-                            Complétez votre profil pour attirer plus de clients. Un profil complet inspire confiance !
-                        @elseif(($completion_percentage ?? 0) < 90)
-                            Excellent ! Votre profil est presque complet. Ajoutez quelques détails pour le finaliser.
-                        @else
-                            Parfait ! Votre profil est complet et prêt à attirer de nouveaux clients.
-                        @endif
-                    </p>
+                    <h3 class="text-lg sm:text-xl font-bold text-purple-900">Complétion du profil</h3>
                 </div>
-                
-                @if ($errors->any())
-                    <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative">
-                        <ul class="list-disc list-inside text-sm">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-                
-                @if (session('success'))
-                    <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative">
-                        {{ session('success') }}
-                    </div>
-                @endif
-                
-                <form action="{{ route('prestataire.profile.update') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    @method('PUT')
-                    
-                    <div class="space-y-6">
-                        <!-- Photo de profil -->
-                        <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
-                            <div class="md:grid md:grid-cols-3 md:gap-6">
-                                <div class="md:col-span-1">
-                                    <h3 class="text-lg font-medium leading-6 text-gray-900">
-                                        <i class="fas fa-camera mr-2 text-indigo-600"></i>
-                                        Photo de profil
-                                    </h3>
-                                    <p class="mt-1 text-sm text-gray-500">Une photo claire et professionnelle inspire confiance aux clients.</p>
-                                </div>
-                                <div class="mt-5 md:mt-0 md:col-span-2">
-                                    <div class="flex items-center space-x-6">
-                                        @if($prestataire && $prestataire->photo)
-                <img class="h-24 w-24 rounded-full object-cover border-4 border-indigo-100" src="{{ asset('storage/' . $prestataire->photo) }}" alt="Photo actuelle">
-                @else
-                                            <div class="h-24 w-24 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center border-4 border-indigo-100">
-                                                <span class="text-2xl font-bold text-white">{{ substr(auth()->user()->name, 0, 1) }}</span>
-                                            </div>
-                                        @endif
-                                        <div class="flex-1">
-                                            <input type="file" name="photo" id="photo" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-                                            <p class="mt-1 text-xs text-gray-500">Format recommandé : JPEG, PNG. Taille max : 2MB</p>
-                                            @if($prestataire->user->profile_photo_url)
-                                                <button type="button" onclick="deletePhoto()" class="mt-2 text-sm text-red-600 hover:text-red-500">Supprimer la photo</button>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Informations de base -->
-                        <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
-                            <div class="md:grid md:grid-cols-3 md:gap-6">
-                                <div class="md:col-span-1">
-                                    <h3 class="text-lg font-medium leading-6 text-gray-900">
-                                        <i class="fas fa-user mr-2 text-indigo-600"></i>
-                                        Informations personnelles
-                                    </h3>
-                                    <p class="mt-1 text-sm text-gray-500">Ces informations seront visibles par les clients.</p>
-                                </div>
-                                <div class="mt-5 md:mt-0 md:col-span-2">
-                                    <div class="grid grid-cols-6 gap-6">
-                                        <!-- Nom -->
-                                        <div class="col-span-6 sm:col-span-3">
-                                            <label for="name" class="block text-sm font-medium text-gray-700">Nom complet *</label>
-                                            <input type="text" name="name" id="name" value="{{ old('name', auth()->user()->name) }}" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required>
-                                        </div>
-                                        
-                                        <!-- Email -->
-                                        <div class="col-span-6 sm:col-span-3">
-                                            <label for="email" class="block text-sm font-medium text-gray-700">Email *</label>
-                                            <input type="email" name="email" id="email" value="{{ old('email', auth()->user()->email) }}" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required>
-                                        </div>
-                                        
-                                        <!-- Téléphone -->
-                                        <div class="col-span-6 sm:col-span-3">
-                                            <label for="phone" class="block text-sm font-medium text-gray-700">Téléphone</label>
-                                            <input type="tel" name="phone" id="phone" value="{{ old('phone', $prestataire->phone ?? '') }}" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                        </div>
-                                        
-                                        <!-- Secteur d'activité -->
-                                        <div class="col-span-6 sm:col-span-3">
-                                            <label for="sector" class="block text-sm font-medium text-gray-700">Secteur d'activité</label>
-                                            <select name="sector" id="sector" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                                <option value="">Sélectionnez un secteur</option>
-                                                @foreach($categories as $category)
-                                                    <option value="{{ $category->name }}" {{ old('sector', $prestataire->sector ?? '') === $category->name ? 'selected' : '' }}>{{ $category->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Présentation / Biographie -->
-                        <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
-                            <div class="md:grid md:grid-cols-3 md:gap-6">
-                                <div class="md:col-span-1">
-                                    <h3 class="text-lg font-medium leading-6 text-gray-900">
-                                        <i class="fas fa-edit mr-2 text-indigo-600"></i>
-                                        Présentation professionnelle
-                                    </h3>
-                                    <p class="mt-1 text-sm text-gray-500">Décrivez votre expertise, votre expérience et ce qui vous différencie. Minimum 200 caractères.</p>
-                                </div>
-                                <div class="mt-5 md:mt-0 md:col-span-2">
-                                    <div>
-                                        <textarea name="description" id="description" rows="6" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="Présentez votre expertise, votre expérience, vos points forts et votre manière de travailler...">{{ old('description', $prestataire->description ?? '') }}</textarea>
-                                        <div class="mt-2 flex justify-between items-center">
-                                            <p class="text-sm text-gray-500">Cette description améliore l'aspect humain de votre profil et favorise la confiance client.</p>
-                                            <span id="char-count" class="text-sm text-gray-400">0/2000</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Compétences -->
-                        <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
-                            <div class="md:grid md:grid-cols-3 md:gap-6">
-                                <div class="md:col-span-1">
-                                    <h3 class="text-lg font-medium leading-6 text-gray-900">
-                                        <i class="fas fa-tools mr-2 text-indigo-600"></i>
-                                        Compétences et expertise
-                                    </h3>
-                                    <p class="mt-1 text-sm text-gray-500">Sélectionnez vos compétences principales. Elles servent de base aux filtres de recherche.</p>
-                                </div>
-                                <div class="mt-5 md:mt-0 md:col-span-2">
-                                    <div class="space-y-4">
-                                        <div class="grid grid-cols-2 gap-4">
-                                            @foreach($skills as $skill)
-                                                <label class="flex items-center">
-                                                    <input type="checkbox" name="skills[]" value="{{ $skill->id }}" 
-                                                           {{ $prestataire && $prestataire->skills->contains($skill->id) ? 'checked' : '' }}
-                                                           class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                                    <span class="ml-2 text-sm text-gray-700">{{ $skill->name }}</span>
-                                                </label>
-                                            @endforeach
-                                        </div>
-                                        
-                                        <!-- Zone de service -->
-                                        <div class="pt-4 border-t">
-                                            <div>
-                                                <label for="service_area" class="block text-sm font-medium text-gray-700">Zone de service</label>
-                                                <input type="text" name="service_area" id="service_area" value="{{ old('service_area', $prestataire->service_area ?? '') }}" placeholder="Ex: Paris et banlieue" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Portfolio -->
-                        <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
-                            <div class="md:grid md:grid-cols-3 md:gap-6">
-                                <div class="md:col-span-1">
-                                    <h3 class="text-lg font-medium leading-6 text-gray-900">
-                                        <i class="fas fa-images mr-2 text-indigo-600"></i>
-                                        Portfolio de réalisations
-                                    </h3>
-                                    <p class="mt-1 text-sm text-gray-500">Montrez vos meilleurs travaux. Le portfolio est un critère déterminant pour la sélection.</p>
-                                </div>
-                                <div class="mt-5 md:mt-0 md:col-span-2">
-                                    <!-- Portfolio existant -->
-                                    @if($prestataire && is_array($prestataire->portfolio_images) && count($prestataire->portfolio_images) > 0)
-                                        <div class="mb-6">
-                                            <h4 class="text-sm font-medium text-gray-900 mb-3">Réalisations actuelles</h4>
-                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                @foreach($prestataire->portfolio_images as $index => $item)
-                                                    <div class="border rounded-lg p-4 bg-gray-50">
-                                                        @if(isset($item['image']))
-                                                            <img src="{{ Storage::url($item['image']) }}" alt="{{ $item['title'] ?? 'Portfolio item' }}" class="w-full h-32 object-cover rounded mb-2">
-                                                        @endif
-                                                        <h5 class="font-medium text-sm">{{ $item['title'] ?? 'Sans titre' }}</h5>
-                                                        <p class="text-xs text-gray-600 mt-1">{{ $item['description'] ?? '' }}</p>
-                                                        @if(isset($item['link']) && $item['link'])
-                                                            <a href="{{ $item['link'] }}" target="_blank" class="text-xs text-indigo-600 hover:text-indigo-500">Voir le projet</a>
-                                                        @endif
-                                                        <button type="button" onclick="deletePortfolioItem({{ $index }})" class="mt-2 text-xs text-red-600 hover:text-red-500">Supprimer</button>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    @endif
-                                    
-                                    <!-- Ajouter de nouveaux éléments -->
-                                    <div id="portfolio-container">
-                                        <h4 class="text-sm font-medium text-gray-900 mb-3">Ajouter de nouvelles réalisations</h4>
-                                        <div class="portfolio-item border-2 border-dashed border-gray-300 rounded-lg p-4">
-                                            <div class="grid grid-cols-1 gap-4">
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-700">Image</label>
-                                                    <input type="file" name="portfolio_images[]" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-                                                </div>
-                                                <div class="grid grid-cols-2 gap-4">
-                                                    <div>
-                                                        <label class="block text-sm font-medium text-gray-700">Titre</label>
-                                                        <input type="text" name="portfolio_titles[]" placeholder="Nom du projet" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                                    </div>
-                                                    <div>
-                                                        <label class="block text-sm font-medium text-gray-700">Lien (optionnel)</label>
-                                                        <input type="url" name="portfolio_links[]" placeholder="https://" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-700">Description</label>
-                                                    <textarea name="portfolio_descriptions[]" rows="2" placeholder="Décrivez brièvement ce projet..." class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"></textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <button type="button" onclick="addPortfolioItem()" class="mt-3 inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                        <i class="fas fa-plus mr-2"></i>
-                                        Ajouter une réalisation
-                                    </button>
-                                    <p class="mt-2 text-xs text-gray-500">Maximum 10 réalisations. Taille max par image : 5MB</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Boutons d'action -->
-                        <div class="flex justify-end space-x-3">
-                            <a href="{{ route('prestataire.dashboard') }}" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50">
-                                Annuler
-                            </a>
-                            <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
-                                <i class="fas fa-save mr-2"></i>
-                                Enregistrer les modifications
-                            </button>
-                        </div>
-                    </div>
-                </form>
+                <span class="text-2xl sm:text-3xl font-extrabold text-purple-600">{{ $completion_percentage ?? 0 }}%</span>
             </div>
+            <div class="w-full bg-purple-100 rounded-full h-3 sm:h-4 mb-3">
+                <div class="bg-gradient-to-r from-purple-600 to-indigo-600 h-3 sm:h-4 rounded-full transition-all duration-500 shadow-sm" style="width: {{ $completion_percentage ?? 0 }}%"></div>
+            </div>
+            <p class="text-sm sm:text-base text-purple-700">
+                @if(($completion_percentage ?? 0) < 70)
+                    Complétez votre profil pour attirer plus de clients. Un profil complet inspire confiance !
+                @elseif(($completion_percentage ?? 0) < 90)
+                    Excellent ! Votre profil est presque complet. Ajoutez quelques détails pour le finaliser.
+                @else
+                    Parfait ! Votre profil est complet et prêt à attirer de nouveaux clients.
+                @endif
+            </p>
         </div>
-    </main>
+                
+        @if ($errors->any())
+            <div class="mb-6 md:mb-8 bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-xl shadow-lg p-4 sm:p-6">
+                <div class="flex items-start gap-3">
+                    <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-red-100 to-pink-100 rounded-xl flex-shrink-0">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-red-600" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-sm sm:text-base font-bold text-red-800 mb-2">Erreurs détectées :</h3>
+                        <div class="text-sm text-red-700">
+                            <ul class="list-disc pl-5 space-y-1">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        @if (session('success'))
+            <div class="mb-6 md:mb-8 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl shadow-lg p-4 sm:p-6">
+                <div class="flex items-start gap-3">
+                    <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl flex-shrink-0">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm sm:text-base font-bold text-green-800">{{ session('success') }}</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+                
+        <form action="{{ route('prestataire.profile.update') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+            
+            <div class="space-y-6 md:space-y-8">
+                <!-- Photo de profil -->
+                <div class="bg-white rounded-xl shadow-lg border border-purple-100 p-4 sm:p-6">
+                    <div class="flex items-center gap-3 mb-4 sm:mb-6">
+                        <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-xl">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg sm:text-xl font-bold text-purple-900">Photo de profil</h3>
+                            <p class="text-sm text-purple-700">Une photo claire et professionnelle inspire confiance aux clients.</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+                        @if($prestataire && $prestataire->photo)
+                            <img class="h-20 w-20 sm:h-24 sm:w-24 rounded-full object-cover border-4 border-purple-200 shadow-lg" src="{{ asset('storage/' . $prestataire->photo) }}" alt="Photo actuelle">
+                        @else
+                            <div class="h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center border-4 border-purple-200 shadow-lg">
+                                <span class="text-xl sm:text-2xl font-bold text-white">{{ substr(auth()->user()->name, 0, 1) }}</span>
+                            </div>
+                        @endif
+                        <div class="flex-1">
+                            <input type="file" name="photo" id="photo" accept="image/*" class="block w-full text-sm text-purple-700 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-purple-50 file:to-indigo-50 file:text-purple-700 hover:file:from-purple-100 hover:file:to-indigo-100 file:shadow-sm">
+                            <p class="mt-1 text-xs text-purple-600">Format recommandé : JPEG, PNG. Taille max : 2MB</p>
+                            @if($prestataire && $prestataire->photo)
+                                <button type="button" onclick="deletePhoto()" class="mt-2 text-sm text-red-600 hover:text-red-500 font-medium">Supprimer la photo</button>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                        
+                <!-- Informations de base -->
+                <div class="bg-white rounded-xl shadow-lg border border-purple-100 p-4 sm:p-6">
+                    <div class="flex items-center gap-3 mb-4 sm:mb-6">
+                        <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-xl">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg sm:text-xl font-bold text-purple-900">Informations personnelles</h3>
+                            <p class="text-sm text-purple-700">Ces informations seront visibles par les clients.</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                        <!-- Nom -->
+                        <div>
+                            <label for="name" class="block text-sm font-bold text-purple-900 mb-2">Nom complet *</label>
+                            <input type="text" name="name" id="name" value="{{ old('name', auth()->user()->name) }}" class="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" required>
+                        </div>
+                        
+                        <!-- Email -->
+                        <div>
+                            <label for="email" class="block text-sm font-bold text-purple-900 mb-2">Email *</label>
+                            <input type="email" name="email" id="email" value="{{ old('email', auth()->user()->email) }}" class="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" required>
+                        </div>
+                        
+                        <!-- Téléphone -->
+                        <div>
+                            <label for="phone" class="block text-sm font-bold text-purple-900 mb-2">Téléphone</label>
+                            <input type="tel" name="phone" id="phone" value="{{ old('phone', $prestataire->phone ?? '') }}" class="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors">
+                        </div>
+                        
+                        <!-- Secteur d'activité -->
+                        <div>
+                            <label for="sector" class="block text-sm font-bold text-purple-900 mb-2">Secteur d'activité</label>
+                            <select name="sector" id="sector" class="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors bg-white">
+                                <option value="">Sélectionnez un secteur</option>
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->name }}" {{ old('sector', $prestataire->sector ?? '') === $category->name ? 'selected' : '' }}>{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                        
+                <!-- Présentation / Biographie -->
+                <div class="bg-white rounded-xl shadow-lg border border-purple-100 p-4 sm:p-6">
+                    <div class="flex items-center gap-3 mb-4 sm:mb-6">
+                        <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-xl">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg sm:text-xl font-bold text-purple-900">Présentation professionnelle</h3>
+                            <p class="text-sm text-purple-700">Décrivez votre expertise, votre expérience et ce qui vous différencie. Minimum 200 caractères.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <textarea name="description" id="description" rows="6" class="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors resize-none" placeholder="Présentez votre expertise, votre expérience, vos points forts et votre manière de travailler...">{{ old('description', $prestataire->description ?? '') }}</textarea>
+                        <div class="mt-2 flex justify-between items-center">
+                            <p class="text-sm text-purple-700">Cette description améliore l'aspect humain de votre profil et favorise la confiance client.</p>
+                            <span id="char-count" class="text-sm font-bold text-purple-600">0/2000</span>
+                        </div>
+                    </div>
+                </div>
+                        
+                <!-- Compétences -->
+                <div class="bg-white rounded-xl shadow-lg border border-purple-100 p-4 sm:p-6">
+                    <div class="flex items-center gap-3 mb-4 sm:mb-6">
+                        <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-xl">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg sm:text-xl font-bold text-purple-900">Compétences et expertise</h3>
+                            <p class="text-sm text-purple-700">Sélectionnez vos compétences principales. Elles servent de base aux filtres de recherche.</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6">
+                        @foreach($skills as $skill)
+                            <div class="flex items-center p-3 border border-purple-200 rounded-xl hover:bg-purple-50 transition-colors">
+                                <input type="checkbox" name="skills[]" value="{{ $skill->id }}" id="skill_{{ $skill->id }}"
+                                       {{ $prestataire && $prestataire->skills->contains($skill->id) ? 'checked' : '' }}
+                                       class="w-4 h-4 text-purple-600 border-purple-300 rounded focus:ring-purple-500 focus:ring-2">
+                                <label for="skill_{{ $skill->id }}" class="ml-3 text-sm font-medium text-purple-900 cursor-pointer">{{ $skill->name }}</label>
+                            </div>
+                        @endforeach
+                    </div>
+                    
+                    <!-- Zone de service -->
+                    <div class="pt-4 border-t border-purple-100">
+                        <label for="service_area" class="block text-sm font-bold text-purple-900 mb-2">Zone de service</label>
+                        <input type="text" name="service_area" id="service_area" value="{{ old('service_area', $prestataire->service_area ?? '') }}" placeholder="Ex: Paris et banlieue" class="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors">
+                    </div>
+                </div>
+                        
+                <!-- Portfolio -->
+                <div class="bg-white rounded-xl shadow-lg border border-purple-100 p-4 sm:p-6">
+                    <div class="flex items-center gap-3 mb-4 sm:mb-6">
+                        <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-xl">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg sm:text-xl font-bold text-purple-900">Portfolio de réalisations</h3>
+                            <p class="text-sm text-purple-700">Montrez vos meilleurs travaux. Le portfolio est un critère déterminant pour la sélection.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Portfolio existant -->
+                    @if($prestataire && is_array($prestataire->portfolio_images) && count($prestataire->portfolio_images) > 0)
+                        <div class="mb-6">
+                            <h4 class="text-base font-bold text-purple-900 mb-4">Réalisations actuelles</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                @foreach($prestataire->portfolio_images as $index => $item)
+                                    <div class="border border-purple-200 rounded-xl p-4 bg-gradient-to-br from-purple-50 to-indigo-50">
+                                        @if(isset($item['image']))
+                                            <img src="{{ Storage::url($item['image']) }}" alt="{{ $item['title'] ?? 'Portfolio item' }}" class="w-full h-32 object-cover rounded-xl mb-3 border-2 border-purple-200">
+                                        @endif
+                                        <h5 class="font-bold text-sm text-purple-900">{{ $item['title'] ?? 'Sans titre' }}</h5>
+                                        <p class="text-xs text-purple-700 mt-1">{{ $item['description'] ?? '' }}</p>
+                                        @if(isset($item['link']) && $item['link'])
+                                            <a href="{{ $item['link'] }}" target="_blank" class="text-xs text-purple-600 hover:text-purple-500 font-medium">Voir le projet</a>
+                                        @endif
+                                        <button type="button" onclick="deletePortfolioItem({{ $index }})" class="mt-2 text-xs text-red-600 hover:text-red-500 font-medium">Supprimer</button>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                    
+                    <!-- Ajouter de nouveaux éléments -->
+                    <div id="portfolio-container">
+                        <h4 class="text-base font-bold text-purple-900 mb-4">Ajouter de nouvelles réalisations</h4>
+                        <div class="portfolio-item border-2 border-dashed border-purple-300 rounded-xl p-4 bg-gradient-to-br from-purple-50 to-indigo-50">
+                            <div class="grid grid-cols-1 gap-4">
+                                <div>
+                                    <label class="block text-sm font-bold text-purple-900 mb-2">Image</label>
+                                    <input type="file" name="portfolio_images[]" accept="image/*" class="block w-full text-sm text-purple-700 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-purple-50 file:to-indigo-50 file:text-purple-700 hover:file:from-purple-100 hover:file:to-indigo-100 file:shadow-sm">
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-bold text-purple-900 mb-2">Titre</label>
+                                        <input type="text" name="portfolio_titles[]" placeholder="Nom du projet" class="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-bold text-purple-900 mb-2">Lien (optionnel)</label>
+                                        <input type="url" name="portfolio_links[]" placeholder="https://" class="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-purple-900 mb-2">Description</label>
+                                    <textarea name="portfolio_descriptions[]" rows="2" placeholder="Décrivez brièvement ce projet..." class="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors resize-none"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="button" onclick="addPortfolioItem()" class="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:from-purple-700 hover:to-indigo-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Ajouter une réalisation
+                    </button>
+                    <p class="mt-3 text-sm text-purple-700">Maximum 10 réalisations. Taille max par image : 5MB</p>
+                </div>
+                        
+                <!-- Boutons d'action -->
+                <div class="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 pt-6 border-t border-purple-100">
+                    <a href="{{ route('prestataire.dashboard') }}" class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border-2 border-purple-200 text-purple-700 font-bold rounded-xl shadow-lg hover:bg-purple-50 hover:border-purple-300 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Annuler
+                    </a>
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:from-purple-700 hover:to-indigo-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                        </svg>
+                        Enregistrer les modifications
+                    </button>
+                </div>
+                    </div>
+        </form>
+    </div>
+</main>
 </div>
 
 <script>

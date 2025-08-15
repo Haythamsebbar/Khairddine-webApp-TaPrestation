@@ -8,17 +8,28 @@
 @endpush
 
 @section('content')
-<div class="container mx-auto px-4 py-6">
-    <div class="max-w-4xl mx-auto">
-        <div class="flex items-center mb-8">
-            <a href="{{ route('prestataire.services.index') }}" class="text-gray-600 hover:text-gray-800 mr-4">
-                <i class="fas fa-arrow-left text-2xl"></i>
-            </a>
-            <i class="fas fa-concierge-bell text-blue-500 text-3xl mr-3"></i>
-            <h1 class="text-4xl font-bold text-blue-700">Créer un nouveau service</h1>
-        </div>
+<div class="bg-blue-50">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- En-tête -->
+            <div class="mb-8 text-center">
+                <h1 class="text-4xl font-extrabold text-blue-900 mb-2">Créer un nouveau service</h1>
+                <p class="text-lg text-blue-700">Créez votre annonce de service professionnel</p>
+            </div>
 
-        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-lg p-8">
+            <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6 mb-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <a href="{{ route('prestataire.services.index') }}" class="text-blue-600 hover:text-blue-900 transition-colors duration-200">
+                            <i class="fas fa-arrow-left text-xl"></i>
+                        </a>
+                        <div>
+                            <h2 class="text-xl font-bold text-blue-900">Nouveau service</h2>
+                            <p class="text-blue-700">Remplissez les informations de votre service</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
             @if ($errors->any())
             <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6 rounded-r-lg" role="alert">
                 <div class="flex">
@@ -45,40 +56,40 @@
                 @csrf
 
                 <!-- Informations de base -->
-                <div class="mb-10 bg-white rounded-lg shadow-md p-6 border border-blue-200">
-                    <h2 class="text-2xl font-bold text-blue-700 mb-6">Informations principales</h2>
+                <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6 mb-6">
+                    <h2 class="text-xl font-bold text-blue-900 mb-4 border-b border-blue-200 pb-2">Informations de base</h2>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-6">
                         <!-- Titre -->
-                        <div class="md:col-span-2">
-                            <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Titre du service *</label>
-                            <input type="text" id="title" name="title" value="{{ old('title') }}" required maxlength="255" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('title') border-red-500 @enderror">
+                        <div>
+                            <label for="title" class="block text-sm font-medium text-blue-700 mb-2">Titre du service *</label>
+                            <input type="text" id="title" name="title" value="{{ old('title') }}" required maxlength="255" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('title') border-red-500 @enderror">
                             @error('title')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
                         </div>
                         
                         <!-- Description -->
-                        <div class="md:col-span-2">
-                            <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description détaillée *</label>
-                            <textarea id="description" name="description" required rows="6" maxlength="2000" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('description') border-red-500 @enderror" placeholder="Décrivez en détail votre service, vos compétences et ce qui vous différencie...">{{ old('description') }}</textarea>
+                        <div>
+                            <label for="description" class="block text-sm font-medium text-blue-700 mb-2">Description détaillée *</label>
+                            <textarea id="description" name="description" required rows="6" maxlength="2000" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('description') border-red-500 @enderror" placeholder="Décrivez en détail votre service, vos compétences et ce qui vous différencie...">{{ old('description') }}</textarea>
                             @error('description')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <!-- Reservable -->
-                        <div class="md:col-span-2">
+                        <div>
                             <label for="reservable" class="inline-flex items-center">
-                                <input id="reservable" type="checkbox" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-offset-0 focus:ring-blue-200 focus:ring-opacity-50" name="reservable" {{ old('reservable') ? 'checked' : '' }}>
-                                <span class="ml-2 text-sm text-gray-600">Activer la réservation directe pour ce service</span>
+                                <input id="reservable" type="checkbox" class="rounded border-blue-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-offset-0 focus:ring-blue-200 focus:ring-opacity-50" name="reservable" {{ old('reservable') ? 'checked' : '' }}>
+                                <span class="ml-2 text-sm text-blue-600">Activer la réservation directe pour ce service</span>
                             </label>
                         </div>
 
                         <!-- Delivery time -->
                         <div>
-                            <label for="delivery_time" class="block text-sm font-medium text-gray-700 mb-2">Délai de livraison (en jours)</label>
-                            <input type="number" id="delivery_time" name="delivery_time" value="{{ old('delivery_time') }}" min="1" max="365" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('delivery_time') border-red-500 @enderror">
+                            <label for="delivery_time" class="block text-sm font-medium text-blue-700 mb-2">Délai de livraison (en jours)</label>
+                            <input type="number" id="delivery_time" name="delivery_time" value="{{ old('delivery_time') }}" min="1" max="365" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('delivery_time') border-red-500 @enderror">
                             @error('delivery_time')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -87,19 +98,19 @@
                 </div>
 
                 <!-- Prix -->
-                <div class="mb-10 bg-white rounded-lg shadow-md p-6 border border-blue-200">
-                    <h2 class="text-2xl font-bold text-blue-700 mb-6">Prix du service</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6 mb-6">
+                    <h2 class="text-xl font-bold text-blue-900 mb-4 border-b border-blue-200 pb-2">Prix du service</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="price" class="block text-sm font-medium text-gray-700 mb-2">Prix (€)</label>
-                            <input type="number" id="price" name="price" value="{{ old('price') }}" min="0" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('price') border-red-500 @enderror">
+                            <label for="price" class="block text-sm font-medium text-blue-700 mb-2">Prix (€)</label>
+                            <input type="number" id="price" name="price" value="{{ old('price') }}" min="0" step="0.01" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('price') border-red-500 @enderror">
                             @error('price')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
                         </div>
                         <div>
-                            <label for="price_type" class="block text-sm font-medium text-gray-700 mb-2">Type de tarification</label>
-                            <select id="price_type" name="price_type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('price_type') border-red-500 @enderror">
+                            <label for="price_type" class="block text-sm font-medium text-blue-700 mb-2">Type de tarification</label>
+                            <select id="price_type" name="price_type" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('price_type') border-red-500 @enderror">
                                 <option value="">Sélectionnez un type</option>
                                 <option value="fixe" {{ old('price_type') == 'fixe' ? 'selected' : '' }}>Prix fixe</option>
                                 <option value="heure" {{ old('price_type') == 'heure' ? 'selected' : '' }}>Par heure</option>
@@ -115,10 +126,10 @@
                 </div>
 
                 <!-- Catégorie -->
-                <div class="mb-10 bg-white rounded-lg shadow-md p-6 border border-blue-200">
-                    <h2 class="text-2xl font-bold text-blue-700 mb-6">Catégorie du service</h2>
-                    <label for="category_id" class="block text-sm font-medium text-gray-700 mb-2">Catégorie *</label>
-                    <select id="category_id" name="category_id" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('category_id') border-red-500 @enderror">
+                <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6 mb-6">
+                    <h2 class="text-xl font-bold text-blue-900 mb-4 border-b border-blue-200 pb-2">Catégorie du service</h2>
+                    <label for="category_id" class="block text-sm font-medium text-blue-700 mb-2">Catégorie *</label>
+                    <select id="category_id" name="category_id" required class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('category_id') border-red-500 @enderror">
                         <option value="">Sélectionner une catégorie</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
@@ -130,14 +141,14 @@
                 </div>
 
                 <!-- Photos -->
-                <div class="mb-10 bg-white rounded-lg shadow-md p-6 border border-blue-200">
-                    <h2 class="text-2xl font-bold text-blue-700 mb-6">Photos</h2>
-                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6 mb-6">
+                    <h2 class="text-xl font-bold text-blue-900 mb-4 border-b border-blue-200 pb-2">Photos</h2>
+                    <div class="border-2 border-dashed border-blue-300 rounded-lg p-6 text-center bg-blue-50 hover:border-blue-400 transition-colors">
                         <input type="file" id="images" name="images[]" multiple accept="image/*" class="hidden" onchange="previewImages(this)">
                         <div id="upload-area" class="cursor-pointer" onclick="document.getElementById('images').click()">
-                            <i class="fas fa-cloud-upload-alt text-gray-400 text-4xl mb-4"></i>
-                            <p class="text-gray-600 mb-2">Cliquez pour ajouter des photos ou glissez-déposez</p>
-                            <p class="text-gray-500 text-sm">Maximum 5 photos, 5MB par photo</p>
+                            <i class="fas fa-cloud-upload-alt text-blue-400 text-4xl mb-4"></i>
+                            <p class="text-blue-600 mb-2">Cliquez pour ajouter des photos ou glissez-déposez</p>
+                            <p class="text-blue-500 text-sm">Maximum 5 photos, 5MB par photo</p>
                         </div>
                         <div id="image-preview" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-4 hidden"></div>
                     </div>
@@ -150,12 +161,12 @@
                 </div>
 
                 <!-- Localisation -->
-                <div class="mb-10 bg-white rounded-lg shadow-md p-6 border border-blue-200">
-                    <h2 class="text-2xl font-bold text-blue-700 mb-6">Localisation</h2>
+                <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6 mb-6">
+                    <h2 class="text-xl font-bold text-blue-900 mb-4 border-b border-blue-200 pb-2">Localisation</h2>
                     <div class="map-container">
-                        <div id="serviceMap" class="h-64 rounded-lg border border-gray-300"></div>
+                        <div id="serviceMap" class="h-64 rounded-lg border border-blue-300"></div>
                         <div class="mt-3">
-                            <input type="text" id="selectedAddress" name="address" value="{{ old('address') }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('address') border-red-500 @enderror" placeholder="Cliquez sur la carte pour sélectionner une localisation" readonly>
+                            <input type="text" id="selectedAddress" name="address" value="{{ old('address') }}" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('address') border-red-500 @enderror" placeholder="Cliquez sur la carte pour sélectionner une localisation" readonly>
                             <input type="hidden" id="latitude" name="latitude" value="{{ old('latitude') }}">
                             <input type="hidden" id="longitude" name="longitude" value="{{ old('longitude') }}">
                             @error('address')
@@ -171,10 +182,10 @@
 
                 <!-- Actions -->
                 <div class="flex justify-between items-center pt-8 border-t border-blue-200">
-                    <a href="{{ route('prestataire.services.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-md transition duration-200">
-                        <i class="fas fa-times mr-2"></i>Annuler
+                    <a href="{{ route('prestataire.services.index') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 px-6 py-3 rounded-lg transition duration-200 font-medium">
+                        <i class="fas fa-arrow-left mr-2"></i>Annuler
                     </a>
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg transition duration-200 font-semibold">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg transition duration-200 font-semibold shadow-lg hover:shadow-xl">
                         <i class="fas fa-check mr-2"></i>Créer le service
                     </button>
                 </div>

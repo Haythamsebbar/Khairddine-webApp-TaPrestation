@@ -11,29 +11,40 @@
 @section('title', 'Ajouter une Vente Urgente')
 
 @section('content')
-<div class="container mx-auto px-4 py-6">
-    <div class="max-w-4xl mx-auto">
-        <div class="flex items-center mb-8">
-    <a href="{{ route('prestataire.urgent-sales.index') }}" class="text-gray-600 hover:text-gray-800 mr-4">
-        <i class="fas fa-arrow-left text-2xl"></i>
-    </a>
-    <i class="fas fa-bolt text-red-500 text-3xl mr-3"></i>
-    <h1 class="text-4xl font-bold text-red-700">Ajouter une Vente Urgente</h1>
-</div>
+<div class="bg-red-50">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- En-tête -->
+            <div class="mb-8 text-center">
+                <h1 class="text-4xl font-extrabold text-red-900 mb-2">Ajouter une Vente Urgente</h1>
+                <p class="text-lg text-red-700">Créez une nouvelle annonce pour votre vente urgente</p>
+            </div>
 
-        <div class="bg-gradient-to-br from-red-50 to-orange-50 rounded-xl shadow-lg p-8">
+            <div class="bg-white rounded-xl shadow-lg border border-red-200 p-6 mb-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <a href="{{ route('prestataire.urgent-sales.index') }}" class="text-red-600 hover:text-red-900 transition-colors duration-200">
+                            <i class="fas fa-arrow-left text-xl"></i>
+                        </a>
+                        <div>
+                            <h2 class="text-xl font-bold text-red-900">Nouvelle vente urgente</h2>
+                            <p class="text-red-700">Remplissez les informations de votre vente</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <form action="{{ route('prestataire.urgent-sales.store') }}" method="POST" enctype="multipart/form-data" id="urgent-sale-form">
                 @csrf
                 
                 <!-- Informations de base -->
-                <div class="mb-10 bg-white rounded-lg shadow-md p-6 border border-red-200">
-    <h2 class="text-2xl font-bold text-red-700 mb-6">Informations de base</h2>
+                <div class="bg-white rounded-xl shadow-lg border border-red-200 p-6 mb-6">
+                    <h2 class="text-xl font-bold text-red-900 mb-4 border-b border-red-200 pb-2">Informations de base</h2>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <!-- Titre -->
                         <div class="md:col-span-2">
-                            <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Titre de la vente *</label>
-                            <input type="text" id="title" name="title" value="{{ old('title') }}" required maxlength="255" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('title') border-red-500 @enderror">
+                            <label for="title" class="block text-sm font-medium text-red-700 mb-2">Titre de la vente *</label>
+                            <input type="text" id="title" name="title" value="{{ old('title') }}" required maxlength="255" class="w-full px-3 py-2 border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('title') border-red-500 @enderror">
                             @error('title')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -41,8 +52,8 @@
                         
                         <!-- Prix -->
                         <div>
-                            <label for="price" class="block text-sm font-medium text-gray-700 mb-2">Prix (€) *</label>
-                            <input type="number" id="price" name="price" value="{{ old('price') }}" required min="0" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('price') border-red-500 @enderror">
+                            <label for="price" class="block text-sm font-medium text-red-700 mb-2">Prix (€) *</label>
+                            <input type="number" id="price" name="price" value="{{ old('price') }}" required min="0" step="0.01" class="w-full px-3 py-2 border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('price') border-red-500 @enderror">
                             @error('price')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -50,8 +61,8 @@
                         
                         <!-- État -->
                         <div>
-                            <label for="condition" class="block text-sm font-medium text-gray-700 mb-2">État *</label>
-                            <select id="condition" name="condition" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('condition') border-red-500 @enderror">
+                            <label for="condition" class="block text-sm font-medium text-red-700 mb-2">État *</label>
+                            <select id="condition" name="condition" required class="w-full px-3 py-2 border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('condition') border-red-500 @enderror">
                                 <option value="">Sélectionner l'état</option>
                                 <option value="new" {{ old('condition') === 'new' ? 'selected' : '' }}>Neuf</option>
                                 <option value="like_new" {{ old('condition') === 'like_new' ? 'selected' : '' }}>Comme neuf</option>
@@ -66,8 +77,8 @@
                         
                         <!-- Catégorie -->
                         <div>
-                            <label for="category_id" class="block text-sm font-medium text-gray-700 mb-2">Catégorie *</label>
-                            <select id="category_id" name="category_id" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('category_id') border-red-500 @enderror">
+                            <label for="category_id" class="block text-sm font-medium text-red-700 mb-2">Catégorie *</label>
+                            <select id="category_id" name="category_id" required class="w-full px-3 py-2 border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('category_id') border-red-500 @enderror">
                                 <option value="">Choisissez une catégorie</option>
                                 @foreach ($categories as $category)
                                     <optgroup label="{{ $category->name }}">
@@ -88,8 +99,8 @@
                         
                         <!-- Quantité -->
                         <div>
-                            <label for="quantity" class="block text-sm font-medium text-gray-700 mb-2">Quantité *</label>
-                            <input type="number" id="quantity" name="quantity" value="{{ old('quantity', 1) }}" required min="1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('quantity') border-red-500 @enderror">
+                            <label for="quantity" class="block text-sm font-medium text-red-700 mb-2">Quantité *</label>
+                            <input type="number" id="quantity" name="quantity" value="{{ old('quantity', 1) }}" required min="1" class="w-full px-3 py-2 border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('quantity') border-red-500 @enderror">
                             @error('quantity')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -97,11 +108,11 @@
                         
                         <!-- Localisation -->
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Localisation *</label>
+                            <label class="block text-sm font-medium text-red-700 mb-2">Localisation *</label>
                             <div class="map-container">
                                 <div id="urgentSaleMap" class="h-64 rounded-lg border border-gray-300"></div>
                                 <div class="mt-3">
-                                    <input type="text" id="selectedAddress" name="location" value="{{ old('location') }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('location') border-red-500 @enderror" placeholder="Cliquez sur la carte pour sélectionner une localisation" readonly>
+                                    <input type="text" id="selectedAddress" name="location" value="{{ old('location') }}" class="w-full px-3 py-2 border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('location') border-red-500 @enderror" placeholder="Cliquez sur la carte pour sélectionner une localisation" readonly>
                                     <input type="hidden" id="selectedLatitude" name="latitude" value="{{ old('latitude') }}">
                                     <input type="hidden" id="selectedLongitude" name="longitude" value="{{ old('longitude') }}">
                                     @error('location')
@@ -124,10 +135,10 @@
                 </div>
                 
                 <!-- Description -->
-                <div class="mb-10 bg-white rounded-lg shadow-md p-6 border border-red-200">
-    <h2 class="text-2xl font-bold text-red-700 mb-6">Description</h2>
-                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description détaillée *</label>
-                    <textarea id="description" name="description" required rows="6" maxlength="2000" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('description') border-red-500 @enderror" placeholder="Décrivez votre produit en détail : caractéristiques, raison de la vente, défauts éventuels...">{{ old('description') }}</textarea>
+                <div class="bg-white rounded-xl shadow-lg border border-red-200 p-6 mb-6">
+                    <h2 class="text-xl font-bold text-red-900 mb-4 border-b border-red-200 pb-2">Description</h2>
+                    <label for="description" class="block text-sm font-medium text-red-700 mb-2">Description détaillée *</label>
+                    <textarea id="description" name="description" required rows="6" maxlength="2000" class="w-full px-3 py-2 border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('description') border-red-500 @enderror" placeholder="Décrivez votre produit en détail : caractéristiques, raison de la vente, défauts éventuels...">{{ old('description') }}</textarea>
                     <div class="flex justify-between mt-1">
                         @error('description')
                             <p class="text-red-500 text-sm">{{ $message }}</p>
@@ -139,14 +150,14 @@
                 </div>
                 
                 <!-- Photos -->
-                <div class="mb-10 bg-white rounded-lg shadow-md p-6 border border-red-200">
-    <h2 class="text-2xl font-bold text-red-700 mb-6">Photos</h2>
-                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <div class="bg-white rounded-xl shadow-lg border border-red-200 p-6 mb-6">
+                    <h2 class="text-xl font-bold text-red-900 mb-4 border-b border-red-200 pb-2">Photos</h2>
+                    <div class="border-2 border-dashed border-red-300 rounded-lg p-6 text-center hover:border-red-400 transition-colors">
                         <input type="file" id="photos" name="photos[]" multiple accept="image/*" class="hidden" onchange="previewImages(this)">
                         <div id="upload-area" class="cursor-pointer" onclick="document.getElementById('photos').click()">
-                            <i class="fas fa-cloud-upload-alt text-gray-400 text-4xl mb-4"></i>
-                            <p class="text-gray-600 mb-2">Cliquez pour ajouter des photos ou glissez-déposez</p>
-                            <p class="text-gray-500 text-sm">Maximum 5 photos, 5MB par photo</p>
+                            <i class="fas fa-cloud-upload-alt text-red-400 text-4xl mb-4"></i>
+                            <p class="text-red-600 mb-2">Cliquez pour ajouter des photos ou glissez-déposez</p>
+                            <p class="text-red-500 text-sm">Maximum 5 photos, 5MB par photo</p>
                         </div>
                         
                         <!-- Prévisualisation des images -->
@@ -161,29 +172,29 @@
                 </div>
                 
                 <!-- Options -->
-                <div class="mb-10 bg-white rounded-lg shadow-md p-6 border border-red-200">
-    <h2 class="text-2xl font-bold text-red-700 mb-6">Options</h2>
+                <div class="bg-white rounded-xl shadow-lg border border-red-200 p-6 mb-6">
+                    <h2 class="text-xl font-bold text-red-900 mb-4 border-b border-red-200 pb-2">Options</h2>
                     <div class="flex items-center">
-                        <input type="checkbox" id="is_urgent" name="is_urgent" value="1" {{ old('is_urgent') ? 'checked' : '' }} class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                        <label for="is_urgent" class="ml-2 block text-sm text-gray-900">
+                        <input type="checkbox" id="is_urgent" name="is_urgent" value="1" {{ old('is_urgent') ? 'checked' : '' }} class="h-4 w-4 text-red-600 focus:ring-red-500 border-red-300 rounded">
+                        <label for="is_urgent" class="ml-2 block text-sm text-red-900">
                             <span class="font-medium">Vente urgente</span>
-                            <span class="text-gray-600">- Mettre en avant cette vente (badge rouge "URGENT")</span>
+                            <span class="text-red-600">- Mettre en avant cette vente (badge rouge "URGENT")</span>
                         </label>
                     </div>
                 </div>
                 
                 <!-- Actions -->
                 <div class="flex justify-between items-center pt-8 border-t border-red-200">
-                    <a href="{{ route('prestataire.urgent-sales.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-md transition duration-200">
-                        <i class="fas fa-times mr-2"></i>Annuler
+                    <a href="{{ route('prestataire.urgent-sales.index') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 px-6 py-3 rounded-lg transition duration-200 font-medium">
+                        <i class="fas fa-arrow-left mr-2"></i>Annuler
                     </a>
                     
                     <div class="flex gap-3">
-                        <button type="submit" name="status" value="inactive" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-md transition duration-200">
+                        <button type="submit" name="status" value="inactive" class="bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 px-6 py-3 rounded-lg transition duration-200 font-medium">
                             <i class="fas fa-save mr-2"></i>Enregistrer en brouillon
                         </button>
                         
-                        <button type="submit" name="status" value="active" class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg transition duration-200 font-semibold">
+                        <button type="submit" name="status" value="active" class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg transition duration-200 font-semibold shadow-lg hover:shadow-xl">
                             <i class="fas fa-check mr-2"></i>Publier maintenant
                         </button>
                     </div>

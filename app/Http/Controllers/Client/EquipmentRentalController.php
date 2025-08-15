@@ -91,17 +91,22 @@ class EquipmentRentalController extends Controller
         $stats = [
             'total' => EquipmentRental::where('client_id', Auth::user()->client->id)->count(),
             'active' => EquipmentRental::where('client_id', Auth::user()->client->id)
-                                     ->whereIn('rental_status', ['confirmed', 'in_preparation', 'delivered'])
+                                     ->whereIn('status', ['confirmed', 'in_preparation', 'delivered'])
                                      ->count(),
             'completed' => EquipmentRental::where('client_id', Auth::user()->client->id)
-                                        ->where('rental_status', 'completed')
+                                        ->where('status', 'completed')
+                                        ->count(),
+            'pending' => EquipmentRental::where('client_id', Auth::user()->client->id)
+                                        ->where('status', 'pending')
                                         ->count(),
             'total_spent' => EquipmentRental::where('client_id', Auth::user()->client->id)
                                           ->where('payment_status', 'paid')
                                           ->sum('final_amount')
         ];
         
-        return view('client.equipment.rentals.index', compact('rentals', 'stats'));
+        $rentals = EquipmentRental::where('client_id', Auth::user()->client->id)->latest()->paginate(10);
+
+        return view('client.equipment-rentals.index', compact('rentals', 'stats'));
     }
     
     /**

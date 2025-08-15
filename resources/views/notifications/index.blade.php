@@ -165,7 +165,7 @@
                         @if(Auth::user()->hasRole('client'))
                             <a href="{{ route('client.requests.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                                 <i class="fas fa-plus mr-2"></i>
-                                Publier une demande
+                                Publier une demande de prestation
                             </a>
                         @elseif(Auth::user()->hasRole('prestataire'))
                             <a href="{{ route('prestataire.responses.index') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">

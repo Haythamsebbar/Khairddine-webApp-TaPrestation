@@ -23,146 +23,139 @@
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            <!-- Filtres de recherche -->
-            <div class="lg:col-span-1">
-                <div class="bg-white rounded-xl shadow-md p-6 sticky top-4 border border-red-100">
-                    <div class="flex items-center gap-3 mb-5">
-                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
-                        </svg>
-                        <h3 class="text-xl font-bold text-red-800">Filtres</h3>
+        <!-- Section des filtres -->
+        <div class="bg-white rounded-xl shadow-lg border border-red-200 p-6 mb-8">
+            <div class="mb-4 flex items-center justify-between">
+                <div>
+                    <h3 class="text-2xl font-bold text-red-800 mb-2">Filtres de recherche</h3>
+                    <p class="text-lg text-red-700">Affinez votre recherche pour trouver les meilleures ventes urgentes</p>
+                </div>
+                <button type="button" id="toggleFilters" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center">
+                    <span id="filterButtonText">Afficher les filtres</span>
+                    <i class="fas fa-chevron-down ml-2" id="filterChevron"></i>
+                </button>
+            </div>
+            
+            <form method="GET" action="{{ route('urgent-sales.index') }}" class="space-y-6" id="filtersForm" style="display: none;">
+                <!-- Conserver les paramètres de recherche principaux -->
+                @if(request('search'))
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                @endif
+                
+                <!-- Première ligne de filtres -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Mot-clé -->
+                    <div>
+                        <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Mot-clé</label>
+                        <div class="relative">
+                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="Ordinateur portable, etc." class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50">
+                        </div>
                     </div>
                     
-                    <form method="GET" action="{{ route('urgent-sales.index') }}" class="space-y-5">
-                        <!-- Mot-clé -->
-                        <div>
-                            <label for="search" class="block text-sm font-semibold text-red-700 mb-2">Mot-clé</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                    </svg>
-                                </div>
-                                <input type="text" id="search" name="search" value="{{ request('search') }}" 
-                                       placeholder="Ordinateur portable, etc."
-                                       class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-shadow duration-200">
-                            </div>
+                    <!-- Ville -->
+                    <div>
+                        <label for="city" class="block text-sm font-medium text-gray-700 mb-2">Ville</label>
+                        <div class="relative">
+                            <i class="fas fa-map-marker-alt absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" name="city" id="city" value="{{ request('city') }}" placeholder="Paris, Lyon..." class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50">
                         </div>
-
-                        <!-- Ville -->
-                        <div>
-                            <label for="city" class="block text-sm font-semibold text-red-700 mb-2">Ville</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    </svg>
-                                </div>
-                                <input type="text" id="city" name="city" value="{{ request('city') }}" 
-                                       placeholder="Paris, Lyon..."
-                                       class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-shadow duration-200">
-                            </div>
+                    </div>
+                    
+                    <!-- État -->
+                    <div>
+                        <label for="condition" class="block text-sm font-medium text-gray-700 mb-2">État</label>
+                        <div class="relative">
+                            <i class="fas fa-cog absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <select name="condition" id="condition" class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50">
+                                <option value="">Tous les états</option>
+                                @foreach($conditions as $value => $label)
+                                    <option value="{{ $value }}" {{ request('condition') == $value ? 'selected' : '' }}>{{ $label }}</option>
+                                @endforeach
+                            </select>
                         </div>
-
-                        <!-- État -->
-                        <div>
-                            <label for="condition" class="block text-sm font-semibold text-red-700 mb-2">État</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4M17 3v4m-2-2h4m2 12v4m-2-2h4M12 3v18"></path></svg>
-                                </div>
-                                <select id="condition" name="condition" class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg appearance-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-shadow duration-200">
-                                    <option value="">Tous les états</option>
-                                    @foreach($conditions as $value => $label)
-                                        <option value="{{ $value }}" {{ request('condition') == $value ? 'selected' : '' }}>
-                                            {{ $label }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+                    </div>
+                    
+                    <!-- Prix maximum -->
+                    <div>
+                        <label for="price_max" class="block text-sm font-medium text-gray-700 mb-2">Prix maximum</label>
+                        <div class="relative">
+                            <i class="fas fa-euro-sign absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <input type="number" name="price_max" id="price_max" value="{{ request('price_max') }}" placeholder="Prix max" min="0" class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50">
                         </div>
-
-                        <!-- Prix maximum -->
-                        <div>
-                            <label class="block text-sm font-semibold text-red-700 mb-2">Prix maximum</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H9a2 2 0 00-2 2v2m4 4h.01M17 13.75V21a2 2 0 01-2 2H9a2 2 0 01-2-2v-7.25A2.25 2.25 0 019.25 11h5.5A2.25 2.25 0 0117 13.75z"></path></svg>
-                                </div>
-                                <select class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg appearance-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-shadow duration-200">
-                                    <option>Tous les prix</option>
-                                    <option>Moins de 50€</option>
-                                    <option>Moins de 100€</option>
-                                    <option>Moins de 500€</option>
-                                    <option>Moins de 1000€</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Trier par -->
-                        <div>
-                            <label class="block text-sm font-semibold text-red-700 mb-2">Trier par</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9M3 12h9m5-4v10l4-5-4-5z"></path></svg>
-                                </div>
-                                <select class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg appearance-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-shadow duration-200">
-                                    <option>Pertinence</option>
-                                    <option>Plus récent</option>
-                                    <option>Prix croissant</option>
-                                    <option>Prix décroissant</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Filtres spéciaux -->
-                        <div class="space-y-3 pt-4 border-t border-gray-200">
-                            <label class="flex items-center">
-                                <input type="checkbox" name="urgent_only" value="1" {{ request('urgent_only') ? 'checked' : '' }}
-                                       class="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-500">
-                                <span class="ml-3 text-sm text-gray-700">Ventes urgentes uniquement</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-500">
-                                <span class="ml-3 text-sm text-gray-700">Avec livraison</span>
-                            </label>
-                        </div>
-
-                        <div class="flex flex-col gap-3 pt-5">
-                            <button type="submit" class="w-full bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 font-semibold flex items-center justify-center gap-2">
-                                Appliquer
-                            </button>
-                            <a href="{{ route('urgent-sales.index') }}" class="w-full text-center text-gray-600 hover:text-red-600 font-medium transition-colors duration-200 py-2">
-                                Réinitialiser
-                            </a>
-                        </div>
-                    </form>
+                    </div>
                 </div>
+                
+                <!-- Deuxième ligne de filtres -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Tri par -->
+                    <div>
+                        <label for="sort" class="block text-sm font-medium text-gray-700 mb-2">Trier par</label>
+                        <div class="relative">
+                            <i class="fas fa-sort absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <select name="sort" id="sort" class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50">
+                                <option value="">Pertinence</option>
+                                <option value="recent" {{ request('sort') == 'recent' ? 'selected' : '' }}>Plus récent</option>
+                                <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Prix croissant</option>
+                                <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Prix décroissant</option>
+                                <option value="urgent" {{ request('sort') == 'urgent' ? 'selected' : '' }}>Urgence</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Ventes urgentes uniquement -->
+                    <div class="flex items-center">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" name="urgent_only" value="1" {{ request('urgent_only') ? 'checked' : '' }} class="rounded border-gray-300 text-red-600 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50">
+                            <span class="ml-2 text-sm text-gray-700">Ventes urgentes uniquement</span>
+                        </label>
+                    </div>
+                    
+                    <!-- Avec livraison -->
+                    <div class="flex items-center">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" name="with_delivery" value="1" {{ request('with_delivery') ? 'checked' : '' }} class="rounded border-gray-300 text-red-600 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50">
+                            <span class="ml-2 text-sm text-gray-700">Avec livraison</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Boutons d'action -->
+                <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t-2 border-red-200">
+                    <button type="submit" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center">
+                        Appliquer les filtres
+                    </button>
+                    
+                    <button type="button" onclick="clearFilters()" class="flex-1 bg-red-100 hover:bg-red-200 text-red-800 font-bold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
+                        Effacer tout
+                    </button>
+                    
+                    @if(request()->anyFilled(['search', 'city', 'condition', 'price_max', 'sort', 'urgent_only', 'with_delivery']))
+                        <a href="{{ route('urgent-sales.index') }}" class="bg-white hover:bg-gray-50 text-red-600 border border-red-200 font-bold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
+                            Réinitialiser
+                        </a>
+                    @endif
+                </div>
+            </form>
+            
+            <!-- Affichage des résultats -->
+            <div class="flex items-center justify-between pt-4 border-t-2 border-red-200 mt-6">
+                <div class="flex items-center gap-2">
+                    <span class="text-sm font-semibold text-red-800">Résultats :</span>
+                    <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-bold">
+                        {{ $urgentSales->total() }} vente(s)
+                    </span>
+                </div>
+                @if($urgentSales->total() > 0)
+                    <div class="text-sm font-semibold text-red-700">
+                        {{ $urgentSales->pluck('prestataire_id')->unique()->count() }} prestataires actifs
+                    </div>
+                @endif
             </div>
+        </div>
 
-            <!-- Résultats -->
-            <div class="lg:col-span-3">
-                <!-- Affichage des résultats -->
-                <div class="flex items-center justify-between pt-4 border-t border-gray-200 mt-6">
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm text-gray-500">Résultats :</span>
-                        <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
-                            {{ $urgentSales->total() }} vente(s)
-                        </span>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <span class="text-sm text-gray-600">Trier par :</span>
-                        <select onchange="window.location.href=this.value" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500">
-                            <option value="{{ request()->fullUrlWithQuery(['sort' => 'recent']) }}" {{ request('sort') == 'recent' || !request('sort') ? 'selected' : '' }}>Pertinence</option>
-                            <option value="{{ request()->fullUrlWithQuery(['sort' => 'urgent']) }}" {{ request('sort') == 'urgent' ? 'selected' : '' }}>Plus récent</option>
-                            <option value="{{ request()->fullUrlWithQuery(['sort' => 'price_asc']) }}" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Prix croissant</option>
-                            <option value="{{ request()->fullUrlWithQuery(['sort' => 'price_desc']) }}" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Prix décroissant</option>
-                            <option>Urgence</option>
-                        </select>
-                    </div>
-                </div>
+        <!-- Résultats -->
+        <div>
 
                 <!-- Ventes urgentes en vedette -->
                 @if($featuredSales->count() > 0 && !request()->hasAny(['search', 'city', 'price_min', 'price_max', 'condition']))
@@ -302,4 +295,60 @@
         </div>
     </div>
 </div>
+
+<script>
+// Fonction pour basculer l'affichage des filtres
+function toggleFilters() {
+    const filtersForm = document.getElementById('filtersForm');
+    const filterButtonText = document.getElementById('filterButtonText');
+    const filterChevron = document.getElementById('filterChevron');
+    
+    if (filtersForm.style.display === 'none' || filtersForm.style.display === '') {
+        filtersForm.style.display = 'block';
+        filterButtonText.textContent = 'Masquer les filtres';
+        filterChevron.classList.remove('fa-chevron-down');
+        filterChevron.classList.add('fa-chevron-up');
+    } else {
+        filtersForm.style.display = 'none';
+        filterButtonText.textContent = 'Afficher les filtres';
+        filterChevron.classList.remove('fa-chevron-up');
+        filterChevron.classList.add('fa-chevron-down');
+    }
+}
+
+// Fonction pour effacer tous les filtres
+function clearFilters() {
+    const form = document.getElementById('filtersForm');
+    const inputs = form.querySelectorAll('input[type="text"], input[type="number"], select');
+    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+    
+    inputs.forEach(input => {
+        input.value = '';
+    });
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    
+    // Rediriger vers la page sans paramètres
+    window.location.href = '{{ route("urgent-sales.index") }}';
+}
+
+// Initialisation au chargement de la page
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleButton = document.getElementById('toggleFilters');
+    toggleButton.addEventListener('click', toggleFilters);
+    
+    // Afficher les filtres si des paramètres sont présents
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasFilters = Array.from(urlParams.keys()).some(key => 
+        ['search', 'city', 'condition', 'price_max', 'sort', 'urgent_only', 'with_delivery'].includes(key) && urlParams.get(key)
+    );
+    
+    if (hasFilters) {
+        toggleFilters();
+    }
+});
+</script>
+
 @endsection

@@ -56,7 +56,7 @@
                     <div class="flex flex-col sm:flex-row gap-3">
                         <!-- Bouton de recherche supprimé -->
                         <a href="{{ route('client.requests.create') }}" class="hero-button flex-1 bg-green-600 hover:bg-green-500 hover:shadow-lg text-white font-medium py-3 px-8 rounded-xl transition-all duration-300 text-center focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 border-b-2 border-green-700 hover:border-green-600 transform hover:-translate-y-0.5">
-                            <i class="fas fa-plus mr-2" aria-hidden="true"></i>Publier une demande
+                            <i class="fas fa-plus mr-2" aria-hidden="true"></i>Publier une demande de prestation
                         </a>
                     </div>
                 </form>

@@ -23,132 +23,153 @@
     
 
 <div class="container mx-auto px-4 py-8">
-    <!-- Filtres avancés -->
-    <div class="bg-green-50 border border-green-200 rounded-lg p-6 mb-8 shadow-sm">
-        <div class="mb-4">
-            <h3 class="text-lg font-semibold text-green-900 mb-2">Filtres de recherche</h3>
-            <p class="text-sm text-green-600">Affinez votre recherche pour trouver l'équipement parfait</p>
-        </div>
-        
-        <form method="GET" action="{{ route('equipment.index') }}" class="space-y-6">
-            <!-- Conserver les paramètres de recherche principaux -->
-            @if(request('search'))
-                <input type="hidden" name="search" value="{{ request('search') }}">
-            @endif
-            @if(request('location'))
-                <input type="hidden" name="location" value="{{ request('location') }}">
-            @endif
-            
-            <!-- Première ligne de filtres -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <!-- Section des filtres -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6 mb-8">
+            <div class="mb-4 flex items-center justify-between">
                 <div>
-                    <label class="block text-sm font-medium text-green-700 mb-2">Catégorie</label>
-                    <select name="category_id" class="w-full px-3 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                        <option value="">Toutes les catégories</option>
-                        @foreach($categories as $category)
-                        <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                            {{ $category->name }}
-                        </option>
-                        @endforeach
-                    </select>
+                    <h3 class="text-2xl font-bold text-green-800 mb-2">Filtres de recherche</h3>
+                    <p class="text-lg text-green-700">Affinez votre recherche pour trouver l'équipement parfait</p>
                 </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-green-700 mb-2">Prix maximum/jour</label>
-                    <select name="max_price" class="w-full px-3 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                        <option value="">Tous les prix</option>
-                        <option value="50" {{ request('max_price') == '50' ? 'selected' : '' }}>Jusqu'à 50€</option>
-                        <option value="100" {{ request('max_price') == '100' ? 'selected' : '' }}>Jusqu'à 100€</option>
-                        <option value="200" {{ request('max_price') == '200' ? 'selected' : '' }}>Jusqu'à 200€</option>
-                        <option value="500" {{ request('max_price') == '500' ? 'selected' : '' }}>Jusqu'à 500€</option>
-                    </select>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-green-700 mb-2">Disponibilité</label>
-                    <select name="availability" class="w-full px-3 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                        <option value="">Toutes les disponibilités</option>
-                        <option value="available" {{ request('availability') == 'available' ? 'selected' : '' }}>Disponible maintenant</option>
-                        <option value="delivery" {{ request('availability') == 'delivery' ? 'selected' : '' }}>Avec livraison</option>
-                    </select>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-green-700 mb-2">Trier par</label>
-                    <select name="sort" class="w-full px-3 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                        <option value="relevance" {{ request('sort') == 'relevance' ? 'selected' : '' }}>Pertinence</option>
-                        <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Prix croissant</option>
-                        <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Prix décroissant</option>
-                        <option value="rating" {{ request('sort') == 'rating' ? 'selected' : '' }}>Mieux notés</option>
-                        <option value="recent" {{ request('sort') == 'recent' ? 'selected' : '' }}>Plus récents</option>
-                    </select>
-                </div>
+                <button type="button" id="toggleFilters" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center">
+                    <span id="filterButtonText">Afficher les filtres</span>
+                    <i class="fas fa-chevron-down ml-2" id="filterChevron"></i>
+                </button>
             </div>
             
-            <!-- Deuxième ligne de filtres -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-green-700 mb-2">Localisation</label>
-                    <input type="text" 
-                           name="location" 
-                           value="{{ request('location') }}"
-                           placeholder="Ville ou code postal"
-                           class="w-full px-3 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+            <form method="GET" action="{{ route('equipment.index') }}" class="space-y-6" id="filtersForm" style="display: none;">
+                <!-- Conserver les paramètres de recherche principaux -->
+                @if(request('search'))
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                @endif
+                
+                <!-- Première ligne de filtres -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Catégorie -->
+                    <div>
+                        <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Catégorie</label>
+                        <div class="relative">
+                            <i class="fas fa-tags absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <select name="category" id="category" class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
+                                <option value="">Toutes les catégories</option>
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Prix maximum -->
+                    <div>
+                        <label for="price_max" class="block text-sm font-medium text-gray-700 mb-2">Prix maximum/jour</label>
+                        <div class="relative">
+                            <i class="fas fa-euro-sign absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <select name="price_max" id="price_max" class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
+                                <option value="">Tous les prix</option>
+                                <option value="50" {{ request('price_max') == '50' ? 'selected' : '' }}>Jusqu'à 50€</option>
+                                <option value="100" {{ request('price_max') == '100' ? 'selected' : '' }}>Jusqu'à 100€</option>
+                                <option value="200" {{ request('price_max') == '200' ? 'selected' : '' }}>Jusqu'à 200€</option>
+                                <option value="500" {{ request('price_max') == '500' ? 'selected' : '' }}>Jusqu'à 500€</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Disponibilité -->
+                    <div>
+                        <label for="availability" class="block text-sm font-medium text-gray-700 mb-2">Disponibilité</label>
+                        <div class="relative">
+                            <i class="fas fa-clock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <select name="availability" id="availability" class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
+                                <option value="">Toutes les disponibilités</option>
+                                <option value="available" {{ request('availability') == 'available' ? 'selected' : '' }}>Disponible maintenant</option>
+                                <option value="delivery" {{ request('availability') == 'delivery' ? 'selected' : '' }}>Avec livraison</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Tri par -->
+                    <div>
+                        <label for="sort" class="block text-sm font-medium text-gray-700 mb-2">Trier par</label>
+                        <div class="relative">
+                            <i class="fas fa-sort absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <select name="sort" id="sort" class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
+                                <option value="relevance" {{ request('sort') == 'relevance' ? 'selected' : '' }}>Pertinence</option>
+                                <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Prix croissant</option>
+                                <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Prix décroissant</option>
+                                <option value="rating" {{ request('sort') == 'rating' ? 'selected' : '' }}>Mieux notés</option>
+                                <option value="recent" {{ request('sort') == 'recent' ? 'selected' : '' }}>Plus récents</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="flex items-center">
-                    <label class="flex items-center mt-6">
-                        <input type="checkbox" 
-                               name="urgent" 
-                               value="1" 
-                               {{ request('urgent') ? 'checked' : '' }}
-                               class="rounded border-green-300 text-green-600 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                        <span class="ml-2 text-sm font-medium text-green-700">Équipements urgents uniquement</span>
-                    </label>
+                <!-- Deuxième ligne de filtres -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Localisation -->
+                    <div>
+                        <label for="city" class="block text-sm font-medium text-gray-700 mb-2">Localisation</label>
+                        <div class="flex gap-2">
+                            <div class="relative flex-1">
+                                <i class="fas fa-map-marker-alt absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" name="city" id="city" value="{{ request('city') }}" placeholder="Ville ou code postal" class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
+                            </div>
+                            <button type="button" id="getLocationBtn" onclick="getMyLocation()" class="px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition duration-200 flex items-center justify-center min-w-[120px]" title="Utiliser ma position">
+                                <i class="fas fa-crosshairs mr-2"></i>
+                                <span class="hidden sm:inline">Ma position</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Équipements urgents -->
+                    <div class="flex items-center">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" name="urgent" value="1" {{ request('urgent') ? 'checked' : '' }} class="rounded border-gray-300 text-green-600 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50">
+                            <span class="ml-2 text-sm text-gray-700">Équipements urgents uniquement</span>
+                        </label>
+                    </div>
+                    
+                    <!-- Avec livraison -->
+                    <div class="flex items-center">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" name="delivery_included" value="1" {{ request('delivery_included') ? 'checked' : '' }} class="rounded border-gray-300 text-green-600 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50">
+                            <span class="ml-2 text-sm text-gray-700">Avec livraison</span>
+                        </label>
+                    </div>
                 </div>
                 
-                <div class="flex items-center">
-                    <label class="flex items-center mt-6">
-                        <input type="checkbox" 
-                               name="with_delivery" 
-                               value="1" 
-                               {{ request('with_delivery') ? 'checked' : '' }}
-                               class="rounded border-green-300 text-green-600 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50">
-                        <span class="ml-2 text-sm font-medium text-green-700">Avec livraison</span>
-                    </label>
-                </div>
-            </div>
-            
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-4 border-t border-green-200">
-                <div class="flex flex-wrap items-center gap-3">
-                    <button type="submit" 
-                            class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors duration-200 shadow-sm">
+                <!-- Boutons d'action -->
+                <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t-2 border-green-200">
+                    <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center">
                         Appliquer les filtres
                     </button>
                     
-                    @if(request()->hasAny(['category_id', 'max_price', 'availability', 'sort', 'urgent', 'with_delivery']))
-                    <a href="{{ route('equipment.index', request()->only(['search'])) }}" 
-                       class="px-6 py-3 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg font-medium transition-colors duration-200 border border-green-300">
-                        Réinitialiser les filtres
-                    </a>
-                    @endif
-                    
-                    @if(request()->hasAny(['search', 'location', 'category_id', 'max_price', 'availability', 'sort', 'urgent', 'with_delivery']))
-                    <a href="{{ route('equipment.index') }}" 
-                       class="text-sm text-green-600 hover:text-green-800 underline">
+                    <button type="button" onclick="clearFilters()" class="flex-1 bg-green-100 hover:bg-green-200 text-green-800 font-bold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
                         Effacer tout
-                    </a>
+                    </button>
+                    
+                    @if(request()->anyFilled(['search', 'category', 'price_max', 'availability', 'sort', 'city', 'urgent', 'delivery_included']))
+                        <a href="{{ route('equipment.index') }}" class="bg-white hover:bg-gray-50 text-green-600 border border-green-200 font-bold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
+                            Réinitialiser
+                        </a>
                     @endif
                 </div>
-                
+            </form>
+            
+            <!-- Affichage des résultats -->
+            <div class="flex items-center justify-between pt-4 border-t-2 border-green-200 mt-6">
                 <div class="flex items-center gap-2">
-                    <span class="text-sm text-gray-500">Résultats :</span>
-                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                    <span class="text-sm font-semibold text-green-800">Résultats :</span>
+                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-bold">
                         {{ $equipments->total() }} équipement(s)
                     </span>
                 </div>
+                @if($equipments->total() > 0)
+                    <div class="text-sm font-semibold text-green-700">
+                        {{ $equipments->pluck('prestataire_id')->unique()->count() }} prestataires actifs
+                    </div>
+                @endif
             </div>
-        </form>
+        </div>
     </div>
 
     <!-- Résultats -->
@@ -398,4 +419,133 @@
     </div>
 </div>
 @endif
+
+<script>
+// Fonction pour basculer l'affichage des filtres
+function toggleFilters() {
+    const filtersForm = document.getElementById('filtersForm');
+    const buttonText = document.getElementById('filterButtonText');
+    const chevron = document.getElementById('filterChevron');
+    
+    if (filtersForm.style.display === 'none' || filtersForm.style.display === '') {
+        filtersForm.style.display = 'block';
+        buttonText.textContent = 'Masquer les filtres';
+        chevron.classList.remove('fa-chevron-down');
+        chevron.classList.add('fa-chevron-up');
+    } else {
+        filtersForm.style.display = 'none';
+        buttonText.textContent = 'Afficher les filtres';
+        chevron.classList.remove('fa-chevron-up');
+        chevron.classList.add('fa-chevron-down');
+    }
+}
+
+// Fonction pour effacer tous les filtres
+function clearFilters() {
+    // Réinitialiser le formulaire
+    document.getElementById('filtersForm').reset();
+    
+    // Rediriger vers la page sans paramètres
+    window.location.href = '{{ route("equipment.index") }}';
+}
+
+// Fonction pour obtenir la géolocalisation
+function getMyLocation() {
+    const locationInput = document.getElementById('city');
+    const btn = document.getElementById('getLocationBtn');
+    
+    if (!navigator.geolocation) {
+        alert('La géolocalisation n\'est pas supportée par ce navigateur.');
+        return;
+    }
+    
+    // Changer le texte du bouton pendant le chargement
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i><span class="hidden sm:inline">Localisation...</span>';
+    btn.disabled = true;
+    
+    navigator.geolocation.getCurrentPosition(
+        function(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            
+            // Utiliser l'API de géocodage inverse gratuite de Nominatim (OpenStreetMap)
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=fr`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.address) {
+                        const address = data.address;
+                        const city = address.city || address.town || address.village || address.municipality || '';
+                        const postcode = address.postcode || '';
+                        
+                        if (city) {
+                            locationInput.value = postcode ? `${city}, ${postcode}` : city;
+                        } else if (data.display_name) {
+                            // Extraire les parties pertinentes de l'adresse complète
+                            const parts = data.display_name.split(',');
+                            locationInput.value = parts.slice(0, 2).join(',').trim();
+                        } else {
+                            locationInput.value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                        }
+                    } else {
+                        // Fallback: utiliser les coordonnées
+                        locationInput.value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur de géocodage:', error);
+                    // Fallback: utiliser les coordonnées
+                    locationInput.value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                })
+                .finally(() => {
+                    // Restaurer le bouton
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                });
+        },
+        function(error) {
+            let message = 'Erreur de géolocalisation: ';
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    message += 'Permission refusée.';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    message += 'Position indisponible.';
+                    break;
+                case error.TIMEOUT:
+                    message += 'Délai d\'attente dépassé.';
+                    break;
+                default:
+                    message += 'Erreur inconnue.';
+                    break;
+            }
+            alert(message);
+            
+            // Restaurer le bouton
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 300000
+        }
+    );
+}
+
+// Ajouter l'événement au bouton de basculement des filtres
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleButton = document.getElementById('toggleFilters');
+    if (toggleButton) {
+        toggleButton.addEventListener('click', toggleFilters);
+    }
+    
+    // Afficher les filtres si des paramètres sont présents
+    const hasFilters = {{ request()->anyFilled(['search', 'category', 'price_max', 'availability', 'sort', 'city', 'urgent', 'delivery_included']) ? 'true' : 'false' }};
+    if (hasFilters) {
+        toggleFilters();
+    }
+});
+</script>
+
 @endsection

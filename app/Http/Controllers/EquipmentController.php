@@ -77,6 +77,23 @@ class EquipmentController extends Controller
             $query->where('featured', true);
         }
         
+        // Filtrage par disponibilité
+        if ($request->filled('availability')) {
+            switch ($request->availability) {
+                case 'available':
+                    $query->where('status', 'active')->where('is_available', true);
+                    break;
+                case 'delivery':
+                    $query->where('delivery_included', true);
+                    break;
+            }
+        }
+        
+        // Filtrage par équipements urgents
+        if ($request->filled('urgent')) {
+            $query->where('is_urgent', true);
+        }
+        
         // Tri
         $sortBy = $request->get('sort', 'created_at');
         $sortOrder = $request->get('order', 'desc');

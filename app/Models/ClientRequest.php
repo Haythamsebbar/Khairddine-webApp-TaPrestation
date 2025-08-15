@@ -12,6 +12,7 @@ class ClientRequest extends Model
 
     protected $fillable = [
         'client_id',
+        'service_type',
         'title',
         'description',
         'category',
@@ -58,6 +59,14 @@ class ClientRequest extends Model
     public function booking()
     {
         return $this->hasOne(Booking::class, 'client_request_id');
+    }
+
+    /**
+     * Get the attachments for this request.
+     */
+    public function attachments()
+    {
+        return $this->hasMany(ClientRequestAttachment::class);
     }
 
     /**
