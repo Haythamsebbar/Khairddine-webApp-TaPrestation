@@ -6,7 +6,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                    <a href="{{ route('client.messaging.index') }}" class="mr-4 text-gray-500 hover:text-gray-700">
+                    <a href="{{ route('messaging.index') }}" class="mr-4 text-gray-500 hover:text-gray-700">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                         </svg>
@@ -31,7 +31,7 @@
                             </div>
                         @endif
                         
-                        <form action="{{ route('client.messaging.start-conversation', $prestataire->id) }}" method="POST">
+                        <form action="{{ route('messaging.start-conversation', $prestataire->id) }}" method="POST">
                             @csrf
                             
                             <!-- Informations du prestataire -->
@@ -39,14 +39,14 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Prestataire</label>
                                 <div class="flex items-center p-4 bg-gray-50 rounded-lg">
                                     @if($prestataire->user->profile_photo_url)
-                <img class="h-12 w-12 rounded-full mr-4" src="{{ $prestataire->user->profile_photo_url }}" alt="{{ $prestataire->user->name }}">
+                <img class="h-12 w-12 rounded-full mr-4" src="{{ $prestataire->user->profile_photo_url }}" alt="{{ $prestataire->user->name ?? 'Prestataire' }}">
             @else
                                         <div class="h-12 w-12 rounded-full bg-gray-300 flex items-center justify-center mr-4">
-                                            <span class="text-lg font-medium text-gray-700">{{ substr($prestataire->user->name, 0, 1) }}</span>
+                                            <span class="text-lg font-medium text-gray-700">{{ $prestataire->user->name ? substr($prestataire->user->name, 0, 1) : 'P' }}</span>
                                         </div>
                                     @endif
                                     <div class="flex-1">
-                                        <h3 class="text-lg font-medium text-gray-900">{{ $prestataire->user->name }}</h3>
+                                        <h3 class="text-lg font-medium text-gray-900">{{ $prestataire->user->name ?? 'Prestataire' }}</h3>
                                         <p class="text-sm text-gray-600">{{ $prestataire->bio ?? 'Prestataire de services' }}</p>
                                         @if($prestataire->location)
                                             <p class="text-sm text-gray-500">
@@ -89,7 +89,7 @@
                             
                             <!-- Boutons d'action -->
                             <div class="flex justify-end space-x-3">
-                                <a href="{{ route('client.messaging.index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                <a href="{{ route('messaging.index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                     Annuler
                                 </a>
                                 <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">

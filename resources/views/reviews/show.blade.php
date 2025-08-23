@@ -24,7 +24,7 @@
                     </div>
                     @if($review->verified)
                     <div class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                        ✓ Avis vérifié
+                        Avis vérifié
                     </div>
                     @endif
                 </div>
@@ -40,7 +40,7 @@
                         <div class="flex items-center">
                             <div class="flex text-3xl">
                                 @for($i = 1; $i <= 5; $i++)
-                                    <span class="{{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-300' }}">★</span>
+                                    <span class="{{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-300' }}">*</span>
                                 @endfor
                             </div>
                             <span class="ml-3 text-2xl font-bold text-gray-800">{{ $review->rating }}/5</span>
@@ -93,7 +93,7 @@
                             </div>
                             <div class="flex">
                                 @for($i = 1; $i <= 5; $i++)
-                                    <span class="text-lg {{ $i <= $review->punctuality_rating ? 'text-yellow-400' : 'text-gray-300' }}">★</span>
+                                    <span class="text-lg {{ $i <= $review->punctuality_rating ? 'text-yellow-400' : 'text-gray-300' }}">*</span>
                                 @endfor
                             </div>
                         </div>
@@ -107,7 +107,7 @@
                             </div>
                             <div class="flex">
                                 @for($i = 1; $i <= 5; $i++)
-                                    <span class="text-lg {{ $i <= $review->quality_rating ? 'text-yellow-400' : 'text-gray-300' }}">★</span>
+                                    <span class="text-lg {{ $i <= $review->quality_rating ? 'text-yellow-400' : 'text-gray-300' }}">*</span>
                                 @endfor
                             </div>
                         </div>
@@ -121,7 +121,7 @@
                             </div>
                             <div class="flex">
                                 @for($i = 1; $i <= 5; $i++)
-                                    <span class="text-lg {{ $i <= $review->value_rating ? 'text-yellow-400' : 'text-gray-300' }}">★</span>
+                                    <span class="text-lg {{ $i <= $review->value_rating ? 'text-yellow-400' : 'text-gray-300' }}">*</span>
                                 @endfor
                             </div>
                         </div>
@@ -135,7 +135,7 @@
                             </div>
                             <div class="flex">
                                 @for($i = 1; $i <= 5; $i++)
-                                    <span class="text-lg {{ $i <= $review->communication_rating ? 'text-yellow-400' : 'text-gray-300' }}">★</span>
+                                    <span class="text-lg {{ $i <= $review->communication_rating ? 'text-yellow-400' : 'text-gray-300' }}">*</span>
                                 @endfor
                             </div>
                         </div>
@@ -167,7 +167,7 @@
                                  class="w-full h-32 object-cover rounded-lg shadow-md group-hover:shadow-lg transition duration-200">
                             <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-lg transition duration-200 flex items-center justify-center">
                                 <span class="text-white opacity-0 group-hover:opacity-100 transition duration-200">
-                                    🔍
+                                    Rechercher
                                 </span>
                             </div>
                         </div>
@@ -210,12 +210,12 @@
                     <div class="flex items-center justify-between mb-2">
                         <div class="flex items-center">
                             @for($i = 1; $i <= 5; $i++)
-                                <span class="text-sm {{ $i <= $similarReview->rating ? 'text-yellow-400' : 'text-gray-300' }}">★</span>
+                                <span class="text-sm {{ $i <= $similarReview->rating ? 'text-yellow-400' : 'text-gray-300' }}">*</span>
                             @endfor
                             <span class="ml-2 text-sm text-gray-600">{{ $similarReview->rating }}/5</span>
                         </div>
                         @if($similarReview->verified)
-                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">✓</span>
+                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Vérifié</span>
                         @endif
                     </div>
                     

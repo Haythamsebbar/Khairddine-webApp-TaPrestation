@@ -133,27 +133,27 @@
                 
                 <!-- Accessoires et instructions -->
                 @if($equipment->accessories_included || $equipment->usage_instructions || $equipment->safety_instructions)
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">📖 Instructions et accessoires</h2>
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6">
+                    <h2 class="text-xl font-bold text-green-900 mb-4 border-b border-green-200 pb-2">Instructions et accessoires</h2>
                     
                     @if($equipment->accessories_included)
                     <div class="mb-4">
-                        <h3 class="font-medium text-gray-900 mb-2">Accessoires inclus:</h3>
-                        <p class="text-gray-700">{{ $equipment->accessories_included }}</p>
+                        <h3 class="font-medium text-green-600 mb-2">Accessoires inclus:</h3>
+                        <p class="text-green-700">{{ $equipment->accessories_included }}</p>
                     </div>
                     @endif
                     
                     @if($equipment->usage_instructions)
                     <div class="mb-4">
-                        <h3 class="font-medium text-gray-900 mb-2">Instructions d'utilisation:</h3>
-                        <p class="text-gray-700">{{ $equipment->usage_instructions }}</p>
+                        <h3 class="font-medium text-green-600 mb-2">Instructions d'utilisation:</h3>
+                        <p class="text-green-700">{{ $equipment->usage_instructions }}</p>
                     </div>
                     @endif
                     
                     @if($equipment->safety_instructions)
                     <div>
-                        <h3 class="font-medium text-gray-900 mb-2">⚠️ Consignes de sécurité:</h3>
-                        <p class="text-gray-700 bg-yellow-50 p-3 rounded-lg border border-yellow-200">{{ $equipment->safety_instructions }}</p>
+                        <h3 class="font-medium text-green-600 mb-2">Consignes de sécurité:</h3>
+                        <p class="text-green-700 bg-green-50 p-3 rounded-lg border border-green-200">{{ $equipment->safety_instructions }}</p>
                     </div>
                     @endif
                 </div>
@@ -161,9 +161,9 @@
                 
                 <!-- Demandes de location récentes -->
                 @if($equipment->rentalRequests->count() > 0)
-                <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6">
                     <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-semibold text-gray-900">📋 Demandes de location récentes</h2>
+                        <h2 class="text-xl font-bold text-green-900 border-b border-green-200 pb-2">Demandes de location récentes</h2>
                         <a href="{{ route('prestataire.equipment-rental-requests.index', ['equipment_id' => $equipment->id]) }}" 
                            class="text-green-600 hover:text-green-800 text-sm font-medium">
                             Voir toutes
@@ -172,14 +172,14 @@
                     
                     <div class="space-y-3">
                         @foreach($equipment->rentalRequests->take(5) as $request)
-                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-100">
                             <div class="flex items-center space-x-3">
                                 <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
                                     <span class="text-green-600 font-medium text-sm">{{ substr($request->client->first_name, 0, 1) }}{{ substr($request->client->last_name, 0, 1) }}</span>
                                 </div>
                                 <div>
-                                    <p class="font-medium text-gray-900">{{ $request->client->first_name }} {{ $request->client->last_name }}</p>
-                                    <p class="text-sm text-gray-600">{{ $request->start_date->format('d/m/Y') }} - {{ $request->end_date->format('d/m/Y') }}</p>
+                                    <p class="font-medium text-green-900">{{ $request->client->first_name }} {{ $request->client->last_name }}</p>
+                                    <p class="text-sm text-green-700">{{ $request->start_date->format('d/m/Y') }} - {{ $request->end_date->format('d/m/Y') }}</p>
                                 </div>
                             </div>
                             <div class="flex items-center space-x-2">
@@ -190,7 +190,7 @@
                                     @else bg-gray-100 text-gray-800 @endif">
                                     {{ ucfirst($request->status) }}
                                 </span>
-                                <span class="text-sm font-medium text-gray-900">{{ number_format($request->total_amount, 2) }}€</span>
+                                <span class="text-sm font-medium text-green-900">{{ number_format($request->total_amount, 2) }}€</span>
                             </div>
                         </div>
                         @endforeach
@@ -200,36 +200,36 @@
                 
                 <!-- Avis -->
                 @if($equipment->reviews->count() > 0)
-                <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6">
                     <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-semibold text-gray-900">⭐ Avis clients</h2>
+                        <h2 class="text-xl font-bold text-green-900 border-b border-green-200 pb-2">⭐ Avis clients</h2>
                         <div class="flex items-center space-x-2">
                             <span class="text-yellow-500">⭐</span>
-                            <span class="font-medium">{{ number_format($equipment->average_rating, 1) }}/5</span>
-                            <span class="text-gray-600">({{ $equipment->reviews_count }} avis)</span>
+                            <span class="font-medium text-green-900">{{ number_format($equipment->average_rating, 1) }}/5</span>
+                            <span class="text-green-700">({{ $equipment->reviews_count }} avis)</span>
                         </div>
                     </div>
                     
                     <div class="space-y-4">
                         @foreach($equipment->reviews->take(3) as $review)
-                        <div class="border-b border-gray-100 pb-4 last:border-b-0">
+                        <div class="border-b border-green-100 pb-4 last:border-b-0">
                             <div class="flex items-center justify-between mb-2">
                                 <div class="flex items-center space-x-2">
-                                    <span class="font-medium text-gray-900">{{ $review->client->first_name }} {{ substr($review->client->last_name, 0, 1) }}.</span>
+                                    <span class="font-medium text-green-900">{{ $review->client->first_name }} {{ substr($review->client->last_name, 0, 1) }}.</span>
                                     <div class="flex text-yellow-500">
                                         @for($i = 1; $i <= 5; $i++)
                                             @if($i <= $review->rating)
                                                 ⭐
                                             @else
-                                                ☆
+                                                *
                                             @endif
                                         @endfor
                                     </div>
                                 </div>
-                                <span class="text-sm text-gray-600">{{ $review->created_at->format('d/m/Y') }}</span>
+                                <span class="text-sm text-green-700">{{ $review->created_at->format('d/m/Y') }}</span>
                             </div>
                             @if($review->comment)
-                            <p class="text-gray-700">{{ $review->comment }}</p>
+                            <p class="text-green-700">{{ $review->comment }}</p>
                             @endif
                         </div>
                         @endforeach
@@ -295,57 +295,37 @@
                         
                         @if($equipment->requires_license)
                         <div class="flex items-center space-x-2 text-orange-600">
-                            <span>⚠️</span>
+                            <span>Attention</span>
                             <span class="text-sm">Permis requis</span>
                         </div>
                         @endif
                         
                         @if($equipment->insurance_required)
                         <div class="flex items-center space-x-2 text-green-600">
-                            <span>🛡️</span>
+                            <span>Sécurité</span>
                             <span class="text-sm">Assurance requise</span>
                         </div>
                         @endif
                     </div>
                 </div>
                 
-                <!-- Livraison -->
-                @if($equipment->delivery_included)
-                <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6">
-                    <h2 class="text-xl font-bold text-green-900 mb-4 border-b border-green-200 pb-2">Livraison</h2>
-                    <div class="space-y-3">
-                        <div class="flex items-center space-x-2 text-green-600">
-                            <span>✅</span>
-                            <span class="text-sm">Livraison incluse</span>
-                        </div>
-                        
-                        @if($equipment->delivery_radius)
-                        <div class="flex justify-between items-center">
-                            <span class="font-medium text-green-600">Rayon:</span>
-                            <span class="text-green-900">{{ $equipment->delivery_radius }} km</span>
-                        </div>
-                        @endif
-                        
-                        @if($equipment->delivery_fee)
-                        <div class="flex justify-between items-center">
-                            <span class="font-medium text-green-600">Coût:</span>
-                            <span class="text-green-900">{{ number_format($equipment->delivery_fee, 2) }}€</span>
-                        </div>
-                        @endif
-                    </div>
-                </div>
-                @endif
+
                 
                 <!-- Catégories -->
-                @if($equipment->categories->count() > 0)
+                @if($equipment->category || $equipment->subcategory)
                 <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6">
                     <h2 class="text-xl font-bold text-green-900 mb-4 border-b border-green-200 pb-2">Catégories</h2>
                     <div class="flex flex-wrap gap-2">
-                        @foreach($equipment->categories as $category)
+                        @if($equipment->category)
                         <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                            {{ $category->name }}
+                            {{ $equipment->category->name }}
                         </span>
-                        @endforeach
+                        @endif
+                        @if($equipment->subcategory && $equipment->subcategory->id !== $equipment->category_id)
+                        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                            {{ $equipment->subcategory->name }}
+                        </span>
+                        @endif
                     </div>
                 </div>
                 @endif
@@ -428,7 +408,7 @@
     <div class="max-w-4xl max-h-full p-4">
         <img id="modalPhoto" src="" alt="" class="max-w-full max-h-full object-contain">
         <button onclick="closePhotoModal()" class="absolute top-4 right-4 text-white text-2xl hover:text-gray-300">
-            ✕
+            Fermer
         </button>
     </div>
 </div>

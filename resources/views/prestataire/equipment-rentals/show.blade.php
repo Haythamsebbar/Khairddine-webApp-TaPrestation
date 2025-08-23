@@ -53,7 +53,7 @@
                         <button type="submit" 
                                 class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200"
                                 onclick="return confirm('Marquer cette location comme terminée ?')">
-                            ✅ Terminer
+                            Terminer
                         </button>
                     </form>
                     @endif
@@ -66,7 +66,7 @@
             <div class="lg:col-span-2 space-y-6">
                 <!-- Informations du client -->
                 <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">👤 Client</h2>
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Client</h2>
                     <div class="flex items-start space-x-4">
                         <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
                             <span class="text-blue-600 font-bold text-lg">
@@ -150,7 +150,7 @@
                 
                 <!-- Détails de la location -->
                 <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">📋 Détails de la location</h2>
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Détails de la location</h2>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -177,27 +177,7 @@
                             </div>
                         </div>
                         
-                        <div>
-                            <h3 class="font-medium text-gray-900 mb-3">Options</h3>
-                            <div class="space-y-2">
-                                <div class="flex items-center space-x-2">
-                                    @if($rental->delivery_required)
-                                        <span class="text-green-600">✅</span>
-                                        <span class="text-sm">Livraison incluse</span>
-                                    @else
-                                        <span class="text-gray-400">❌</span>
-                                        <span class="text-sm text-gray-600">Récupération sur place</span>
-                                    @endif
-                                </div>
-                                
-                                @if($rental->delivery_required && $rental->delivery_address)
-                                <div class="text-sm text-gray-600">
-                                    <span class="font-medium">Adresse de livraison:</span><br>
-                                    {{ $rental->delivery_address }}
-                                </div>
-                                @endif
-                            </div>
-                        </div>
+
                     </div>
                     
                     @if($rental->notes)
@@ -213,7 +193,7 @@
                 <!-- Problèmes signalés -->
                 @if($rental->problem_reported)
                 <div class="bg-red-50 border border-red-200 rounded-lg p-6">
-                    <h2 class="text-lg font-semibold text-red-900 mb-4">⚠️ Problème signalé</h2>
+                    <h2 class="text-lg font-semibold text-red-900 mb-4">Problème signalé</h2>
                     <div class="space-y-3">
                         <div>
                             <span class="font-medium text-red-800">Date du signalement:</span>
@@ -233,7 +213,7 @@
                 
                 <!-- Historique -->
                 <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">📅 Historique</h2>
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Historique</h2>
                     <div class="space-y-4">
                         <div class="flex items-start space-x-3">
                             <div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
@@ -280,19 +260,14 @@
             <div class="space-y-6">
                 <!-- Récapitulatif financier -->
                 <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">💰 Récapitulatif</h2>
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Récapitulatif</h2>
                     <div class="space-y-3">
                         <div class="flex justify-between items-center">
                             <span class="text-gray-600">Location ({{ $rental->start_date->diffInDays($rental->end_date) + 1 }} jours):</span>
                             <span class="font-medium">{{ number_format($rental->rental_amount, 2) }}€</span>
                         </div>
                         
-                        @if($rental->delivery_required && $rental->delivery_cost > 0)
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Livraison:</span>
-                            <span class="font-medium">{{ number_format($rental->delivery_cost, 2) }}€</span>
-                        </div>
-                        @endif
+
                         
                         <div class="flex justify-between items-center pt-3 border-t border-gray-200">
                             <span class="font-medium text-gray-900">Total:</span>
@@ -315,7 +290,7 @@
                 
                 <!-- Actions rapides -->
                 <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">⚡ Actions</h2>
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Actions</h2>
                     <div class="space-y-3">
                         @if($rental->status === 'pending_start')
                         <form method="POST" action="{{ route('prestataire.equipment-rentals.start', $rental) }}" class="w-full">
@@ -336,7 +311,7 @@
                             <button type="submit" 
                                     class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200"
                                     onclick="return confirm('Marquer cette location comme terminée ?')">
-                                ✅ Terminer la location
+                                Terminer la location
                             </button>
                         </form>
                         @endif
@@ -345,19 +320,19 @@
                         <button type="button" 
                                 onclick="reportProblem()"
                                 class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors duration-200">
-                            ⚠️ Signaler un problème
+                            Signaler un problème
                         </button>
                         @endif
                         
                         <a href="mailto:{{ $rental->client->email }}" 
                            class="w-full px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors duration-200 text-center block">
-                            📧 Contacter le client
+                            Contacter le client
                         </a>
                         
                         @if($rental->client->phone)
                         <a href="tel:{{ $rental->client->phone }}" 
                            class="w-full px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors duration-200 text-center block">
-                            📞 Appeler
+                            Appeler
                         </a>
                         @endif
                     </div>
@@ -404,7 +379,7 @@
         <img id="modalPhoto" src="" alt="" class="max-w-full max-h-full object-contain">
         <button onclick="closePhotoModal()" 
                 class="absolute top-4 right-4 text-white text-2xl hover:text-gray-300">
-            ✕
+            Fermer
         </button>
     </div>
 </div>

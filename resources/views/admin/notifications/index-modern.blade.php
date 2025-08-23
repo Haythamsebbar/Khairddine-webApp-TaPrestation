@@ -139,7 +139,7 @@
                             <select name="type" id="type" class="form-control">
                                 <option value="">Tous les types</option>
                                 <option value="booking" {{ request('type') == 'booking' ? 'selected' : '' }}>Réservation</option>
-                                <option value="offer" {{ request('type') == 'offer' ? 'selected' : '' }}>Offre</option>
+
                                 <option value="message" {{ request('type') == 'message' ? 'selected' : '' }}>Message</option>
                                 <option value="review" {{ request('type') == 'review' ? 'selected' : '' }}>Avis</option>
                                 <option value="system" {{ request('type') == 'system' ? 'selected' : '' }}>Système</option>

@@ -11,9 +11,18 @@
     
             <!-- Filtres -->
             <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6 mb-8">
-                <h2 class="text-2xl font-bold text-blue-800 mb-5 border-b-2 border-blue-200 pb-3">Filtrer les prestataires</h2>
+                <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div class="text-center sm:text-left">
+                        <h2 class="text-2xl font-bold text-blue-800 mb-1">Filtrer les prestataires</h2>
+                        <p class="text-sm text-blue-600">Affinez votre recherche pour trouver le prestataire parfait</p>
+                    </div>
+                    <button type="button" id="toggleFilters" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center text-sm sm:text-base">
+                        <span id="filterButtonText">Afficher les filtres</span>
+                        <i class="fas fa-chevron-down ml-2" id="filterChevron"></i>
+                    </button>
+                </div>
         
-        <form action="{{ route('client.browse.prestataires') }}" method="GET" class="space-y-6">
+        <form action="{{ route('client.browse.prestataires') }}" method="GET" class="space-y-6" id="filtersForm" style="display: none;">
             <!-- Filtres -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Filtre par catégorie principale -->
@@ -50,7 +59,7 @@
                                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200">
                             <button type="button" id="use_current_location" 
                                     class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded text-xs font-medium transition duration-200">
-                                📍 Ma position
+                                Ma position
                             </button>
                         </div>
                         <input type="hidden" name="user_latitude" id="user_latitude" value="{{ request('user_latitude') }}">
@@ -110,7 +119,7 @@
                         <!-- En-tête avec nom et statut -->
                         <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-4 border-b border-blue-200">
                             <div class="flex items-center justify-between">
-                                <h3 class="text-xl font-bold text-blue-900">{{ $prestataire->user->name }}</h3>
+                                <h3 class="text-xl font-bold text-blue-900">{{ $prestataire->user->name ?? 'Prestataire' }}</h3>
                                 <div class="flex items-center space-x-2">
                                     @if($prestataire->isVerified())
                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
@@ -144,13 +153,13 @@
                             <div class="flex items-start mb-4">
                                 <div class="flex-shrink-0 mr-4">
                                     @if($prestataire->photo)
-                                        <img src="{{ asset('storage/' . $prestataire->photo) }}" alt="{{ $prestataire->user->name }}" 
+                                        <img src="{{ asset('storage/' . $prestataire->photo) }}" alt="{{ $prestataire->user->name ?? 'Prestataire' }}" 
                                             class="w-16 h-16 rounded-full object-cover border-3 border-blue-200 shadow-md">
                                     @elseif($prestataire->user->avatar)
-                                        <img src="{{ asset('storage/' . $prestataire->user->avatar) }}" alt="{{ $prestataire->user->name }}" 
+                                        <img src="{{ asset('storage/' . $prestataire->user->avatar) }}" alt="{{ $prestataire->user->name ?? 'Prestataire' }}" 
                                             class="w-16 h-16 rounded-full object-cover border-3 border-blue-200 shadow-md">
                                     @elseif($prestataire->user->profile_photo_url)
-                                        <img src="{{ $prestataire->user->profile_photo_url }}" alt="{{ $prestataire->user->name }}" 
+                                        <img src="{{ $prestataire->user->profile_photo_url }}" alt="{{ $prestataire->user->name ?? 'Prestataire' }}" 
                                             class="w-16 h-16 rounded-full object-cover border-3 border-blue-200 shadow-md">
                                     @else
                                         <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-md">
@@ -311,6 +320,35 @@
 
 @push('scripts')
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleButton = document.getElementById('toggleFilters');
+        const filtersForm = document.getElementById('filtersForm');
+        const buttonText = document.getElementById('filterButtonText');
+        const chevron = document.getElementById('filterChevron');
+        
+        let filtersVisible = false;
+        
+        toggleButton.addEventListener('click', function() {
+            filtersVisible = !filtersVisible;
+            
+            if (filtersVisible) {
+                filtersForm.style.display = 'block';
+                buttonText.textContent = 'Masquer les filtres';
+                chevron.classList.remove('fa-chevron-down');
+                chevron.classList.add('fa-chevron-up');
+            } else {
+                filtersForm.style.display = 'none';
+                buttonText.textContent = 'Afficher les filtres';
+                chevron.classList.remove('fa-chevron-up');
+                chevron.classList.add('fa-chevron-down');
+            }
+        });
+    });
+</script>
+@endpush
+
+@push('scripts')
+<script>
 document.addEventListener('DOMContentLoaded', function() {
     const categorySelect = document.getElementById('category');
     const subcategorySelect = document.getElementById('subcategory');
@@ -374,7 +412,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     useCurrentLocationBtn.addEventListener('click', function() {
         if (navigator.geolocation) {
-            useCurrentLocationBtn.textContent = '🔄 Localisation...';
+            useCurrentLocationBtn.textContent = 'Localisation...';
             useCurrentLocationBtn.disabled = true;
             
             navigator.geolocation.getCurrentPosition(
@@ -402,13 +440,13 @@ document.addEventListener('DOMContentLoaded', function() {
                      
                      console.log('Position obtenue:', latitude, longitude);
                      
-                     useCurrentLocationBtn.textContent = '📍 Ma position';
+                     useCurrentLocationBtn.textContent = 'Ma position';
                      useCurrentLocationBtn.disabled = false;
                 },
                 function(error) {
                     console.error('Erreur géolocalisation:', error);
                     alert('Impossible d\'obtenir votre position. Veuillez saisir votre localisation manuellement.');
-                    useCurrentLocationBtn.textContent = '📍 Ma position';
+                    useCurrentLocationBtn.textContent = 'Ma position';
                     useCurrentLocationBtn.disabled = false;
                 }
             );

@@ -20,11 +20,35 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom styles -->
     <style>
+        /*
+        ========================================
+        ADMIN MODERN LAYOUT - CSS ORGANIZATION
+        ========================================
+        
+        Structure:
+        1. CSS Variables (Colors, Spacing)
+        2. Base Styles (Body, Layout)
+        3. Sidebar Navigation
+        4. Main Content Area
+        5. Reusable Components:
+           - Base Card Styles (.card-base)
+           - Grid Layouts (.stats-grid)
+           - Icons (.icon-base)
+           - Text Styles (.text-title, .text-value)
+           - Color Variants (.variant-*)
+        6. Specific Components (Stats, Charts, Tables)
+        7. Buttons & Forms
+        8. Responsive Design
+        */
+        
         :root {
             --primary: #4f46e5;
             --primary-dark: #3730a3;
@@ -47,8 +71,8 @@
         
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f1f5f9;
-            color: #334155;
+            background-color: #dbeafe;
+            color: #1e3a8a;
             line-height: 1.6;
         }
         
@@ -159,6 +183,8 @@
             flex: 1;
             display: flex;
             flex-direction: column;
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            min-height: 100vh;
         }
         
         /* Header */
@@ -217,9 +243,50 @@
         .content {
             padding: 2rem;
             flex: 1;
+            background: transparent;
         }
         
-        /* Cards */
+        /* Page Headers */
+        .page-header {
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            padding: 2rem;
+            margin: -2rem -2rem 2rem -2rem;
+            border-radius: 0 0 1rem 1rem;
+            text-align: center;
+        }
+        
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .page-subtitle {
+            font-size: 1.125rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Base Card Styles */
+        .card-base {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+            border: 2px solid #dbeafe;
+            transition: all 0.3s ease;
+        }
+        
+        .card-base:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.25);
+            border-color: #3b82f6;
+        }
+        
+        /* Grid Layouts */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -227,13 +294,8 @@
             margin-bottom: 2rem;
         }
         
+        /* Stat Cards */
         .stat-card {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid;
-            transition: all 0.2s ease;
             position: relative;
             overflow: hidden;
         }
@@ -251,8 +313,7 @@
         }
         
         .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-4px);
         }
         
         .stat-card.primary {
@@ -271,14 +332,8 @@
             border-left-color: var(--info);
         }
         
-        .stat-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-        }
-        
-        .stat-title {
+        /* Text Styles */
+        .text-title {
             font-size: 0.875rem;
             font-weight: 600;
             color: var(--secondary);
@@ -286,7 +341,23 @@
             letter-spacing: 0.05em;
         }
         
-        .stat-icon {
+        .text-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Stat Specific */
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        /* Icons */
+        .icon-base {
             width: 48px;
             height: 48px;
             border-radius: 10px;
@@ -297,19 +368,20 @@
             color: white;
         }
         
-        .stat-icon.primary {
+        /* Color Variants */
+        .variant-primary {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
         }
         
-        .stat-icon.success {
+        .variant-success {
             background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
         }
         
-        .stat-icon.warning {
+        .variant-warning {
             background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
         }
         
-        .stat-icon.info {
+        .variant-info {
             background: linear-gradient(135deg, var(--info) 0%, #0891b2 100%);
         }
         
@@ -337,21 +409,21 @@
         
         /* Chart Cards */
         .chart-card {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             margin-bottom: 2rem;
         }
         
-        .chart-header {
+        /* Card Headers */
+        .card-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
+        }
+        
+        .chart-header {
             margin-bottom: 1.5rem;
         }
         
-        .chart-title {
+        .card-title {
             font-size: 1.125rem;
             font-weight: 600;
             color: var(--dark);
@@ -364,24 +436,12 @@
         
         /* Tables */
         .table-card {
-            background: white;
-            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         
         .table-header {
             padding: 1.5rem;
             border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .table-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: var(--dark);
         }
         
         .table-responsive {
@@ -499,19 +559,19 @@
             transition: width 0.3s ease;
         }
         
-        .progress-bar.primary {
+        .progress-bar.variant-primary {
             background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
         }
         
-        .progress-bar.success {
+        .progress-bar.variant-success {
             background: linear-gradient(90deg, var(--success) 0%, #059669 100%);
         }
         
-        .progress-bar.warning {
+        .progress-bar.variant-warning {
             background: linear-gradient(90deg, var(--warning) 0%, #d97706 100%);
         }
         
-        .progress-bar.info {
+        .progress-bar.variant-info {
             background: linear-gradient(90deg, var(--info) 0%, #0891b2 100%);
         }
     </style>
@@ -580,16 +640,16 @@
                     <div class="nav-section-title">Gestion du contenu</div>
                     
                     <div class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('administrateur.categories.*') ? 'active' : '' }}" href="{{ route('administrateur.categories.index') }}">
-                            <i class="fas fa-folder"></i>
-                            <span>Catégories</span>
+                        <a class="nav-link {{ request()->routeIs('administrateur.equipments.*') ? 'active' : '' }}" href="{{ route('administrateur.equipments.index') }}">
+                            <i class="fas fa-wrench"></i>
+                            <span>Équipements</span>
                         </a>
                     </div>
                     
                     <div class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('administrateur.skills.*') ? 'active' : '' }}" href="{{ route('administrateur.skills.index') }}">
-                            <i class="fas fa-tools"></i>
-                            <span>Compétences</span>
+                        <a class="nav-link {{ request()->routeIs('administrateur.announcements.*') ? 'active' : '' }}" href="{{ route('administrateur.announcements.index') }}">
+                            <i class="fas fa-bullhorn"></i>
+                            <span>Annonces</span>
                         </a>
                     </div>
                     
@@ -624,32 +684,12 @@
                         </a>
                     </div>
                     
-                    <div class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('administrateur.client-requests.*') ? 'active' : '' }}" href="{{ route('administrateur.client-requests.index') }}">
-                            <i class="fas fa-clipboard-list"></i>
-                            <span>Demandes clients</span>
-                            @php
-                                $activeRequestsCount = \App\Models\ClientRequest::where('status', 'active')->count();
-                            @endphp
-                            @if($activeRequestsCount > 0)
-                                <span class="badge-notification">{{ $activeRequestsCount }}</span>
-                            @endif
-                        </a>
-                    </div>
                     
-                    <div class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('administrateur.offers.*') ? 'active' : '' }}" href="{{ route('administrateur.offers.index') }}">
-                            <i class="fas fa-handshake"></i>
-                            <span>Offres</span>
-                            @php
-                                $pendingOffersCount = \App\Models\Offer::where('status', 'pending')->count();
-                            @endphp
-                            @if($pendingOffersCount > 0)
-                                <span class="badge-notification">{{ $pendingOffersCount }}</span>
-                            @endif
-                        </a>
-                    </div>
+                    
+
                 </div>
+                
+                
                 
                 <div class="nav-section">
                     <div class="nav-section-title">Communication</div>
@@ -682,7 +722,7 @@
                 </div>
                 
                 <div class="nav-section">
-                    <div class="nav-section-title">Modération</div>
+                    <div class="nav-section-title">Signalements</div>
                     
                     <div class="nav-item">
                         <a class="nav-link {{ request()->routeIs('administrateur.reports.urgent-sales.*') ? 'active' : '' }}" href="{{ route('administrateur.reports.urgent-sales.index') }}">
@@ -711,11 +751,24 @@
                     </div>
                     
                     <div class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('administrateur.reports.services.*') ? 'active' : '' }}" href="{{ route('administrateur.reports.services.index') }}">
+                            <i class="fas fa-briefcase"></i>
+                            <span>Signalements Services</span>
+                            @php
+                                $pendingServiceReports = \App\Models\ServiceReport::where('status', 'pending')->count();
+                            @endphp
+                            @if($pendingServiceReports > 0)
+                                <span class="badge-notification">{{ $pendingServiceReports }}</span>
+                            @endif
+                        </a>
+                    </div>
+                    
+                    <div class="nav-item">
                         <a class="nav-link {{ request()->routeIs('administrateur.reports.all.*') ? 'active' : '' }}" href="{{ route('administrateur.reports.all.index') }}">
                             <i class="fas fa-shield-alt"></i>
                             <span>Tous les signalements</span>
                             @php
-                                $totalPendingReports = \App\Models\UrgentSaleReport::where('status', 'pending')->count() + \App\Models\EquipmentReport::where('status', 'pending')->count();
+                                $totalPendingReports = \App\Models\UrgentSaleReport::where('status', 'pending')->count() + \App\Models\EquipmentReport::where('status', 'pending')->count() + \App\Models\ServiceReport::where('status', 'pending')->count();
                             @endphp
                             @if($totalPendingReports > 0)
                                 <span class="badge-notification">{{ $totalPendingReports }}</span>

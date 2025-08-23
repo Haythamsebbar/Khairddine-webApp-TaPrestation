@@ -9,7 +9,7 @@
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900 mb-2">🔍 Parcourir les prestataires</h1>
+                    <h1 class="text-2xl font-bold text-gray-900 mb-2">Parcourir les prestataires</h1>
                     <p class="text-gray-600">Trouvez le prestataire parfait pour vos besoins</p>
                 </div>
                 <div class="mt-4 lg:mt-0">
@@ -21,8 +21,19 @@
         </div>
 
         <!-- Filtres et recherche -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <form method="GET" action="{{ route('client.browse.prestataires') }}" class="space-y-4">
+        <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6 mb-8">
+            <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div class="text-center sm:text-left">
+                    <h2 class="text-2xl font-bold text-blue-800 mb-1">Filtrer les prestataires</h2>
+                    <p class="text-sm text-blue-600">Affinez votre recherche pour trouver le prestataire parfait</p>
+                </div>
+                <button type="button" id="toggleFilters" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center text-sm sm:text-base">
+                    <span id="filterButtonText">Afficher les filtres</span>
+                    <i class="fas fa-chevron-down ml-2" id="filterChevron"></i>
+                </button>
+            </div>
+            
+            <form method="GET" action="{{ route('client.browse.prestataires') }}" class="space-y-6" id="filtersForm" style="display: none;">
                 <!-- Barre de recherche -->
                 <div class="flex flex-col lg:flex-row gap-4">
                     <div class="flex-1">
@@ -33,7 +44,7 @@
                     </div>
                     <div class="flex-shrink-0 flex items-end">
                         <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                            🔍 Rechercher
+                            Rechercher
                         </button>
                     </div>
                 </div>
@@ -138,7 +149,7 @@
                         @if($prestataire->user->is_online)
                             <div class="absolute top-3 right-3">
                                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                    🟢 En ligne
+                                    En ligne
                                 </span>
                             </div>
                         @endif
@@ -208,7 +219,7 @@
                         <!-- Prix et localisation -->
                         <div class="flex items-center justify-between mb-4">
                             <div class="text-sm text-gray-600">
-                                📍 {{ $prestataire->user->ville ?? 'Non spécifié' }}
+                                {{ $prestataire->user->ville ?? 'Non spécifié' }}
                             </div>
                             <!-- Tarif horaire supprimé pour des raisons de confidentialité -->
                         </div>
@@ -226,9 +237,9 @@
                                             class="px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors
                                                    {{ $prestataire->isFollowedBy(auth()->user()) ? 'bg-red-50 border-red-300 text-red-600' : 'text-gray-600' }}">
                                         @if($prestataire->isFollowedBy(auth()->user()))
-                                            💔
+                                            Retirer
                                         @else
-                                            ❤️
+                                            Suivre
                                         @endif
                                     </button>
                                 @endif
@@ -240,7 +251,7 @@
                 <div class="col-span-full">
                     <div class="bg-white rounded-lg shadow-md p-12 text-center">
                         <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <span class="text-gray-400 text-2xl">🔍</span>
+                            <span class="text-gray-400 text-2xl">Recherche</span>
                         </div>
                         <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun prestataire trouvé</h3>
                         <p class="text-gray-500 mb-4">Aucun prestataire ne correspond à vos critères de recherche.</p>
@@ -284,10 +295,10 @@ function toggleFollow(prestataireId) {
         if (data.success) {
             if (data.following) {
                 btn.classList.add('bg-red-50', 'border-red-300', 'text-red-600');
-                btn.innerHTML = '💔';
+                btn.innerHTML = 'Retirer';
             } else {
                 btn.classList.remove('bg-red-50', 'border-red-300', 'text-red-600');
-                btn.innerHTML = '❤️';
+                btn.innerHTML = 'Suivre';
             }
         }
     })
@@ -299,3 +310,32 @@ function toggleFollow(prestataireId) {
 @endif
 @endauth
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleButton = document.getElementById('toggleFilters');
+        const filtersForm = document.getElementById('filtersForm');
+        const buttonText = document.getElementById('filterButtonText');
+        const chevron = document.getElementById('filterChevron');
+        
+        let filtersVisible = false;
+        
+        toggleButton.addEventListener('click', function() {
+            filtersVisible = !filtersVisible;
+            
+            if (filtersVisible) {
+                filtersForm.style.display = 'block';
+                buttonText.textContent = 'Masquer les filtres';
+                chevron.classList.remove('fa-chevron-down');
+                chevron.classList.add('fa-chevron-up');
+            } else {
+                filtersForm.style.display = 'none';
+                buttonText.textContent = 'Afficher les filtres';
+                chevron.classList.remove('fa-chevron-up');
+                chevron.classList.add('fa-chevron-down');
+            }
+        });
+    });
+</script>
+@endpush

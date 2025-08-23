@@ -48,39 +48,35 @@
                             <input type="text" name="name" id="name" value="{{ old('name', $equipment->name) }}" required 
                                    placeholder="Ex: Perceuse sans fil Bosch" 
                                    class="mt-1 block w-full shadow-sm sm:text-sm border-green-300 rounded-md focus:ring-green-500 focus:border-green-500">
+                            <div class="flex justify-between items-center mt-1">
+                                <div>
+                                    <p id="name-warning" class="text-yellow-600 text-sm hidden">Nom trop court, précisez la marque ou le modèle</p>
+                                    <p id="name-tip" class="text-green-600 text-sm">Idéal : 5–9 mots, incluez marque et modèle</p>
+                                </div>
+                                <p class="text-gray-500 text-sm"><span id="name-count">0</span>/70</p>
+                            </div>
                         </div>
 
-                    <!-- Catégories -->
+                    <!-- Catégorie principale -->
                     <div>
-                        <label class="block text-sm font-medium text-green-700 mb-2">Catégories *</label>
-                        <div class="space-y-2 max-h-48 overflow-y-auto border border-green-300 rounded-md p-3">
-                            @foreach ($categories as $category)
-                                <div>
-                                    <label class="font-medium text-green-800">{{ $category->name }}</label>
-                                    @if($category->children->count() > 0)
-                                        <div class="ml-4 space-y-1 mt-1">
-                                            @foreach ($category->children as $child)
-                                                <label class="flex items-center">
-                                                    <input type="checkbox" name="categories[]" value="{{ $child->id }}" 
-                                                           {{ in_array($child->id, old('categories', $equipment->categories->pluck('id')->toArray())) ? 'checked' : '' }}
-                                                           class="h-4 w-4 text-green-600 border-green-300 rounded focus:ring-green-500">
-                                                    <span class="ml-2 text-sm text-green-700">{{ $child->name }}</span>
-                                                </label>
-                                            @endforeach
-                                        </div>
-                                    @else
-                                        <div class="ml-4">
-                                            <label class="flex items-center">
-                                                <input type="checkbox" name="categories[]" value="{{ $category->id }}" 
-                                                       {{ in_array($category->id, old('categories', $equipment->categories->pluck('id')->toArray())) ? 'checked' : '' }}
-                                                       class="h-4 w-4 text-green-600 border-green-300 rounded focus:ring-green-500">
-                                                <span class="ml-2 text-sm text-green-700">{{ $category->name }}</span>
-                                            </label>
-                                        </div>
-                                    @endif
-                                </div>
-                            @endforeach
-                        </div>
+                        <label for="category_id" class="block text-sm font-medium text-green-700 mb-2">Catégorie principale *</label>
+                        <select id="category_id" name="category_id" required class="mt-1 block w-full shadow-sm sm:text-sm border-green-300 rounded-md focus:ring-green-500 focus:border-green-500 @error('category_id') border-red-500 @enderror">
+                            <option value="">Sélectionnez une catégorie principale</option>
+                        </select>
+                        @error('category_id')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Sous-catégorie -->
+                    <div id="subcategory-group" style="display: none;">
+                        <label for="subcategory_id" class="block text-sm font-medium text-green-700 mb-2">Sous-catégorie</label>
+                        <select id="subcategory_id" name="subcategory_id" class="mt-1 block w-full shadow-sm sm:text-sm border-green-300 rounded-md focus:ring-green-500 focus:border-green-500 @error('subcategory_id') border-red-500 @enderror" disabled>
+                            <option value="">Veuillez d'abord choisir une catégorie</option>
+                        </select>
+                        @error('subcategory_id')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <!-- Description -->
@@ -89,6 +85,19 @@
                         <textarea id="description" name="description" rows="3" required 
                                   placeholder="Décrivez brièvement votre équipement, son état et ses caractéristiques principales" 
                                   class="mt-1 block w-full shadow-sm sm:text-sm border-green-300 rounded-md focus:ring-green-500 focus:border-green-500">{{ old('description', $equipment->description) }}</textarea>
+                        <div class="mt-1">
+                            <div id="description-error" class="text-red-500 text-sm hidden">
+                                <p class="font-medium">Description trop courte (minimum 50 caractères)</p>
+                                <p class="text-xs mt-1">Structure suggérée : État / Marque-modèle / Usage / Accessoires inclus</p>
+                            </div>
+                            <div id="description-warning" class="text-yellow-600 text-sm hidden">
+                                <p>Ajoutez état, année, accessoires, conditions d'utilisation</p>
+                            </div>
+                            <div class="flex justify-between items-center mt-1">
+                                <p class="text-green-600 text-sm">Recommandé : 150–400 caractères</p>
+                                <p class="text-gray-500 text-sm"><span id="description-count">0</span> caractères</p>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Spécifications techniques -->
@@ -350,4 +359,191 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Validation en temps réel pour le nom
+    const nameInput = document.getElementById('name');
+    const nameCount = document.getElementById('name-count');
+    const nameWarning = document.getElementById('name-warning');
+    const nameTip = document.getElementById('name-tip');
+
+    function updateNameValidation() {
+        const length = nameInput.value.length;
+        nameCount.textContent = length;
+        
+        // Réinitialiser les styles
+        nameInput.classList.remove('border-yellow-400', 'border-green-500', 'border-red-500');
+        nameInput.classList.add('border-green-300');
+        
+        if (length < 10) {
+            nameInput.classList.remove('border-green-300');
+            nameInput.classList.add('border-yellow-400');
+            nameWarning.classList.remove('hidden');
+            nameTip.classList.add('hidden');
+        } else if (length >= 10 && length <= 70) {
+            nameInput.classList.remove('border-green-300');
+            nameInput.classList.add('border-green-500');
+            nameWarning.classList.add('hidden');
+            nameTip.classList.remove('hidden');
+        } else {
+            nameInput.classList.remove('border-green-300');
+            nameInput.classList.add('border-red-500');
+            nameWarning.classList.add('hidden');
+            nameTip.classList.add('hidden');
+        }
+    }
+
+    // Validation en temps réel pour la description
+    const descriptionInput = document.getElementById('description');
+    const descriptionCount = document.getElementById('description-count');
+    const descriptionError = document.getElementById('description-error');
+    const descriptionWarning = document.getElementById('description-warning');
+
+    function updateDescriptionValidation() {
+        const length = descriptionInput.value.length;
+        descriptionCount.textContent = length;
+        
+        // Réinitialiser les styles
+        descriptionInput.classList.remove('border-red-500', 'border-yellow-400', 'border-green-500');
+        descriptionInput.classList.add('border-green-300');
+        
+        if (length < 50) {
+            descriptionInput.classList.remove('border-green-300');
+            descriptionInput.classList.add('border-red-500');
+            descriptionError.classList.remove('hidden');
+            descriptionWarning.classList.add('hidden');
+        } else if (length >= 50 && length <= 150) {
+            descriptionInput.classList.remove('border-green-300');
+            descriptionInput.classList.add('border-yellow-400');
+            descriptionError.classList.add('hidden');
+            descriptionWarning.classList.remove('hidden');
+        } else {
+            descriptionInput.classList.remove('border-green-300');
+            descriptionInput.classList.add('border-green-500');
+            descriptionError.classList.add('hidden');
+            descriptionWarning.classList.add('hidden');
+        }
+    }
+
+    // Événements
+    nameInput.addEventListener('input', updateNameValidation);
+    descriptionInput.addEventListener('input', updateDescriptionValidation);
+
+    // Initialisation
+    updateNameValidation();
+    updateDescriptionValidation();
+
+    // Validation lors de la soumission
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        if (descriptionInput.value.length < 50) {
+            e.preventDefault();
+            alert('La description doit contenir au moins 50 caractères.');
+            descriptionInput.focus();
+            return false;
+        }
+    });
+});
+</script>
+@endpush
+
+@push('scripts')
+<script>
+// Gestion des catégories et sous-catégories
+document.addEventListener('DOMContentLoaded', function() {
+    const categorySelect = document.getElementById('category_id');
+    const subcategorySelect = document.getElementById('subcategory_id');
+    
+    // Valeurs existantes de l'équipement
+    const currentCategoryId = '{{ old("category_id", $equipment->category_id ?? "") }}';
+    const currentSubcategoryId = '{{ old("subcategory_id", $equipment->subcategory_id ?? "") }}';
+    
+    if (categorySelect) {
+        loadMainCategories();
+        
+        // Gérer le changement de catégorie principale
+        categorySelect.addEventListener('change', function() {
+            const categoryId = this.value;
+            loadSubcategories(categoryId);
+        });
+    }
+});
+
+// Fonctions pour la gestion des catégories
+function loadMainCategories() {
+    fetch('/categories/main')
+        .then(response => response.json())
+        .then(categories => {
+            const categorySelect = document.getElementById('category_id');
+            const currentCategoryId = '{{ old("category_id", $equipment->category_id ?? "") }}';
+            
+            categorySelect.innerHTML = '<option value="">Sélectionnez une catégorie principale</option>';
+            
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.id;
+                option.textContent = category.name;
+                if (category.id == currentCategoryId) {
+                    option.selected = true;
+                }
+                categorySelect.appendChild(option);
+            });
+            
+            // Charger les sous-catégories si une catégorie est pré-sélectionnée
+            if (currentCategoryId) {
+                loadSubcategories(currentCategoryId);
+            }
+        })
+        .catch(error => {
+            console.error('Erreur lors du chargement des catégories:', error);
+        });
+}
+
+function loadSubcategories(categoryId) {
+    const subcategorySelect = document.getElementById('subcategory_id');
+    const subcategoryGroup = document.getElementById('subcategory-group');
+    const currentSubcategoryId = '{{ old("subcategory_id", $equipment->subcategory_id ?? "") }}';
+    
+    if (!categoryId) {
+        subcategoryGroup.style.display = 'none';
+        subcategorySelect.disabled = true;
+        subcategorySelect.innerHTML = '<option value="">Veuillez d\'abord choisir une catégorie</option>';
+        return;
+    }
+    
+    fetch(`/api/categories/${categoryId}/subcategories`)
+        .then(response => response.json())
+        .then(subcategories => {
+            subcategorySelect.innerHTML = '<option value="">Sélectionnez une sous-catégorie</option>';
+            
+            if (subcategories.length > 0) {
+                subcategories.forEach(subcategory => {
+                    const option = document.createElement('option');
+                    option.value = subcategory.id;
+                    option.textContent = subcategory.name;
+                    if (subcategory.id == currentSubcategoryId) {
+                        option.selected = true;
+                    }
+                    subcategorySelect.appendChild(option);
+                });
+                subcategoryGroup.style.display = 'block';
+                subcategorySelect.disabled = false;
+            } else {
+                subcategorySelect.innerHTML = '<option value="">Pas de sous-catégorie disponible</option>';
+                subcategoryGroup.style.display = 'block';
+                subcategorySelect.disabled = true;
+            }
+        })
+        .catch(error => {
+            console.error('Erreur lors du chargement des sous-catégories:', error);
+            subcategorySelect.innerHTML = '<option value="">Erreur de chargement</option>';
+            subcategoryGroup.style.display = 'block';
+            subcategorySelect.disabled = true;
+        });
+}
+</script>
+@endpush
+
 @endsection

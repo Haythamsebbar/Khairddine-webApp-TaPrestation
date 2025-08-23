@@ -43,7 +43,7 @@ class DashboardController extends Controller
 
 
         // --- Statistiques Détaillées ---
-        $totalClientRequests = \App\Models\ClientRequest::count();
+        $totalServices = \App\Models\Service::count();
         $totalMessages = \App\Models\Message::count();
         $satisfactionRate = \App\Models\Review::avg('rating'); // Supposant une colonne 'rating'
         $satisfactionRate = $satisfactionRate ? round($satisfactionRate / 5 * 100) : 0; // Converti en pourcentage
@@ -64,7 +64,7 @@ class DashboardController extends Controller
             'prestataireChange',
             'pendingChange',
             'serviceChange',
-            'totalClientRequests',
+            'totalServices',
             'totalMessages',
             'satisfactionRate',
             'pendingPrestataires',

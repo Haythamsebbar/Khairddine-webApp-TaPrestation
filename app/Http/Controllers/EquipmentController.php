@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Equipment;
 use Illuminate\Support\Facades\Log;
-use App\Models\EquipmentCategory;
+
 use App\Models\EquipmentRentalRequest;
 use App\Models\EquipmentReport;
 use Illuminate\Http\Request;
@@ -21,7 +21,7 @@ class EquipmentController extends Controller
     {
 
 
-        $query = Equipment::with(['prestataire.user', 'categories']);
+        $query = Equipment::with(['prestataire.user', 'category', 'subcategory']);
         
         // Recherche par mot-clé
         if ($request->filled('search')) {
@@ -35,8 +35,9 @@ class EquipmentController extends Controller
         
         // Filtrage par catégorie
         if ($request->filled('category')) {
-            $query->whereHas('categories', function ($q) use ($request) {
-                $q->where('equipment_categories.id', $request->category);
+            $query->where(function ($q) use ($request) {
+                $q->where('category_id', $request->category)
+                  ->orWhere('subcategory_id', $request->category);
             });
         }
         
@@ -69,9 +70,6 @@ class EquipmentController extends Controller
         }
         
         // Filtres spéciaux
-        if ($request->filled('delivery_included')) {
-            $query->where('delivery_included', true);
-        }
         
         if ($request->filled('featured')) {
             $query->where('featured', true);
@@ -83,16 +81,11 @@ class EquipmentController extends Controller
                 case 'available':
                     $query->where('status', 'active')->where('is_available', true);
                     break;
-                case 'delivery':
-                    $query->where('delivery_included', true);
-                    break;
+
             }
         }
         
-        // Filtrage par équipements urgents
-        if ($request->filled('urgent')) {
-            $query->where('is_urgent', true);
-        }
+
         
         // Tri
         $sortBy = $request->get('sort', 'created_at');
@@ -126,12 +119,12 @@ class EquipmentController extends Controller
         $equipments = $query->paginate(12)->withQueryString();
         
         // Données pour les filtres
-        $categories = EquipmentCategory::active()->main()->withCount('equipment')->get();
+        $categories = \App\Models\Category::whereNull('parent_id')->with('children')->orderBy('name')->get();
         $priceRange = Equipment::active()->selectRaw('MIN(price_per_day) as min_price, MAX(price_per_day) as max_price')->first();
         
         // Équipements en vedette
         $featuredEquipment = Equipment::active()->available()->featured()
-                                    ->with(['prestataire.user', 'categories'])
+                                    ->with(['prestataire.user', 'category', 'subcategory'])
                                     ->limit(6)
                                     ->get();
         
@@ -230,8 +223,7 @@ class EquipmentController extends Controller
             'unit_price' => $equipment->price_per_day,
             'total_amount' => $equipment->price_per_day * $durationDays,
             'security_deposit' => $equipment->security_deposit,
-            'delivery_fee' => $equipment->delivery_fee,
-            'final_amount' => ($equipment->price_per_day * $durationDays) + $equipment->delivery_fee,
+            'final_amount' => $equipment->price_per_day * $durationDays,
             'status' => 'pending',
         ]);
 
@@ -244,23 +236,20 @@ class EquipmentController extends Controller
     /**
      * Affiche les équipements d'une catégorie
      */
-    public function category(EquipmentCategory $category, Request $request)
+    public function category(\App\Models\Category $category, Request $request)
     {
-        if (!$category->is_active) {
-            abort(404);
-        }
-        
-        // Récupérer tous les IDs des catégories (incluant les sous-catégories)
-        $categoryIds = collect([$category->id]);
-        if ($category->hasChildren()) {
-            $categoryIds = $categoryIds->merge($category->getAllDescendants()->pluck('id'));
-        }
-        
+        // Récupérer les équipements de cette catégorie ou de ses sous-catégories
         $query = Equipment::active()->available()
-                         ->whereHas('categories', function ($q) use ($categoryIds) {
-                             $q->whereIn('equipment_categories.id', $categoryIds);
+                         ->where(function ($q) use ($category) {
+                             $q->where('category_id', $category->id)
+                               ->orWhere('subcategory_id', $category->id);
+                             
+                             // Si c'est une catégorie parent, inclure aussi les équipements des sous-catégories
+                             if ($category->children->count() > 0) {
+                                 $q->orWhereIn('subcategory_id', $category->children->pluck('id'));
+                             }
                          })
-                         ->with(['prestataire.user', 'categories']);
+                         ->with(['prestataire.user', 'category', 'subcategory']);
         
         // Appliquer les mêmes filtres que l'index
         if ($request->filled('search')) {
@@ -355,9 +344,9 @@ class EquipmentController extends Controller
             'end_date' => 'required|date|after:start_date',
             'start_time' => 'nullable|date_format:H:i',
             'end_time' => 'nullable|date_format:H:i',
-            'delivery_address' => 'nullable|string|max:500',
+
             'pickup_address' => 'nullable|string|max:500',
-            'delivery_required' => 'boolean',
+
             'pickup_required' => 'boolean',
             'client_message' => 'nullable|string|max:1000',
             'special_requirements' => 'nullable|string|max:500',
@@ -384,8 +373,7 @@ class EquipmentController extends Controller
         }
         
         $totalAmount = $equipment->calculatePrice($durationDays);
-        $deliveryFee = ($validated['delivery_required'] && !$equipment->delivery_included) ? $equipment->delivery_fee : 0;
-        $finalAmount = $totalAmount + $deliveryFee + $equipment->security_deposit;
+        $finalAmount = $totalAmount + $equipment->security_deposit;
         
         // Créer la demande
         $rentalRequest = EquipmentRentalRequest::create([
@@ -400,11 +388,11 @@ class EquipmentController extends Controller
             'unit_price' => $equipment->price_per_day,
             'total_amount' => $totalAmount,
             'security_deposit' => $equipment->security_deposit,
-            'delivery_fee' => $deliveryFee,
+
             'final_amount' => $finalAmount,
-            'delivery_address' => $validated['delivery_address'],
+
             'pickup_address' => $validated['pickup_address'],
-            'delivery_required' => $validated['delivery_required'] ?? false,
+
             'pickup_required' => $validated['pickup_required'] ?? false,
             'client_message' => $validated['client_message'],
             'special_requirements' => $validated['special_requirements'],
@@ -472,7 +460,7 @@ class EquipmentController extends Controller
             $priority = 'high';
         }
         
-        EquipmentReport::create([
+        $report = EquipmentReport::create([
             'equipment_id' => $equipment->id,
             'reporter_id' => $reporterId,
             'reporter_type' => $reporterType,
@@ -486,7 +474,9 @@ class EquipmentController extends Controller
             'user_agent' => $request->userAgent()
         ]);
         
-        // TODO: Envoyer notification aux administrateurs
+        // Envoyer notification aux administrateurs
+        $admins = \App\Models\User::where('role', 'admin')->get();
+        \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\EquipmentReportCreated($report));
         
         return redirect()->route('equipment.show', $equipment)
                         ->with('success', 'Votre signalement a été envoyé. Nous l\'examinerons dans les plus brefs délais.');

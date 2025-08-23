@@ -17,6 +17,10 @@ class ServiceController extends Controller
      */
     public function index(Request $request)
     {
+        // Sauvegarder les filtres en session pour pouvoir les récupérer lors du retour
+        $filters = $request->only(['search', 'category', 'price_min', 'price_max', 'location', 'verified_only', 'sort']);
+        session(['services_filters' => $filters]);
+        
         $query = Service::with(['prestataire', 'categories'])
             ->whereHas('prestataire', function($q) {
                 $q->where('is_approved', true);
@@ -92,7 +96,7 @@ class ServiceController extends Controller
         }
 
         $services = $query->paginate(12)->withQueryString();
-        $categories = Category::all();
+        $categories = Category::orderBy('name')->get();
         
         return view('services.index', compact('services', 'categories'));
     }
@@ -126,7 +130,7 @@ class ServiceController extends Controller
      */
     public function create()
     {
-        $categories = Category::all();
+        $categories = Category::orderBy('name')->get();
         return view('prestataire.services.create', compact('categories'));
     }
 
@@ -219,7 +223,7 @@ class ServiceController extends Controller
                 ->with('error', 'Accès non autorisé.');
         }
         
-        $categories = Category::all();
+        $categories = Category::orderBy('name')->get();
         return view('prestataire.services.edit', compact('service', 'categories'));
     }
 
@@ -285,5 +289,60 @@ class ServiceController extends Controller
         
         return redirect()->route('prestataire.services.index')
             ->with('success', 'Service supprimé avec succès.');
+    }
+    
+    /**
+     * Soumettre un signalement pour un service
+     */
+    public function submitReport(Request $request, Service $service)
+    {
+        $request->validate([
+            'category' => 'required|in:inappropriate_content,fraud,misleading_info,poor_service,pricing_issue,unavailable,spam,copyright,other',
+            'reason' => 'required|string|max:255',
+            'description' => 'required|string|min:10|max:1000',
+            'evidence_photos' => 'nullable|array|max:3',
+            'evidence_photos.*' => 'image|mimes:jpeg,png,jpg|max:2048'
+        ]);
+        
+        $reportData = [
+            'service_id' => $service->id,
+            'reason' => $request->reason,
+            'category' => $request->category,
+            'description' => $request->description,
+            'reporter_ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'priority' => 'medium'
+        ];
+        
+        // Gérer l'utilisateur connecté
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user->client) {
+                $reportData['reporter_id'] = $user->client->id;
+                $reportData['reporter_type'] = 'client';
+            } elseif ($user->prestataire) {
+                $reportData['reporter_id'] = $user->prestataire->id;
+                $reportData['reporter_type'] = 'prestataire';
+            }
+        } else {
+            $reportData['reporter_type'] = 'anonymous';
+        }
+        
+        // Gérer les photos de preuve
+        if ($request->hasFile('evidence_photos')) {
+            $photos = [];
+            foreach ($request->file('evidence_photos') as $photo) {
+                $path = $photo->store('service-reports', 'public');
+                $photos[] = $path;
+            }
+            $reportData['evidence_photos'] = $photos;
+        }
+        
+        \App\Models\ServiceReport::create($reportData);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Votre signalement a été soumis avec succès. Nous examinerons votre demande dans les plus brefs délais.'
+        ]);
     }
 }

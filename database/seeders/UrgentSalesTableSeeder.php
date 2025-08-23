@@ -18,7 +18,7 @@ class UrgentSalesTableSeeder extends Seeder
         // Créer des prestataires de test si nécessaire
         $prestataires = $this->createTestPrestataires();
         
-        // Créer des ventes urgentes de test
+        // Créer des annonces de test
         $this->createTestUrgentSales($prestataires);
     }
     
@@ -97,7 +97,6 @@ class UrgentSalesTableSeeder extends Seeder
                 'condition' => 'good',
                 'quantity' => 15,
                 'location' => 'Casablanca',
-                'is_urgent' => true,
                 'status' => 'active',
                 'photos' => ['laptop1.jpg', 'laptop2.jpg', 'laptop3.jpg'],
                 'prestataire_index' => 0
@@ -109,7 +108,6 @@ class UrgentSalesTableSeeder extends Seeder
                 'condition' => 'good',
                 'quantity' => 1,
                 'location' => 'Rabat',
-                'is_urgent' => true,
                 'status' => 'active',
                 'photos' => ['bureau1.jpg', 'bureau2.jpg'],
                 'prestataire_index' => 1
@@ -120,8 +118,7 @@ class UrgentSalesTableSeeder extends Seeder
                 'price' => 280.00,
                 'condition' => 'good',
                 'quantity' => 5,
-                'location' => 'Casablanca',
-                'is_urgent' => true,
+                'location' => 'Fès',
                 'status' => 'active',
                 'photos' => ['printer1.jpg', 'printer2.jpg'],
                 'prestataire_index' => 0
@@ -132,8 +129,7 @@ class UrgentSalesTableSeeder extends Seeder
                 'price' => 850.00,
                 'condition' => 'new',
                 'quantity' => 1,
-                'location' => 'Marrakech',
-                'is_urgent' => true,
+                'location' => 'Tanger',
                 'status' => 'active',
                 'photos' => ['tools1.jpg', 'tools2.jpg', 'tools3.jpg'],
                 'prestataire_index' => 2
@@ -145,7 +141,6 @@ class UrgentSalesTableSeeder extends Seeder
                 'condition' => 'good',
                 'quantity' => 20,
                 'location' => 'Rabat',
-                'is_urgent' => false,
                 'status' => 'active',
                 'photos' => ['screen1.jpg', 'screen2.jpg'],
                 'prestataire_index' => 1
@@ -157,7 +152,6 @@ class UrgentSalesTableSeeder extends Seeder
                 'condition' => 'good',
                 'quantity' => 1,
                 'location' => 'Casablanca',
-                'is_urgent' => true,
                 'status' => 'active',
                 'photos' => ['server1.jpg', 'server2.jpg'],
                 'prestataire_index' => 0
@@ -169,7 +163,6 @@ class UrgentSalesTableSeeder extends Seeder
                 'condition' => 'good',
                 'quantity' => 1,
                 'location' => 'Marrakech',
-                'is_urgent' => true,
                 'status' => 'active',
                 'photos' => ['soudure1.jpg', 'soudure2.jpg'],
                 'prestataire_index' => 2
@@ -180,8 +173,7 @@ class UrgentSalesTableSeeder extends Seeder
                 'price' => 95.00,
                 'condition' => 'good',
                 'quantity' => 25,
-                'location' => 'Rabat',
-                'is_urgent' => false,
+                'location' => 'Agadir',
                 'status' => 'active',
                 'photos' => ['phone1.jpg', 'phone2.jpg'],
                 'prestataire_index' => 1

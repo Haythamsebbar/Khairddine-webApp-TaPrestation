@@ -45,7 +45,7 @@ class EquipmentRentalFactory extends Factory
             'delivery_fee' => $deliveryFee,
             'total_amount' => $baseAmount + $deliveryFee,
             'final_amount' => $baseAmount + $deliveryFee,
-            'status' => $this->faker->randomElement(['confirmed', 'in_preparation', 'ready_for_delivery', 'delivered', 'in_progress', 'returned', 'completed', 'cancelled']),
+            'status' => $this->faker->randomElement(['confirmed', 'in_preparation', 'in_progress', 'returned', 'completed', 'cancelled']),
             'payment_status' => $this->faker->randomElement(['pending', 'paid', 'partially_paid', 'refunded', 'failed']),
             'delivery_address' => $this->faker->optional()->address(),
             'pickup_address' => $this->faker->optional()->address(),

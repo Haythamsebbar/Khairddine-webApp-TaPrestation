@@ -3,8 +3,9 @@
 @section('title', $urgentSale->title)
 
 @section('content')
-<div class="container mx-auto px-4 py-6">
-    <div class="max-w-6xl mx-auto">
+<div class="bg-red-50">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-6xl mx-auto">
         <!-- En-tête -->
         <div class="flex items-center justify-between mb-6">
             <div class="flex items-center">
@@ -12,7 +13,7 @@
                     <i class="fas fa-arrow-left text-xl"></i>
                 </a>
                 <div>
-                    <h1 class="text-3xl font-bold text-red-800">{{ $urgentSale->title }}</h1>
+                    <h1 class="text-4xl font-extrabold text-red-900 mb-2">{{ $urgentSale->title }}</h1>
                     <div class="flex items-center mt-2 space-x-4">
                         <span class="px-3 py-1 rounded-full text-sm font-semibold
                             @if($urgentSale->status === 'active') bg-green-100 text-green-800
@@ -21,13 +22,7 @@
                             {{ $urgentSale->status_label }}
                         </span>
                         
-                        @if($urgentSale->is_urgent)
-                            <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                                <i class="fas fa-bolt mr-1"></i>URGENT
-                            </span>
-                        @endif
-                        
-                        <span class="text-gray-500 text-sm">
+                        <span class="text-red-700 text-sm">
                             Publié le {{ $urgentSale->created_at->format('d/m/Y à H:i') }}
                         </span>
                     </div>
@@ -93,24 +88,55 @@
             </div>
         </div>
         
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Colonne principale -->
-            <div class="lg:col-span-2">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Colonne de gauche - Informations -->
+            <div class="space-y-6">
+                <!-- Informations principales -->
+                <div class="bg-white rounded-xl shadow-lg border border-red-200">
+                    <div class="p-6">
+                        <h2 class="text-2xl font-bold text-red-800 mb-5 border-b-2 border-red-200 pb-3">Informations</h2>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <span class="text-sm font-medium text-red-600">Prix</span>
+                                <div class="text-3xl font-extrabold text-red-600">{{ number_format($urgentSale->price, 0, ',', ' ') }} €</div>
+                            </div>
+                            
+                            <div>
+                                <span class="text-sm font-medium text-red-600">État</span>
+                                <div class="text-lg font-semibold text-red-900">{{ $urgentSale->condition_label }}</div>
+                            </div>
+                            
+                            <div>
+                                <span class="text-sm font-medium text-red-600">Quantité</span>
+                                <div class="text-lg font-semibold text-red-900">{{ $urgentSale->quantity }}</div>
+                            </div>
+                            
+                            <div>
+                                <span class="text-sm font-medium text-red-600">Localisation</span>
+                                <div class="text-lg font-semibold text-red-900">
+                                    <i class="fas fa-map-marker-alt text-red-400 mr-1"></i>{{ $urgentSale->location }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Photos -->
-                @if($urgentSale->photos && count($urgentSale->photos) > 0)
-                    <div class="bg-white rounded-lg shadow mb-6">
+                @if($urgentSale->photos && count(json_decode($urgentSale->photos, true) ?? []) > 0)
+                    <div class="bg-white rounded-xl shadow-lg border border-red-200">
                         <div class="p-6">
-                            <h2 class="text-xl font-semibold text-gray-900 mb-4">Photos</h2>
+                            <h2 class="text-2xl font-bold text-red-800 mb-5 border-b-2 border-red-200 pb-3">Photos</h2>
                             
                             <!-- Photo principale -->
                             <div class="mb-4">
-                                <img id="main-image" src="{{ Storage::url($urgentSale->photos[0]) }}" alt="{{ $urgentSale->title }}" class="w-full h-96 object-cover rounded-lg">
+                                <img id="main-image" src="{{ Storage::url(json_decode($urgentSale->photos, true)[0]) }}" alt="{{ $urgentSale->title }}" class="w-full h-64 object-cover rounded-lg">
                             </div>
                             
                             <!-- Miniatures -->
-                            @if(count($urgentSale->photos) > 1)
-                                <div class="grid grid-cols-4 md:grid-cols-6 gap-2">
-                                    @foreach($urgentSale->photos as $index => $photo)
+                            @if(count(json_decode($urgentSale->photos, true) ?? []) > 1)
+                                <div class="grid grid-cols-4 gap-2">
+                                    @foreach(json_decode($urgentSale->photos, true) ?? [] as $index => $photo)
                                         <img src="{{ Storage::url($photo) }}" alt="Photo {{ $index + 1 }}" class="w-full h-16 object-cover rounded cursor-pointer hover:opacity-75 transition-opacity {{ $index === 0 ? 'ring-2 ring-blue-500' : '' }}" onclick="changeMainImage('{{ Storage::url($photo) }}', this)">
                                     @endforeach
                                 </div>
@@ -120,122 +146,112 @@
                 @endif
                 
                 <!-- Description -->
-                <div class="bg-white rounded-lg shadow mb-6">
+                <div class="bg-white rounded-xl shadow-lg border border-red-200">
                     <div class="p-6">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Description</h2>
+                        <h2 class="text-2xl font-bold text-red-800 mb-5 border-b-2 border-red-200 pb-3">Description</h2>
                         <div class="prose max-w-none">
                             {!! nl2br(e($urgentSale->description)) !!}
                         </div>
                     </div>
                 </div>
                 
-                <!-- Statistiques détaillées -->
-                <div class="bg-white rounded-lg shadow">
-                    <div class="p-6">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Statistiques</h2>
-                        
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div class="text-center p-4 bg-gray-50 rounded-lg">
-                                <div class="text-2xl font-bold text-red-600">{{ $urgentSale->views_count }}</div>
-                                <div class="text-sm text-gray-600">Vues</div>
-                            </div>
-                            
-                            <div class="text-center p-4 bg-gray-50 rounded-lg">
-                                <div class="text-2xl font-bold text-red-600">{{ $urgentSale->contact_count }}</div>
-                                <div class="text-sm text-gray-600">Contacts</div>
-                            </div>
-                            
-                            <div class="text-center p-4 bg-gray-50 rounded-lg">
-                                <div class="text-2xl font-bold text-red-600">{{ $urgentSale->created_at->diffForHumans() }}</div>
-                                <div class="text-sm text-gray-600">En ligne depuis</div>
-                            </div>
-                            
-                            <div class="text-center p-4 bg-gray-50 rounded-lg">
-                                <div class="text-2xl font-bold text-red-600">{{ $urgentSale->updated_at->diffForHumans() }}</div>
-                                <div class="text-sm text-gray-600">Dernière modification</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                
+
+                
             </div>
             
-            <!-- Sidebar -->
-            <div class="lg:col-span-1">
-                <!-- Informations principales -->
-                <div class="bg-white rounded-lg shadow mb-6">
+            <!-- Colonne de droite - Messages reçus -->
+            <div>
+                <div>
+                    <!-- Statistiques détaillées -->
+                <div class="bg-white rounded-xl shadow-lg border border-red-200">
                     <div class="p-6">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Informations</h2>
+                        <h2 class="text-2xl font-bold text-red-800 mb-5 border-b-2 border-red-200 pb-3">Statistiques</h2>
                         
-                        <div class="space-y-4">
-                            <div>
-                                <span class="text-sm font-medium text-gray-600">Prix</span>
-                                <div class="text-3xl font-bold text-red-600">{{ number_format($urgentSale->price, 0, ',', ' ') }} €</div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="text-center p-4 bg-red-50 rounded-lg border border-red-200">
+                                <div class="text-2xl font-bold text-red-600">{{ $urgentSale->views_count }}</div>
+                                <div class="text-sm text-red-700">Vues</div>
                             </div>
                             
-                            <div>
-                                <span class="text-sm font-medium text-gray-600">État</span>
-                                <div class="text-lg font-semibold text-gray-900">{{ $urgentSale->condition_label }}</div>
+                            <div class="text-center p-4 bg-red-50 rounded-lg border border-red-200">
+                                <div class="text-2xl font-bold text-red-600">{{ $urgentSale->contact_count }}</div>
+                                <div class="text-sm text-red-700">Contacts</div>
                             </div>
                             
-                            <div>
-                                <span class="text-sm font-medium text-gray-600">Quantité</span>
-                                <div class="text-lg font-semibold text-gray-900">{{ $urgentSale->quantity }}</div>
+                            <div class="text-center p-4 bg-red-50 rounded-lg border border-red-200">
+                                <div class="text-2xl font-bold text-red-600">{{ $urgentSale->created_at->diffForHumans() }}</div>
+                                <div class="text-sm text-red-700">En ligne depuis</div>
                             </div>
                             
-                            <div>
-                                <span class="text-sm font-medium text-gray-600">Localisation</span>
-                                <div class="text-lg font-semibold text-gray-900">
-                                    <i class="fas fa-map-marker-alt text-gray-400 mr-1"></i>{{ $urgentSale->location }}
-                                </div>
+                            <div class="text-center p-4 bg-red-50 rounded-lg border border-red-200">
+                                <div class="text-2xl font-bold text-red-600">{{ $urgentSale->updated_at->diffForHumans() }}</div>
+                                <div class="text-sm text-red-700">Dernière modification</div>
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Contacts reçus -->
-                @if($urgentSale->contact_count > 0)
-                    <div class="bg-white rounded-lg shadow">
+                </div>
+                @if($relatedMessages->count() > 0)
+                    <div class="bg-white rounded-xl shadow-lg border border-red-200 h-fit">
                         <div class="p-6">
-                            <div class="flex justify-between items-center mb-4">
-                                <h2 class="text-xl font-semibold text-gray-900">Contacts reçus</h2>
-                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-semibold">{{ $urgentSale->contact_count }}</span>
+                            <div class="flex justify-between items-center mb-5">
+                                <h2 class="text-2xl font-bold text-red-800 border-b-2 border-red-200 pb-3">Messages reçus</h2>
+                                <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">{{ $relatedMessages->count() }}</span>
                             </div>
                             
-                            <a href="{{ route('prestataire.urgent-sales.contacts', $urgentSale) }}" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-3 rounded-lg transition duration-200 block">
-                                <i class="fas fa-envelope mr-2"></i>Voir tous les contacts
-                            </a>
-                            
-                            @if($recentContacts->count() > 0)
-                                <div class="mt-4 space-y-3">
-                                    <h3 class="text-sm font-medium text-gray-600">Contacts récents</h3>
-                                    @foreach($recentContacts as $contact)
-                                        <div class="border border-gray-200 rounded-lg p-3">
-                                            <div class="flex justify-between items-start mb-2">
-                                                <span class="font-medium text-gray-900">{{ $contact->user->name }}</span>
-                                                <span class="text-xs text-gray-500">{{ $contact->created_at->diffForHumans() }}</span>
+                            <div class="space-y-4 max-h-96 overflow-y-auto">
+                                @foreach($relatedMessages as $message)
+                                    <div class="bg-white border border-red-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-200">
+                                        <div class="flex justify-between items-start mb-3">
+                                            <div class="flex items-center">
+                                                <div class="w-10 h-10 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center mr-3 shadow-sm">
+                                                    <i class="fas fa-user text-white text-sm"></i>
+                                                </div>
+                                                <div>
+                                                    <span class="font-semibold text-red-900 text-base">{{ $message->sender->name }}</span>
+                                                    <div class="text-xs text-red-600 mt-1">
+                                                        <i class="fas fa-clock mr-1"></i>{{ $message->created_at->format('d/m/Y à H:i') }}
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <p class="text-sm text-gray-600 line-clamp-2">{{ $contact->message }}</p>
-                                            @if($contact->status === 'pending')
-                                                <span class="inline-block mt-2 bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold">
-                                                    En attente
-                                                </span>
-                                            @endif
+                                            <span class="text-xs text-red-500 bg-red-100 px-2 py-1 rounded-full">{{ $message->created_at->diffForHumans() }}</span>
                                         </div>
-                                    @endforeach
-                                </div>
-                            @endif
+                                        <div class="bg-red-50 rounded-lg p-4 mb-4 border border-red-200">
+                                            <p class="text-red-800 leading-relaxed">{{ $message->content }}</p>
+                                        </div>
+                                        <div class="flex justify-between items-center">
+                                            <div class="text-xs text-red-600">
+                                                <i class="fas fa-envelope mr-1"></i>Message reçu
+                                            </div>
+                                            <a href="#" 
+                               class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
+                                <i class="fas fa-reply mr-2"></i>Répondre
+                            </a>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                            
+                            <div class="mt-6 text-center">
+                                <a href="{{ route('messaging.index') }}" 
+                                   class="inline-flex items-center px-6 py-3 bg-red-100 hover:bg-red-200 text-red-700 hover:text-red-900 font-medium rounded-lg transition-colors duration-200 border border-red-300 hover:border-red-400">
+                                    <i class="fas fa-envelope mr-2"></i>Voir tous les messages
+                                </a>
+                            </div>
                         </div>
                     </div>
                 @else
-                    <div class="bg-white rounded-lg shadow">
+                    <div class="bg-white rounded-xl shadow-lg border border-red-200 h-fit">
                         <div class="p-6 text-center">
-                            <i class="fas fa-envelope text-gray-400 text-3xl mb-3"></i>
-                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Aucun contact</h3>
-                            <p class="text-gray-600 text-sm">Vous n'avez pas encore reçu de contact pour cette vente.</p>
+                            <i class="fas fa-comments text-red-400 text-4xl mb-4"></i>
+                            <h3 class="text-lg font-semibold text-red-900 mb-2">Aucun message</h3>
+                            <p class="text-red-700 text-sm">Vous n'avez pas encore reçu de message concernant cette vente.</p>
                         </div>
                     </div>
                 @endif
             </div>
+        </div>
         </div>
     </div>
 </div>

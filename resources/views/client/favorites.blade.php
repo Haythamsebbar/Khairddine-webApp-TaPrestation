@@ -103,7 +103,7 @@
                                     <i class="fas fa-eye mr-1"></i>
                                     Voir le profil
                                 </a>
-                                <a href="{{ route('client.messaging.index') }}" class="flex-1 bg-gray-100 text-gray-700 text-center py-2 px-4 rounded-lg hover:bg-gray-200 transition-all duration-200 text-sm font-medium border border-gray-300">
+                                <a href="{{ route('messaging.index') }}" class="flex-1 bg-gray-100 text-gray-700 text-center py-2 px-4 rounded-lg hover:bg-gray-200 transition-all duration-200 text-sm font-medium border border-gray-300">
                                     <i class="fas fa-envelope mr-1"></i>
                                     Contacter
                                 </a>

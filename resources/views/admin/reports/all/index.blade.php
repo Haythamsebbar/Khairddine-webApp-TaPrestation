@@ -7,8 +7,8 @@
     <!-- En-tête -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 mb-0 text-gray-800">Tous les signalements</h1>
-            <p class="text-muted">Vue d'ensemble de tous les signalements</p>
+            <h1 class="h3 mb-0 text-gray-800">Signalements d'annonces</h1>
+            <p class="text-muted">Vue d'ensemble de tous les signalements d'annonces</p>
         </div>
     </div>
 
@@ -124,7 +124,7 @@
                             <label for="type">Type</label>
                             <select name="type" id="type" class="form-control">
                                 <option value="">Tous les types</option>
-                                <option value="urgent_sales" {{ request('type') === 'urgent_sales' ? 'selected' : '' }}>Ventes urgentes</option>
+                                <option value="urgent_sales" {{ request('type') === 'urgent_sales' ? 'selected' : '' }}>Annonces</option>
                                 <option value="equipments" {{ request('type') === 'equipments' ? 'selected' : '' }}>Équipements</option>
                             </select>
                         </div>

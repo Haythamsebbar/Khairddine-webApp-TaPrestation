@@ -3,44 +3,42 @@
 @section('title', 'Détails de la demande de vérification')
 
 @section('content')
-<div class="min-h-screen" style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- En-tête avec navigation -->
-        <div class="mb-8">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <a href="{{ route('prestataire.verification.index') }}" 
-                       class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-all duration-300">
-                        <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                        </svg>
-                        Retour
-                    </a>
-                    <div>
-                        <h1 class="text-3xl font-bold text-gray-900">Demande de vérification #{{ $verificationRequest->id }}</h1>
-                        <p class="text-gray-600 mt-1">Détails de votre demande de vérification</p>
-                    </div>
+<div class="min-h-screen bg-orange-50">
+    <div class="container mx-auto py-4 sm:py-6 md:py-8 px-2 sm:px-4">
+        <!-- En-tête amélioré -->
+        <div class="mb-6 md:mb-8">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-orange-700 rounded-xl shadow-lg">
+                    <svg class="h-5 w-5 sm:h-6 sm:w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-orange-900 mb-1 sm:mb-2">
+                        Demande de vérification #{{ $verificationRequest->id }}
+                    </h1>
+                    <p class="text-sm sm:text-base md:text-lg text-orange-700">Détails de votre demande de vérification</p>
                 </div>
                 
-                <!-- Badge de statut -->
+                <!-- Badge de statut principal -->
                 <div class="flex-shrink-0">
                     @if($verificationRequest->isPending())
-                        <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-orange-100 text-orange-800">
-                            <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <span class="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-lg font-semibold bg-orange-100 text-orange-800">
+                            <svg class="w-4 h-4 sm:w-6 sm:h-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             En attente
                         </span>
                     @elseif($verificationRequest->isApproved())
-                        <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-orange-100 text-orange-800">
-                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <span class="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-lg font-semibold bg-orange-100 text-orange-800">
+                            <svg class="w-4 h-4 sm:w-6 sm:h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                             </svg>
                             Approuvée
                         </span>
                     @else
-                        <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-red-100 text-red-800">
-                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <span class="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-lg font-semibold bg-red-100 text-red-800">
+                            <svg class="w-4 h-4 sm:w-6 sm:h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
                             </svg>
                             Rejetée
@@ -48,22 +46,34 @@
                     @endif
                 </div>
             </div>
+            
+            <!-- Bouton retour -->
+            <div class="mt-4 sm:mt-6">
+                <a href="{{ route('prestataire.verification.index') }}" 
+                   class="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 border border-orange-300 rounded-xl text-xs sm:text-sm font-bold text-orange-700 bg-white hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    <span class="hidden sm:inline">Retour à la liste</span>
+                    <span class="sm:hidden">Retour</span>
+                </a>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-6 sm:mb-8">
             <!-- Informations de la demande -->
-            <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-8 hover:shadow-xl transition-all duration-300">
-                <div class="flex items-center mb-6">
+            <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-8 hover:shadow-xl transition-all duration-300">
+                <div class="flex items-center mb-4 sm:mb-6">
                     <div class="flex-shrink-0">
-                        <div class="flex items-center justify-center w-12 h-12 bg-orange-50 rounded-xl">
-                            <svg class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-orange-50 rounded-xl">
+                            <svg class="h-5 w-5 sm:h-6 sm:w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                         </div>
                     </div>
-                    <div class="ml-4">
-                        <h3 class="text-xl font-bold text-gray-900">Informations de la demande</h3>
-                        <p class="text-gray-600">Détails de votre soumission</p>
+                    <div class="ml-3 sm:ml-4">
+                        <h3 class="text-lg sm:text-xl font-bold text-gray-900">Informations de la demande</h3>
+                        <p class="text-sm sm:text-base text-gray-600">Détails de votre soumission</p>
                     </div>
                 </div>
                 
@@ -134,29 +144,29 @@
             </div>
 
             <!-- Statut de révision -->
-            <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-8 hover:shadow-xl transition-all duration-300">
-                <div class="flex items-center mb-6">
+            <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-8 hover:shadow-xl transition-all duration-300">
+                <div class="flex items-center mb-4 sm:mb-6">
                     <div class="flex-shrink-0">
-                        <div class="flex items-center justify-center w-12 h-12 
+                        <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 
                             @if($verificationRequest->isPending()) bg-orange-50 @elseif($verificationRequest->isApproved()) bg-orange-50 @else bg-red-50 @endif rounded-xl">
                             @if($verificationRequest->isPending())
-                                <svg class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg class="h-5 w-5 sm:h-6 sm:w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             @elseif($verificationRequest->isApproved())
-                                <svg class="h-6 w-6 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                                <svg class="h-5 w-5 sm:h-6 sm:w-6 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                                 </svg>
                             @else
-                                <svg class="h-6 w-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                <svg class="h-5 w-5 sm:h-6 sm:w-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
                                 </svg>
                             @endif
                         </div>
                     </div>
-                    <div class="ml-4">
-                        <h3 class="text-xl font-bold text-gray-900">Statut de révision</h3>
-                        <p class="text-gray-600">État d'avancement de votre demande</p>
+                    <div class="ml-3 sm:ml-4">
+                        <h3 class="text-lg sm:text-xl font-bold text-gray-900">Statut de révision</h3>
+                        <p class="text-sm sm:text-base text-gray-600">État d'avancement de votre demande</p>
                     </div>
                 </div>
                 

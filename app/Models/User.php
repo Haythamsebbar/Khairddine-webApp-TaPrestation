@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
-use App\Models\Offer;
+
 
 
 class User extends Authenticatable
@@ -85,13 +85,7 @@ class User extends Authenticatable
         return $this->role === $role;
     }
     
-    /**
-     * Get the offers submitted by the prestataire.
-     */
-    public function offers()
-    {
-        return $this->hasMany(Offer::class, 'prestataire_id');
-    }
+
     
     
 

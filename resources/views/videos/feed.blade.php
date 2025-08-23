@@ -481,7 +481,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Animation de cœur pour le double-clic
     function showHeartAnimation(slide) {
         const heart = document.createElement('div');
-        heart.innerHTML = '❤️';
+        heart.innerHTML = '&hearts;';
         heart.style.cssText = `
             position: absolute;
             top: 50%;

@@ -336,7 +336,7 @@ class BookingController extends Controller
             $equipmentRentalRequestsQuery->where('status', $request->status);
         }
         
-        // Récupérer les ventes urgentes
+        // Récupérer les annonces
         $urgentSalesQuery = $prestataire->urgentSales()->with(['contacts.user']);
         if ($request->filled('status') && (!$request->filled('type') || $request->type === 'urgent_sales')) {
             $urgentSalesQuery->where('status', $request->status);

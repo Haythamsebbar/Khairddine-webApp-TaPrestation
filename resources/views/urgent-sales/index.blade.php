@@ -1,21 +1,19 @@
 @extends('layouts.app')
 
-@section('title', 'Ventes urgentes - TaPrestation')
+@section('title', 'Annonces - TaPrestation')
 
 @section('content')
 <div class="min-h-screen bg-gray-50">
     <!-- Bannière d'en-tête -->
     <div class="bg-red-600 text-white relative overflow-hidden">
         <div class="absolute inset-0 opacity-10 bg-grid-pattern"></div>
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-16">
             <div class="text-center">
-                <div class="inline-flex items-center justify-center bg-white bg-opacity-25 rounded-full w-16 h-16 mb-4">
-                    <i class="fas fa-bolt text-3xl text-white"></i>
-                </div>
-                <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight">
-                    Ventes Urgentes
+                
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
+                    Annonces
                 </h1>
-                <p class="mt-4 text-xl text-red-100 max-w-2xl mx-auto">
+                <p class="mt-4 text-lg sm:text-xl text-red-100 max-w-2xl mx-auto px-4">
                     Saisissez les meilleures affaires avant qu'il ne soit trop tard.
                 </p>
             </div>
@@ -24,13 +22,13 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Section des filtres -->
-        <div class="bg-white rounded-xl shadow-lg border border-red-200 p-6 mb-8">
-            <div class="mb-4 flex items-center justify-between">
+        <div class="bg-white rounded-xl shadow-lg border border-red-200 p-4 sm:p-6 mb-8">
+            <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h3 class="text-2xl font-bold text-red-800 mb-2">Filtres de recherche</h3>
-                    <p class="text-lg text-red-700">Affinez votre recherche pour trouver les meilleures ventes urgentes</p>
+                    <h3 class="text-xl sm:text-2xl font-bold text-red-800 mb-2">Filtres de recherche</h3>
+                    <p class="text-base sm:text-lg text-red-700">Affinez votre recherche pour trouver les meilleures annonces</p>
                 </div>
-                <button type="button" id="toggleFilters" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center">
+                <button type="button" id="toggleFilters" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 sm:py-3 sm:px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center text-sm sm:text-base">
                     <span id="filterButtonText">Afficher les filtres</span>
                     <i class="fas fa-chevron-down ml-2" id="filterChevron"></i>
                 </button>
@@ -43,22 +41,31 @@
                 @endif
                 
                 <!-- Première ligne de filtres -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                     <!-- Mot-clé -->
                     <div>
                         <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Mot-clé</label>
                         <div class="relative">
                             <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                            <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="Ordinateur portable, etc." class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50">
+                            <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="Ordinateur portable, etc." class="w-full pl-10 pr-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50">
                         </div>
                     </div>
                     
-                    <!-- Ville -->
+                    <!-- Localisation -->
                     <div>
-                        <label for="city" class="block text-sm font-medium text-gray-700 mb-2">Ville</label>
-                        <div class="relative">
-                            <i class="fas fa-map-marker-alt absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                            <input type="text" name="city" id="city" value="{{ request('city') }}" placeholder="Paris, Lyon..." class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50">
+                        <label for="city" class="block text-sm font-medium text-gray-700 mb-2">Localisation</label>
+                        <div class="flex gap-2">
+                            <div class="relative flex-1">
+                                <i class="fas fa-map-marker-alt absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" name="city" id="city" value="{{ request('city') }}" placeholder="Ville ou code postal" class="w-full pl-10 pr-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50">
+                                <input type="hidden" name="latitude" id="latitude" value="{{ request('latitude') }}">
+                                <input type="hidden" name="longitude" id="longitude" value="{{ request('longitude') }}">
+                            </div>
+                            <button type="button" id="getLocationBtn" onclick="getMyLocation()" class="px-2 sm:px-4 py-2 sm:py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition duration-200 flex items-center justify-center min-w-[60px] sm:min-w-[120px] text-xs sm:text-sm" title="Utiliser ma position">
+                                <i class="fas fa-crosshairs mr-1 sm:mr-2"></i>
+                                <span class="hidden sm:inline">Ma position</span>
+                                <span class="sm:hidden">GPS</span>
+                            </button>
                         </div>
                     </div>
                     
@@ -67,7 +74,7 @@
                         <label for="condition" class="block text-sm font-medium text-gray-700 mb-2">État</label>
                         <div class="relative">
                             <i class="fas fa-cog absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                            <select name="condition" id="condition" class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50">
+                            <select name="condition" id="condition" class="w-full pl-10 pr-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50">
                                 <option value="">Tous les états</option>
                                 @foreach($conditions as $value => $label)
                                     <option value="{{ $value }}" {{ request('condition') == $value ? 'selected' : '' }}>{{ $label }}</option>
@@ -81,35 +88,46 @@
                         <label for="price_max" class="block text-sm font-medium text-gray-700 mb-2">Prix maximum</label>
                         <div class="relative">
                             <i class="fas fa-euro-sign absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                            <input type="number" name="price_max" id="price_max" value="{{ request('price_max') }}" placeholder="Prix max" min="0" class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50">
+                            <input type="number" name="price_max" id="price_max" value="{{ request('price_max') }}" placeholder="Prix max" min="0" class="w-full pl-10 pr-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50">
                         </div>
                     </div>
                 </div>
                 
                 <!-- Deuxième ligne de filtres -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                     <!-- Tri par -->
                     <div>
                         <label for="sort" class="block text-sm font-medium text-gray-700 mb-2">Trier par</label>
                         <div class="relative">
                             <i class="fas fa-sort absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                            <select name="sort" id="sort" class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50">
+                            <select name="sort" id="sort" onchange="handleSortChange()" class="w-full pl-10 pr-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50">
                                 <option value="">Pertinence</option>
                                 <option value="recent" {{ request('sort') == 'recent' ? 'selected' : '' }}>Plus récent</option>
                                 <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Prix croissant</option>
                                 <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Prix décroissant</option>
                                 <option value="urgent" {{ request('sort') == 'urgent' ? 'selected' : '' }}>Urgence</option>
+                                <option value="distance" {{ request('sort') == 'distance' ? 'selected' : '' }}>Distance</option>
                             </select>
                         </div>
                     </div>
                     
-                    <!-- Ventes urgentes uniquement -->
-                    <div class="flex items-center">
-                        <label class="flex items-center cursor-pointer">
-                            <input type="checkbox" name="urgent_only" value="1" {{ request('urgent_only') ? 'checked' : '' }} class="rounded border-gray-300 text-red-600 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50">
-                            <span class="ml-2 text-sm text-gray-700">Ventes urgentes uniquement</span>
-                        </label>
+                    <!-- Rayon de recherche -->
+                    <div>
+                        <label for="radius" class="block text-sm font-medium text-gray-700 mb-2">Rayon (km)</label>
+                        <div class="relative">
+                            <i class="fas fa-circle-notch absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <select name="radius" id="radius" onchange="handleRadiusChange()" class="w-full pl-10 pr-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg border-gray-300 shadow-sm focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50">
+                                <option value="" {{ request('radius') == '' ? 'selected' : '' }}>Tous</option>
+                                <option value="5" {{ request('radius') == '5' ? 'selected' : '' }}>5 km</option>
+                                <option value="10" {{ request('radius') == '10' ? 'selected' : '' }}>10 km</option>
+                                <option value="25" {{ request('radius') == '25' ? 'selected' : '' }}>25 km</option>
+                                <option value="50" {{ request('radius') == '50' ? 'selected' : '' }}>50 km</option>
+                                <option value="100" {{ request('radius') == '100' ? 'selected' : '' }}>100 km</option>
+                            </select>
+                        </div>
                     </div>
+                    
+                    
                     
                     <!-- Avec livraison -->
                     <div class="flex items-center">
@@ -122,16 +140,16 @@
                 
                 <!-- Boutons d'action -->
                 <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t-2 border-red-200">
-                    <button type="submit" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center">
+                    <button type="submit" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center text-sm sm:text-base">
                         Appliquer les filtres
                     </button>
                     
-                    <button type="button" onclick="clearFilters()" class="flex-1 bg-red-100 hover:bg-red-200 text-red-800 font-bold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
+                    <button type="button" onclick="clearFilters()" class="flex-1 bg-red-100 hover:bg-red-200 text-red-800 font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm sm:text-base">
                         Effacer tout
                     </button>
                     
                     @if(request()->anyFilled(['search', 'city', 'condition', 'price_max', 'sort', 'urgent_only', 'with_delivery']))
-                        <a href="{{ route('urgent-sales.index') }}" class="bg-white hover:bg-gray-50 text-red-600 border border-red-200 font-bold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
+                        <a href="{{ route('urgent-sales.index') }}" class="bg-white hover:bg-gray-50 text-red-600 border border-red-200 font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm sm:text-base">
                             Réinitialiser
                         </a>
                     @endif
@@ -139,15 +157,15 @@
             </form>
             
             <!-- Affichage des résultats -->
-            <div class="flex items-center justify-between pt-4 border-t-2 border-red-200 mt-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4 border-t-2 border-red-200 mt-6">
                 <div class="flex items-center gap-2">
-                    <span class="text-sm font-semibold text-red-800">Résultats :</span>
-                    <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-bold">
+                    <span class="text-xs sm:text-sm font-semibold text-red-800">Résultats :</span>
+                    <span class="px-2 sm:px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs sm:text-sm font-bold">
                         {{ $urgentSales->total() }} vente(s)
                     </span>
                 </div>
                 @if($urgentSales->total() > 0)
-                    <div class="text-sm font-semibold text-red-700">
+                    <div class="text-xs sm:text-sm font-semibold text-red-700">
                         {{ $urgentSales->pluck('prestataire_id')->unique()->count() }} prestataires actifs
                     </div>
                 @endif
@@ -157,24 +175,36 @@
         <!-- Résultats -->
         <div>
 
-                <!-- Ventes urgentes en vedette -->
+                <!-- Annonces en vedette -->
                 @if($featuredSales->count() > 0 && !request()->hasAny(['search', 'city', 'price_min', 'price_max', 'condition']))
-                    <div class="bg-gradient-to-r from-red-500 to-pink-600 rounded-lg shadow-lg p-6 mb-8 text-white">
-                        <h2 class="text-2xl font-bold mb-4 flex items-center">
-                            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="bg-gradient-to-r from-red-500 to-pink-600 rounded-lg shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 text-white">
+                        <h2 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 flex items-center">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                             </svg>
-                            Ventes urgentes du moment
+                            Annonces du moment
                         </h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                             @foreach($featuredSales as $sale)
-                                <a href="{{ route('urgent-sales.show', $sale) }}" class="bg-white/10 backdrop-blur-sm rounded-lg p-4 hover:bg-white/20 transition duration-200">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <span class="text-sm font-medium">{{ Str::limit($sale->title, 30) }}</span>
-                                        <span class="bg-white/20 px-2 py-1 rounded text-xs font-bold">URGENT</span>
+                                <a href="{{ route('urgent-sales.show', $sale) }}" class="bg-white/10 backdrop-blur-sm rounded-lg overflow-hidden hover:bg-white/20 transition duration-200">
+                                    <!-- Image -->
+                                    @if($sale->photos && count(json_decode($sale->photos, true) ?? []) > 0)
+                                    <div class="relative h-32 sm:h-40">
+                                        <img src="{{ Storage::url(json_decode($sale->photos, true)[0]) }}" alt="{{ $sale->title }}" class="w-full h-full object-cover">
+                                            <div class="absolute top-2 right-2">
+                                                <span class="bg-white/20 px-2 py-1 rounded text-xs font-bold whitespace-nowrap">URGENT</span>
+                                            </div>
+                                        </div>
+                                    @endif
+                                    
+                                    <!-- Contenu -->
+                                    <div class="p-3 sm:p-4">
+                                        <div class="mb-2">
+                                            <span class="text-xs sm:text-sm font-medium line-clamp-2">{{ $sale->title }}</span>
+                                        </div>
+                                        <div class="text-xl sm:text-2xl font-bold mb-1">{{ number_format($sale->price, 2) }}€</div>
+                                        <div class="text-xs sm:text-sm opacity-90 truncate">{{ $sale->prestataire->user->name }}</div>
                                     </div>
-                                    <div class="text-2xl font-bold">{{ number_format($sale->price, 2) }}€</div>
-                                    <div class="text-sm opacity-90">{{ $sale->prestataire->user->name }}</div>
                                 </a>
                             @endforeach
                         </div>
@@ -183,63 +213,68 @@
 
                 <!-- Liste des ventes -->
                 @if($urgentSales->count() > 0)
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                         @foreach($urgentSales as $sale)
-                            <div class="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden" data-lat="{{ $sale->prestataire->latitude }}" data-lon="{{ $sale->prestataire->longitude }}">
                                 <a href="{{ route('urgent-sales.show', $sale) }}" class="block">
                                     <!-- Image -->
-                                    <div class="relative h-48 bg-gray-200">
-                                        @if($sale->photos && count($sale->photos) > 0)
-                                            <img src="{{ Storage::url($sale->photos[0]) }}" alt="{{ $sale->title }}" class="w-full h-full object-cover">
+                                    <div class="relative">
+                                        @if($sale->photos && count(json_decode($sale->photos, true) ?? []) > 0)
+                            <img src="{{ Storage::url(json_decode($sale->photos, true)[0]) }}" alt="{{ $sale->title }}" class="w-full h-48 object-cover">
                                         @else
-                                            <div class="w-full h-full flex items-center justify-center">
-                                                <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                                </svg>
+                                            <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+                                                <i class="fas fa-image text-gray-400 text-3xl"></i>
                                             </div>
                                         @endif
                                         
-                                        @if($sale->is_urgent)
-                                            <div class="absolute top-3 left-3 bg-red-500 text-white px-2 py-1 rounded-md text-xs font-bold flex items-center gap-1">
-                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"></path>
-                                                </svg>
-                                                URGENT
-                                            </div>
-                                        @endif
-                                        
-                                        <div class="absolute top-3 right-3 bg-black/70 text-white px-2 py-1 rounded-md text-xs font-medium">
-                                            {{ ucfirst($sale->condition) }}
+                                        <!-- Badge urgent -->
+                                        <div class="absolute top-2 left-2">
+                                            <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                                                <i class="fas fa-bolt mr-1"></i>URGENT
+                                            </span>
                                         </div>
+                                        
+                                        <!-- Nombre de photos -->
+                                        @if($sale->photos && count(json_decode($sale->photos, true) ?? []) > 1)
+                                            <div class="absolute top-2 right-2 bg-black/50 text-white px-2 py-1 rounded-full text-xs">
+                                                <i class="fas fa-images mr-1"></i>{{ count(json_decode($sale->photos, true) ?? []) }}
+                                            </div>
+                                        @endif
                                     </div>
                                     
                                     <!-- Contenu -->
-                                    <div class="p-5">
-                                        <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2 text-lg">{{ $sale->title }}</h3>
-                                        <p class="text-gray-600 text-sm mb-4 line-clamp-2">{{ $sale->description }}</p>
+                                    <div class="p-4 sm:p-5">
+                                        <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2 text-base sm:text-lg">{{ $sale->title }}</h3>
+                                        <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">{{ $sale->description }}</p>
                                         
                                         <div class="flex items-center justify-between mb-3">
-                                            <div class="text-2xl font-bold text-red-600">{{ number_format($sale->price, 2) }}€</div>
+                                            <div class="text-xl sm:text-2xl font-bold text-red-600">{{ number_format($sale->price, 2) }}€</div>
                                             @if($sale->quantity > 1)
-                                                <div class="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-md">Qté: {{ $sale->quantity }}</div>
+                                                <div class="text-xs sm:text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-md">Qté: {{ $sale->quantity }}</div>
                                             @endif
                                         </div>
                                         
-                                       
+                                        <!-- Localisation -->
+                        @if($sale->location)
+                            <div class="flex items-center text-xs sm:text-sm text-gray-500 mb-3">
+                                <i class="fas fa-map-marker-alt mr-1"></i>
+                                <span>{{ $sale->location }}</span>
+                            </div>
+                        @endif
                                         
                                         <div class="pt-3 border-t border-gray-100">
                                             <div class="flex items-center justify-between">
-                                                <div class="flex items-center text-sm text-gray-600">
-                                                    <div class="w-8 h-8 bg-gray-300 rounded-full mr-2 flex items-center justify-center">
+                                                <div class="flex items-center text-xs sm:text-sm text-gray-600">
+                                                    <div class="w-6 h-6 sm:w-8 sm:h-8 bg-gray-300 rounded-full mr-2 flex items-center justify-center">
                                                         @if($sale->prestataire->user->avatar)
-                                                            <img src="{{ Storage::url($sale->prestataire->user->avatar) }}" alt="{{ $sale->prestataire->user->name }}" class="w-8 h-8 rounded-full object-cover">
+                                                            <img src="{{ Storage::url($sale->prestataire->user->avatar) }}" alt="{{ $sale->prestataire->user->name }}" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover">
                                                         @else
                                                             <span class="text-xs font-medium">{{ substr($sale->prestataire->user->name, 0, 1) }}</span>
                                                         @endif
                                                     </div>
                                                     <span class="truncate">{{ $sale->prestataire->user->name }}</span>
                                                 </div>
-                                                <button class="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 text-xs font-medium">
+                                                <button class="px-2 sm:px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 text-xs font-medium">
                                                     Contacter
                                                 </button>
                                             </div>
@@ -251,38 +286,42 @@
                     </div>
                     
                     <!-- Pagination -->
-                    <div class="mt-8">
-                        {{ $urgentSales->links() }}
+                    <div class="mt-8 md:mt-12">
+                        <div class="flex justify-center">
+                            <div class="w-full max-w-md md:max-w-none">
+                                {{ $urgentSales->links() }}
+                            </div>
+                        </div>
                     </div>
                 @else
                     <!-- Message d'état vide -->
-                    <div class="text-center py-16">
-                        <div class="max-w-md mx-auto">
-                            <div class="w-24 h-24 mx-auto mb-6 bg-red-100 rounded-full flex items-center justify-center">
-                                <svg class="w-12 h-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="text-center py-12 md:py-16">
+                        <div class="max-w-md mx-auto px-4">
+                            <div class="w-20 h-20 md:w-24 md:h-24 mx-auto mb-4 md:mb-6 bg-red-100 rounded-full flex items-center justify-center">
+                                <svg class="w-10 h-10 md:w-12 md:h-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
                             </div>
-                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Aucune vente urgente trouvée</h3>
-                            <p class="text-gray-600 mb-6">Nous n'avons trouvé aucune vente urgente correspondant à vos critères de recherche. Essayez de modifier vos filtres ou explorez toutes nos ventes.</p>
+                            <h3 class="text-lg md:text-xl font-semibold text-gray-900 mb-2">Aucune vente urgente trouvée</h3>
+                            <p class="text-sm md:text-base text-gray-600 mb-4 md:mb-6">Nous n'avons trouvé aucune vente urgente correspondant à vos critères de recherche. Essayez de modifier vos filtres ou explorez toutes nos ventes.</p>
                             <div class="flex flex-col sm:flex-row gap-3 justify-center">
                                 @if(request()->anyFilled(['search', 'city', 'condition']))
-                                    <a href="{{ route('urgent-sales.index') }}" class="inline-flex items-center px-6 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors duration-200">
-                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <a href="{{ route('urgent-sales.index') }}" class="inline-flex items-center px-4 md:px-6 py-2 md:py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors duration-200 text-sm md:text-base">
+                                        <svg class="w-4 h-4 md:w-5 md:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                                         </svg>
                                         Réinitialiser les filtres
                                     </a>
                                 @else
-                                    <a href="{{ route('urgent-sales.index') }}" class="inline-flex items-center px-6 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors duration-200">
-                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <a href="{{ route('urgent-sales.index') }}" class="inline-flex items-center px-4 md:px-6 py-2 md:py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors duration-200 text-sm md:text-base">
+                                        <svg class="w-4 h-4 md:w-5 md:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
                                         </svg>
                                         Voir toutes les ventes
                                     </a>
                                 @endif
-                                <a href="{{ route('home') }}" class="inline-flex items-center px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors duration-200">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <a href="{{ route('home') }}" class="inline-flex items-center px-4 md:px-6 py-2 md:py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors duration-200 text-sm md:text-base">
+                                    <svg class="w-4 h-4 md:w-5 md:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                                     </svg>
                                     Retour à l'accueil
@@ -334,6 +373,143 @@ function clearFilters() {
     window.location.href = '{{ route("urgent-sales.index") }}';
 }
 
+// Fonction pour calculer la distance entre deux points (formule de Haversine)
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Rayon de la Terre en kilomètres
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+}
+
+// Fonction pour afficher les distances
+function displayDistances() {
+    const userLat = parseFloat(document.getElementById('latitude').value);
+    const userLon = parseFloat(document.getElementById('longitude').value);
+    
+    if (!userLat || !userLon) return;
+    
+    document.querySelectorAll('[data-lat][data-lon]').forEach(element => {
+        const lat = parseFloat(element.getAttribute('data-lat'));
+        const lon = parseFloat(element.getAttribute('data-lon'));
+        
+        if (lat && lon) {
+            const distance = calculateDistance(userLat, userLon, lat, lon);
+            const distanceText = distance < 1 ? 
+                Math.round(distance * 1000) + ' m' : 
+                distance.toFixed(1) + ' km';
+            
+            // Créer ou mettre à jour le badge de distance
+            let distanceBadge = element.querySelector('.distance-badge');
+            if (!distanceBadge) {
+                distanceBadge = document.createElement('span');
+                distanceBadge.className = 'distance-badge inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 ml-2';
+                element.appendChild(distanceBadge);
+            }
+            distanceBadge.innerHTML = `<i class="fas fa-map-marker-alt mr-1"></i>${distanceText}`;
+        }
+    });
+}
+
+// Fonction pour obtenir la position de l'utilisateur
+function getMyLocation() {
+    const btn = document.getElementById('getLocationBtn');
+    const originalContent = btn.innerHTML;
+    
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1 sm:mr-2"></i><span class="hidden sm:inline">Localisation...</span><span class="sm:hidden">GPS</span>';
+    btn.disabled = true;
+    
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                
+                document.getElementById('latitude').value = lat;
+                document.getElementById('longitude').value = lon;
+                
+                // Géocodage inverse pour obtenir le nom de la ville
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&addressdetails=1`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.address) {
+                            const city = data.address.city || data.address.town || data.address.village || data.address.municipality || '';
+                            const postcode = data.address.postcode || '';
+                            const displayName = city + (postcode ? ` (${postcode})` : '');
+                            document.getElementById('city').value = displayName;
+                        }
+                        
+                        btn.innerHTML = originalContent;
+                        btn.disabled = false;
+                        
+                        // Afficher les distances
+                        displayDistances();
+                        
+                        // Soumettre automatiquement le formulaire si un rayon est sélectionné
+                        const radius = document.getElementById('radius').value;
+                        if (radius) {
+                            document.getElementById('filtersForm').submit();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur de géocodage:', error);
+                        btn.innerHTML = originalContent;
+                        btn.disabled = false;
+                        displayDistances();
+                    });
+            },
+            function(error) {
+                console.error('Erreur de géolocalisation:', error);
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+                alert('Impossible d\'obtenir votre position. Veuillez vérifier les autorisations de géolocalisation.');
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 300000
+            }
+        );
+    } else {
+        alert('La géolocalisation n\'est pas supportée par ce navigateur.');
+        btn.innerHTML = originalContent;
+        btn.disabled = false;
+    }
+}
+
+// Fonction pour gérer le changement de tri
+function handleSortChange() {
+    const sort = document.getElementById('sort').value;
+    if (sort === 'distance') {
+        const lat = document.getElementById('latitude').value;
+        const lon = document.getElementById('longitude').value;
+        if (!lat || !lon) {
+            alert('Veuillez d\'abord définir votre position pour trier par distance.');
+            document.getElementById('sort').value = '';
+            return;
+        }
+    }
+    document.getElementById('filtersForm').submit();
+}
+
+// Fonction pour gérer le changement de rayon
+function handleRadiusChange() {
+    const radius = document.getElementById('radius').value;
+    if (radius) {
+        const lat = document.getElementById('latitude').value;
+        const lon = document.getElementById('longitude').value;
+        if (!lat || !lon) {
+            alert('Veuillez d\'abord définir votre position pour utiliser la recherche par rayon.');
+            document.getElementById('radius').value = '';
+            return;
+        }
+    }
+    document.getElementById('filtersForm').submit();
+}
+
 // Initialisation au chargement de la page
 document.addEventListener('DOMContentLoaded', function() {
     const toggleButton = document.getElementById('toggleFilters');
@@ -342,12 +518,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Afficher les filtres si des paramètres sont présents
     const urlParams = new URLSearchParams(window.location.search);
     const hasFilters = Array.from(urlParams.keys()).some(key => 
-        ['search', 'city', 'condition', 'price_max', 'sort', 'urgent_only', 'with_delivery'].includes(key) && urlParams.get(key)
+        ['search', 'city', 'condition', 'price_max', 'sort', 'urgent_only', 'with_delivery', 'latitude', 'longitude', 'radius'].includes(key) && urlParams.get(key)
     );
     
     if (hasFilters) {
         toggleFilters();
     }
+    
+    // Afficher les distances si la position est disponible
+    displayDistances();
 });
 </script>
 

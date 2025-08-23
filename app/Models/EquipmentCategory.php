@@ -88,7 +88,7 @@ class EquipmentCategory extends Model
     public function children(): HasMany
     {
         return $this->hasMany(EquipmentCategory::class, 'parent_id')
-                    ->orderBy('sort_order');
+                    ->orderBy('name');
     }
 
     /**

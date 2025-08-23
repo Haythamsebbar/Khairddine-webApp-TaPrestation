@@ -120,7 +120,7 @@ class AgendaController extends Controller
                      str_contains(strtolower($booking->service->title ?? ''), 'vente')) {
                 $eventType = 'urgent_sale';
                 $icon = '⚡';
-                $color = '#ef4444'; // Rouge pour ventes urgentes
+                $color = '#ef4444'; // Rouge pour annonces
             }
             
             return [

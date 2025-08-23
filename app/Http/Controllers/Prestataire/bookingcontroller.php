@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Prestataire;
 
 use App\Http\Controllers\Controller;
+use App\Models\Booking;
+use App\Notifications\BookingConfirmedNotification;
+use App\Notifications\BookingRejectedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Booking;
+use Illuminate\Support\Facades\Notification;
 use App\Models\EquipmentRentalRequest;
 use App\Models\UrgentSale;
 
@@ -99,7 +102,7 @@ class BookingController extends Controller
             $equipmentRentalRequests = $query->orderBy('created_at', 'desc')->get();
         }
 
-        // Récupérer les ventes urgentes
+        // Récupérer les annonces
         if ($showUrgentSales) {
             $query = $prestataire->urgentSales();
             
@@ -143,7 +146,7 @@ class BookingController extends Controller
             $allRequests->push($request);
         }
         
-        // Ajouter les ventes urgentes
+        // Ajouter les annonces
         foreach ($urgentSales as $sale) {
             $sale->request_type = 'urgent_sale';
             $allRequests->push($sale);
@@ -207,6 +210,10 @@ class BookingController extends Controller
         
         $booking->update(['status' => 'confirmed']);
         
+        // Envoyer notification au client
+        $booking->load('client.user');
+        Notification::send($booking->client->user, new BookingConfirmedNotification($booking));
+        
         return redirect()->back()->with('success', 'Réservation acceptée avec succès.');
     }
 
@@ -225,10 +232,16 @@ class BookingController extends Controller
             return redirect()->back()->with('error', 'Cette réservation ne peut pas être refusée.');
         }
         
+        $rejectionReason = $request->get('rejection_reason');
+        
         $booking->update([
             'status' => 'rejected',
-            'rejection_reason' => $request->get('rejection_reason')
+            'rejection_reason' => $rejectionReason
         ]);
+        
+        // Envoyer notification au client
+        $booking->load('client.user');
+        Notification::send($booking->client->user, new BookingRejectedNotification($booking, $rejectionReason));
         
         return redirect()->back()->with('success', 'Réservation refusée.');
     }

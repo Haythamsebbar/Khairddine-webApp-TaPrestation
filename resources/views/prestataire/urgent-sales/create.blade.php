@@ -11,190 +11,116 @@
 @section('title', 'Ajouter une Vente Urgente')
 
 @section('content')
-<div class="bg-red-50">
-    <div class="container mx-auto px-4 py-8">
+<div class="bg-red-50 min-h-screen">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         <div class="max-w-4xl mx-auto">
             <!-- En-tête -->
-            <div class="mb-8 text-center">
-                <h1 class="text-4xl font-extrabold text-red-900 mb-2">Ajouter une Vente Urgente</h1>
-                <p class="text-lg text-red-700">Créez une nouvelle annonce pour votre vente urgente</p>
+            <div class="mb-6 sm:mb-8 text-center">
+                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-red-900 mb-2">Ajouter une Vente Urgente</h1>
+                <p class="text-base sm:text-lg text-red-700">Créez une nouvelle annonce pour votre vente urgente</p>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg border border-red-200 p-6 mb-6">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
+            <!-- Indicateur d'étapes -->
+            <div class="bg-white rounded-xl shadow-lg border border-red-200 p-4 sm:p-6 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3 sm:space-x-4">
                         <a href="{{ route('prestataire.urgent-sales.index') }}" class="text-red-600 hover:text-red-900 transition-colors duration-200">
-                            <i class="fas fa-arrow-left text-xl"></i>
+                            <i class="fas fa-arrow-left text-lg sm:text-xl"></i>
                         </a>
                         <div>
-                            <h2 class="text-xl font-bold text-red-900">Nouvelle vente urgente</h2>
-                            <p class="text-red-700">Remplissez les informations de votre vente</p>
+                            <h2 class="text-lg sm:text-xl font-bold text-red-900">Nouvelle vente urgente</h2>
+                            <p class="text-sm sm:text-base text-red-700 hidden sm:block">Étape <span id="current-step">1</span> sur 4</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Barre de progression -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2 sm:space-x-4 w-full">
+                        <!-- Étape 1 -->
+                        <div class="flex items-center">
+                            <div id="step-1-indicator" class="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center text-sm font-bold">
+                                1
+                            </div>
+                            <span class="ml-2 text-sm font-medium text-red-900 hidden sm:inline">Informations</span>
+                        </div>
+                        
+                        <!-- Ligne de connexion -->
+                        <div id="line-1" class="flex-1 h-1 bg-gray-300 mx-2"></div>
+                        
+                        <!-- Étape 2 -->
+                        <div class="flex items-center">
+                            <div id="step-2-indicator" class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-bold">
+                                2
+                            </div>
+                            <span class="ml-2 text-sm font-medium text-gray-600 hidden sm:inline">Localisation</span>
+                        </div>
+                        
+                        <!-- Ligne de connexion -->
+                        <div id="line-2" class="flex-1 h-1 bg-gray-300 mx-2"></div>
+                        
+                        <!-- Étape 3 -->
+                        <div class="flex items-center">
+                            <div id="step-3-indicator" class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-bold">
+                                3
+                            </div>
+                            <span class="ml-2 text-sm font-medium text-gray-600 hidden sm:inline">Description</span>
+                        </div>
+                        
+                        <!-- Ligne de connexion -->
+                        <div id="line-3" class="flex-1 h-1 bg-gray-300 mx-2"></div>
+                        
+                        <!-- Étape 4 -->
+                        <div class="flex items-center">
+                            <div id="step-4-indicator" class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-bold">
+                                4
+                            </div>
+                            <span class="ml-2 text-sm font-medium text-gray-600 hidden sm:inline">Révision</span>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Formulaire multi-étapes -->
             <form action="{{ route('prestataire.urgent-sales.store') }}" method="POST" enctype="multipart/form-data" id="urgent-sale-form">
                 @csrf
                 
-                <!-- Informations de base -->
-                <div class="bg-white rounded-xl shadow-lg border border-red-200 p-6 mb-6">
-                    <h2 class="text-xl font-bold text-red-900 mb-4 border-b border-red-200 pb-2">Informations de base</h2>
+                <!-- Étape 1: Informations de base -->
+                <div id="step-1" class="step-content">
+                    @include('prestataire.urgent-sales.steps.step1')
+                </div>
+                
+                <!-- Étape 2: Localisation -->
+                <div id="step-2" class="step-content hidden">
+                    @include('prestataire.urgent-sales.steps.step2')
+                </div>
+                
+                <!-- Étape 3: Description et photos -->
+                <div id="step-3" class="step-content hidden">
+                    @include('prestataire.urgent-sales.steps.step3')
+                </div>
+                
+                <!-- Étape 4: Révision et publication -->
+                <div id="step-4" class="step-content hidden">
+                    @include('prestataire.urgent-sales.steps.step4')
+                </div>
+                
+                <!-- Navigation -->
+                <div class="flex flex-col sm:flex-row justify-between items-center pt-6 sm:pt-8 border-t border-red-200 gap-4 sm:gap-0 bg-white rounded-xl shadow-lg border border-red-200 p-4 sm:p-6 mt-6">
+                    <button type="button" id="prev-btn" class="w-full sm:w-auto bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 px-4 sm:px-6 py-3 rounded-lg transition duration-200 font-medium hidden">
+                        <i class="fas fa-arrow-left mr-2"></i>Précédent
+                    </button>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <!-- Titre -->
-                        <div class="md:col-span-2">
-                            <label for="title" class="block text-sm font-medium text-red-700 mb-2">Titre de la vente *</label>
-                            <input type="text" id="title" name="title" value="{{ old('title') }}" required maxlength="255" class="w-full px-3 py-2 border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('title') border-red-500 @enderror">
-                            @error('title')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
+                    <div class="flex space-x-4">
+                        <a href="{{ route('prestataire.urgent-sales.index') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 px-4 sm:px-6 py-3 rounded-lg transition duration-200 font-medium">
+                            <i class="fas fa-times mr-2"></i>Annuler
+                        </a>
                         
-                        <!-- Prix -->
-                        <div>
-                            <label for="price" class="block text-sm font-medium text-red-700 mb-2">Prix (€) *</label>
-                            <input type="number" id="price" name="price" value="{{ old('price') }}" required min="0" step="0.01" class="w-full px-3 py-2 border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('price') border-red-500 @enderror">
-                            @error('price')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        
-                        <!-- État -->
-                        <div>
-                            <label for="condition" class="block text-sm font-medium text-red-700 mb-2">État *</label>
-                            <select id="condition" name="condition" required class="w-full px-3 py-2 border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('condition') border-red-500 @enderror">
-                                <option value="">Sélectionner l'état</option>
-                                <option value="new" {{ old('condition') === 'new' ? 'selected' : '' }}>Neuf</option>
-                                <option value="like_new" {{ old('condition') === 'like_new' ? 'selected' : '' }}>Comme neuf</option>
-                                <option value="good" {{ old('condition') === 'good' ? 'selected' : '' }}>Bon état</option>
-                                <option value="fair" {{ old('condition') === 'fair' ? 'selected' : '' }}>État correct</option>
-                                <option value="poor" {{ old('condition') === 'poor' ? 'selected' : '' }}>Mauvais état</option>
-                            </select>
-                            @error('condition')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        
-                        <!-- Catégorie -->
-                        <div>
-                            <label for="category_id" class="block text-sm font-medium text-red-700 mb-2">Catégorie *</label>
-                            <select id="category_id" name="category_id" required class="w-full px-3 py-2 border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('category_id') border-red-500 @enderror">
-                                <option value="">Choisissez une catégorie</option>
-                                @foreach ($categories as $category)
-                                    <optgroup label="{{ $category->name }}">
-                                        @if($category->children->count() > 0)
-                                            @foreach ($category->children as $child)
-                                                <option value="{{ $child->id }}" {{ old('category_id') == $child->id ? 'selected' : '' }}>{{ $child->name }}</option>
-                                            @endforeach
-                                        @else
-                                            <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-                                        @endif
-                                    </optgroup>
-                                @endforeach
-                            </select>
-                            @error('category_id')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        
-                        <!-- Quantité -->
-                        <div>
-                            <label for="quantity" class="block text-sm font-medium text-red-700 mb-2">Quantité *</label>
-                            <input type="number" id="quantity" name="quantity" value="{{ old('quantity', 1) }}" required min="1" class="w-full px-3 py-2 border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('quantity') border-red-500 @enderror">
-                            @error('quantity')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        
-                        <!-- Localisation -->
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-red-700 mb-2">Localisation *</label>
-                            <div class="map-container">
-                                <div id="urgentSaleMap" class="h-64 rounded-lg border border-gray-300"></div>
-                                <div class="mt-3">
-                                    <input type="text" id="selectedAddress" name="location" value="{{ old('location') }}" class="w-full px-3 py-2 border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('location') border-red-500 @enderror" placeholder="Cliquez sur la carte pour sélectionner une localisation" readonly>
-                                    <input type="hidden" id="selectedLatitude" name="latitude" value="{{ old('latitude') }}">
-                                    <input type="hidden" id="selectedLongitude" name="longitude" value="{{ old('longitude') }}">
-                                    @error('location')
-                                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                                    @enderror
-                                    @error('latitude')
-                                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                                    @enderror
-                                    @error('longitude')
-                                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                                    @enderror
-                                    <div class="flex gap-3 mt-3">
-                                        <button type="button" id="getCurrentLocationBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition duration-200"><i class="fas fa-location-arrow mr-2"></i>Ma position actuelle</button>
-                                        <button type="button" id="clearLocationBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition duration-200"><i class="fas fa-times mr-2"></i>Effacer la localisation</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Description -->
-                <div class="bg-white rounded-xl shadow-lg border border-red-200 p-6 mb-6">
-                    <h2 class="text-xl font-bold text-red-900 mb-4 border-b border-red-200 pb-2">Description</h2>
-                    <label for="description" class="block text-sm font-medium text-red-700 mb-2">Description détaillée *</label>
-                    <textarea id="description" name="description" required rows="6" maxlength="2000" class="w-full px-3 py-2 border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('description') border-red-500 @enderror" placeholder="Décrivez votre produit en détail : caractéristiques, raison de la vente, défauts éventuels...">{{ old('description') }}</textarea>
-                    <div class="flex justify-between mt-1">
-                        @error('description')
-                            <p class="text-red-500 text-sm">{{ $message }}</p>
-                        @else
-                            <p class="text-gray-500 text-sm">Décrivez votre produit de manière détaillée</p>
-                        @enderror
-                        <p class="text-gray-500 text-sm"><span id="description-count">0</span>/2000</p>
-                    </div>
-                </div>
-                
-                <!-- Photos -->
-                <div class="bg-white rounded-xl shadow-lg border border-red-200 p-6 mb-6">
-                    <h2 class="text-xl font-bold text-red-900 mb-4 border-b border-red-200 pb-2">Photos</h2>
-                    <div class="border-2 border-dashed border-red-300 rounded-lg p-6 text-center hover:border-red-400 transition-colors">
-                        <input type="file" id="photos" name="photos[]" multiple accept="image/*" class="hidden" onchange="previewImages(this)">
-                        <div id="upload-area" class="cursor-pointer" onclick="document.getElementById('photos').click()">
-                            <i class="fas fa-cloud-upload-alt text-red-400 text-4xl mb-4"></i>
-                            <p class="text-red-600 mb-2">Cliquez pour ajouter des photos ou glissez-déposez</p>
-                            <p class="text-red-500 text-sm">Maximum 5 photos, 5MB par photo</p>
-                        </div>
-                        
-                        <!-- Prévisualisation des images -->
-                        <div id="image-preview" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-4 hidden"></div>
-                    </div>
-                    @error('photos')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                    @error('photos.*')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                
-                <!-- Options -->
-                <div class="bg-white rounded-xl shadow-lg border border-red-200 p-6 mb-6">
-                    <h2 class="text-xl font-bold text-red-900 mb-4 border-b border-red-200 pb-2">Options</h2>
-                    <div class="flex items-center">
-                        <input type="checkbox" id="is_urgent" name="is_urgent" value="1" {{ old('is_urgent') ? 'checked' : '' }} class="h-4 w-4 text-red-600 focus:ring-red-500 border-red-300 rounded">
-                        <label for="is_urgent" class="ml-2 block text-sm text-red-900">
-                            <span class="font-medium">Vente urgente</span>
-                            <span class="text-red-600">- Mettre en avant cette vente (badge rouge "URGENT")</span>
-                        </label>
-                    </div>
-                </div>
-                
-                <!-- Actions -->
-                <div class="flex justify-between items-center pt-8 border-t border-red-200">
-                    <a href="{{ route('prestataire.urgent-sales.index') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 px-6 py-3 rounded-lg transition duration-200 font-medium">
-                        <i class="fas fa-arrow-left mr-2"></i>Annuler
-                    </a>
-                    
-                    <div class="flex gap-3">
-                        <button type="submit" name="status" value="inactive" class="bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 px-6 py-3 rounded-lg transition duration-200 font-medium">
-                            <i class="fas fa-save mr-2"></i>Enregistrer en brouillon
+                        <button type="button" id="next-btn" class="bg-red-600 hover:bg-red-700 text-white px-6 sm:px-8 py-3 rounded-lg transition duration-200 font-semibold shadow-lg hover:shadow-xl">
+                            Suivant<i class="fas fa-arrow-right ml-2"></i>
                         </button>
                         
-                        <button type="submit" name="status" value="active" class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg transition duration-200 font-semibold shadow-lg hover:shadow-xl">
+                        <button type="submit" id="submit-btn" class="bg-red-600 hover:bg-red-700 text-white px-6 sm:px-8 py-3 rounded-lg transition duration-200 font-semibold shadow-lg hover:shadow-xl hidden">
                             <i class="fas fa-check mr-2"></i>Publier maintenant
                         </button>
                     </div>
@@ -207,211 +133,217 @@
 
 @push('scripts')
 <script>
-// Initialisation de la carte Leaflet pour urgent sale
+// Variables globales
+let currentStep = 1;
+const totalSteps = 4;
 let urgentSaleMap = null;
 let currentMarker = null;
 
-function initializeUrgentSaleMap() {
-    const mapElement = document.getElementById('urgentSaleMap');
-    if (!mapElement) return;
-
-    const defaultLat = 33.5731;
-    const defaultLng = -7.5898;
-
-    urgentSaleMap = L.map('urgentSaleMap', {
-        center: [defaultLat, defaultLng],
-        zoom: 6
-    });
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-        maxZoom: 19
-    }).addTo(urgentSaleMap);
-
-    urgentSaleMap.on('click', function(e) {
-        const lat = e.latlng.lat;
-        const lng = e.latlng.lng;
-
-        if (currentMarker) urgentSaleMap.removeLayer(currentMarker);
-
-        currentMarker = L.marker([lat, lng]).addTo(urgentSaleMap);
-
-        document.getElementById('selectedLatitude').value = lat.toFixed(6);
-        document.getElementById('selectedLongitude').value = lng.toFixed(6);
-
-        reverseGeocode(lat, lng);
-    });
-
-    setTimeout(() => urgentSaleMap.invalidateSize(), 250);
-}
-
-async function reverseGeocode(lat, lng) {
-    try {
-        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1&accept-language=fr`);
-        const data = await response.json();
-        document.getElementById('selectedAddress').value = data.display_name || `Coordonnées: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-    } catch (error) {
-        document.getElementById('selectedAddress').value = `Coordonnées: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+// Gestion des étapes
+function showStep(step) {
+    // Masquer toutes les étapes
+    document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
+    
+    // Afficher l'étape courante
+    document.getElementById(`step-${step}`).classList.remove('hidden');
+    
+    // Mettre à jour l'indicateur d'étape
+    document.getElementById('current-step').textContent = step;
+    
+    // Mettre à jour les indicateurs visuels
+    updateStepIndicators(step);
+    
+    // Gérer les boutons de navigation
+    updateNavigationButtons(step);
+    
+    // Actions spécifiques par étape
+    if (step === 2 && !urgentSaleMap) {
+        setTimeout(initializeUrgentSaleMap, 100);
+    }
+    
+    if (step === 4) {
+        updateReviewStep();
     }
 }
 
-function clearLocation() {
-    if (currentMarker) urgentSaleMap.removeLayer(currentMarker);
-    currentMarker = null;
-    document.getElementById('selectedLatitude').value = '';
-    document.getElementById('selectedLongitude').value = '';
-    document.getElementById('selectedAddress').value = '';
-}
-
-function getCurrentLocation() {
-    if (!navigator.geolocation) {
-        alert('La géolocalisation n\'est pas supportée.');
-        return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-        position => {
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
-
-            urgentSaleMap.setView([lat, lng], 15);
-            if (currentMarker) urgentSaleMap.removeLayer(currentMarker);
-            currentMarker = L.marker([lat, lng]).addTo(urgentSaleMap);
-
-            document.getElementById('selectedLatitude').value = lat.toFixed(6);
-            document.getElementById('selectedLongitude').value = lng.toFixed(6);
-
-            reverseGeocode(lat, lng);
-        },
-        error => alert('Erreur de géolocalisation: ' + error.message)
-    );
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    initializeUrgentSaleMap();
-    document.getElementById('getCurrentLocationBtn').addEventListener('click', getCurrentLocation);
-    document.getElementById('clearLocationBtn').addEventListener('click', clearLocation);
-});
-// Compteur de caractères pour la description
-document.getElementById('description').addEventListener('input', function() {
-    const count = this.value.length;
-    document.getElementById('description-count').textContent = count;
-    
-    if (count > 2000) {
-        this.classList.add('border-red-500');
-    } else {
-        this.classList.remove('border-red-500');
-    }
-});
-
-// Prévisualisation des images
-function previewImages(input) {
-    const preview = document.getElementById('image-preview');
-    const uploadArea = document.getElementById('upload-area');
-    
-    preview.innerHTML = '';
-    
-    if (input.files && input.files.length > 0) {
-        preview.classList.remove('hidden');
-        uploadArea.classList.add('hidden');
+function updateStepIndicators(step) {
+    for (let i = 1; i <= totalSteps; i++) {
+        const indicator = document.getElementById(`step-${i}-indicator`);
+        const line = document.getElementById(`line-${i}`);
         
-        // Limiter à 5 images
-        const files = Array.from(input.files).slice(0, 5);
-        
-        files.forEach((file, index) => {
-            if (file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    const div = document.createElement('div');
-                    div.className = 'relative group';
-                    div.innerHTML = `
-                        <img src="${e.target.result}" class="w-full h-24 object-cover rounded-lg">
-                        <button type="button" onclick="removeImage(${index})" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    `;
-                    preview.appendChild(div);
-                };
-                
-                reader.readAsDataURL(file);
-            }
-        });
-        
-        // Ajouter un bouton pour ajouter plus d'images si moins de 5
-        if (files.length < 5) {
-            const addMore = document.createElement('div');
-            addMore.className = 'flex items-center justify-center h-24 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 transition-colors';
-            addMore.innerHTML = '<i class="fas fa-plus text-gray-400 text-xl"></i>';
-            addMore.onclick = () => document.getElementById('photos').click();
-            preview.appendChild(addMore);
-        }
-    } else {
-        preview.classList.add('hidden');
-        uploadArea.classList.remove('hidden');
-    }
-}
-
-function removeImage(index) {
-    const input = document.getElementById('photos');
-    const dt = new DataTransfer();
-    
-    for (let i = 0; i < input.files.length; i++) {
-        if (i !== index) {
-            dt.items.add(input.files[i]);
+        if (i < step) {
+            // Étapes complétées
+            indicator.className = 'w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-sm font-bold';
+            indicator.innerHTML = '<i class="fas fa-check"></i>';
+            if (line) line.className = 'flex-1 h-1 bg-green-600 mx-2';
+        } else if (i === step) {
+            // Étape courante
+            indicator.className = 'w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center text-sm font-bold';
+            indicator.textContent = i;
+            if (line) line.className = 'flex-1 h-1 bg-gray-300 mx-2';
+        } else {
+            // Étapes futures
+            indicator.className = 'w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-bold';
+            indicator.textContent = i;
+            if (line) line.className = 'flex-1 h-1 bg-gray-300 mx-2';
         }
     }
-    
-    input.files = dt.files;
-    previewImages(input);
 }
 
-// Validation du formulaire
-document.getElementById('urgent-sale-form').addEventListener('submit', function(e) {
+function updateNavigationButtons(step) {
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    // Bouton précédent
+    if (step === 1) {
+        prevBtn.classList.add('hidden');
+    } else {
+        prevBtn.classList.remove('hidden');
+    }
+    
+    // Boutons suivant/soumettre
+    if (step === totalSteps) {
+        nextBtn.classList.add('hidden');
+        submitBtn.classList.remove('hidden');
+    } else {
+        nextBtn.classList.remove('hidden');
+        submitBtn.classList.add('hidden');
+    }
+}
+
+function validateCurrentStep() {
+    switch (currentStep) {
+        case 1:
+            return validateStep1();
+        case 2:
+            return validateStep2();
+        case 3:
+            return validateStep3();
+        case 4:
+            return true; // Pas de validation spécifique pour la révision
+        default:
+            return true;
+    }
+}
+
+function validateStep1() {
     const title = document.getElementById('title').value.trim();
     const price = document.getElementById('price').value;
     const condition = document.getElementById('condition').value;
+    const parentCategory = document.getElementById('parent_category_id').value;
     const quantity = document.getElementById('quantity').value;
-    const location = document.getElementById('location').value.trim();
+    
+    if (!title) {
+        alert('Veuillez saisir un titre pour votre vente.');
+        document.getElementById('title').focus();
+        return false;
+    }
+    
+    if (title.length < 10) {
+        alert('Le titre doit contenir au moins 10 caractères.');
+        document.getElementById('title').focus();
+        return false;
+    }
+    
+    if (!price || parseFloat(price) <= 0) {
+        alert('Veuillez saisir un prix valide.');
+        document.getElementById('price').focus();
+        return false;
+    }
+    
+    if (!condition) {
+        alert('Veuillez sélectionner l\'état du produit.');
+        document.getElementById('condition').focus();
+        return false;
+    }
+    
+    if (!parentCategory) {
+        alert('Veuillez sélectionner une catégorie principale.');
+        document.getElementById('parent_category_id').focus();
+        return false;
+    }
+    
+    if (!quantity || parseInt(quantity) <= 0) {
+        alert('Veuillez saisir une quantité valide.');
+        document.getElementById('quantity').focus();
+        return false;
+    }
+    
+    return true;
+}
+
+function validateStep2() {
+    const location = document.getElementById('selectedAddress').value.trim();
+    const latitude = document.getElementById('selectedLatitude').value;
+    const longitude = document.getElementById('selectedLongitude').value;
+    
+    if (!location || !latitude || !longitude) {
+        alert('Veuillez sélectionner une localisation sur la carte.');
+        return false;
+    }
+    
+    return true;
+}
+
+function validateStep3() {
     const description = document.getElementById('description').value.trim();
     
-    if (!title || !price || !condition || !quantity || !location || !description) {
-        e.preventDefault();
-        alert('Veuillez remplir tous les champs obligatoires.');
-        return;
+    if (!description) {
+        alert('Veuillez saisir une description.');
+        document.getElementById('description').focus();
+        return false;
     }
     
-    if (parseFloat(price) <= 0) {
-        e.preventDefault();
-        alert('Le prix doit être supérieur à 0.');
-        return;
+    if (description.length < 50) {
+        alert('La description doit contenir au moins 50 caractères.');
+        document.getElementById('description').focus();
+        return false;
     }
     
-    if (parseInt(quantity) <= 0) {
-        e.preventDefault();
-        alert('La quantité doit être supérieure à 0.');
-        return;
-    }
+    return true;
+}
+
+function updateReviewStep() {
+    // Mettre à jour les informations dans l'étape de révision
+    document.getElementById('review-title').textContent = document.getElementById('title').value;
+    document.getElementById('review-price').textContent = document.getElementById('price').value + ' €';
+    document.getElementById('review-condition').textContent = document.getElementById('condition').selectedOptions[0].text;
+    document.getElementById('review-category').textContent = document.getElementById('parent_category_id').selectedOptions[0].text;
+    document.getElementById('review-quantity').textContent = document.getElementById('quantity').value;
+    document.getElementById('review-location').textContent = document.getElementById('selectedAddress').value;
+    document.getElementById('review-description').textContent = document.getElementById('description').value;
     
-    if (description.length > 2000) {
-        e.preventDefault();
-        alert('La description ne peut pas dépasser 2000 caractères.');
-        return;
+    // Sous-catégorie (optionnelle)
+    const subcategory = document.getElementById('category_id');
+    if (subcategory.value) {
+        document.getElementById('review-subcategory').textContent = subcategory.selectedOptions[0].text;
+        document.getElementById('review-subcategory-container').classList.remove('hidden');
+    } else {
+        document.getElementById('review-subcategory-container').classList.add('hidden');
+    }
+}
+
+// Événements de navigation
+document.getElementById('next-btn').addEventListener('click', function() {
+    if (validateCurrentStep()) {
+        if (currentStep < totalSteps) {
+            currentStep++;
+            showStep(currentStep);
+        }
     }
 });
 
-// Initialiser le compteur de caractères
+document.getElementById('prev-btn').addEventListener('click', function() {
+    if (currentStep > 1) {
+        currentStep--;
+        showStep(currentStep);
+    }
+});
+
+// Initialisation
 document.addEventListener('DOMContentLoaded', function() {
-    const description = document.getElementById('description');
-    document.getElementById('description-count').textContent = description.value.length;
+    showStep(1);
 });
 </script>
-@endpush
-
-@push('styles')
-<style>
-.group:hover .group-hover\:opacity-100 {
-    opacity: 1;
-}
-</style>
 @endpush

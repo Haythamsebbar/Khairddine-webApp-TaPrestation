@@ -120,7 +120,8 @@ class EquipmentReviewController extends Controller
         }
         
         $review->load([
-            'equipment.categories',
+            'equipment.category',
+            'equipment.subcategory',
             'client.user',
             'rental'
         ]);

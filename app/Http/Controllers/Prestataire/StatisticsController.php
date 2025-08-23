@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Prestataire;
 use App\Http\Controllers\Controller;
 use App\Models\Service;
 use App\Models\Review;
-use App\Models\Offer;
+
 use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -51,8 +51,7 @@ class StatisticsController extends Controller
         // Statistiques de période
         $periodStats = $this->getPeriodStats($user, $prestataire, $startDate);
         
-        // Évolution des offres par jour
-        $offersEvolution = $this->getOffersEvolution($user, $startDate);
+
         
         // Répartition des avis par note
         $reviewsDistribution = $this->getReviewsDistribution($prestataire);
@@ -66,7 +65,6 @@ class StatisticsController extends Controller
         return view('prestataire.statistics.index', [
             'generalStats' => $generalStats,
             'periodStats' => $periodStats,
-            'offersEvolution' => $offersEvolution,
             'reviewsDistribution' => $reviewsDistribution,
             'popularServices' => $popularServices,
             'messagingStats' => $messagingStats,
@@ -86,8 +84,6 @@ class StatisticsController extends Controller
         return [
             'total_services' => $prestataire->services()->count(),
             'active_services' => $prestataire->services()->where('status', 'active')->count(),
-            'total_offers' => Offer::where('prestataire_id', $user->id)->count(),
-            'accepted_offers' => Offer::where('prestataire_id', $user->id)->where('status', 'accepted')->count(),
             'total_reviews' => $prestataire->reviews()->count(),
             'average_rating' => round($prestataire->reviews()->avg('rating') ?: 0, 2),
             'member_since' => $user->created_at->format('d/m/Y'),
@@ -106,13 +102,6 @@ class StatisticsController extends Controller
     private function getPeriodStats($user, $prestataire, $startDate)
     {
         return [
-            'new_offers' => Offer::where('prestataire_id', $user->id)
-                ->where('created_at', '>=', $startDate)
-                ->count(),
-            'accepted_offers' => Offer::where('prestataire_id', $user->id)
-                ->where('status', 'accepted')
-                ->where('updated_at', '>=', $startDate)
-                ->count(),
             'new_reviews' => $prestataire->reviews()
                 ->where('created_at', '>=', $startDate)
                 ->count(),
@@ -125,40 +114,7 @@ class StatisticsController extends Controller
         ];
     }
 
-    /**
-     * Récupère l'évolution des offres par jour.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \Carbon\Carbon  $startDate
-     * @return array
-     */
-    private function getOffersEvolution($user, $startDate)
-    {
-        $offers = Offer::where('prestataire_id', $user->id)
-            ->where('created_at', '>=', $startDate)
-            ->select(DB::raw('DATE(created_at) as date'), DB::raw('count(*) as count'))
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get();
 
-        $evolution = [];
-        $current = $startDate->copy();
-        $end = Carbon::now();
-
-        while ($current <= $end) {
-            $dateStr = $current->format('Y-m-d');
-            $offer = $offers->firstWhere('date', $dateStr);
-            
-            $evolution[] = [
-                'date' => $current->format('d/m'),
-                'count' => $offer ? $offer->count : 0
-            ];
-            
-            $current->addDay();
-        }
-
-        return $evolution;
-    }
 
     /**
      * Récupère la répartition des avis par note.

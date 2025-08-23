@@ -6,26 +6,24 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use App\Models\ClientRequest;
+
 use App\Models\Booking;
 
 class MissionCompletedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    protected $clientRequest;
+
     protected $booking;
 
     /**
      * Create a new notification instance.
      *
-     * @param  \App\Models\ClientRequest  $clientRequest
      * @param  \App\Models\Booking  $booking
      * @return void
      */
-    public function __construct(ClientRequest $clientRequest, Booking $booking)
+    public function __construct(Booking $booking)
     {
-        $this->clientRequest = $clientRequest;
         $this->booking = $booking;
     }
 
@@ -37,7 +35,7 @@ class MissionCompletedNotification extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
-        return ['mail', 'database'];
+        return ['database'];
     }
 
     /**
@@ -53,7 +51,7 @@ class MissionCompletedNotification extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject('Mission marquée comme terminée')
             ->greeting('Bonjour ' . $notifiable->name . '!')
-            ->line('Le client a marqué la mission "' . $this->clientRequest->title . '" comme terminée.')
+            ->line('Le client a marqué la mission comme terminée.')
             ->line('Vous pouvez maintenant recevoir une évaluation pour cette mission.')
             ->action('Voir vos réservations', $url)
             ->line('Merci d\'utiliser notre plateforme!');
@@ -68,9 +66,9 @@ class MissionCompletedNotification extends Notification implements ShouldQueue
     public function toArray($notifiable)
     {
         return [
-            'client_request_id' => $this->clientRequest->id,
+
             'booking_id' => $this->booking->id,
-            'message' => 'Le client a marqué la mission "' . $this->clientRequest->title . '" comme terminée',
+            'message' => 'Le client a marqué la mission comme terminée',
             'type' => 'mission_completed',
             'url' => route('prestataire.bookings.index')
         ];

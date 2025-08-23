@@ -15,7 +15,7 @@ class AllReportsController extends Controller
      */
     public function index(Request $request)
     {
-        // Récupérer les signalements de ventes urgentes
+        // Récupérer les signalements d'annonces
         $urgentSaleReports = UrgentSaleReport::with(['urgentSale', 'user'])
             ->when($request->filled('status'), function ($query) use ($request) {
                 $query->where('status', $request->status);

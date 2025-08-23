@@ -106,7 +106,7 @@ class BookingsIndexTest extends TestCase
             ->assertSee('Toutes les activités')
             ->assertSee('Réservations')
             ->assertSee('Équipements')
-            ->assertSee('Ventes urgentes');
+            ->assertSee('Annonces');
     }
 
     /** @test */
@@ -345,7 +345,7 @@ class BookingsIndexTest extends TestCase
     /** @test */
     public function it_displays_urgent_sales_with_all_statuses()
     {
-        // Créer des ventes urgentes avec différents statuts
+        // Créer des annonces avec différents statuts
         $saleActive = UrgentSale::create([
             'prestataire_id' => $this->prestataire->id,
             'title' => 'Vente Urgente Test',

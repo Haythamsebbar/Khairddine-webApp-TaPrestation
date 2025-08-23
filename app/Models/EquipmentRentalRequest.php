@@ -24,8 +24,7 @@ class EquipmentRentalRequest extends Model
         'start_date',
         'end_date',
         'status',
-        'delivery_required',
-        'delivery_address',
+
         'request_number',
         'duration_days',
         'unit_price',
@@ -48,8 +47,7 @@ class EquipmentRentalRequest extends Model
         'daily_rate' => 'decimal:2',
         'total_amount' => 'decimal:2',
         'deposit_amount' => 'decimal:2',
-        'delivery_cost' => 'decimal:2',
-        'delivery_required' => 'boolean',
+
         'insurance_accepted' => 'boolean',
         'terms_accepted' => 'boolean',
         'responded_at' => 'datetime',
@@ -229,9 +227,7 @@ class EquipmentRentalRequest extends Model
     public function calculateTotalAmount()
     {
         $baseAmount = $this->daily_rate * $this->total_days;
-        $deliveryCost = $this->delivery_required ? ($this->delivery_cost ?? 0) : 0;
-        
-        return $baseAmount + $deliveryCost;
+        return $baseAmount;
     }
 
     /**

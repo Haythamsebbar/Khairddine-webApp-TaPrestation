@@ -17,7 +17,14 @@ class ServicePolicy
 
     public function update(User $user, Service $service)
     {
-        return $user->hasRole('prestataire') && 
+        return $user->role === 'prestataire' && 
+               $user->prestataire !== null && 
+               $user->prestataire->id === $service->prestataire_id;
+    }
+
+    public function delete(User $user, Service $service)
+    {
+        return $user->role === 'prestataire' && 
                $user->prestataire !== null && 
                $user->prestataire->id === $service->prestataire_id;
     }

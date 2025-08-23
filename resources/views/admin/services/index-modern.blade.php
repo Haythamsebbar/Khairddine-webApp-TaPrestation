@@ -1,338 +1,409 @@
 @extends('layouts.admin-modern')
 
-@section('page-title', 'Gestion des Services')
+@section('title', 'Gestion des Services - Administration')
 
 @section('content')
-<!-- Header Actions -->
-<div style="display: flex; justify-content: between; align-items: center; margin-bottom: 2rem;">
-    <div>
-        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--dark); margin: 0;">Services</h2>
-        <p style="color: var(--secondary); margin: 0.5rem 0 0 0;">Gérez tous les services publiés sur la plateforme</p>
+<div class="bg-blue-50">
+    <!-- Bannière d'en-tête -->
+    <div class="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-6 sm:mb-8 text-center">
+                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-blue-900 mb-2 leading-tight">
+                    Gestion des Services
+                </h1>
+                <p class="text-base sm:text-lg text-blue-700 max-w-2xl mx-auto">
+                    Gérez tous les services publiés sur la plateforme TaPrestation.
+                </p>
+            </div>
+            
+            <!-- Actions Header -->
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+                <div class="flex flex-wrap gap-2 sm:gap-3">
+                    <a href="{{ route('administrateur.services.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center text-sm sm:text-base">
+                        <i class="fas fa-plus mr-2"></i>
+                        Nouveau Service
+                    </a>
+                    <button class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm sm:text-base" onclick="toggleFilters()">
+                        <i class="fas fa-filter mr-2"></i>
+                        Filtres
+                    </button>
+                    <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center text-sm sm:text-base" onclick="exportServices()">
+                        <i class="fas fa-download mr-2"></i>
+                        Exporter
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
-    <div style="display: flex; gap: 1rem;">
-        <a href="{{ route('administrateur.services.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus"></i>
-            Nouveau Service
-        </a>
-        <button class="btn btn-outline" onclick="toggleFilters()">
-            <i class="fas fa-filter"></i>
-            Filtres
-        </button>
-    </div>
-</div>
 
-<!-- Stats Cards -->
-<div class="stats-grid" style="margin-bottom: 2rem;">
-    <div class="stat-card primary">
-        <div class="stat-header">
-            <div>
-                <div class="stat-title">Total Services</div>
-                <div class="stat-value">{{ $services->total() ?? 0 }}</div>
-                <div class="stat-change positive">
-                    <i class="fas fa-arrow-up"></i>
-                    <span>+8% ce mois</span>
+    <!-- Stats Cards -->
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 mb-6 sm:mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-xs sm:text-sm font-medium text-blue-600 uppercase tracking-wide">Total Services</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-blue-900 mt-1">{{ $services->total() ?? 0 }}</div>
+                        <div class="flex items-center mt-2 text-xs sm:text-sm text-green-600">
+                            <i class="fas fa-arrow-up mr-1"></i>
+                            <span>+8% ce mois</span>
+                        </div>
+                    </div>
+                    <div class="bg-blue-100 p-3 rounded-full">
+                        <i class="fas fa-briefcase text-blue-600 text-xl"></i>
+                    </div>
                 </div>
             </div>
-            <div class="stat-icon primary">
-                <i class="fas fa-briefcase"></i>
+            
+            <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-xs sm:text-sm font-medium text-green-600 uppercase tracking-wide">Services Actifs</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-blue-900 mt-1">{{ $services->where('status', 'active')->count() ?? 0 }}</div>
+                        <div class="flex items-center mt-2 text-xs sm:text-sm text-green-600">
+                            <i class="fas fa-arrow-up mr-1"></i>
+                            <span>+12% ce mois</span>
+                        </div>
+                    </div>
+                    <div class="bg-green-100 p-3 rounded-full">
+                        <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-xs sm:text-sm font-medium text-orange-600 uppercase tracking-wide">En Attente</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-blue-900 mt-1">{{ $services->where('status', 'pending')->count() ?? 0 }}</div>
+                        <div class="flex items-center mt-2 text-xs sm:text-sm text-red-600">
+                            <i class="fas fa-arrow-down mr-1"></i>
+                            <span>-3% ce mois</span>
+                        </div>
+                    </div>
+                    <div class="bg-orange-100 p-3 rounded-full">
+                        <i class="fas fa-clock text-orange-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-xs sm:text-sm font-medium text-blue-600 uppercase tracking-wide">Revenus Moyens</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-blue-900 mt-1">€€€</div>
+                        <div class="flex items-center mt-2 text-xs sm:text-sm text-green-600">
+                            <i class="fas fa-arrow-up mr-1"></i>
+                            <span>+5% ce mois</span>
+                        </div>
+                    </div>
+                    <div class="bg-blue-100 p-3 rounded-full">
+                        <i class="fas fa-euro-sign text-blue-600 text-xl"></i>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    
-    <div class="stat-card success">
-        <div class="stat-header">
-            <div>
-                <div class="stat-title">Services Actifs</div>
-                <div class="stat-value">{{ $services->where('status', 'active')->count() ?? 0 }}</div>
-                <div class="stat-change positive">
-                    <i class="fas fa-arrow-up"></i>
-                    <span>+12% ce mois</span>
-                </div>
-            </div>
-            <div class="stat-icon success">
-                <i class="fas fa-check-circle"></i>
-            </div>
-        </div>
-    </div>
-    
-    <div class="stat-card warning">
-        <div class="stat-header">
-            <div>
-                <div class="stat-title">En Attente de Validation</div>
-                <div class="stat-value">{{ $services->where('status', 'pending')->count() ?? 0 }}</div>
-                <div class="stat-change negative">
-                    <i class="fas fa-arrow-down"></i>
-                    <span>-3% ce mois</span>
-                </div>
-            </div>
-            <div class="stat-icon warning">
-                <i class="fas fa-clock"></i>
-            </div>
-        </div>
-    </div>
-    
-    <div class="stat-card info">
-        <div class="stat-header">
-            <div>
-                <div class="stat-title">Revenus Moyens</div>
-                <div class="stat-value"><!-- Prix moyen supprimé pour confidentialité --></div>
-                <div class="stat-change positive">
-                    <i class="fas fa-arrow-up"></i>
-                    <span>+5% ce mois</span>
-                </div>
-            </div>
-            <div class="stat-icon info">
-                <i class="fas fa-euro-sign"></i>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Filters Panel -->
-<div id="filtersPanel" class="chart-card" style="display: none; margin-bottom: 2rem;">
-    <div class="chart-header">
-        <div class="chart-title">Filtres de recherche</div>
-        <button class="btn btn-outline" onclick="clearFilters()">
-            <i class="fas fa-times"></i>
-            Effacer
-        </button>
-    </div>
-    <form action="{{ route('administrateur.services.index') }}" method="GET" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; padding: 1rem 0;">
-        <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark);">Titre du service</label>
-            <input type="text" name="title" value="{{ request('title') }}" placeholder="Rechercher par titre..." style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
-        </div>
-        
-        <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark);">Prestataire</label>
-            <input type="text" name="prestataire" value="{{ request('prestataire') }}" placeholder="Nom du prestataire..." style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
-        </div>
-        
-        <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark);">Catégorie</label>
-            <select name="category" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
-                <option value="">Toutes les catégories</option>
-                @foreach($categories ?? [] as $category)
-                    <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-                @endforeach
-            </select>
-        </div>
-        
-        <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark);">Statut</label>
-            <select name="status" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
-                <option value="">Tous</option>
-                <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Actif</option>
-                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>En attente</option>
-                <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactif</option>
-            </select>
-        </div>
-        
-        <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark);">Prix</label>
-            <div style="display: flex; gap: 0.5rem;">
-                <input type="number" name="price_min" value="{{ request('price_min') }}" placeholder="Min" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
-                <input type="number" name="price_max" value="{{ request('price_max') }}" placeholder="Max" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
+    <!-- Filters Panel -->
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
+        <div id="filtersPanel" class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6 mb-6 sm:mb-8" style="display: none;">
+            <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div class="text-center sm:text-left">
+                    <h3 class="text-xl sm:text-2xl font-bold text-blue-800 mb-1 sm:mb-2">Filtres de recherche</h3>
+                    <p class="text-sm sm:text-base lg:text-lg text-blue-700">Affinez votre recherche pour trouver le service parfait</p>
+                </div>
+                <button class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm sm:text-base" onclick="clearFilters()">
+                    <i class="fas fa-times mr-2"></i>
+                    Effacer tout
+                </button>
             </div>
+            
+            <form action="{{ route('administrateur.services.index') }}" method="GET" class="space-y-4 sm:space-y-6">
+                <!-- Première ligne de filtres -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                    <!-- Titre du service -->
+                    <div>
+                        <label for="title" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Titre du service</label>
+                        <div class="relative">
+                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <input type="text" name="title" id="title" value="{{ request('title') }}" placeholder="Rechercher par titre..." class="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-sm sm:text-base">
+                        </div>
+                    </div>
+                    
+                    <!-- Prestataire -->
+                    <div>
+                        <label for="prestataire" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Prestataire</label>
+                        <div class="relative">
+                            <i class="fas fa-user absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <input type="text" name="prestataire" id="prestataire" value="{{ request('prestataire') }}" placeholder="Nom du prestataire..." class="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-sm sm:text-base">
+                        </div>
+                    </div>
+                    
+                    <!-- Catégorie -->
+                    <div>
+                        <label for="category" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Catégorie</label>
+                        <div class="relative">
+                            <i class="fas fa-tags absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <select name="category" id="category" class="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-sm sm:text-base">
+                                <option value="">Toutes les catégories</option>
+                                @foreach($categories ?? [] as $category)
+                                    <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Statut -->
+                    <div>
+                        <label for="status" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Statut</label>
+                        <div class="relative">
+                            <i class="fas fa-info-circle absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <select name="status" id="status" class="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-sm sm:text-base">
+                                <option value="">Tous</option>
+                                <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Actif</option>
+                                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>En attente</option>
+                                <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactif</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Deuxième ligne de filtres -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
+                    <!-- Prix -->
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Prix</label>
+                        <div class="flex gap-2">
+                            <div class="relative flex-1">
+                                <i class="fas fa-euro-sign absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                                <input type="number" name="price_min" value="{{ request('price_min') }}" placeholder="Prix min" min="0" class="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-sm sm:text-base">
+                            </div>
+                            <div class="relative flex-1">
+                                <i class="fas fa-euro-sign absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                                <input type="number" name="price_max" value="{{ request('price_max') }}" placeholder="Prix max" min="0" class="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-sm sm:text-base">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Boutons d'action -->
+                <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4 sm:pt-6 border-t-2 border-blue-200">
+                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center text-sm sm:text-base">
+                        <i class="fas fa-search mr-2"></i>Appliquer les filtres
+                    </button>
+                    
+                    <button type="button" onclick="clearFilters()" class="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm sm:text-base">
+                        <i class="fas fa-times mr-2"></i>Effacer tout
+                    </button>
+                    
+                    @if(request('title') || request('prestataire') || request('category') || request('status') || request('price_min') || request('price_max'))
+                        <a href="{{ route('administrateur.services.index') }}" class="bg-white hover:bg-gray-50 text-blue-600 border border-blue-200 font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm sm:text-base">
+                            <i class="fas fa-undo mr-2"></i>Réinitialiser
+                        </a>
+                    @endif
+                </div>
+            </form>
         </div>
-        
-        <div style="display: flex; align-items: end; gap: 1rem;">
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-search"></i>
-                Rechercher
-            </button>
-        </div>
-    </form>
-</div>
+    </div>
 
-<!-- Services Table -->
-<div class="table-card">
-    <div class="table-header">
-        <div class="table-title">Liste des services ({{ $services->total() ?? 0 }})</div>
-        <div style="display: flex; gap: 1rem; align-items: center;">
-            <select onchange="changePerPage(this.value)" style="padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.875rem;">
+<!-- Services Cards -->
+<div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6">
+    <div class="flex justify-between items-center mb-6">
+        <div class="text-xl font-bold text-blue-800">Liste des services ({{ $services->total() ?? 0 }})</div>
+        <div class="flex gap-4 items-center">
+            <select onchange="changePerPage(this.value)" class="px-3 py-2 border border-blue-200 rounded-lg text-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
                 <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 par page</option>
                 <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 par page</option>
                 <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 par page</option>
             </select>
             
-            <button class="btn btn-outline" onclick="exportServices()">
-                <i class="fas fa-download"></i>
+            <button class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2 px-4 rounded-lg transition duration-200 flex items-center" onclick="exportServices()">
+                <i class="fas fa-download mr-2"></i>
                 Exporter
             </button>
         </div>
     </div>
     
-    <div class="table-responsive">
-        <table class="modern-table">
-            <thead>
-                <tr>
-                    <th>
-                        <input type="checkbox" onchange="toggleAllCheckboxes(this)" style="margin-right: 0.5rem;">
-                        Service
-                    </th>
-                    <th>Prestataire</th>
-                    <th>Catégorie</th>
-                    <th>Prix</th>
-                    <th>Statut</th>
-                    <th>Note</th>
-                    <th>Créé le</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($services ?? [] as $service)
-                    <tr>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 1rem;">
-                                <input type="checkbox" name="selected_services[]" value="{{ $service->id }}" class="service-checkbox">
-                                <div style="display: flex; align-items: center; gap: 1rem;">
-                                    @if($service->image)
-                                        <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->title }}" style="width: 48px; height: 48px; border-radius: 8px; object-fit: cover;">
-                                    @else
-                                        <div style="width: 48px; height: 48px; border-radius: 8px; background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 1.1rem;">
-                                            {{ substr($service->title, 0, 1) }}
-                                        </div>
-                                    @endif
-                                    <div>
-                                        <div style="font-weight: 600; color: var(--dark); margin-bottom: 0.25rem;">{{ Str::limit($service->title, 40) }}</div>
-                                        <div style="font-size: 0.875rem; color: var(--secondary);">{{ Str::limit($service->description, 60) }}</div>
+    <div class="space-y-4">
+        @forelse($services ?? [] as $service)
+            <div class="bg-white border border-blue-200 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 p-6">
+                <div class="flex items-center justify-between">
+                    <!-- Zone gauche: Media + Infos clés -->
+                    <div class="flex items-center space-x-4 flex-1">
+                        <input type="checkbox" name="selected_services[]" value="{{ $service->id }}" class="service-checkbox w-4 h-4 text-blue-600 border-blue-300 rounded focus:ring-blue-500">
+                        
+                        <!-- Vignette du service -->
+                        <div class="flex-shrink-0">
+                            @if($service->image)
+                                <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->title }}" class="w-16 h-16 rounded-lg object-cover border border-blue-200">
+                            @else
+                                <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-xl">
+                                    {{ substr($service->title, 0, 1) }}
+                                </div>
+                            @endif
+                        </div>
+                        
+                        <!-- Infos principales -->
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-start justify-between mb-2">
+                                <div class="flex-1">
+                                    <h3 class="text-lg font-bold text-blue-900 truncate">{{ $service->title }}</h3>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        @if($service->categories->first())
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                                                {{ $service->categories->first()->name }}
+                                            </span>
+                                        @else
+                                            <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">Non catégorisé</span>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
-                        </td>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--info) 0%, #06b6d4 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">
-                                    {{ substr($service->prestataire->user->name, 0, 1) }}
+                            
+                            <p class="text-sm text-gray-600 line-clamp-2 mb-3">{{ Str::limit($service->description, 120) }}</p>
+                            
+                            <!-- Métriques -->
+                            <div class="flex items-center gap-4 text-xs text-gray-500">
+                                <div class="flex items-center gap-1">
+                                    <i class="fas fa-eye text-blue-500"></i>
+                                    <span>{{ $service->views_count ?? 0 }} vues</span>
                                 </div>
-                                <div>
-                                    <div style="font-weight: 500; color: var(--dark); font-size: 0.875rem;">{{ $service->prestataire->user->name }}</div>
-                                    <div style="font-size: 0.8rem; color: var(--secondary);">{{ $service->prestataire->user->email }}</div>
+                                <div class="flex items-center gap-1">
+                                    <i class="fas fa-envelope text-blue-500"></i>
+                                    <span>{{ $service->requests_count ?? 0 }} demandes</span>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <i class="fas fa-calendar-check text-blue-500"></i>
+                                    <span>{{ $service->bookings_count ?? 0 }} réservations</span>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    @php
+                                        $rating = $service->average_rating ?? 0;
+                                        $fullStars = floor($rating);
+                                        $hasHalfStar = ($rating - $fullStars) >= 0.5;
+                                    @endphp
+                                    <div class="flex">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            @if($i <= $fullStars)
+                                                <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                            @elseif($i == $fullStars + 1 && $hasHalfStar)
+                                                <i class="fas fa-star-half-alt text-yellow-400 text-xs"></i>
+                                            @else
+                                                <i class="far fa-star text-gray-300 text-xs"></i>
+                                            @endif
+                                        @endfor
+                                    </div>
+                                    <span class="ml-1">{{ number_format($rating, 1) }} ({{ $service->reviews_count ?? 0 }})</span>
                                 </div>
                             </div>
-                        </td>
-                        <td>
-                            @if($service->categories->first())
-                                <span style="padding: 0.375rem 0.75rem; background: rgba(139, 69, 19, 0.1); color: #8b4513; border-radius: 6px; font-size: 0.8rem; font-weight: 500;">
-                                    {{ $service->categories->first()->name }}
-                                </span>
-                            @else
-                                <span style="color: var(--secondary); font-style: italic;">Non catégorisé</span>
-                            @endif
-                        </td>
-                        <td>
-                            <div style="font-weight: 600; color: var(--dark); font-size: 1rem;">
-                                €{{ number_format($service->price, 2) }}
-                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Zone centrale: Prix & Statut -->
+                    <div class="flex flex-col items-center px-6 border-l border-r border-blue-100">
+                        <div class="text-center mb-3">
+                            <div class="text-2xl font-bold text-blue-900">€{{ number_format($service->price, 0) }}</div>
                             @if($service->price_type)
-                                <div style="font-size: 0.8rem; color: var(--secondary);">{{ $service->price_type }}</div>
+                                <div class="text-xs text-gray-500">/ {{ $service->price_type }}</div>
                             @endif
-                        </td>
-                        <td>
+                        </div>
+                        
+                        <div class="mb-2">
                             @switch($service->status)
                                 @case('active')
-                                    <span style="padding: 0.375rem 0.75rem; background: rgba(16, 185, 129, 0.1); color: var(--success); border-radius: 6px; font-size: 0.8rem; font-weight: 500;">
-                                        <i class="fas fa-check-circle" style="margin-right: 0.25rem;"></i>
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium flex items-center">
+                                        <i class="fas fa-check-circle mr-1"></i>
                                         Actif
                                     </span>
                                     @break
                                 @case('pending')
-                                    <span style="padding: 0.375rem 0.75rem; background: rgba(245, 158, 11, 0.1); color: var(--warning); border-radius: 6px; font-size: 0.8rem; font-weight: 500;">
-                                        <i class="fas fa-clock" style="margin-right: 0.25rem;"></i>
-                                        En attente
+                                    <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium flex items-center">
+                                        <i class="fas fa-clock mr-1"></i>
+                                        En révision
                                     </span>
                                     @break
                                 @case('inactive')
-                                    <span style="padding: 0.375rem 0.75rem; background: rgba(239, 68, 68, 0.1); color: var(--danger); border-radius: 6px; font-size: 0.8rem; font-weight: 500;">
-                                        <i class="fas fa-times-circle" style="margin-right: 0.25rem;"></i>
+                                    <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium flex items-center">
+                                        <i class="fas fa-times-circle mr-1"></i>
                                         Inactif
                                     </span>
                                     @break
                                 @default
-                                    <span style="padding: 0.375rem 0.75rem; background: rgba(107, 114, 128, 0.1); color: var(--secondary); border-radius: 6px; font-size: 0.8rem; font-weight: 500;">
-                                        Inconnu
-                                    </span>
+                                    <span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">Inconnu</span>
                             @endswitch
-                        </td>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                @php
-                                    $rating = $service->average_rating ?? 0;
-                                    $fullStars = floor($rating);
-                                    $hasHalfStar = ($rating - $fullStars) >= 0.5;
-                                @endphp
-                                
-                                <div style="display: flex; gap: 0.1rem;">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        @if($i <= $fullStars)
-                                            <i class="fas fa-star" style="color: #fbbf24; font-size: 0.875rem;"></i>
-                                        @elseif($i == $fullStars + 1 && $hasHalfStar)
-                                            <i class="fas fa-star-half-alt" style="color: #fbbf24; font-size: 0.875rem;"></i>
-                                        @else
-                                            <i class="far fa-star" style="color: #d1d5db; font-size: 0.875rem;"></i>
-                                        @endif
-                                    @endfor
-                                </div>
-                                
-                                <span style="font-weight: 500; color: var(--dark); font-size: 0.875rem;">{{ number_format($rating, 1) }}</span>
-                                <span style="color: var(--secondary); font-size: 0.8rem;">({{ $service->reviews_count ?? 0 }})</span>
-                            </div>
-                        </td>
-                        <td style="color: var(--secondary); font-size: 0.875rem;">
-                            {{ $service->created_at->format('d/m/Y') }}
-                        </td>
-                        <td>
-                            <div style="display: flex; gap: 0.5rem;">
-                                <a href="{{ route('administrateur.services.show', $service->id) }}" class="btn btn-outline" style="padding: 0.375rem 0.75rem; font-size: 0.8rem;" title="Voir les détails">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                
-                                <a href="{{ route('administrateur.services.edit', $service->id) }}" class="btn btn-info" style="padding: 0.375rem 0.75rem; font-size: 0.8rem;" title="Modifier">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                
-                                @if($service->status === 'pending')
-                                    <button onclick="approveService({{ $service->id }})" class="btn btn-success" style="padding: 0.375rem 0.75rem; font-size: 0.8rem;" title="Approuver">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                @endif
-                                
-                                @if($service->status === 'active')
-                                    <button onclick="deactivateService({{ $service->id }})" class="btn btn-warning" style="padding: 0.375rem 0.75rem; font-size: 0.8rem;" title="Désactiver">
-                                        <i class="fas fa-pause"></i>
-                                    </button>
-                                @else
-                                    <button onclick="activateService({{ $service->id }})" class="btn btn-success" style="padding: 0.375rem 0.75rem; font-size: 0.8rem;" title="Activer">
-                                        <i class="fas fa-play"></i>
-                                    </button>
-                                @endif
-                                
-                                <button onclick="deleteService({{ $service->id }})" class="btn btn-danger" style="padding: 0.375rem 0.75rem; font-size: 0.8rem;" title="Supprimer">
-                                    <i class="fas fa-trash"></i>
+                        </div>
+                        
+                        <div class="text-xs text-gray-500 text-center">
+                            Mis à jour le<br>{{ $service->updated_at->format('d/m/Y') }}
+                        </div>
+                    </div>
+                    
+                    <!-- Zone droite: Actions rapides -->
+                    <div class="flex flex-col gap-2 pl-6">
+                        <div class="flex gap-2">
+                            <a href="{{ route('administrateur.services.show', $service->id) }}" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs font-medium transition duration-200 flex items-center" title="Voir">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            
+                            <a href="{{ route('administrateur.services.edit', $service->id) }}" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-2 rounded-lg text-xs font-medium transition duration-200 flex items-center" title="Éditer">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            
+                            <button onclick="duplicateService({{ $service->id }})" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-xs font-medium transition duration-200 flex items-center" title="Dupliquer">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="flex gap-2">
+                            @if($service->status === 'active')
+                                <button onclick="deactivateService({{ $service->id }})" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 px-3 py-2 rounded-lg text-xs font-medium transition duration-200 flex items-center" title="Désactiver">
+                                    <i class="fas fa-pause"></i>
                                 </button>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="8" style="text-align: center; padding: 3rem; color: var(--secondary);">
-                            <i class="fas fa-briefcase" style="font-size: 3rem; margin-bottom: 1rem; color: #e2e8f0;"></i>
-                            <div style="font-size: 1.125rem; font-weight: 500; margin-bottom: 0.5rem;">Aucun service trouvé</div>
-                            <div>Essayez de modifier vos critères de recherche</div>
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                            @else
+                                <button onclick="activateService({{ $service->id }})" class="bg-green-100 hover:bg-green-200 text-green-800 px-3 py-2 rounded-lg text-xs font-medium transition duration-200 flex items-center" title="Activer">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                            @endif
+                            
+                            <button onclick="archiveService({{ $service->id }})" class="bg-orange-100 hover:bg-orange-200 text-orange-800 px-3 py-2 rounded-lg text-xs font-medium transition duration-200 flex items-center" title="Archiver">
+                                <i class="fas fa-archive"></i>
+                            </button>
+                            
+                            <button onclick="deleteService({{ $service->id }})" class="bg-red-100 hover:bg-red-200 text-red-800 px-3 py-2 rounded-lg text-xs font-medium transition duration-200 flex items-center" title="Supprimer">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Actions secondaires -->
+                        <div class="flex gap-2 mt-2 pt-2 border-t border-blue-100">
+                            <a href="{{ route('services.show', $service->id) }}" target="_blank" class="text-blue-600 hover:text-blue-800 text-xs flex items-center" title="Aperçu côté client">
+                                <i class="fas fa-external-link-alt mr-1"></i>
+                                Aperçu
+                            </a>
+                            <button onclick="copyServiceLink({{ $service->id }})" class="text-blue-600 hover:text-blue-800 text-xs flex items-center" title="Copier le lien">
+                                <i class="fas fa-link mr-1"></i>
+                                Copier
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @empty
+            <div class="text-center py-12">
+                <i class="fas fa-briefcase text-6xl text-blue-200 mb-4"></i>
+                <div class="text-xl font-semibold text-blue-800 mb-2">Aucun service trouvé</div>
+                <div class="text-blue-600">Essayez de modifier vos critères de recherche</div>
+            </div>
+        @endforelse
     </div>
     
     @if($services && $services->hasPages())
-        <div style="padding: 1.5rem; border-top: 1px solid #e2e8f0; display: flex; justify-content: between; align-items: center;">
-            <div style="color: var(--secondary); font-size: 0.875rem;">
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 mt-6 border-t-2 border-blue-200">
+            <div class="text-sm text-blue-700 font-medium">
                 Affichage de {{ $services->firstItem() }} à {{ $services->lastItem() }} sur {{ $services->total() }} résultats
             </div>
-            <div>
+            <div class="flex justify-center">
                 {{ $services->links() }}
             </div>
         </div>
@@ -340,23 +411,23 @@
 </div>
 
 <!-- Bulk Actions -->
-<div id="bulkActions" style="position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: white; padding: 1rem 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); display: none; z-index: 1000;">
-    <div style="display: flex; align-items: center; gap: 1rem;">
-        <span style="font-weight: 500;">Actions groupées :</span>
-        <button class="btn btn-success" onclick="bulkApprove()">
-            <i class="fas fa-check"></i>
+<div id="bulkActions" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-white rounded-xl shadow-2xl border border-blue-200 p-4 z-50" style="display: none;">
+    <div class="flex flex-wrap items-center justify-center gap-3">
+        <span class="text-blue-800 font-semibold text-sm">Actions groupées :</span>
+        <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition duration-200 flex items-center" onclick="bulkApprove()">
+            <i class="fas fa-check mr-2"></i>
             Approuver
         </button>
-        <button class="btn btn-warning" onclick="bulkDeactivate()">
-            <i class="fas fa-pause"></i>
+        <button class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition duration-200 flex items-center" onclick="bulkDeactivate()">
+            <i class="fas fa-pause mr-2"></i>
             Désactiver
         </button>
-        <button class="btn btn-danger" onclick="bulkDelete()">
-            <i class="fas fa-trash"></i>
+        <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition duration-200 flex items-center" onclick="bulkDelete()">
+            <i class="fas fa-trash mr-2"></i>
             Supprimer
         </button>
-        <button class="btn btn-outline" onclick="clearSelection()">
-            <i class="fas fa-times"></i>
+        <button class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-4 py-2 rounded-lg text-sm font-medium transition duration-200 flex items-center" onclick="clearSelection()">
+            <i class="fas fa-times mr-2"></i>
             Annuler
         </button>
     </div>
@@ -483,8 +554,130 @@ function bulkDelete() {
 
 // Export services
 function exportServices() {
-    // Implement export logic
-    console.log('Exporting services');
+    const selectedServices = document.querySelectorAll('.service-checkbox:checked');
+    if (selectedServices.length === 0) {
+        alert('Veuillez sélectionner au moins un service à exporter.');
+        return;
+    }
+    
+    const serviceIds = Array.from(selectedServices).map(cb => cb.value);
+    const url = new URL('{{ route("administrateur.services.export") }}');
+    serviceIds.forEach(id => url.searchParams.append('services[]', id));
+    
+    window.open(url.toString(), '_blank');
+}
+
+function duplicateService(serviceId) {
+    if (confirm('Êtes-vous sûr de vouloir dupliquer ce service ?')) {
+        fetch(`/administrateur/services/${serviceId}/duplicate`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Erreur lors de la duplication du service.');
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            alert('Erreur lors de la duplication du service.');
+        });
+    }
+}
+
+function archiveService(serviceId) {
+    if (confirm('Êtes-vous sûr de vouloir archiver ce service ?')) {
+        fetch(`/administrateur/services/${serviceId}/archive`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Erreur lors de l\'archivage du service.');
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            alert('Erreur lors de l\'archivage du service.');
+        });
+    }
+}
+
+function copyServiceLink(serviceId) {
+    const serviceUrl = `{{ url('/services') }}/${serviceId}`;
+    
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(serviceUrl).then(() => {
+            // Créer une notification temporaire
+            const notification = document.createElement('div');
+            notification.textContent = 'Lien copié dans le presse-papiers !';
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #10b981;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                z-index: 10000;
+                font-weight: 500;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 3000);
+        }).catch(err => {
+            console.error('Erreur lors de la copie:', err);
+            fallbackCopyTextToClipboard(serviceUrl);
+        });
+    } else {
+        fallbackCopyTextToClipboard(serviceUrl);
+    }
+}
+
+function fallbackCopyTextToClipboard(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.top = '0';
+    textArea.style.left = '0';
+    textArea.style.position = 'fixed';
+    
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            alert('Lien copié dans le presse-papiers !');
+        } else {
+            alert('Impossible de copier le lien.');
+        }
+    } catch (err) {
+        console.error('Erreur lors de la copie:', err);
+        alert('Impossible de copier le lien.');
+    }
+    
+    document.body.removeChild(textArea);
+}
+
+// Export services
+function exportServices() {
+    window.location.href = '{{ route("administrateur.services.export") }}' + window.location.search;
 }
 </script>
 @endpush

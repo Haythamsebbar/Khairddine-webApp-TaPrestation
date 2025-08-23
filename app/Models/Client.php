@@ -70,12 +70,14 @@ class Client extends Model
         return $this->followedPrestataires()->where('prestataire_id', $prestataireId)->exists();
     }
 
+
+
     /**
-     * Get the client requests for this client.
+     * Get the client requests (now bookings) for this client.
      */
     public function clientRequests()
     {
-        return $this->hasMany(ClientRequest::class);
+        return $this->hasMany(Booking::class);
     }
 
     /**

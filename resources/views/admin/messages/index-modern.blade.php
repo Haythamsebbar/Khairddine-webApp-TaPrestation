@@ -156,10 +156,14 @@
 
     <!-- Filtres -->
     <div class="card shadow mb-4">
-        <div class="card-header py-3">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
             <h6 class="m-0 font-weight-bold text-primary">Filtres de Recherche</h6>
+            <button type="button" id="toggleFilters" class="btn btn-primary btn-sm">
+                <span id="filterButtonText">Afficher les filtres</span>
+                <i class="fas fa-chevron-down ml-1" id="filterChevron"></i>
+            </button>
         </div>
-        <div class="card-body">
+        <div class="card-body" id="filtersForm" style="display: none;">
             <form method="GET" action="{{ route('administrateur.messages.index') }}">
                 <div class="row">
                     <div class="col-md-2">
@@ -632,5 +636,31 @@ function submitBulkAction(url, messageIds, extraData = {}, method = 'POST') {
     $('body').append(form);
     form.submit();
 }
+
+// Toggle filters functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleButton = document.getElementById('toggleFilters');
+    const filtersForm = document.getElementById('filtersForm');
+    const buttonText = document.getElementById('filterButtonText');
+    const chevron = document.getElementById('filterChevron');
+    
+    let filtersVisible = false;
+    
+    toggleButton.addEventListener('click', function() {
+        filtersVisible = !filtersVisible;
+        
+        if (filtersVisible) {
+            filtersForm.style.display = 'block';
+            buttonText.textContent = 'Masquer les filtres';
+            chevron.classList.remove('fa-chevron-down');
+            chevron.classList.add('fa-chevron-up');
+        } else {
+            filtersForm.style.display = 'none';
+            buttonText.textContent = 'Afficher les filtres';
+            chevron.classList.remove('fa-chevron-up');
+            chevron.classList.add('fa-chevron-down');
+        }
+    });
+});
 </script>
 @endpush

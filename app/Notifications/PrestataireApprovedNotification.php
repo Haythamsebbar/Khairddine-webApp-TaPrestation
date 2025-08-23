@@ -33,7 +33,7 @@ class PrestataireApprovedNotification extends Notification implements ShouldQueu
      */
     public function via($notifiable)
     {
-        return ['mail', 'database'];
+        return ['database'];
     }
 
     /**

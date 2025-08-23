@@ -23,7 +23,6 @@ class UrgentSale extends Model
         'location',
         'latitude',
         'longitude',
-        'is_urgent',
         'status',
         'slug',
         'views_count',
@@ -32,7 +31,6 @@ class UrgentSale extends Model
 
     protected $casts = [
         'photos' => 'array',
-        'is_urgent' => 'boolean',
         'price' => 'decimal:2',
         'quantity' => 'integer',
         'views_count' => 'integer',
@@ -69,7 +67,7 @@ class UrgentSale extends Model
      */
     public function category()
     {
-        return $this->belongsTo(EquipmentCategory::class);
+        return $this->belongsTo(Category::class);
     }
 
     /**
@@ -105,14 +103,6 @@ class UrgentSale extends Model
     }
 
     /**
-     * Scope pour les ventes urgentes
-     */
-    public function scopeUrgent($query)
-    {
-        return $query->where('is_urgent', true);
-    }
-
-    /**
      * Scope pour les ventes récentes
      */
     public function scopeRecent($query)
@@ -129,9 +119,21 @@ class UrgentSale extends Model
         $originalSlug = $slug;
         $counter = 1;
 
-        while (self::where('slug', $slug)->where('id', '!=', $this->id)->exists()) {
+        $query = self::where('slug', $slug);
+        
+        // Si l'objet existe déjà (mise à jour), exclure son propre ID
+        if ($this->exists) {
+            $query->where('id', '!=', $this->id);
+        }
+        
+        while ($query->exists()) {
             $slug = $originalSlug . '-' . $counter;
             $counter++;
+            
+            $query = self::where('slug', $slug);
+            if ($this->exists) {
+                $query->where('id', '!=', $this->id);
+            }
         }
 
         return $slug;
@@ -185,10 +187,15 @@ class UrgentSale extends Model
     public function getConditionLabelAttribute()
     {
         $conditions = [
+            // Constantes du modèle
             self::CONDITION_NEW => 'Neuf',
             self::CONDITION_GOOD => 'Bon état',
             self::CONDITION_USED => 'Usagé',
-            self::CONDITION_FAIR => 'État correct'
+            self::CONDITION_FAIR => 'État correct',
+            // Valeurs utilisées dans les contrôleurs
+            'excellent' => 'Excellent',
+            'very_good' => 'Très bon état',
+            'poor' => 'Mauvais état'
         ];
 
         return $conditions[$this->condition] ?? 'Non spécifié';

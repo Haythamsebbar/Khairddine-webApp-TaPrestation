@@ -167,7 +167,7 @@
                                     </div>
                                     
                                     <div class="flex gap-4">
-                                        <a href="{{ url()->previous() }}" 
+                                        <a href="{{ route('services.index', request()->session()->get('services_filters', [])) }}" 
                                            class="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold px-6 py-3 rounded-lg text-center transition duration-200">
                                             Retour
                                         </a>
@@ -180,7 +180,7 @@
                                 </div>
                             @else
                                 <div class="border-t-2 border-blue-200 pt-6">
-                                    <a href="{{ route('services.index') }}" 
+                                    <a href="{{ route('services.index', request()->session()->get('services_filters', [])) }}" 
                                        class="w-full bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold px-6 py-3 rounded-lg text-center transition duration-200 block">
                                         Retour aux services
                                     </a>

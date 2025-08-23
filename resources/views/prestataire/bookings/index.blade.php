@@ -5,672 +5,428 @@
 @section('content')
 <div class="bg-blue-50">
     <div class="container mx-auto px-4 py-8">
-        <div class="max-w-6xl mx-auto">
-            <!-- En-tête -->
-            <div class="mb-8 text-center">
-                <h1 class="text-4xl font-extrabold text-blue-900 mb-2">Mes Demandes</h1>
-                <p class="text-lg text-blue-700">Gérez toutes vos demandes de services, équipements et ventes urgentes</p>
-            </div>
+        <!-- En-tête -->
+        <div class="mb-8 text-center">
+            <h1 class="text-4xl font-extrabold text-blue-900 mb-2">Mes Demandes</h1>
+            <p class="text-lg text-blue-700">Gérez toutes vos demandes de services, équipements et ventes urgentes</p>
+        </div>
 
-            <!-- Messages de session -->
-            @if(session('success'))
-                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-md mb-6 shadow-md">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            @if(session('error'))
-                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md mb-6 shadow-md">
-                    {{ session('error') }}
-                </div>
-            @endif
-
-            <!-- Filtres par type -->
-            <div class="mb-8">
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">Filtrer par type</h3>
-                    <div class="flex flex-wrap gap-3">
-                        <a href="{{ route('prestataire.bookings.index') }}" 
-                           class="px-6 py-3 rounded-lg font-semibold {{ !request('type') ? 'bg-gray-600 text-white shadow-lg' : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200' }} transition duration-200">
-                            Toutes
-                        </a>
-                        <a href="{{ route('prestataire.bookings.index', ['type' => 'service']) }}" 
-                           class="px-6 py-3 rounded-lg font-semibold {{ request('type') === 'service' ? 'bg-blue-600 text-white shadow-lg' : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200' }} transition duration-200">
-                            Services
-                        </a>
-                        <a href="{{ route('prestataire.bookings.index', ['type' => 'equipment']) }}" 
-                           class="px-6 py-3 rounded-lg font-semibold {{ request('type') === 'equipment' ? 'bg-green-600 text-white shadow-lg' : 'bg-green-50 text-green-700 hover:bg-green-100 border border-green-200' }} transition duration-200">
-                            Équipements
-                        </a>
-                        <a href="{{ route('prestataire.bookings.index', ['type' => 'urgent_sale']) }}" 
-                           class="px-6 py-3 rounded-lg font-semibold {{ request('type') === 'urgent_sale' ? 'bg-red-600 text-white shadow-lg' : 'bg-red-50 text-red-700 hover:bg-red-100 border border-red-200' }} transition duration-200">
-                            Ventes Urgentes
-                        </a>
+        <!-- Filtres -->
+        <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6 mb-6 sm:mb-8">
+            <div class="space-y-4">
+                <!-- Boutons de filtrage par type -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Type:</label>
+                    <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
+                        <button onclick="filterByType('all')" id="btn-all" class="filter-btn active px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition duration-200 text-xs sm:text-sm font-medium flex items-center justify-center">
+                            <i class="fas fa-list mr-1 sm:mr-2"></i><span class="hidden sm:inline">Tous</span><span class="sm:hidden">Tous</span>
+                        </button>
+                        <button onclick="filterByType('service')" id="btn-service" class="filter-btn px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition duration-200 text-xs sm:text-sm font-medium flex items-center justify-center">
+                            <i class="fas fa-concierge-bell mr-1 sm:mr-2"></i><span class="hidden sm:inline">Services</span><span class="sm:hidden">Services</span>
+                        </button>
+                        <button onclick="filterByType('equipment')" id="btn-equipment" class="filter-btn px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-green-100 hover:text-green-700 transition duration-200 text-xs sm:text-sm font-medium flex items-center justify-center">
+                            <i class="fas fa-tools mr-1 sm:mr-2"></i><span class="hidden sm:inline">Équipements</span><span class="sm:hidden">Équip.</span>
+                        </button>
+                        <button onclick="filterByType('urgent_sale')" id="btn-urgent_sale" class="filter-btn px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-red-100 hover:text-red-700 transition duration-200 text-xs sm:text-sm font-medium flex items-center justify-center">
+                            <i class="fas fa-tag mr-1 sm:mr-2"></i><span class="hidden sm:inline">Annonces</span><span class="sm:hidden">Annonces</span>
+                        </button>
                     </div>
                 </div>
-            </div>
 
-            <!-- Section Toutes les demandes mélangées (affichée uniquement si aucun filtre de type spécifique) -->
-            @if(!request('type') || request('type') === 'all')
-                @if(isset($allRequests) && $allRequests->count() > 0)
-                    <div class="mb-8">
-                        <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-                            <div class="flex items-center justify-between mb-6 border-b-2 border-gray-200 pb-4">
-                                 <div class="flex items-center">
-                                     <div class="w-4 h-4 bg-gray-600 rounded-full mr-3"></div>
-                                     <h2 class="text-2xl font-bold text-gray-800">Toutes les demandes</h2>
-                                     <span class="ml-3 bg-gray-100 text-gray-800 text-sm font-bold px-3 py-1 rounded-full">{{ $allRequests->count() }}</span>
-                                 </div>
-                                 
-                                 <!-- Sélecteur de tri -->
-                                 <div class="flex items-center space-x-3">
-                                     <span class="text-sm text-gray-600 font-medium">Trier par :</span>
-                                     <select id="sortOrder" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white">
-                                         <option value="desc" {{ request('sort', 'desc') === 'desc' ? 'selected' : '' }}>Plus récent au plus ancien</option>
-                                         <option value="asc" {{ request('sort') === 'asc' ? 'selected' : '' }}>Plus ancien au plus récent</option>
-                                     </select>
-                                 </div>
-                             </div>
-                             
-                             <script>
-                                 document.getElementById('sortOrder').addEventListener('change', function() {
-                                     const currentUrl = new URL(window.location.href);
-                                     currentUrl.searchParams.set('sort', this.value);
-                                     window.location.href = currentUrl.toString();
-                                 });
-                             </script>
+                <!-- Filtre par statut et réinitialisation -->
+                <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                    <div class="flex items-center space-x-2 flex-1">
+                        <label class="text-sm font-medium text-gray-700 whitespace-nowrap">Statut:</label>
+                        <select id="statusFilter" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                            <option value="all" {{ !request('status') ? 'selected' : '' }}>Tous</option>
+                            <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>En attente</option>
+                            <option value="accepted" {{ request('status') === 'accepted' ? 'selected' : '' }}>Acceptées</option>
+                            <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Refusées</option>
+                        </select>
+                    </div>
+
+                    <!-- Bouton de réinitialisation -->
+                    <button onclick="resetFilters()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition duration-200 text-sm font-medium w-full sm:w-auto">
+                        <i class="fas fa-undo mr-2"></i>Réinitialiser
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        @php
+        // Combiner toutes les demandes
+        $allRequests = collect();
+        
+        // Ajouter les services
+        if(isset($serviceBookings) && $serviceBookings->count() > 0) {
+            foreach($serviceBookings as $booking) {
+                $allRequests->push((object)[
+                    'id' => $booking->id,
+                    'type' => 'service',
+                    'title' => $booking->service->title ?? 'Service',
+                    'client_name' => $booking->client->user->name ?? 'N/A',
+                    'status' => $booking->status,
+                    'created_at' => $booking->created_at,
+                    'image' => $booking->service && $booking->service->images && $booking->service->images->count() > 0 
+                        ? $booking->service->images->first()->image_path : null,
+                    'category' => $booking->service && $booking->service->category->first() 
+                        ? $booking->service->category->first()->name : null,
+                    'price' => $booking->service->price ?? null,
+                    'price_type' => $booking->service->price_type ?? null,
+                    'route_show' => route('prestataire.bookings.show', $booking->id),
+                     'route_accept' => route('prestataire.bookings.accept', $booking),
+                     'route_reject' => route('prestataire.bookings.reject', $booking),
+                    'original' => $booking
+                ]);
+            }
+        }
+        
+        // Ajouter les équipements
+        if(isset($equipmentRentalRequests) && $equipmentRentalRequests->count() > 0) {
+            foreach($equipmentRentalRequests as $request) {
+                $allRequests->push((object)[
+                    'id' => $request->id,
+                    'type' => 'equipment',
+                    'title' => $request->equipment->name ?? 'Équipement',
+                    'client_name' => $request->client->user->name ?? 'N/A',
+                    'status' => $request->status,
+                    'created_at' => $request->created_at,
+                    'image' => $request->equipment && $request->equipment->main_photo 
+                        ? $request->equipment->main_photo : ($request->equipment && $request->equipment->photos && count($request->equipment->photos) > 0 ? $request->equipment->photos[0] : null),
+                    'category' => $request->equipment && $request->equipment->category 
+                        ? $request->equipment->category->name : ($request->equipment && $request->equipment->subcategory ? $request->equipment->subcategory->name : null),
+                    'start_date' => $request->start_date ?? null,
+                    'end_date' => $request->end_date ?? null,
+                    'route_show' => route('prestataire.equipment-rental-requests.show', $request->id),
+                    'route_accept' => route('prestataire.equipment-rental-requests.accept', $request),
+                    'route_reject' => route('prestataire.equipment-rental-requests.reject', $request),
+                    'original' => $request
+                ]);
+            }
+        }
+        
+        // Ajouter les ventes urgentes
+        if(isset($urgentSales) && $urgentSales->count() > 0) {
+            foreach($urgentSales as $sale) {
+                $allRequests->push((object)[
+                    'id' => $sale->id,
+                    'type' => 'urgent_sale',
+                    'title' => $sale->title ?? 'Vente urgente',
+                    'client_name' => $sale->client->name ?? 'N/A',
+                    'status' => $sale->status,
+                    'created_at' => $sale->created_at,
+                    'image' => $sale->photos && count($sale->photos) > 0 
+                        ? $sale->photos[0] : null,
+                    'category' => $sale->category ? $sale->category->name : null,
+                    'price' => $sale->price ?? null,
+                    'price_min' => $sale->price_min ?? null,
+                    'price_max' => $sale->price_max ?? null,
+                    'route_show' => route('prestataire.urgent-sales.show', $sale->id),
+                     'route_accept' => null, // Urgent sales don't have accept action
+                     'route_reject' => null, // Urgent sales don't have reject action
+                    'original' => $sale
+                ]);
+            }
+        }
+        
+        // Trier par date de création (plus récent en premier)
+        $allRequests = $allRequests->sortByDesc('created_at');
+        @endphp
+
+        <!-- Section Toutes les demandes -->
+        @if($allRequests->count() > 0)
+            <div class="mb-8">
+                <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6">
+                    <div class="flex items-center mb-6 border-b-2 border-blue-200 pb-4">
+                        <div class="w-4 h-4 bg-blue-600 rounded-full mr-3"></div>
+                        <h2 id="section-title" class="text-2xl font-bold text-blue-800">Toutes les demandes</h2>
+                        <span class="ml-3 bg-blue-100 text-blue-800 text-sm font-bold px-3 py-1 rounded-full">{{ $allRequests->count() }}</span>
+                    </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    @foreach($allRequests as $item)
+                        <div class="booking-item bg-white border-2 
+                            @if($item->type === 'service') border-blue-200 hover:border-blue-300
+                            @elseif($item->type === 'equipment') border-green-200 hover:border-green-300
+                            @else border-red-200 hover:border-red-300
+                            @endif
+                            rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden touch-manipulation"
+                            data-type="{{ $item->type }}" data-status="{{ $item->status }}">
                             
-                            <div class="space-y-4">
-                                @foreach($allRequests as $item)
-                                    @if($item->request_type === 'service')
-                                        <!-- Réservation de service -->
-                                        <div class="bg-blue-50 border-l-4 border-blue-600 rounded-lg shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden">
-                                            <div class="flex flex-col md:flex-row">
-                                                <!-- Image à gauche -->
-                                                <div class="w-full md:w-48 h-36 flex-shrink-0">
-                                                    @if($item->service && $item->service->images && $item->service->images->count() > 0)
-                                                        @php
-                                                            $firstImage = $item->service->images->first();
-                                                            $imagePath = $firstImage->image_path;
-                                                            $imageUrl = asset('storage/' . $imagePath);
-                                                        @endphp
-                                                        <img src="{{ $imageUrl }}" 
-                                                             alt="{{ $item->service->title ?? 'Service' }}" 
-                                                             class="w-full h-full object-cover object-center" 
-                                                             loading="lazy"
-                                                             onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"w-full h-full bg-blue-100 flex items-center justify-center\"><i class=\"fas fa-concierge-bell text-blue-400 text-3xl\"></i></div>
-                                                    @else
-                                                        <div class="w-full h-full bg-blue-100 flex items-center justify-center">
-                                                            <i class="fas fa-concierge-bell text-blue-400 text-3xl"></i>
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                                
-                                                <!-- Détails au centre -->
-                                                <div class="flex-1 p-6">
-                                                    <div class="flex flex-col md:flex-row md:items-center md:justify-between h-full">
-                                                        <div class="flex-1">
-                                                            <h3 class="text-xl font-bold text-blue-900 mb-2">
-                                                                {{ $item->service->title ?? 'Service' }}
-                                                            </h3>
-                                                            <div class="space-y-1 text-sm mb-3">
-                                                                <p class="text-blue-800 font-medium">Client: {{ $item->client->user->name ?? 'N/A' }}</p>
-                                                                <p class="text-blue-700">Type: Service</p>
-                                                                <p class="text-blue-700">Prix: {{ number_format($item->service->price ?? 0, 2) }}€</p>
-                                                                <p class="text-blue-600 text-xs">{{ $item->created_at->format('d/m/Y à H:i') }}</p>
-                                                            </div>
-                                                            <span class="inline-block px-3 py-1 text-xs font-bold rounded-full
-                                                                @if($item->status === 'pending') bg-yellow-100 text-yellow-800
-                                                                @elseif($item->status === 'confirmed') bg-green-100 text-green-800
-                                                                @elseif($item->status === 'cancelled') bg-red-100 text-red-800
-                                                                @endif">
-                                                                @if($item->status === 'pending') En attente
-                                                                @elseif($item->status === 'confirmed') Confirmée
-                                                                @elseif($item->status === 'cancelled') Annulée
-                                                                @endif
-                                                            </span>
-                                                        </div>
-                                                        <div class="mt-4 md:mt-0 md:ml-6">
-                                                            <a href="{{ route('prestataire.bookings.show', $item->id) }}" 
-                                                               class="w-full md:w-auto px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded hover:bg-blue-700 transition duration-200 text-center">
-                                                                Voir détails
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @elseif($item->request_type === 'equipment')
-                                        <!-- Demande d'équipement -->
-                                        <div class="bg-green-50 border-l-4 border-green-600 rounded-lg shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden">
-                                            <div class="flex flex-col md:flex-row">
-                                                <div class="w-full md:w-48 h-36 flex-shrink-0">
-                                                    @if($item->equipment && $item->equipment->images && $item->equipment->images->count() > 0)
-                                                        @php
-                                                            $firstEquipmentImage = $item->equipment->images->first();
-                                                            $equipmentImagePath = $firstEquipmentImage->image_path;
-                                                            $equipmentImageUrl = asset('storage/' . $equipmentImagePath);
-                                                        @endphp
-                                                        <img src="{{ $equipmentImageUrl }}" 
-                                                             alt="{{ $item->equipment->name ?? 'Équipement' }}" 
-                                                             class="w-full h-full object-cover object-center" 
-                                                             loading="lazy"
-                                                             onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"w-full h-full bg-green-100 flex items-center justify-center\"><i class=\"fas fa-tools text-green-400 text-3xl\"></i></div>
-                                                    @else
-                                                        <div class="w-full h-full bg-green-100 flex items-center justify-center">
-                                                            <i class="fas fa-tools text-green-400 text-3xl"></i>
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                                <div class="flex-1 p-6">
-                                                    <div class="flex flex-col md:flex-row md:items-center md:justify-between h-full">
-                                                        <div class="flex-1">
-                                                            <h3 class="text-xl font-bold text-green-900 mb-2">
-                                                                {{ $item->equipment->name ?? 'Équipement' }}
-                                                            </h3>
-                                                            <div class="space-y-1 text-sm mb-3">
-                                                                <p class="text-green-800 font-medium">Client: {{ $item->client->user->name ?? 'N/A' }}</p>
-                                                                <p class="text-green-700">Type: Location d'équipement</p>
-                                                                @if($item->start_date && $item->end_date)
-                                                                    <p class="text-green-700">Période: {{ \Carbon\Carbon::parse($item->start_date)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($item->end_date)->format('d/m/Y') }}</p>
-                                                                @endif
-                                                                <p class="text-green-600 text-xs">{{ $item->created_at->format('d/m/Y à H:i') }}</p>
-                                                            </div>
-                                                            <span class="inline-block px-3 py-1 text-xs font-bold rounded-full
-                                                                @if($item->status === 'pending') bg-yellow-100 text-yellow-800
-                                                                @elseif($item->status === 'accepted') bg-green-100 text-green-800
-                                                                @elseif($item->status === 'rejected') bg-red-100 text-red-800
-                                                                @endif">
-                                                                @if($item->status === 'pending') En attente
-                                                                @elseif($item->status === 'accepted') Acceptée
-                                                                @elseif($item->status === 'rejected') Refusée
-                                                                @endif
-                                                            </span>
-                                                        </div>
-                                                        <div class="mt-4 md:mt-0 md:ml-6">
-                                                            <a href="{{ route('prestataire.equipment-rental-requests.show', $item->id) }}" 
-                                                               class="w-full md:w-auto px-4 py-2 bg-green-600 text-white text-sm font-bold rounded hover:bg-green-700 transition duration-200 text-center">
-                                                                Voir détails
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @elseif($item->request_type === 'urgent_sale')
-                                        <!-- Vente urgente -->
-                                        <div class="bg-red-50 border-l-4 border-red-600 rounded-lg shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden">
-                                            <div class="flex flex-col md:flex-row">
-                                                <div class="w-full md:w-48 h-36 flex-shrink-0">
-                                                    @if($item->images && $item->images->count() > 0)
-                                                        @php
-                                                            $firstUrgentImage = $item->images->first();
-                                                            $urgentImagePath = $firstUrgentImage->image_path;
-                                                            $urgentImageUrl = asset('storage/' . $urgentImagePath);
-                                                        @endphp
-                                                        <img src="{{ $urgentImageUrl }}" 
-                                                             alt="{{ $item->title ?? 'Vente urgente' }}" 
-                                                             class="w-full h-full object-cover object-center" 
-                                                             loading="lazy"
-                                                             onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"w-full h-full bg-red-100 flex items-center justify-center\"><i class=\"fas fa-tag text-red-400 text-3xl\"></i></div>
-                                                    @else
-                                                        <div class="w-full h-full bg-red-100 flex items-center justify-center">
-                                                            <i class="fas fa-tag text-red-400 text-3xl"></i>
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                                <div class="flex-1 p-6">
-                                                    <div class="flex flex-col md:flex-row md:items-center md:justify-between h-full">
-                                                        <div class="flex-1">
-                                                            <h3 class="text-xl font-bold text-red-900 mb-2">
-                                                                {{ $item->title ?? 'Vente urgente' }}
-                                                            </h3>
-                                                            <div class="space-y-1 text-sm mb-3">
-                                                                <p class="text-red-800 font-medium">Client: {{ $item->client->user->name ?? 'N/A' }}</p>
-                                                                <p class="text-red-700">Type: Vente urgente</p>
-                                                                @if($item->price)
-                                                                    <p class="text-red-700 font-bold">Prix: {{ number_format($item->price, 0, ',', ' ') }}€</p>
-                                                                @endif
-                                                                <p class="text-red-600 text-xs">{{ $item->created_at->format('d/m/Y à H:i') }}</p>
-                                                            </div>
-                                                            <span class="inline-block px-3 py-1 text-xs font-bold rounded-full
-                                                                @if($item->status === 'pending') bg-yellow-100 text-yellow-800
-                                                                @elseif($item->status === 'accepted') bg-green-100 text-green-800
-                                                                @elseif($item->status === 'rejected') bg-red-100 text-red-800
-                                                                @endif">
-                                                                @if($item->status === 'pending') En attente
-                                                                @elseif($item->status === 'accepted') Acceptée
-                                                                @elseif($item->status === 'rejected') Refusée
-                                                                @endif
-                                                            </span>
-                                                        </div>
-                                                        <div class="mt-4 md:mt-0 md:ml-6">
-                                                            <a href="{{ route('prestataire.urgent-sales.show', $item->id) }}" 
-                                                               class="w-full md:w-auto px-4 py-2 bg-red-600 text-white text-sm font-bold rounded hover:bg-red-700 transition duration-200 text-center">
-                                                                Voir détails
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                            <a href="{{ $item->route_show }}" class="block">
+                                <!-- Image -->
+                                <div class="aspect-[3/2] sm:aspect-[4/3] overflow-hidden">
+                                    @if($item->image)
+                                        <img src="{{ asset('storage/' . $item->image) }}" 
+                                             alt="{{ $item->title }}" 
+                                             class="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-300" loading="lazy">
+                                    @else
+                                        <div class="w-full h-full 
+                                            @if($item->type === 'service') bg-blue-100
+                                            @elseif($item->type === 'equipment') bg-green-100
+                                            @else bg-red-100
+                                            @endif
+                                            flex items-center justify-center">
+                                            @if($item->type === 'service')
+                                                <i class="fas fa-concierge-bell text-blue-400 text-4xl"></i>
+                                            @elseif($item->type === 'equipment')
+                                                <i class="fas fa-tools text-green-400 text-4xl"></i>
+                                            @else
+                                                <i class="fas fa-tag text-red-400 text-4xl"></i>
+                                            @endif
                                         </div>
                                     @endif
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                @else
-                    <!-- Message si aucune demande -->
-                    <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-8 text-center">
-                        <div class="text-gray-400 mb-4">
-                            <i class="fas fa-inbox text-6xl"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-700 mb-2">Aucune demande trouvée</h3>
-                        <p class="text-gray-600">Vous n'avez encore reçu aucune demande de réservation.</p>
-                    </div>
-                @endif
-            @endif
-
-    @php
-        // Vérifier s'il y a des données à afficher
-        $hasItems = ($showServices && isset($serviceBookings) && $serviceBookings->count() > 0) ||
-                   ($showEquipments && isset($equipmentRentalRequests) && $equipmentRentalRequests->count() > 0) ||
-                   ($showUrgentSales && isset($urgentSales) && $urgentSales->count() > 0);
-    @endphp
-
-            @if($hasItems)
-                <!-- Section Services -->
-                @if($showServices && isset($serviceBookings) && $serviceBookings->count() > 0)
-                    <div class="mb-8">
-                        <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6">
-                            <div class="flex items-center mb-6 border-b-2 border-blue-200 pb-4">
-                                <div class="w-4 h-4 bg-blue-600 rounded-full mr-3"></div>
-                                <h2 class="text-2xl font-bold text-blue-800">Services</h2>
-                                <span class="ml-3 bg-blue-100 text-blue-800 text-sm font-bold px-3 py-1 rounded-full">{{ $serviceBookings->count() }}</span>
-                            </div>
-                            
-                            <div class="space-y-4">
-                                @foreach($serviceBookings as $booking)
-                                    <div class="bg-blue-50 border-l-4 border-blue-600 rounded-lg shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden">
-                                        <div class="flex flex-col md:flex-row">
-                                            <!-- Image à gauche (format 4:3) -->
-                                            <div class="w-full md:w-48 h-36 flex-shrink-0">
-                                                @if($booking->service && $booking->service->images && $booking->service->images->count() > 0)
-                                                    <img src="{{ asset('storage/' . $booking->service->images->first()->image_path) }}" 
-                                                         alt="{{ $booking->service->title ?? 'Service' }}" 
-                                                         class="w-full h-full object-cover object-center" loading="lazy">
-                                                @else
-                                                    <div class="w-full h-full bg-blue-100 flex items-center justify-center">
-                                                        <i class="fas fa-concierge-bell text-blue-400 text-3xl"></i>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                            
-                                            <!-- Détails au centre -->
-                                            <div class="flex-1 p-6">
-                                                <div class="flex flex-col md:flex-row md:items-center md:justify-between h-full">
-                                                    <div class="flex-1">
-                                                        <!-- Titre -->
-                                                        <h3 class="text-xl font-bold text-blue-900 mb-2">
-                                                            {{ $booking->service->title ?? 'Service' }}
-                                                        </h3>
-                                                        
-                                                        <!-- Métadonnées -->
-                                                        <div class="space-y-1 text-sm mb-3">
-                                                            <p class="text-blue-800 font-medium">Client: {{ $booking->client->user->name ?? 'N/A' }}</p>
-                                                            <p class="text-blue-700">Type: Service</p>
-                                                            @if($booking->service && $booking->service->category->first())
-                                                                <p class="text-blue-700">Catégorie: {{ $booking->service->category->first()->name }}</p>
-                                                            @endif
-                                                            <p class="text-blue-600 text-xs">{{ $booking->created_at->format('d/m/Y à H:i') }}</p>
-                                                        </div>
-                                                        
-                                                        <!-- Statut -->
-                                                        <span class="inline-block px-3 py-1 text-xs font-bold rounded-full
-                                                            @if($booking->status === 'pending') bg-yellow-100 text-yellow-800
-                                                            @elseif($booking->status === 'accepted') bg-green-100 text-green-800
-                                                            @elseif($booking->status === 'rejected') bg-red-100 text-red-800
-                                                            @endif">
-                                                            @if($booking->status === 'pending') En attente
-                                                            @elseif($booking->status === 'accepted') Acceptée
-                                                            @elseif($booking->status === 'rejected') Refusée
-                                                            @endif
-                                                        </span>
-                                                    </div>
-                                                    
-                                                    <!-- Bouton à droite -->
-                                                    <div class="mt-4 md:mt-0 md:ml-6 flex flex-col space-y-2">
-                                                        <a href="{{ route('prestataire.bookings.show', $booking->id) }}" 
-                                                           class="w-full md:w-auto px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded hover:bg-blue-700 transition duration-200 text-center">
-                                                            Voir détails
-                                                        </a>
-                                                        @if($booking->status === 'pending')
-                                                            <div class="flex space-x-2">
-                                                                <form action="{{ route('prestataire.bookings.accept', $booking->id) }}" method="POST" class="flex-1">
-                                                                    @csrf
-                                                                    @method('PATCH')
-                                                                    <button type="submit" class="w-full px-3 py-1 bg-green-600 text-white text-xs font-bold rounded hover:bg-green-700 transition duration-200">
-                                                                        Accepter
-                                                                    </button>
-                                                                </form>
-                                                                <form action="{{ route('prestataire.bookings.reject', $booking->id) }}" method="POST" class="flex-1">
-                                                                    @csrf
-                                                                    @method('PATCH')
-                                                                    <button type="submit" class="w-full px-3 py-1 bg-red-600 text-white text-xs font-bold rounded hover:bg-red-700 transition duration-200">
-                                                                        Refuser
-                                                                    </button>
-                                                                </form>
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Modals de refus pour chaque demande -->
-                    @foreach($equipmentRentalRequests as $request)
-                        @if($request->status === 'pending')
-                            <x-modal name="reject-request-{{ $request->id }}" :show="false" maxWidth="md">
-                                <div class="p-6">
-                                    <div class="flex items-center mb-4">
-                                        <div class="flex-shrink-0">
-                                            <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                                            </svg>
-                                        </div>
-                                        <div class="ml-4">
-                                            <h3 class="text-lg font-semibold text-gray-900">Refuser la demande</h3>
-                                            <p class="text-sm text-gray-600">Veuillez indiquer la raison du refus</p>
-                                        </div>
-                                    </div>
-
-                                    <form action="{{ route('prestataire.equipment-rental-requests.reject', $request) }}" method="POST">
-                                        @csrf
-                                        @method('PATCH')
-                                        
-                                        <div class="mb-4">
-                                            <label for="rejection_reason_{{ $request->id }}" class="block text-sm font-medium text-gray-700 mb-2">
-                                                Raison du refus *
-                                            </label>
-                                            <textarea 
-                                                id="rejection_reason_{{ $request->id }}"
-                                                name="rejection_reason" 
-                                                rows="3" 
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"
-                                                placeholder="Expliquez pourquoi vous refusez cette demande..."
-                                                required></textarea>
-                                        </div>
-
-                                        <div class="flex justify-end space-x-3">
-                                            <button type="button" 
-                                                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
-                                                    x-on:click="$dispatch('close')">
-                                                Annuler
-                                            </button>
-                                            <button type="submit" 
-                                                    class="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
-                                                Confirmer le refus
-                                            </button>
-                                        </div>
-                                    </form>
                                 </div>
-                            </x-modal>
-                        @endif
+                                
+                                <!-- Contenu -->
+                                <div class="p-3 sm:p-4">
+                                    <!-- Badge de type -->
+                                    <div class="mb-3">
+                                        <span class="inline-block px-3 py-1 text-xs font-bold rounded-full
+                                            @if($item->type === 'service') bg-blue-100 text-blue-800
+                                            @elseif($item->type === 'equipment') bg-green-100 text-green-800
+                                            @else bg-red-100 text-red-800
+                                            @endif">
+                                            @if($item->type === 'service') SERVICE
+                                            @elseif($item->type === 'equipment') ÉQUIPEMENT
+                                            @else VENTE URGENTE
+                                            @endif
+                                        </span>
+                                    </div>
+                                    
+                                    <!-- Titre -->
+                                    <h3 class="text-base sm:text-lg font-bold 
+                                        @if($item->type === 'service') text-blue-900
+                                        @elseif($item->type === 'equipment') text-green-900
+                                        @else text-red-900
+                                        @endif
+                                        mb-2 line-clamp-2">{{ $item->title }}</h3>
+                                    
+                                    <!-- Informations -->
+                                    <div class="space-y-2 text-xs sm:text-sm mb-4">
+                                        <!-- Client avec photo -->
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full overflow-hidden flex-shrink-0">
+                                                @if($item->type === 'service' && $item->original->client->user->avatar)
+                                                    <img src="{{ asset('storage/' . $item->original->client->user->avatar) }}" 
+                                                         alt="{{ $item->client_name }}" 
+                                                         class="w-full h-full object-cover">
+                                                @elseif($item->type === 'equipment' && $item->original->client->user->avatar)
+                                                    <img src="{{ asset('storage/' . $item->original->client->user->avatar) }}" 
+                                                         alt="{{ $item->client_name }}" 
+                                                         class="w-full h-full object-cover">
+                                                @elseif($item->type === 'urgent_sale' && $item->original->client && $item->original->client->avatar)
+                                                    <img src="{{ asset('storage/' . $item->original->client->avatar) }}" 
+                                                         alt="{{ $item->client_name }}" 
+                                                         class="w-full h-full object-cover">
+                                                @else
+                                                    <div class="w-full h-full 
+                                                        @if($item->type === 'service') bg-blue-100
+                                                        @elseif($item->type === 'equipment') bg-green-100
+                                                        @else bg-red-100
+                                                        @endif
+                                                        flex items-center justify-center">
+                                                        <span class="text-xs font-medium
+                                                            @if($item->type === 'service') text-blue-600
+                                                            @elseif($item->type === 'equipment') text-green-600
+                                                            @else text-red-600
+                                                            @endif
+                                                            ">{{ substr($item->client_name, 0, 1) }}</span>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            <p class="
+                                                @if($item->type === 'service') text-blue-800
+                                                @elseif($item->type === 'equipment') text-green-800
+                                                @else text-red-800
+                                                @endif
+                                                font-medium truncate"><span class="hidden sm:inline">Client: </span>{{ $item->client_name }}</p>
+                                        </div>
+                                        
+                                        @if($item->category)
+                                            <p class="
+                                                @if($item->type === 'service') text-blue-700
+                                                @elseif($item->type === 'equipment') text-green-700
+                                                @else text-red-700
+                                                @endif
+                                                truncate"><span class="hidden sm:inline">Catégorie: </span><span class="sm:hidden">Cat: </span>{{ $item->category }}</p>
+                                        @endif
+                                        
+                                        @if($item->type === 'service' && $item->price)
+                                            <p class="text-blue-700 truncate">Prix: {{ number_format($item->price, 0, ',', ' ') }}€{{ $item->price_type === 'per_hour' ? '/h' : ($item->price_type === 'per_day' ? '/jour' : '') }}</p>
+                                        @elseif($item->type === 'equipment' && $item->start_date && $item->end_date)
+                                            <p class="text-green-700 truncate">Période: {{ \Carbon\Carbon::parse($item->start_date)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($item->end_date)->format('d/m/Y') }}</p>
+                                        @elseif($item->type === 'urgent_sale')
+                                            @if($item->price_min && $item->price_max)
+                                                <p class="text-red-700 truncate">Prix: {{ number_format($item->price_min, 0, ',', ' ') }}€ - {{ number_format($item->price_max, 0, ',', ' ') }}€</p>
+                                            @elseif($item->price)
+                                                <p class="text-red-700 truncate">Prix: {{ number_format($item->price, 0, ',', ' ') }}€</p>
+                                            @endif
+                                        @endif
+                                        
+                                        <p class="
+                                            @if($item->type === 'service') text-blue-600
+                                            @elseif($item->type === 'equipment') text-green-600
+                                            @else text-red-600
+                                            @endif
+                                            text-xs truncate">{{ $item->created_at->format('d/m/Y à H:i') }}</p>
+                                    </div>
+                                    
+                                    <!-- Statut et actions -->
+                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+                                        <span class="inline-block px-3 py-1 text-xs font-bold rounded-full self-start
+                                            @if($item->status === 'pending') bg-yellow-100 text-yellow-800
+                                            @elseif($item->status === 'accepted') bg-green-100 text-green-800
+                                            @elseif($item->status === 'rejected') bg-red-100 text-red-800
+                                            @endif">
+                                            @if($item->status === 'pending') En attente
+                                            @elseif($item->status === 'accepted') Acceptée
+                                            @elseif($item->status === 'rejected') Refusée
+                                            @endif
+                                        </span>
+                                        
+                                        <button class="px-3 py-2 w-full sm:w-auto
+                                            @if($item->type === 'service') bg-blue-600 hover:bg-blue-700
+                                            @elseif($item->type === 'equipment') bg-green-600 hover:bg-green-700
+                                            @else bg-red-600 hover:bg-red-700
+                                            @endif
+                                            text-white rounded-lg transition-colors duration-200 text-xs font-medium min-h-[44px] flex items-center justify-center">
+                                            Voir détails
+                                        </button>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
                     @endforeach
-                @endif
-
-                <!-- Section Équipements -->
-                @if($showEquipments && isset($equipmentRentalRequests) && $equipmentRentalRequests->count() > 0)
-                    <div class="mb-8">
-                        <div class="bg-white rounded-xl shadow-lg border border-green-200 p-6">
-                            <div class="flex items-center mb-6 border-b-2 border-green-200 pb-4">
-                                <div class="w-4 h-4 bg-green-600 rounded-full mr-3"></div>
-                                <h2 class="text-2xl font-bold text-green-800">Équipements à louer</h2>
-                                <span class="ml-3 bg-green-100 text-green-800 text-sm font-bold px-3 py-1 rounded-full">{{ $equipmentRentalRequests->count() }}</span>
-                            </div>
-                            
-                            <div class="space-y-4">
-                                @foreach($equipmentRentalRequests as $request)
-                                    <div class="bg-green-50 border-l-4 border-green-600 rounded-lg shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden">
-                                        <div class="flex flex-col md:flex-row">
-                                            <!-- Image à gauche (format 4:3) -->
-                                            <div class="w-full md:w-48 h-36 flex-shrink-0">
-                                                @if($request->equipment && $request->equipment->images && $request->equipment->images->count() > 0)
-                                                    <img src="{{ asset('storage/' . $request->equipment->images->first()->image_path) }}" 
-                                                         alt="{{ $request->equipment->name ?? 'Équipement' }}" 
-                                                         class="w-full h-full object-cover object-center" loading="lazy">
-                                                @else
-                                                    <div class="w-full h-full bg-green-100 flex items-center justify-center">
-                                                        <i class="fas fa-tools text-green-400 text-3xl"></i>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                            
-                                            <!-- Détails au centre -->
-                                            <div class="flex-1 p-6">
-                                                <div class="flex flex-col md:flex-row md:items-center md:justify-between h-full">
-                                                    <div class="flex-1">
-                                                        <!-- Titre -->
-                                                        <h3 class="text-xl font-bold text-green-900 mb-2">
-                                                            {{ $request->equipment->name ?? 'Équipement' }}
-                                                        </h3>
-                                                        
-                                                        <!-- Métadonnées -->
-                                                        <div class="space-y-1 text-sm mb-3">
-                                                            <p class="text-green-800 font-medium">Client: {{ $request->client->user->name ?? 'N/A' }}</p>
-                                                            <p class="text-green-700">Type: Location d'équipement</p>
-                                                            @if($request->equipment && $request->equipment->categories->first())
-                                                                <p class="text-green-700">Catégorie: {{ $request->equipment->categories->first()->name }}</p>
-                                                            @endif
-                                                            @if($request->start_date && $request->end_date)
-                                                                <p class="text-green-700">Période: {{ \Carbon\Carbon::parse($request->start_date)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($request->end_date)->format('d/m/Y') }}</p>
-                                                            @endif
-                                                            <p class="text-green-600 text-xs">{{ $request->created_at->format('d/m/Y à H:i') }}</p>
-                                                        </div>
-                                                        
-                                                        <!-- Statut -->
-                                                        <span class="inline-block px-3 py-1 text-xs font-bold rounded-full
-                                                            @if($request->status === 'pending') bg-yellow-100 text-yellow-800
-                                                            @elseif($request->status === 'accepted') bg-green-100 text-green-800
-                                                            @elseif($request->status === 'rejected') bg-red-100 text-red-800
-                                                            @endif">
-                                                            @if($request->status === 'pending') En attente
-                                                            @elseif($request->status === 'accepted') Acceptée
-                                                            @elseif($request->status === 'rejected') Refusée
-                                                            @endif
-                                                        </span>
-                                                    </div>
-                                                    
-                                                    <!-- Bouton à droite -->
-                                                    <div class="mt-4 md:mt-0 md:ml-6 flex flex-col space-y-2">
-                                                        <a href="{{ route('prestataire.equipment-rental-requests.show', $request->id) }}" 
-                                                           class="w-full md:w-auto px-4 py-2 bg-green-600 text-white text-sm font-bold rounded hover:bg-green-700 transition duration-200 text-center">
-                                                            Voir détails
-                                                        </a>
-                                                        @if($request->status === 'pending')
-                                                            <div class="flex space-x-2">
-                                                                <form action="{{ route('prestataire.equipment-rental-requests.accept', $request) }}" method="POST" class="flex-1">
-                                                                    @csrf
-                                                                    @method('PATCH')
-                                                                    <button type="submit" class="w-full px-3 py-1 bg-green-600 text-white text-xs font-bold rounded hover:bg-green-700 transition duration-200"
-                                                                            onclick="return confirm('Accepter cette demande de location ?')">
-                                                                        Accepter
-                                                                    </button>
-                                                                </form>
-                                                                <button type="button" 
-                                                                        class="flex-1 px-3 py-1 bg-red-600 text-white text-xs font-bold rounded hover:bg-red-700 transition duration-200"
-                                                                        x-data
-                                                                        @click="$dispatch('open-modal', 'reject-request-{{ $request->id }}')">
-                                                                    Refuser
-                                                                </button>
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
                     </div>
-                @endif
-
-                <!-- Section Ventes Urgentes -->
-                @if($showUrgentSales && isset($urgentSales) && $urgentSales->count() > 0)
-                    <div class="mb-8">
-                        <div class="bg-white rounded-xl shadow-lg border border-red-200 p-6">
-                            <div class="flex items-center mb-6 border-b-2 border-red-200 pb-4">
-                                <div class="w-4 h-4 bg-red-600 rounded-full mr-3"></div>
-                                <h2 class="text-2xl font-bold text-red-800">Ventes urgentes</h2>
-                                <span class="ml-3 bg-red-100 text-red-800 text-sm font-bold px-3 py-1 rounded-full">{{ $urgentSales->count() }}</span>
-                            </div>
-                            
-                            <div class="space-y-4">
-                                @foreach($urgentSales as $sale)
-                                    <div class="bg-red-50 border-l-4 border-red-600 rounded-lg shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden">
-                                        <div class="flex flex-col md:flex-row">
-                                            <!-- Image à gauche (format 4:3) -->
-                                            <div class="w-full md:w-48 h-36 flex-shrink-0">
-                                                @if($sale->images && $sale->images->count() > 0)
-                                                    <img src="{{ asset('storage/' . $sale->images->first()->image_path) }}" 
-                                                         alt="{{ $sale->title ?? 'Vente urgente' }}" 
-                                                         class="w-full h-full object-cover object-center" loading="lazy">
-                                                @else
-                                                    <div class="w-full h-full bg-red-100 flex items-center justify-center">
-                                                        <i class="fas fa-tag text-red-400 text-3xl"></i>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                            
-                                            <!-- Détails au centre -->
-                                            <div class="flex-1 p-6">
-                                                <div class="flex flex-col md:flex-row md:items-center md:justify-between h-full">
-                                                    <div class="flex-1">
-                                                        <!-- Titre -->
-                                                        <h3 class="text-xl font-bold text-red-900 mb-2">
-                                                            {{ $sale->title ?? 'Vente urgente' }}
-                                                        </h3>
-                                                        
-                                                        <!-- Métadonnées -->
-                                                        <div class="space-y-1 text-sm mb-3">
-                                                            <p class="text-red-800 font-medium">Client: {{ $sale->client->name ?? 'N/A' }}</p>
-                                                            <p class="text-red-700">Type: Vente urgente</p>
-                                                            @if($sale->category)
-                                                                <p class="text-red-700">Catégorie: {{ $sale->category->name }}</p>
-                                                            @endif
-                                                            @if($sale->price_min && $sale->price_max)
-                                                                <p class="text-red-700">Prix: {{ number_format($sale->price_min, 0, ',', ' ') }}€ - {{ number_format($sale->price_max, 0, ',', ' ') }}€</p>
-                                                            @elseif($sale->price)
-                                                                <p class="text-red-700">Prix: {{ number_format($sale->price, 0, ',', ' ') }}€</p>
-                                                            @endif
-                                                            <p class="text-red-600 text-xs">{{ $sale->created_at->format('d/m/Y à H:i') }}</p>
-                                                        </div>
-                                                        
-                                                        <!-- Statut -->
-                                                        <span class="inline-block px-3 py-1 text-xs font-bold rounded-full
-                                                            @if($sale->status === 'pending') bg-yellow-100 text-yellow-800
-                                                            @elseif($sale->status === 'accepted') bg-green-100 text-green-800
-                                                            @elseif($sale->status === 'rejected') bg-red-100 text-red-800
-                                                            @endif">
-                                                            @if($sale->status === 'pending') En attente
-                                                            @elseif($sale->status === 'accepted') Acceptée
-                                                            @elseif($sale->status === 'rejected') Refusée
-                                                            @endif
-                                                        </span>
-                                                    </div>
-                                                    
-                                                    <!-- Bouton à droite -->
-                                                    <div class="mt-4 md:mt-0 md:ml-6 flex flex-col space-y-2">
-                                                        <a href="{{ route('prestataire.urgent-sales.show', $sale->id) }}" 
-                                                           class="w-full md:w-auto px-4 py-2 bg-red-600 text-white text-sm font-bold rounded hover:bg-red-700 transition duration-200 text-center">
-                                                            Voir détails
-                                                        </a>
-                                                        @if($sale->status === 'pending')
-                                                            <div class="flex space-x-2">
-                                                                <form action="{{ route('prestataire.urgent-sales.accept', $sale->id) }}" method="POST" class="flex-1">
-                                                                    @csrf
-                                                                    @method('PATCH')
-                                                                    <button type="submit" class="w-full px-3 py-1 bg-green-600 text-white text-xs font-bold rounded hover:bg-green-700 transition duration-200">
-                                                                        Accepter
-                                                                    </button>
-                                                                </form>
-                                                                <form action="{{ route('prestataire.urgent-sales.reject', $sale->id) }}" method="POST" class="flex-1">
-                                                                    @csrf
-                                                                    @method('PATCH')
-                                                                    <button type="submit" class="w-full px-3 py-1 bg-red-600 text-white text-xs font-bold rounded hover:bg-red-700 transition duration-200">
-                                                                        Refuser
-                                                                    </button>
-                                                                </form>
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
+                </div>
+            </div>
+        @else
+            <div class="text-center py-16">
+                <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-12">
+                    <div class="text-blue-400 mb-6">
+                        <svg class="mx-auto h-24 w-24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
                     </div>
-                @endif
-            @else
-        <!-- États vides spécifiques par type -->
-        @if($showServices && (!isset($serviceBookings) || $serviceBookings->count() === 0))
-            <div class="text-center py-12">
-                <div class="mx-auto w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                    <i class="fas fa-calendar-alt text-blue-500 text-3xl"></i>
+                    <h3 class="text-2xl font-bold text-blue-900 mb-4">Aucune demande pour le moment</h3>
+                    <p class="text-blue-700 text-lg mb-8">Vous n'avez reçu aucune demande de réservation pour vos services, équipements ou annonces.</p>
+                    <div class="space-y-4">
+                        <a href="{{ route('prestataire.services.index') }}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 mr-4">
+                            <i class="fas fa-plus mr-2"></i>Ajouter un service
+                        </a>
+                        <a href="{{ route('prestataire.equipment.index') }}" class="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
+                            <i class="fas fa-tools mr-2"></i>Ajouter un équipement
+                        </a>
+                    </div>
                 </div>
-                <h3 class="text-xl font-semibold text-blue-700 mb-2">Aucune demande de service</h3>
-                <p class="text-blue-500">Vous n'avez reçu aucune demande de service pour le moment.</p>
             </div>
         @endif
-
-        @if($showEquipments && (!isset($equipmentRentalRequests) || $equipmentRentalRequests->count() === 0))
-            <div class="text-center py-12">
-                <div class="mx-auto w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                    <i class="fas fa-tools text-green-500 text-3xl"></i>
-                </div>
-                <h3 class="text-xl font-semibold text-green-700 mb-2">Aucune demande d'équipement</h3>
-                <p class="text-green-500">Vous n'avez reçu aucune demande de location d'équipement pour le moment.</p>
-            </div>
-        @endif
-
-        @if($showUrgentSales && (!isset($urgentSales) || $urgentSales->count() === 0))
-            <div class="text-center py-12">
-                <div class="mx-auto w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mb-4">
-                    <i class="fas fa-tag text-red-500 text-3xl"></i>
-                </div>
-                <h3 class="text-xl font-semibold text-red-700 mb-2">Aucune vente urgente</h3>
-                <p class="text-red-500">Vous n'avez reçu aucune demande de vente urgente pour le moment.</p>
-            </div>
-        @endif
-
-        <!-- État vide général -->
-        @if(!$hasItems && !request('type'))
-            <div class="text-center py-12">
-                <div class="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                    <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                    </svg>
-                </div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">Aucune demande</h3>
-                <p class="text-gray-500">Vous n'avez aucune demande pour le moment.</p>
-            </div>
-        @endif
-    @endif
+    </div>
 </div>
 
+<style>
+.filter-btn.active {
+    background-color: #4B5563 !important;
+    color: white !important;
+}
+
+.filter-btn.active:hover {
+    background-color: #374151 !important;
+}
+
+.booking-item {
+    transition: all 0.3s ease;
+}
+
+.booking-item.hidden {
+    display: none !important;
+}
+</style>
+
 <script>
-// Script pour les notifications en temps réel (à implémenter plus tard)
+let currentFilter = 'all';
+
+function filterByType(type) {
+    currentFilter = type;
+    
+    // Mettre à jour le titre de la section
+    const sectionTitle = document.getElementById('section-title');
+    switch(type) {
+        case 'service':
+            sectionTitle.textContent = 'Demandes de services';
+            break;
+        case 'equipment':
+            sectionTitle.textContent = 'Demandes d\'équipements';
+            break;
+        case 'urgent_sale':
+            sectionTitle.textContent = 'Demandes d\'annonces';
+            break;
+        default:
+            sectionTitle.textContent = 'Toutes les demandes';
+    }
+    
+    // Mettre à jour l'état des boutons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.classList.remove('bg-gray-600', 'text-white');
+        btn.classList.add('bg-gray-100', 'text-gray-700');
+    });
+    
+    const activeBtn = document.getElementById('btn-' + type);
+    activeBtn.classList.add('active');
+    activeBtn.classList.remove('bg-gray-100', 'text-gray-700');
+    activeBtn.classList.add('bg-gray-600', 'text-white');
+    
+    // Filtrer les éléments
+    const bookingItems = document.querySelectorAll('.booking-item');
+    bookingItems.forEach(item => {
+        const itemType = item.getAttribute('data-type');
+        
+        if (type === 'all' || itemType === type) {
+            item.classList.remove('hidden');
+            item.style.display = 'block';
+        } else {
+            item.classList.add('hidden');
+            item.style.display = 'none';
+        }
+    });
+    
+    // Appliquer aussi le filtre de statut si nécessaire
+    applyStatusFilter();
+}
+
+function applyStatusFilter() {
+    const statusFilter = document.getElementById('statusFilter').value;
+    const bookingItems = document.querySelectorAll('.booking-item');
+    
+    bookingItems.forEach(item => {
+        const itemStatus = item.getAttribute('data-status');
+        const itemType = item.getAttribute('data-type');
+        
+        // Vérifier si l'élément passe les deux filtres
+        const passesTypeFilter = (currentFilter === 'all' || itemType === currentFilter);
+        const passesStatusFilter = (statusFilter === 'all' || itemStatus === statusFilter);
+        
+        if (passesTypeFilter && passesStatusFilter) {
+            item.classList.remove('hidden');
+            item.style.display = 'block';
+        } else {
+            item.classList.add('hidden');
+            item.style.display = 'none';
+        }
+    });
+}
+
+function resetFilters() {
+    currentFilter = 'all';
+    document.getElementById('statusFilter').value = 'all';
+    filterByType('all');
+}
+
+// Écouter les changements du filtre de statut
 document.addEventListener('DOMContentLoaded', function() {
-    // Ici on pourra ajouter la logique pour les notifications en temps réel
-    // et la mise à jour automatique des statuts
+    document.getElementById('statusFilter').addEventListener('change', applyStatusFilter);
 });
 </script>
 @endsection

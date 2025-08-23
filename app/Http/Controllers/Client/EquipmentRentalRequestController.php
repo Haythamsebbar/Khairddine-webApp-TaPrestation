@@ -111,8 +111,7 @@ class EquipmentRentalRequestController extends Controller
             'equipment_id' => 'required|exists:equipment,id',
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'delivery_required' => 'nullable|boolean',
-            'delivery_address' => 'nullable|string|max:255',
+
             'client_message' => 'nullable|string|max:2000',
         ]);
         } catch (ValidationException $e) {
@@ -147,7 +146,7 @@ class EquipmentRentalRequestController extends Controller
             'unit_price' => $equipment->price_per_day, // Assuming daily rate is the unit price
             'total_amount' => $rentalCost,
             'security_deposit' => $equipment->security_deposit,
-            'final_amount' => $rentalCost + (isset($validated['delivery_required']) && $validated['delivery_required'] ? $equipment->delivery_fee : 0),
+            'final_amount' => $rentalCost,
             'pickup_address' => $equipment->address,
         ]);
 
@@ -229,11 +228,11 @@ class EquipmentRentalRequestController extends Controller
                 'unit_price' => $request->unit_price,
                 'total_amount' => $request->total_amount,
                 'security_deposit' => $request->security_deposit,
-                'delivery_fee' => $request->delivery_fee,
+
                 'final_amount' => $request->final_amount,
-                'delivery_address' => $request->delivery_address,
+
                 'pickup_address' => $request->pickup_address,
-                'delivery_required' => $request->delivery_required,
+
                 'pickup_required' => $request->pickup_required,
                 'special_requirements' => $request->special_requirements,
                 'rental_status' => 'confirmed',
@@ -314,9 +313,9 @@ class EquipmentRentalRequestController extends Controller
             'end_date' => 'required|date|after:start_date',
             'start_time' => 'nullable|date_format:H:i',
             'end_time' => 'nullable|date_format:H:i',
-            'delivery_address' => 'nullable|string|max:500',
+
             'pickup_address' => 'nullable|string|max:500',
-            'delivery_required' => 'boolean',
+
             'pickup_required' => 'boolean',
             'client_message' => 'nullable|string|max:1000',
             'special_requirements' => 'nullable|string|max:500'
@@ -333,15 +332,14 @@ class EquipmentRentalRequestController extends Controller
         $durationDays = $startDate->diffInDays($endDate) + 1;
         
         $totalAmount = $rentalRequest->equipment->calculatePrice($durationDays);
-        $deliveryFee = ($validated['delivery_required'] && !$rentalRequest->equipment->delivery_included) ? $rentalRequest->equipment->delivery_fee : 0;
-        $finalAmount = $totalAmount + $deliveryFee + $rentalRequest->equipment->security_deposit;
+        $finalAmount = $totalAmount + $rentalRequest->equipment->security_deposit;
         
         $rentalRequest->update(array_merge($validated, [
             'duration_days' => $durationDays,
             'total_amount' => $totalAmount,
-            'delivery_fee' => $deliveryFee,
+
             'final_amount' => $finalAmount,
-            'delivery_required' => $validated['delivery_required'] ?? false,
+
             'pickup_required' => $validated['pickup_required'] ?? false,
             'updated_at' => now()
         ]));

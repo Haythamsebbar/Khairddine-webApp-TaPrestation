@@ -3,79 +3,107 @@
 @section('page-title', 'Tableau de bord')
 
 @section('content')
-<!-- Stats Cards -->
-<div class="stats-grid">
-    <div class="stat-card primary">
+<div class="page-header">
+    <h1 class="page-title">Tableau de Bord Administrateur</h1>
+    <p class="page-subtitle">Vue d'ensemble des activités et statistiques de la plateforme</p>
+</div>
+
+<!-- Action Buttons -->
+<div class="flex justify-end mb-8">
+    <div class="flex space-x-4">
+        <button class="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 font-medium">
+            <i class="fas fa-download mr-2"></i>Exporter les données
+        </button>
+        <button class="bg-white text-blue-600 border-2 border-blue-200 px-6 py-3 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 font-medium">
+            <i class="fas fa-cog mr-2"></i>Paramètres
+        </button>
+    </div>
+</div>
+
+<!-- Statistiques Principales -->
+<div class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+        <i class="fas fa-chart-bar mr-3 text-blue-600"></i>
+        Statistiques Principales
+    </h2>
+    <div class="stats-grid">
+    <div class="stat-card card-base">
         <div class="stat-header">
             <div>
-                <div class="stat-title">Total Utilisateurs</div>
-                <div class="stat-value">{{ $totalUsersCount ?? 0 }}</div>
+                <div class="text-title">Total Utilisateurs</div>
+                <div class="text-value">{{ $totalUsersCount ?? 0 }}</div>
                 <div class="stat-change {{ $userChange >= 0 ? 'positive' : 'negative' }}">
                     <i class="fas {{ $userChange >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' }}"></i>
                     <span>{{ number_format($userChange, 1) }}% ce mois</span>
                 </div>
             </div>
-            <div class="stat-icon primary">
+            <div class="icon-base variant-primary">
                 <i class="fas fa-users"></i>
             </div>
         </div>
     </div>
     
-    <div class="stat-card success">
+    <div class="stat-card card-base">
         <div class="stat-header">
             <div>
-                <div class="stat-title">Prestataires Approuvés</div>
-                <div class="stat-value">{{ $approvedPrestatairesCount ?? 0 }}</div>
+                <div class="text-title">Prestataires Approuvés</div>
+                <div class="text-value">{{ $approvedPrestatairesCount ?? 0 }}</div>
                 <div class="stat-change {{ $prestataireChange >= 0 ? 'positive' : 'negative' }}">
                     <i class="fas {{ $prestataireChange >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' }}"></i>
                     <span>{{ number_format($prestataireChange, 1) }}% ce mois</span>
                 </div>
             </div>
-            <div class="stat-icon success">
+            <div class="icon-base variant-success">
                 <i class="fas fa-user-check"></i>
             </div>
         </div>
     </div>
     
-    <div class="stat-card warning">
+    <div class="stat-card card-base">
         <div class="stat-header">
             <div>
-                <div class="stat-title">En Attente</div>
-                <div class="stat-value">{{ $pendingPrestatairesCount ?? 0 }}</div>
+                <div class="text-title">En Attente</div>
+                <div class="text-value">{{ $pendingPrestatairesCount ?? 0 }}</div>
                 <div class="stat-change {{ $pendingChange >= 0 ? 'positive' : 'negative' }}">
                     <i class="fas {{ $pendingChange >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' }}"></i>
                     <span>{{ number_format($pendingChange, 1) }}% ce mois</span>
                 </div>
             </div>
-            <div class="stat-icon warning">
+            <div class="icon-base variant-warning">
                 <i class="fas fa-clock"></i>
             </div>
         </div>
     </div>
     
-    <div class="stat-card info">
+    <div class="stat-card card-base">
         <div class="stat-header">
             <div>
-                <div class="stat-title">Services Actifs</div>
-                <div class="stat-value">{{ $activeServicesCount ?? 0 }}</div>
+                <div class="text-title">Services Actifs</div>
+                <div class="text-value">{{ $activeServicesCount ?? 0 }}</div>
                 <div class="stat-change {{ $serviceChange >= 0 ? 'positive' : 'negative' }}">
                     <i class="fas {{ $serviceChange >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' }}"></i>
                     <span>{{ number_format($serviceChange, 1) }}% ce mois</span>
                 </div>
             </div>
-            <div class="stat-icon info">
+            <div class="icon-base variant-info">
                 <i class="fas fa-briefcase"></i>
             </div>
         </div>
     </div>
+    </div>
 </div>
 
-<!-- Charts Row -->
-<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 2rem;">
-    <!-- Main Chart -->
-    <div class="chart-card">
-        <div class="chart-header">
-            <div class="chart-title">Évolution des Inscriptions</div>
+<!-- Analyses et Tendances -->
+<div class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+        <i class="fas fa-chart-line mr-3 text-blue-600"></i>
+        Analyses et Tendances
+    </h2>
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
+        <!-- Main Chart -->
+        <div class="chart-card card-base xl:col-span-2">
+        <div class="chart-header card-header">
+            <div class="card-title">Évolution des Inscriptions</div>
             <div style="display: flex; gap: 1rem;" id="chart-period-buttons">
                 <button class="btn btn-outline" data-period="7j">7j</button>
                 <button class="btn btn-outline" data-period="30j">30j</button>
@@ -86,20 +114,20 @@
             <canvas id="registrationsChart"></canvas>
         </div>
     </div>
-    
-    <!-- Progress Stats -->
-    <div class="chart-card">
-        <div class="chart-header">
-            <div class="chart-title">Statistiques Détaillées</div>
+        
+        <!-- Progress Stats -->
+        <div class="chart-card card-base">
+        <div class="chart-header card-header">
+            <div class="card-title">Statistiques Détaillées</div>
         </div>
         <div style="padding: 1rem 0;">
             <div style="margin-bottom: 2rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                    <span style="font-weight: 500;">Demandes de services</span>
-                    <span style="font-weight: 600; color: var(--primary);">{{ $totalClientRequests ?? 0 }}</span>
+                    <span style="font-weight: 500;">Total des services</span>
+                    <span style="font-weight: 600; color: var(--primary);">{{ $totalServices ?? 0 }}</span>
                 </div>
                 <div class="progress">
-                    <div class="progress-bar primary" style="width: 85%;"></div>
+                    <div class="progress-bar variant-primary" style="width: 85%;"></div>
                 </div>
             </div>
             
@@ -109,7 +137,7 @@
                     <span style="font-weight: 600; color: var(--success);">{{ $totalServices ?? 0 }}</span>
                 </div>
                 <div class="progress">
-                    <div class="progress-bar success" style="width: 70%;"></div>
+                    <div class="progress-bar variant-success" style="width: 70%;"></div>
                 </div>
             </div>
             
@@ -119,7 +147,7 @@
                     <span style="font-weight: 600; color: var(--info);">{{ $totalMessages ?? 0 }}</span>
                 </div>
                 <div class="progress">
-                    <div class="progress-bar info" style="width: 92%;"></div>
+                    <div class="progress-bar variant-info" style="width: 92%;"></div>
                 </div>
             </div>
             
@@ -129,19 +157,24 @@
                     <span style="font-weight: 600; color: var(--warning);">{{ $satisfactionRate ?? 0 }}%</span>
                 </div>
                 <div class="progress">
-                    <div class="progress-bar warning" style="width: {{ $satisfactionRate ?? 0 }}%;"></div>
+                    <div class="progress-bar variant-warning" style="width: {{ $satisfactionRate ?? 0 }}%;"></div>
                 </div>
             </div>
-        </div>
     </div>
 </div>
+</div>
 
-<!-- Tables Row -->
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+<!-- Activités Récentes -->
+<div class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+        <i class="fas fa-clock mr-3 text-blue-600"></i>
+        Activités Récentes
+    </h2>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <!-- Pending Prestataires -->
-    <div class="table-card">
-        <div class="table-header">
-            <div class="table-title">Prestataires en Attente</div>
+    <div class="table-card card-base">
+        <div class="table-header card-header">
+            <div class="card-title">Prestataires en Attente</div>
             <a href="{{ route('administrateur.prestataires.pending') }}" class="btn btn-outline">
                 <i class="fas fa-eye"></i>
                 Voir tout
@@ -184,7 +217,7 @@
                                             {{ $prestataire->user->name }}
                                             @if($prestataire->isVerified())
                                                 <span style="padding: 0.125rem 0.375rem; border-radius: 9999px; font-size: 0.625rem; font-weight: 500; background: rgba(16, 185, 129, 0.1); color: #10b981;">
-                                                    ✓ Vérifié
+                                                    Vérifié
                                                 </span>
                                             @endif
                                         </div>
@@ -269,6 +302,7 @@
             </table>
         </div>
     </div>
+</div>
 </div>
 @endsection
 

@@ -8,30 +8,75 @@
 @endpush
 
 @section('content')
-<div class="bg-blue-50">
-    <div class="container mx-auto px-4 py-8">
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div class="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 lg:py-8">
         <div class="max-w-4xl mx-auto">
             <!-- En-tête -->
-            <div class="mb-8 text-center">
-                <h1 class="text-4xl font-extrabold text-blue-900 mb-2">Créer un nouveau service</h1>
-                <p class="text-lg text-blue-700">Créez votre annonce de service professionnel</p>
+            <div class="mb-6 sm:mb-8 text-center">
+                <h1 class="text-2xl sm:text-3xl font-bold text-blue-900 mb-2">Créer un nouveau service</h1>
+                <p class="text-sm sm:text-base text-blue-700 px-2 sm:px-0">Créez votre annonce de service professionnel étape par étape</p>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6 mb-6">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
+            <!-- Indicateur d'étapes -->
+            <div class="bg-white rounded-xl sm:rounded-2xl shadow-xl border border-blue-200 p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3 sm:space-x-4">
                         <a href="{{ route('prestataire.services.index') }}" class="text-blue-600 hover:text-blue-900 transition-colors duration-200">
-                            <i class="fas fa-arrow-left text-xl"></i>
+                            <i class="fas fa-arrow-left text-lg sm:text-xl"></i>
                         </a>
                         <div>
-                            <h2 class="text-xl font-bold text-blue-900">Nouveau service</h2>
-                            <p class="text-blue-700">Remplissez les informations de votre service</p>
+                            <h2 class="text-lg sm:text-xl font-bold text-blue-900">Nouveau service</h2>
+                            <p class="text-sm sm:text-base text-blue-700 hidden sm:block">Étape par étape</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Barre de progression -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-1 sm:space-x-2 lg:space-x-4 w-full overflow-x-auto">
+                        <div class="flex items-center flex-shrink-0">
+                            <div class="w-6 h-6 sm:w-8 sm:h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs sm:text-sm font-bold">
+                                1
+                            </div>
+                            <span class="ml-1 sm:ml-2 text-xs sm:text-sm font-medium text-blue-600 hidden sm:inline">Informations</span>
+                            <span class="ml-1 text-xs font-medium text-blue-600 sm:hidden">Info</span>
+                        </div>
+                        <div class="flex-1 h-1 bg-gray-200 rounded min-w-4">
+                            <div class="h-1 bg-blue-600 rounded" style="width: 0%"></div>
+                        </div>
+                        <div class="flex items-center flex-shrink-0">
+                            <div class="w-6 h-6 sm:w-8 sm:h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold">
+                                2
+                            </div>
+                            <span class="ml-1 sm:ml-2 text-xs sm:text-sm font-medium text-gray-500 hidden sm:inline">Prix & Catégorie</span>
+                            <span class="ml-1 text-xs font-medium text-gray-500 sm:hidden">Prix</span>
+                        </div>
+                        <div class="flex-1 h-1 bg-gray-200 rounded min-w-4">
+                            <div class="h-1 bg-gray-200 rounded" style="width: 0%"></div>
+                        </div>
+                        <div class="flex items-center flex-shrink-0">
+                            <div class="w-6 h-6 sm:w-8 sm:h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold">
+                                3
+                            </div>
+                            <span class="ml-1 sm:ml-2 text-xs sm:text-sm font-medium text-gray-500 hidden sm:inline">Photos</span>
+                            <span class="ml-1 text-xs font-medium text-gray-500 sm:hidden">Photo</span>
+                        </div>
+                        <div class="flex-1 h-1 bg-gray-200 rounded min-w-4">
+                            <div class="h-1 bg-gray-200 rounded" style="width: 0%"></div>
+                        </div>
+                        <div class="flex items-center flex-shrink-0">
+                            <div class="w-6 h-6 sm:w-8 sm:h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold">
+                                4
+                            </div>
+                            <span class="ml-1 sm:ml-2 text-xs sm:text-sm font-medium text-gray-500 hidden sm:inline">Localisation</span>
+                            <span class="ml-1 text-xs font-medium text-gray-500 sm:hidden">Lieu</span>
                         </div>
                     </div>
                 </div>
             </div>
+
             @if ($errors->any())
-            <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6 rounded-r-lg" role="alert">
+            <div class="bg-red-50 border-l-4 border-red-400 p-3 sm:p-4 mb-4 sm:mb-6 rounded-r-lg" role="alert">
                 <div class="flex">
                     <div class="flex-shrink-0">
                         <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
@@ -52,293 +97,71 @@
             </div>
             @endif
 
-            <form method="POST" action="{{ route('prestataire.services.store') }}" enctype="multipart/form-data" id="serviceForm">
-                @csrf
+            <!-- Boutons de navigation -->
+            <div class="flex justify-center space-x-4 mb-4 sm:mb-6">
+                <a href="{{ route('prestataire.services.create.step1') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg transition duration-200 font-semibold shadow-lg hover:shadow-xl text-sm sm:text-base">
+                    <i class="fas fa-play mr-1 sm:mr-2"></i>Commencer
+                </a>
+            </div>
 
-                <!-- Informations de base -->
-                <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6 mb-6">
-                    <h2 class="text-xl font-bold text-blue-900 mb-4 border-b border-blue-200 pb-2">Informations de base</h2>
-                    
-                    <div class="space-y-6">
-                        <!-- Titre -->
-                        <div>
-                            <label for="title" class="block text-sm font-medium text-blue-700 mb-2">Titre du service *</label>
-                            <input type="text" id="title" name="title" value="{{ old('title') }}" required maxlength="255" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('title') border-red-500 @enderror">
-                            @error('title')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        
-                        <!-- Description -->
-                        <div>
-                            <label for="description" class="block text-sm font-medium text-blue-700 mb-2">Description détaillée *</label>
-                            <textarea id="description" name="description" required rows="6" maxlength="2000" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('description') border-red-500 @enderror" placeholder="Décrivez en détail votre service, vos compétences et ce qui vous différencie...">{{ old('description') }}</textarea>
-                            @error('description')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Reservable -->
-                        <div>
-                            <label for="reservable" class="inline-flex items-center">
-                                <input id="reservable" type="checkbox" class="rounded border-blue-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-offset-0 focus:ring-blue-200 focus:ring-opacity-50" name="reservable" {{ old('reservable') ? 'checked' : '' }}>
-                                <span class="ml-2 text-sm text-blue-600">Activer la réservation directe pour ce service</span>
-                            </label>
-                        </div>
-
-                        <!-- Delivery time -->
-                        <div>
-                            <label for="delivery_time" class="block text-sm font-medium text-blue-700 mb-2">Délai de livraison (en jours)</label>
-                            <input type="number" id="delivery_time" name="delivery_time" value="{{ old('delivery_time') }}" min="1" max="365" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('delivery_time') border-red-500 @enderror">
-                            @error('delivery_time')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
+            <!-- Aperçu des étapes -->
+            <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+                <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-3 sm:p-4 lg:p-6 text-center">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                        <i class="fas fa-info-circle text-blue-600 text-lg sm:text-xl lg:text-2xl"></i>
                     </div>
+                    <h3 class="text-base sm:text-lg font-bold text-blue-900 mb-1 sm:mb-2">Étape 1</h3>
+                    <p class="text-xs sm:text-sm text-blue-700">Informations de base</p>
+                    <p class="text-xs text-gray-600 mt-1 sm:mt-2 hidden sm:block">Titre, description, options</p>
                 </div>
-
-                <!-- Prix -->
-                <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6 mb-6">
-                    <h2 class="text-xl font-bold text-blue-900 mb-4 border-b border-blue-200 pb-2">Prix du service</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="price" class="block text-sm font-medium text-blue-700 mb-2">Prix (€)</label>
-                            <input type="number" id="price" name="price" value="{{ old('price') }}" min="0" step="0.01" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('price') border-red-500 @enderror">
-                            @error('price')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div>
-                            <label for="price_type" class="block text-sm font-medium text-blue-700 mb-2">Type de tarification</label>
-                            <select id="price_type" name="price_type" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('price_type') border-red-500 @enderror">
-                                <option value="">Sélectionnez un type</option>
-                                <option value="fixe" {{ old('price_type') == 'fixe' ? 'selected' : '' }}>Prix fixe</option>
-                                <option value="heure" {{ old('price_type') == 'heure' ? 'selected' : '' }}>Par heure</option>
-                                <option value="jour" {{ old('price_type') == 'jour' ? 'selected' : '' }}>Par jour</option>
-                                <option value="projet" {{ old('price_type') == 'projet' ? 'selected' : '' }}>Par projet</option>
-                                <option value="devis" {{ old('price_type') == 'devis' ? 'selected' : '' }}>Sur devis</option>
-                            </select>
-                            @error('price_type')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
+                
+                <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-3 sm:p-4 lg:p-6 text-center">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                        <i class="fas fa-tags text-green-600 text-lg sm:text-xl lg:text-2xl"></i>
                     </div>
+                    <h3 class="text-base sm:text-lg font-bold text-blue-900 mb-1 sm:mb-2">Étape 2</h3>
+                    <p class="text-xs sm:text-sm text-blue-700">Prix & Catégorie</p>
+                    <p class="text-xs text-gray-600 mt-1 sm:mt-2 hidden sm:block">Tarification et classification</p>
                 </div>
-
-                <!-- Catégorie -->
-                <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6 mb-6">
-                    <h2 class="text-xl font-bold text-blue-900 mb-4 border-b border-blue-200 pb-2">Catégorie du service</h2>
-                    <label for="category_id" class="block text-sm font-medium text-blue-700 mb-2">Catégorie *</label>
-                    <select id="category_id" name="category_id" required class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('category_id') border-red-500 @enderror">
-                        <option value="">Sélectionner une catégorie</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-                        @endforeach
-                    </select>
-                    @error('category_id')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- Photos -->
-                <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6 mb-6">
-                    <h2 class="text-xl font-bold text-blue-900 mb-4 border-b border-blue-200 pb-2">Photos</h2>
-                    <div class="border-2 border-dashed border-blue-300 rounded-lg p-6 text-center bg-blue-50 hover:border-blue-400 transition-colors">
-                        <input type="file" id="images" name="images[]" multiple accept="image/*" class="hidden" onchange="previewImages(this)">
-                        <div id="upload-area" class="cursor-pointer" onclick="document.getElementById('images').click()">
-                            <i class="fas fa-cloud-upload-alt text-blue-400 text-4xl mb-4"></i>
-                            <p class="text-blue-600 mb-2">Cliquez pour ajouter des photos ou glissez-déposez</p>
-                            <p class="text-blue-500 text-sm">Maximum 5 photos, 5MB par photo</p>
-                        </div>
-                        <div id="image-preview" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-4 hidden"></div>
+                
+                <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-3 sm:p-4 lg:p-6 text-center">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                        <i class="fas fa-camera text-purple-600 text-lg sm:text-xl lg:text-2xl"></i>
                     </div>
-                    @error('images')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                    @error('images.*')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
+                    <h3 class="text-base sm:text-lg font-bold text-blue-900 mb-1 sm:mb-2">Étape 3</h3>
+                    <p class="text-xs sm:text-sm text-blue-700">Photos</p>
+                    <p class="text-xs text-gray-600 mt-1 sm:mt-2 hidden sm:block">Images de votre service</p>
                 </div>
-
-                <!-- Localisation -->
-                <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6 mb-6">
-                    <h2 class="text-xl font-bold text-blue-900 mb-4 border-b border-blue-200 pb-2">Localisation</h2>
-                    <div class="map-container">
-                        <div id="serviceMap" class="h-64 rounded-lg border border-blue-300"></div>
-                        <div class="mt-3">
-                            <input type="text" id="selectedAddress" name="address" value="{{ old('address') }}" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('address') border-red-500 @enderror" placeholder="Cliquez sur la carte pour sélectionner une localisation" readonly>
-                            <input type="hidden" id="latitude" name="latitude" value="{{ old('latitude') }}">
-                            <input type="hidden" id="longitude" name="longitude" value="{{ old('longitude') }}">
-                            @error('address')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                            <div class="flex gap-3 mt-3">
-                                <button type="button" id="getCurrentLocationBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition duration-200"><i class="fas fa-location-arrow mr-2"></i>Ma position actuelle</button>
-                                <button type="button" id="clearLocationBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition duration-200"><i class="fas fa-times mr-2"></i>Effacer la localisation</button>
-                            </div>
-                        </div>
+                
+                <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-3 sm:p-4 lg:p-6 text-center">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                        <i class="fas fa-map-marker-alt text-orange-600 text-lg sm:text-xl lg:text-2xl"></i>
                     </div>
+                    <h3 class="text-base sm:text-lg font-bold text-blue-900 mb-1 sm:mb-2">Étape 4</h3>
+                    <p class="text-xs sm:text-sm text-blue-700">Localisation</p>
+                    <p class="text-xs text-gray-600 mt-1 sm:mt-2 hidden sm:block">Où proposez-vous ce service</p>
                 </div>
-
-                <!-- Actions -->
-                <div class="flex justify-between items-center pt-8 border-t border-blue-200">
-                    <a href="{{ route('prestataire.services.index') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 px-6 py-3 rounded-lg transition duration-200 font-medium">
-                        <i class="fas fa-arrow-left mr-2"></i>Annuler
-                    </a>
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg transition duration-200 font-semibold shadow-lg hover:shadow-xl">
-                        <i class="fas fa-check mr-2"></i>Créer le service
-                    </button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
 @endsection
 
 @push('scripts')
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
-        crossorigin=""></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Map Initialization
-    let map = null;
-    let marker = null;
-    const defaultLat = 33.5731; // Casablanca
-    const defaultLng = -7.5898;
-
-    function initializeMap() {
-        const mapElement = document.getElementById('serviceMap');
-        if (!mapElement) return;
-
-        map = L.map('serviceMap').setView([defaultLat, defaultLng], 6);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-
-        map.on('click', function(e) {
-            const lat = e.latlng.lat;
-            const lng = e.latlng.lng;
-            updateMarker(lat, lng);
-            reverseGeocode(lat, lng);
+    // Animation des cartes d'étapes
+    const cards = document.querySelectorAll('.bg-white.rounded-xl');
+    cards.forEach((card, index) => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+            this.style.transition = 'transform 0.3s ease';
         });
-    }
-
-    function updateMarker(lat, lng) {
-        if (marker) {
-            marker.setLatLng([lat, lng]);
-        } else {
-            marker = L.marker([lat, lng]).addTo(map);
-        }
-        document.getElementById('latitude').value = lat.toFixed(6);
-        document.getElementById('longitude').value = lng.toFixed(6);
-    }
-
-    async function reverseGeocode(lat, lng) {
-        try {
-            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1&accept-language=fr`);
-            const data = await response.json();
-            document.getElementById('selectedAddress').value = data.display_name || `Coordonnées: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-        } catch (error) {
-            console.error('Error during reverse geocoding:', error);
-            document.getElementById('selectedAddress').value = `Coordonnées: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-        }
-    }
-
-    document.getElementById('getCurrentLocationBtn').addEventListener('click', function() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                const lat = position.coords.latitude;
-                const lng = position.coords.longitude;
-                map.setView([lat, lng], 13);
-                updateMarker(lat, lng);
-                reverseGeocode(lat, lng);
-            }, function(error) {
-                alert('Erreur de géolocalisation: ' + error.message);
-            });
-        } else {
-            alert('La géolocalisation n\'est pas supportée par votre navigateur.');
-        }
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
     });
-
-    document.getElementById('clearLocationBtn').addEventListener('click', function() {
-        if (marker) {
-            map.removeLayer(marker);
-            marker = null;
-        }
-        document.getElementById('latitude').value = '';
-        document.getElementById('longitude').value = '';
-        document.getElementById('selectedAddress').value = '';
-        map.setView([defaultLat, defaultLng], 6);
-    });
-
-    initializeMap();
-
-    // Image Preview
-    const imageInput = document.getElementById('images');
-    const previewContainer = document.getElementById('image-preview');
-    const uploadArea = document.getElementById('upload-area');
-
-    window.previewImages = function(input) {
-        previewContainer.innerHTML = '';
-        if (input.files && input.files.length > 0) {
-            previewContainer.classList.remove('hidden');
-            uploadArea.classList.add('hidden');
-            
-            const files = Array.from(input.files).slice(0, 5);
-            
-            files.forEach((file, index) => {
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const div = document.createElement('div');
-                        div.className = 'relative group';
-                        div.innerHTML = `
-                            <img src="${e.target.result}" class="w-full h-24 object-cover rounded-lg">
-                            <button type="button" onclick="removeImage(${index})" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        `;
-                        previewContainer.appendChild(div);
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-
-            if (files.length < 5) {
-                const addMore = document.createElement('div');
-                addMore.className = 'flex items-center justify-center h-24 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 transition-colors';
-                addMore.innerHTML = '<i class="fas fa-plus text-gray-400 text-xl"></i>';
-                addMore.onclick = () => imageInput.click();
-                previewContainer.appendChild(addMore);
-            }
-        } else {
-            previewContainer.classList.add('hidden');
-            uploadArea.classList.remove('hidden');
-        }
-    }
-
-    window.removeImage = function(index) {
-        const dt = new DataTransfer();
-        const files = imageInput.files;
-        for (let i = 0; i < files.length; i++) {
-            if (i !== index) {
-                dt.items.add(files[i]);
-            }
-        }
-        imageInput.files = dt.files;
-        previewImages(imageInput);
-    }
 });
 </script>
-@endpush
-
-@push('styles')
-<style>
-.group:hover .group-hover\:opacity-100 {
-    opacity: 1;
-}
-</style>
 @endpush

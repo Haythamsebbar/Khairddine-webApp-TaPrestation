@@ -158,13 +158,7 @@ class Prestataire extends Model
         return $this->hasMany(Review::class);
     }
 
-    /**
-     * Relation avec les offres soumises
-     */
-    public function offers(): HasMany
-    {
-        return $this->hasMany(Offer::class);
-    }
+
 
     /**
      * Relation avec les disponibilités
@@ -174,13 +168,7 @@ class Prestataire extends Model
         return $this->hasMany(PrestataireAvailability::class);
     }
 
-    /**
-     * Relation avec les exceptions de disponibilité
-     */
-    public function availabilityExceptions(): HasMany
-    {
-        return $this->hasMany(AvailabilityException::class);
-    }
+
 
     /**
      * Relation avec les équipements
@@ -215,7 +203,7 @@ class Prestataire extends Model
     }
 
     /**
-     * Relation avec les ventes urgentes
+     * Relation avec les annonces
      */
     public function urgentSales(): HasMany
     {
@@ -413,18 +401,6 @@ class Prestataire extends Model
         $date = $date ?: now()->toDateString();
         
         // Vérifier les exceptions de disponibilité
-        $hasException = $this->availabilityExceptions()
-            ->where('date', $date)
-            ->when($timeSlot, function($query) use ($timeSlot) {
-                return $query->where('start_time', '<=', $timeSlot)
-                           ->where('end_time', '>=', $timeSlot);
-            })
-            ->exists();
-            
-        if ($hasException) {
-            return false;
-        }
-        
         // Vérifier les disponibilités générales
         return $this->availabilities()
             ->where('day_of_week', date('w', strtotime($date)))
@@ -475,16 +451,7 @@ class Prestataire extends Model
         ];
     }
 
-    /**
-     * Calculer le taux de réponse
-     */
-    private function calculateResponseRate()
-    {
-        $totalRequests = $this->offers()->count();
-        $respondedRequests = $this->offers()->whereNotNull('created_at')->count();
-        
-        return $totalRequests > 0 ? ($respondedRequests / $totalRequests) * 100 : 0;
-    }
+
 
     /**
      * Vérifier si le prestataire peut être contacté
@@ -507,9 +474,7 @@ class Prestataire extends Model
             ->where('day_of_week', $dayOfWeek)
             ->get();
             
-        $exceptions = $this->availabilityExceptions()
-            ->where('date', $date)
-            ->get();
+
             
         $bookedSlots = $this->bookings()
             ->whereDate('start_datetime', $date)

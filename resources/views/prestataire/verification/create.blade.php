@@ -3,41 +3,50 @@
 @section('title', 'Demande de vérification')
 
 @section('content')
-<div class="min-h-screen" style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- En-tête -->
-        <div class="mb-8">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-3xl font-bold text-gray-900">Nouvelle demande de vérification</h1>
-                    <p class="text-gray-600 mt-1">Soumettez vos documents pour faire vérifier votre compte</p>
+<div class="min-h-screen bg-orange-50">
+    <div class="container mx-auto py-4 sm:py-6 md:py-8 px-2 sm:px-4">
+        <!-- En-tête amélioré -->
+        <div class="mb-6 md:mb-8">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-orange-700 rounded-xl shadow-lg">
+                    <svg class="h-5 w-5 sm:h-6 sm:w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
                 </div>
-                
-                <div class="flex-shrink-0">
-                    <a href="{{ route('prestataire.verification.index') }}" 
-                       class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-all duration-300">
-                        <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                        </svg>
-                        Retour
-                    </a>
+                <div class="flex-1">
+                    <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-orange-900 mb-1 sm:mb-2">
+                        Nouvelle demande de vérification
+                    </h1>
+                    <p class="text-sm sm:text-base md:text-lg text-orange-700">Soumettez vos documents pour faire vérifier votre compte</p>
                 </div>
+            </div>
+            
+            <!-- Bouton retour -->
+            <div class="mt-4 sm:mt-6">
+                <a href="{{ route('prestataire.verification.index') }}" 
+                   class="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 border border-orange-300 rounded-xl text-xs sm:text-sm font-bold text-orange-700 bg-white hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    <span class="hidden sm:inline">Retour à la liste</span>
+                    <span class="sm:hidden">Retour</span>
+                </a>
             </div>
         </div>
 
         <!-- Carte principale -->
-        <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+        <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
             <!-- Information importante -->
-            <div class="bg-blue-50 border-b border-blue-200 p-6">
+            <div class="bg-orange-50 border-b border-orange-200 p-4 sm:p-6">
                 <div class="flex items-start">
                     <div class="flex-shrink-0">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                     <div class="ml-3">
-                        <h3 class="text-lg font-semibold text-blue-900 mb-2">Information importante</h3>
-                        <p class="text-blue-700 text-sm leading-relaxed">
+                        <h3 class="text-base sm:text-lg font-semibold text-orange-900 mb-2">Information importante</h3>
+                        <p class="text-orange-700 text-xs sm:text-sm leading-relaxed">
                             Soumettez des documents officiels pour faire vérifier votre compte. 
                             Les documents acceptés incluent : pièce d'identité, certificats professionnels, 
                             patente d'entreprise, etc. Tous les documents doivent être lisibles et en cours de validité.
@@ -47,19 +56,19 @@
             </div>
 
             <!-- Formulaire -->
-            <div class="p-8">
-                <form action="{{ route('prestataire.verification.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8">
+            <div class="p-4 sm:p-8">
+                <form action="{{ route('prestataire.verification.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6 sm:space-y-8">
                     @csrf
                     
                     <!-- Type de document -->
                     <div>
-                        <label for="document_type" class="block text-sm font-semibold text-gray-900 mb-3">
+                        <label for="document_type" class="block text-xs sm:text-sm font-semibold text-gray-900 mb-2 sm:mb-3">
                             Type de document
                             <span class="text-red-500 ml-1">*</span>
                         </label>
                         <div class="relative">
                             <select name="document_type" id="document_type" 
-                                    class="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 @error('document_type') border-red-300 ring-red-500 @enderror" 
+                                    class="block w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-300 @error('document_type') border-red-300 ring-red-500 @enderror text-sm sm:text-base" 
                                     required>
                                 <option value="">Sélectionnez le type de document</option>
                                 <option value="identity" {{ old('document_type') == 'identity' ? 'selected' : '' }}>
@@ -85,34 +94,36 @@
 
                     <!-- Documents justificatifs -->
                     <div>
-                        <label for="documents" class="block text-sm font-semibold text-gray-900 mb-3">
+                        <label for="documents" class="block text-xs sm:text-sm font-semibold text-gray-900 mb-2 sm:mb-3">
                             Documents justificatifs
                             <span class="text-red-500 ml-1">*</span>
                         </label>
                         
-                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-indigo-400 transition-all duration-300 @error('documents') border-red-300 @enderror @error('documents.*') border-red-300 @enderror">
-                            <div class="space-y-4">
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 sm:p-8 text-center hover:border-orange-400 transition-all duration-300 @error('documents') border-red-300 @enderror @error('documents.*') border-red-300 @enderror">
+                            <div class="space-y-3 sm:space-y-4">
                                 <div class="flex justify-center">
-                                    <svg class="w-12 h-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg class="w-8 h-8 sm:w-12 sm:h-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                                     </svg>
                                 </div>
                                 <div>
                                     <label for="documents" class="cursor-pointer">
-                                        <span class="inline-flex items-center px-6 py-3 border border-transparent rounded-lg text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition-all duration-300">
-                                            <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <span class="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 border border-transparent rounded-lg text-sm sm:text-base font-medium text-white bg-orange-600 hover:bg-orange-700 transition-all duration-300">
+                                            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                             </svg>
-                                            Choisir les fichiers
+                                            <span class="hidden sm:inline">Choisir les fichiers</span>
+                                            <span class="sm:hidden">Choisir</span>
                                         </span>
                                     </label>
                                     <input type="file" name="documents[]" id="documents" 
                                            class="hidden" 
                                            multiple accept=".pdf,.jpg,.jpeg,.png" required>
                                 </div>
-                                <div class="text-sm text-gray-500">
+                                <div class="text-xs sm:text-sm text-gray-500">
                                     <p>Formats acceptés : PDF, JPG, JPEG, PNG</p>
-                                    <p>Taille maximale : 5 MB par fichier • Maximum 5 fichiers</p>
+                                    <p class="hidden sm:block">Taille maximale : 5 MB par fichier • Maximum 5 fichiers</p>
+                                    <p class="sm:hidden">Max : 5 MB • 5 fichiers</p>
                                 </div>
                             </div>
                         </div>
@@ -132,16 +143,16 @@
                     </div>
 
                     <!-- Conditions importantes -->
-                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4 sm:p-6">
                         <div class="flex items-start">
                             <div class="flex-shrink-0">
-                                <svg class="w-6 h-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                                 </svg>
                             </div>
                             <div class="ml-3">
-                                <h4 class="text-lg font-semibold text-yellow-900 mb-3">Conditions importantes</h4>
-                                <ul class="space-y-2 text-sm text-yellow-800">
+                                <h4 class="text-base sm:text-lg font-semibold text-orange-900 mb-2 sm:mb-3">Conditions importantes</h4>
+                                <ul class="space-y-1 sm:space-y-2 text-xs sm:text-sm text-orange-800">
                                     <li class="flex items-start">
                                         <svg class="w-4 h-4 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
@@ -178,15 +189,15 @@
                     </div>
 
                     <!-- Acceptation des conditions -->
-                    <div class="bg-gray-50 rounded-lg p-6">
+                    <div class="bg-gray-50 rounded-lg p-4 sm:p-6">
                         <div class="flex items-start">
                             <div class="flex items-center h-5">
                                 <input type="checkbox" id="terms" 
-                                       class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 focus:ring-2" 
+                                       class="w-4 h-4 sm:w-5 sm:h-5 text-orange-600 border-gray-300 rounded focus:ring-orange-500 focus:ring-2" 
                                        required>
                             </div>
                             <div class="ml-3">
-                                <label for="terms" class="text-sm text-gray-700 leading-relaxed cursor-pointer">
+                                <label for="terms" class="text-xs sm:text-sm text-gray-700 leading-relaxed cursor-pointer">
                                     Je certifie que les documents soumis sont authentiques et que les informations 
                                     fournies sont exactes. Je comprends que toute fausse déclaration peut entraîner 
                                     la suspension de mon compte.
@@ -196,20 +207,21 @@
                     </div>
 
                     <!-- Boutons d'action -->
-                    <div class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
+                    <div class="flex flex-col sm:flex-row items-center justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-4 sm:pt-6 border-t border-gray-200">
                         <a href="{{ route('prestataire.verification.index') }}" 
-                           class="inline-flex items-center px-6 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-all duration-300">
-                            <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                           class="w-full sm:w-auto inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 border border-orange-300 rounded-lg text-xs sm:text-sm font-medium text-orange-700 bg-white hover:bg-orange-50 transition-all duration-300">
+                            <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                             </svg>
                             Annuler
                         </a>
                         <button type="submit" 
-                                class="inline-flex items-center px-8 py-3 border border-transparent rounded-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-300">
-                            <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                class="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-8 py-2 sm:py-3 border border-transparent rounded-lg text-xs sm:text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-300">
+                            <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                             </svg>
-                            Soumettre la demande
+                            <span class="hidden sm:inline">Soumettre la demande</span>
+                            <span class="sm:hidden">Soumettre</span>
                         </button>
                     </div>
                 </form>

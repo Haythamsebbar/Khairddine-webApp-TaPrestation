@@ -23,7 +23,8 @@ class StoreEquipmentRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:equipment_categories,id',
+            'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'nullable|exists:categories,id',
             'description' => 'required|string|min:10|max:1000',
             'technical_specifications' => 'nullable|string|max:2000',
             'main_photo' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
@@ -56,8 +57,9 @@ class StoreEquipmentRequest extends FormRequest
         return [
             'name.required' => 'Le nom de l\'équipement est obligatoire.',
             'name.max' => 'Le nom ne peut pas dépasser 255 caractères.',
-            'category_id.required' => 'Veuillez sélectionner une catégorie.',
+            'category_id.required' => 'Veuillez sélectionner une catégorie principale.',
             'category_id.exists' => 'La catégorie sélectionnée n\'existe pas.',
+            'subcategory_id.exists' => 'La sous-catégorie sélectionnée n\'existe pas.',
             'description.required' => 'La description est obligatoire.',
             'description.min' => 'La description doit contenir au moins 10 caractères.',
             'description.max' => 'La description ne peut pas dépasser 1000 caractères.',

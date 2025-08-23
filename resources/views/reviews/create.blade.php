@@ -155,11 +155,11 @@ const starIcons = document.querySelectorAll('.star-icon');
 const ratingLabel = document.getElementById('rating-label');
 
 const ratingLabels = {
-    1: '★ Très mauvais',
-    2: '★★ Mauvais', 
-    3: '★★★ Correct',
-    4: '★★★★ Bon',
-    5: '★★★★★ Excellent'
+    1: 'Très mauvais',
+    2: 'Mauvais', 
+    3: 'Correct',
+    4: 'Bon',
+    5: 'Excellent'
 };
 
 ratingInputs.forEach((input, index) => {

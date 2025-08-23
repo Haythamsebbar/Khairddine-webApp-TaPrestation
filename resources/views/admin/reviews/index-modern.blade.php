@@ -3,355 +3,378 @@
 @section('page-title', 'Gestion des Avis')
 
 @section('content')
-<!-- Header Actions -->
-<div style="display: flex; justify-content: between; align-items: center; margin-bottom: 2rem;">
-    <div>
-        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--dark); margin: 0;">Avis et Évaluations</h2>
-        <p style="color: var(--secondary); margin: 0.5rem 0 0 0;">Modérez les avis clients et gérez la qualité du service</p>
+<div class="bg-blue-50 min-h-screen">
+    <!-- Bannière d'en-tête -->
+    <div class="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-6 sm:mb-8 text-center">
+                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-blue-900 mb-2 leading-tight">
+                    Avis et Évaluations
+                </h1>
+                <p class="text-base sm:text-lg text-blue-700 max-w-2xl mx-auto">
+                    Modérez les avis clients et gérez la qualité du service
+                </p>
+            </div>
+            <div class="flex justify-center gap-4">
+                <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center text-sm sm:text-base" onclick="toggleFilters()">
+                    <i class="fas fa-filter mr-2"></i>
+                    Filtres
+                </button>
+                <button class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm sm:text-base" onclick="exportReviews()">
+                    <i class="fas fa-download mr-2"></i>
+                    Exporter
+                </button>
+            </div>
+        </div>
     </div>
-    <div style="display: flex; gap: 1rem;">
-        <button class="btn btn-outline" onclick="toggleFilters()">
-            <i class="fas fa-filter"></i>
-            Filtres
-        </button>
-        <button class="btn btn-primary" onclick="exportReviews()">
-            <i class="fas fa-download"></i>
-            Exporter
-        </button>
-    </div>
-</div>
 
-<!-- Stats Cards -->
-<div class="stats-grid" style="margin-bottom: 2rem;">
-    <div class="stat-card primary">
-        <div class="stat-header">
-            <div>
-                <div class="stat-title">Total Avis</div>
-                <div class="stat-value">{{ $reviews->total() ?? 0 }}</div>
-                <div class="stat-change positive">
-                    <i class="fas fa-arrow-up"></i>
-                    <span>+15% ce mois</span>
-                </div>
-            </div>
-            <div class="stat-icon primary">
-                <i class="fas fa-star"></i>
-            </div>
-        </div>
-    </div>
-    
-    <div class="stat-card success">
-        <div class="stat-header">
-            <div>
-                <div class="stat-title">Note Moyenne</div>
-                <div class="stat-value">{{ number_format($averageRating ?? 4.2, 1) }}</div>
-                <div class="stat-change positive">
-                    <i class="fas fa-arrow-up"></i>
-                    <span>+0.2 ce mois</span>
-                </div>
-            </div>
-            <div class="stat-icon success">
-                <i class="fas fa-thumbs-up"></i>
-            </div>
-        </div>
-    </div>
-    
-    <div class="stat-card warning">
-        <div class="stat-header">
-            <div>
-                <div class="stat-title">En Attente de Modération</div>
-                <div class="stat-value">{{ $reviews->where('status', 'pending')->count() ?? 0 }}</div>
-                <div class="stat-change negative">
-                    <i class="fas fa-arrow-down"></i>
-                    <span>-5% ce mois</span>
-                </div>
-            </div>
-            <div class="stat-icon warning">
-                <i class="fas fa-clock"></i>
-            </div>
-        </div>
-    </div>
-    
-    <div class="stat-card danger">
-        <div class="stat-header">
-            <div>
-                <div class="stat-title">Avis Signalés</div>
-                <div class="stat-value">{{ $reviews->where('is_reported', true)->count() ?? 0 }}</div>
-                <div class="stat-change positive">
-                    <i class="fas fa-arrow-down"></i>
-                    <span>-8% ce mois</span>
-                </div>
-            </div>
-            <div class="stat-icon danger">
-                <i class="fas fa-flag"></i>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Rating Distribution Chart -->
-<div class="chart-card" style="margin-bottom: 2rem;">
-    <div class="chart-header">
-        <div class="chart-title">Distribution des Notes</div>
-        <div style="display: flex; gap: 1rem; align-items: center;">
-            <select style="padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.875rem;">
-                <option>Ce mois</option>
-                <option>3 derniers mois</option>
-                <option>Cette année</option>
-            </select>
-        </div>
-    </div>
-    <div style="padding: 1.5rem;">
-        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem;">
-            @for($i = 5; $i >= 1; $i--)
-                @php
-                    $count = $reviews->where('rating', $i)->count() ?? 0;
-                    $percentage = $reviews->count() > 0 ? ($count / $reviews->count()) * 100 : 0;
-                @endphp
-                <div style="text-align: center;">
-                    <div style="display: flex; align-items: center; justify-content: center; gap: 0.25rem; margin-bottom: 0.5rem;">
-                        <span style="font-weight: 600;">{{ $i }}</span>
-                        <i class="fas fa-star" style="color: #fbbf24; font-size: 0.875rem;"></i>
+    <!-- Stats Cards -->
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 mb-6 sm:mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-sm font-medium text-blue-700 mb-1">Total Avis</div>
+                        <div class="text-2xl font-bold text-blue-900">{{ $reviews->total() ?? 0 }}</div>
+                        <div class="text-xs text-green-600 flex items-center mt-1">
+                            <i class="fas fa-arrow-up mr-1"></i>
+                            <span>+15% ce mois</span>
+                        </div>
                     </div>
-                    <div style="height: 100px; background: #f1f5f9; border-radius: 4px; position: relative; margin-bottom: 0.5rem;">
-                        <div style="position: absolute; bottom: 0; left: 0; right: 0; height: {{ $percentage }}%; background: linear-gradient(180deg, 
-                            @if($i >= 4) var(--success) @elseif($i >= 3) var(--warning) @else var(--danger) @endif 0%, 
-                            @if($i >= 4) #059669 @elseif($i >= 3) #d97706 @else #dc2626 @endif 100%); border-radius: 4px; transition: height 0.3s ease;"></div>
+                    <div class="bg-blue-100 p-3 rounded-lg">
+                        <i class="fas fa-star text-blue-600 text-xl"></i>
                     </div>
-                    <div style="font-size: 0.875rem; font-weight: 500; color: var(--dark);">{{ $count }}</div>
-                    <div style="font-size: 0.8rem; color: var(--secondary);">{{ number_format($percentage, 1) }}%</div>
                 </div>
-            @endfor
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-sm font-medium text-blue-700 mb-1">Note Moyenne</div>
+                        <div class="text-2xl font-bold text-blue-900">{{ number_format($averageRating ?? 4.2, 1) }}</div>
+                        <div class="text-xs text-green-600 flex items-center mt-1">
+                            <i class="fas fa-arrow-up mr-1"></i>
+                            <span>+0.2 ce mois</span>
+                        </div>
+                    </div>
+                    <div class="bg-green-100 p-3 rounded-lg">
+                        <i class="fas fa-thumbs-up text-green-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-sm font-medium text-blue-700 mb-1">En Attente de Modération</div>
+                        <div class="text-2xl font-bold text-blue-900">{{ $reviews->where('status', 'pending')->count() ?? 0 }}</div>
+                        <div class="text-xs text-red-600 flex items-center mt-1">
+                            <i class="fas fa-arrow-down mr-1"></i>
+                            <span>-5% ce mois</span>
+                        </div>
+                    </div>
+                    <div class="bg-yellow-100 p-3 rounded-lg">
+                        <i class="fas fa-clock text-yellow-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-sm font-medium text-blue-700 mb-1">Avis Signalés</div>
+                        <div class="text-2xl font-bold text-blue-900">{{ $reviews->where('is_reported', true)->count() ?? 0 }}</div>
+                        <div class="text-xs text-green-600 flex items-center mt-1">
+                            <i class="fas fa-arrow-down mr-1"></i>
+                            <span>-8% ce mois</span>
+                        </div>
+                    </div>
+                    <div class="bg-red-100 p-3 rounded-lg">
+                        <i class="fas fa-flag text-red-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Filters Panel -->
-<div id="filtersPanel" class="chart-card" style="display: none; margin-bottom: 2rem;">
-    <div class="chart-header">
-        <div class="chart-title">Filtres de recherche</div>
-        <button class="btn btn-outline" onclick="clearFilters()">
-            <i class="fas fa-times"></i>
-            Effacer
-        </button>
+    <!-- Rating Distribution Chart -->
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 mb-6 sm:mb-8">
+        <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-blue-900">Distribution des Notes</h3>
+                <select class="bg-blue-50 border border-blue-300 text-blue-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 px-3 py-2">
+                    <option>Ce mois</option>
+                    <option>3 derniers mois</option>
+                    <option>Cette année</option>
+                </select>
+            </div>
+            <div class="grid grid-cols-5 gap-4">
+                @for($i = 5; $i >= 1; $i--)
+                    @php
+                        $count = $reviews->where('rating', $i)->count() ?? 0;
+                        $percentage = $reviews->count() > 0 ? ($count / $reviews->count()) * 100 : 0;
+                    @endphp
+                    <div class="text-center">
+                        <div class="flex items-center justify-center gap-1 mb-2">
+                            <span class="font-semibold text-blue-900">{{ $i }}</span>
+                            <i class="fas fa-star text-yellow-400 text-sm"></i>
+                        </div>
+                        <div class="h-24 bg-blue-50 rounded relative mb-2">
+                            <div class="absolute bottom-0 left-0 right-0 rounded transition-all duration-300" style="height: {{ $percentage }}%; background: linear-gradient(180deg, 
+                                @if($i >= 4) #10b981 @elseif($i >= 3) #f59e0b @else #ef4444 @endif 0%, 
+                                @if($i >= 4) #059669 @elseif($i >= 3) #d97706 @else #dc2626 @endif 100%);"></div>
+                        </div>
+                        <div class="text-sm font-medium text-blue-900">{{ $count }}</div>
+                        <div class="text-xs text-blue-600">{{ number_format($percentage, 1) }}%</div>
+                    </div>
+                @endfor
+            </div>
+        </div>
     </div>
-    <form action="{{ route('administrateur.reviews.index') }}" method="GET" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; padding: 1rem 0;">
-        <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark);">Client</label>
-            <input type="text" name="client" value="{{ request('client') }}" placeholder="Nom du client..." style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
+
+    <!-- Filters Panel -->
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 mb-6 sm:mb-8" id="filtersPanel" style="display: none;">
+        <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h4 class="text-lg font-bold text-blue-900">Filtres de recherche</h4>
+                <button class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-medium py-2 px-4 rounded-lg transition duration-200 flex items-center" onclick="clearFilters()">
+                    <i class="fas fa-times mr-2"></i>
+                    Effacer
+                </button>
+            </div>
+            <form action="{{ route('administrateur.reviews.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-blue-700 mb-2">Client</label>
+                    <input type="text" name="client" value="{{ request('client') }}" placeholder="Nom du client..." class="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-blue-700 mb-2">Service</label>
+                    <input type="text" name="service" value="{{ request('service') }}" placeholder="Nom du service..." class="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-blue-700 mb-2">Note</label>
+                    <select name="rating" class="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Toutes les notes</option>
+                        <option value="5" {{ request('rating') == '5' ? 'selected' : '' }}>5 étoiles</option>
+                        <option value="4" {{ request('rating') == '4' ? 'selected' : '' }}>4 étoiles</option>
+                        <option value="3" {{ request('rating') == '3' ? 'selected' : '' }}>3 étoiles</option>
+                        <option value="2" {{ request('rating') == '2' ? 'selected' : '' }}>2 étoiles</option>
+                        <option value="1" {{ request('rating') == '1' ? 'selected' : '' }}>1 étoile</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-blue-700 mb-2">Statut</label>
+                    <select name="status" class="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Tous</option>
+                        <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approuvé</option>
+                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>En attente</option>
+                        <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejeté</option>
+                        <option value="reported" {{ request('status') == 'reported' ? 'selected' : '' }}>Signalé</option>
+                    </select>
+                </div>
+                
+                <div class="flex items-end">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center">
+                        <i class="fas fa-search mr-2"></i>
+                        Rechercher
+                    </button>
+                </div>
+            </form>
         </div>
-        
-        <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark);">Service</label>
-            <input type="text" name="service" value="{{ request('service') }}" placeholder="Nom du service..." style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
-        </div>
-        
-        <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark);">Note</label>
-            <select name="rating" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
-                <option value="">Toutes les notes</option>
-                <option value="5" {{ request('rating') == '5' ? 'selected' : '' }}>5 étoiles</option>
-                <option value="4" {{ request('rating') == '4' ? 'selected' : '' }}>4 étoiles</option>
-                <option value="3" {{ request('rating') == '3' ? 'selected' : '' }}>3 étoiles</option>
-                <option value="2" {{ request('rating') == '2' ? 'selected' : '' }}>2 étoiles</option>
-                <option value="1" {{ request('rating') == '1' ? 'selected' : '' }}>1 étoile</option>
-            </select>
-        </div>
-        
-        <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark);">Statut</label>
-            <select name="status" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
-                <option value="">Tous</option>
-                <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approuvé</option>
-                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>En attente</option>
-                <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejeté</option>
-                <option value="reported" {{ request('status') == 'reported' ? 'selected' : '' }}>Signalé</option>
-            </select>
-        </div>
-        
-        <div style="display: flex; align-items: end; gap: 1rem;">
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-search"></i>
-                Rechercher
-            </button>
-        </div>
-    </form>
-</div>
+    </div>
 
 <!-- Reviews List -->
-<div class="table-card">
-    <div class="table-header">
-        <div class="table-title">Liste des avis ({{ $reviews->total() ?? 0 }})</div>
-        <div style="display: flex; gap: 1rem; align-items: center;">
-            <select onchange="changePerPage(this.value)" style="padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.875rem;">
-                <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 par page</option>
-                <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 par page</option>
-                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 par page</option>
-            </select>
+<div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 mb-6 sm:mb-8">
+    <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div class="font-semibold text-blue-900">Liste des avis ({{ $reviews->total() ?? 0 }})</div>
+                <div class="flex items-center gap-2">
+                    <label class="text-sm text-blue-700">Afficher :</label>
+                    <select onchange="changePerPage(this.value)" class="bg-blue-50 border border-blue-300 text-blue-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 px-3 py-2">
+                        <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 par page</option>
+                        <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 par page</option>
+                        <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 par page</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="flex gap-3">
+                <button class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-medium py-2 px-4 rounded-lg transition duration-200 flex items-center" onclick="selectAllReviews()">
+                    <i class="fas fa-check-square mr-2"></i>
+                    Tout sélectionner
+                </button>
+                <button class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 flex items-center" onclick="bulkDeleteReviews()" id="bulkDeleteBtn" style="display: none;">
+                    <i class="fas fa-trash mr-2"></i>
+                    Supprimer sélectionnés
+                </button>
+            </div>
         </div>
-    </div>
-    
-    <div style="padding: 1.5rem;">
-        <div style="display: grid; gap: 1.5rem;">
+        
+        <div class="space-y-4">
             @forelse($reviews ?? [] as $review)
-                <div style="background: #f8fafc; border-radius: 12px; padding: 1.5rem; border-left: 4px solid 
-                    @if($review->rating >= 4) var(--success) @elseif($review->rating >= 3) var(--warning) @else var(--danger) @endif;">
-                    <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 1rem;">
-                        <div style="display: flex; align-items: center; gap: 1rem;">
-                            <input type="checkbox" name="selected_reviews[]" value="{{ $review->id }}" class="review-checkbox">
+                <div class="bg-blue-50 border-l-4 rounded-xl p-6 @if($review->rating >= 4) border-green-500 @elseif($review->rating >= 3) border-yellow-500 @else border-red-500 @endif">
+                    <div class="flex flex-col lg:flex-row justify-between items-start gap-4 mb-4">
+                        <div class="flex items-start gap-4 flex-1">
+                            <input type="checkbox" name="selected_reviews[]" value="{{ $review->id }}" class="review-checkbox mt-1 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
                             
-                            <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--info) 0%, #06b6d4 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 1.1rem;">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold text-lg">
                                 {{ $review->client ? substr($review->client->name, 0, 1) : 'C' }}
                             </div>
                             
-                            <div>
-                                <div style="font-weight: 600; color: var(--dark); margin-bottom: 0.25rem;">{{ $review->client_name }}</div>
-                                <div style="font-size: 0.875rem; color: var(--secondary);">{{ $review->client_email ?? 'Email non disponible' }}</div>
-                                <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
-                                    <div style="display: flex; gap: 0.1rem;">
+                            <div class="flex-1">
+                                <div class="font-semibold text-blue-900 mb-1">{{ $review->client_name }}</div>
+                                <div class="text-sm text-blue-700 mb-2">{{ $review->client_email ?? 'Email non disponible' }}</div>
+                                <div class="flex items-center gap-3">
+                                    <div class="flex gap-1">
                                         @for($i = 1; $i <= 5; $i++)
                                             @if($i <= $review->rating)
-                                                <i class="fas fa-star" style="color: #fbbf24; font-size: 0.875rem;"></i>
+                                                <i class="fas fa-star text-yellow-400 text-sm"></i>
                                             @else
-                                                <i class="far fa-star" style="color: #d1d5db; font-size: 0.875rem;"></i>
+                                                <i class="far fa-star text-gray-300 text-sm"></i>
                                             @endif
                                         @endfor
                                     </div>
-                                    <span style="font-weight: 500; color: var(--dark); font-size: 0.875rem;">{{ $review->rating }}/5</span>
-                                    <span style="color: var(--secondary); font-size: 0.8rem;">• {{ $review->created_at->diffForHumans() }}</span>
+                                    <span class="font-medium text-blue-900 text-sm">{{ $review->rating }}/5</span>
+                                    <span class="text-blue-600 text-xs">• {{ $review->created_at->diffForHumans() }}</span>
                                 </div>
                             </div>
                         </div>
                         
-                        <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div class="flex flex-wrap items-center gap-2">
                             @switch($review->status)
                                 @case('approved')
-                                    <span style="padding: 0.375rem 0.75rem; background: rgba(16, 185, 129, 0.1); color: var(--success); border-radius: 6px; font-size: 0.8rem; font-weight: 500;">
-                                        <i class="fas fa-check-circle" style="margin-right: 0.25rem;"></i>
+                                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium flex items-center">
+                                        <i class="fas fa-check-circle mr-1"></i>
                                         Approuvé
                                     </span>
                                     @break
                                 @case('pending')
-                                    <span style="padding: 0.375rem 0.75rem; background: rgba(245, 158, 11, 0.1); color: var(--warning); border-radius: 6px; font-size: 0.8rem; font-weight: 500;">
-                                        <i class="fas fa-clock" style="margin-right: 0.25rem;"></i>
+                                    <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium flex items-center">
+                                        <i class="fas fa-clock mr-1"></i>
                                         En attente
                                     </span>
                                     @break
                                 @case('rejected')
-                                    <span style="padding: 0.375rem 0.75rem; background: rgba(239, 68, 68, 0.1); color: var(--danger); border-radius: 6px; font-size: 0.8rem; font-weight: 500;">
-                                        <i class="fas fa-times-circle" style="margin-right: 0.25rem;"></i>
+                                    <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium flex items-center">
+                                        <i class="fas fa-times-circle mr-1"></i>
                                         Rejeté
                                     </span>
                                     @break
                             @endswitch
                             
                             @if($review->is_reported)
-                                <span style="padding: 0.375rem 0.75rem; background: rgba(239, 68, 68, 0.1); color: var(--danger); border-radius: 6px; font-size: 0.8rem; font-weight: 500;">
-                                    <i class="fas fa-flag" style="margin-right: 0.25rem;"></i>
+                                <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium flex items-center">
+                                    <i class="fas fa-flag mr-1"></i>
                                     Signalé
                                 </span>
                             @endif
                             
-                            <div style="display: flex; gap: 0.5rem;">
+                            <div class="flex gap-2">
                                 @if($review->status === 'pending')
-                                    <button onclick="approveReview({{ $review->id }})" class="btn btn-success" style="padding: 0.375rem 0.75rem; font-size: 0.8rem;" title="Approuver">
-                                        <i class="fas fa-check"></i>
+                                    <button onclick="approveReview({{ $review->id }})" class="bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg transition duration-200" title="Approuver">
+                                        <i class="fas fa-check text-sm"></i>
                                     </button>
-                                    <button onclick="rejectReview({{ $review->id }})" class="btn btn-danger" style="padding: 0.375rem 0.75rem; font-size: 0.8rem;" title="Rejeter">
-                                        <i class="fas fa-times"></i>
+                                    <button onclick="rejectReview({{ $review->id }})" class="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition duration-200" title="Rejeter">
+                                        <i class="fas fa-times text-sm"></i>
                                     </button>
                                 @endif
                                 
-                                <button onclick="deleteReview({{ $review->id }})" class="btn btn-outline" style="padding: 0.375rem 0.75rem; font-size: 0.8rem;" title="Supprimer">
-                                    <i class="fas fa-trash"></i>
+                                <button onclick="deleteReview({{ $review->id }})" class="bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-lg transition duration-200" title="Supprimer">
+                                    <i class="fas fa-trash text-sm"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
                     
                     @if($review->service)
-                        <div style="margin-bottom: 1rem;">
-                            <div style="font-weight: 500; color: var(--dark); margin-bottom: 0.5rem;">Service évalué :</div>
-                            <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div class="mb-4">
+                            <div class="font-medium text-blue-900 mb-2">Service évalué :</div>
+                            <div class="flex items-center gap-3">
                                 @if($review->service->image)
-                                    <img src="{{ asset('storage/' . $review->service->image) }}" alt="{{ $review->service->title }}" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;">
+                                    <img src="{{ asset('storage/' . $review->service->image) }}" alt="{{ $review->service->title }}" class="w-10 h-10 rounded-lg object-cover">
                                 @else
-                                    <div style="width: 40px; height: 40px; border-radius: 8px; background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 1rem;">
+                                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold">
                                         {{ substr($review->service->title, 0, 1) }}
                                     </div>
                                 @endif
                                 <div>
-                                    <div style="font-weight: 500; color: var(--dark); font-size: 0.875rem;">{{ $review->service->title }}</div>
-                                    <div style="font-size: 0.8rem; color: var(--secondary);">par {{ $review->service->prestataire->user->name ?? 'Prestataire inconnu' }}</div>
+                                    <div class="font-medium text-blue-900 text-sm">{{ $review->service->title }}</div>
+                                    <div class="text-xs text-blue-600">par {{ $review->service->prestataire->user->name ?? 'Prestataire inconnu' }}</div>
                                 </div>
                             </div>
                         </div>
                     @else
-                        <div style="margin-bottom: 1rem;">
-                            <div style="font-weight: 500; color: var(--dark); margin-bottom: 0.5rem;">Service évalué :</div>
-                            <div style="color: var(--secondary); font-style: italic;">Service non disponible</div>
+                        <div class="mb-4">
+                            <div class="font-medium text-blue-900 mb-2">Service évalué :</div>
+                            <div class="text-blue-600 italic">Service non disponible</div>
                         </div>
                     @endif
                     
                     @if($review->comment)
-                        <div style="background: white; padding: 1rem; border-radius: 8px; border-left: 3px solid var(--primary);">
-                            <div style="font-weight: 500; color: var(--dark); margin-bottom: 0.5rem;">Commentaire :</div>
-                            <div style="color: var(--secondary); line-height: 1.6;">{{ $review->comment }}</div>
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-blue-500 mb-4">
+                            <div class="font-medium text-blue-900 mb-2">Commentaire :</div>
+                            <div class="text-blue-700 leading-relaxed">{{ $review->comment }}</div>
                         </div>
                     @endif
                     
                     @if($review->response)
-                        <div style="background: rgba(16, 185, 129, 0.05); padding: 1rem; border-radius: 8px; border-left: 3px solid var(--success); margin-top: 1rem;">
-                            <div style="font-weight: 500; color: var(--success); margin-bottom: 0.5rem;">
-                                <i class="fas fa-reply" style="margin-right: 0.5rem;"></i>
+                        <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+                            <div class="font-medium text-green-800 mb-2 flex items-center">
+                                <i class="fas fa-reply mr-2"></i>
                                 Réponse du prestataire :
                             </div>
-                            <div style="color: var(--dark); line-height: 1.6;">{{ $review->response }}</div>
+                            <div class="text-green-700 leading-relaxed">{{ $review->response }}</div>
                         </div>
                     @endif
                 </div>
             @empty
-                <div style="text-align: center; padding: 3rem; color: var(--secondary);">
-                    <i class="fas fa-star" style="font-size: 3rem; margin-bottom: 1rem; color: #e2e8f0;"></i>
-                    <div style="font-size: 1.125rem; font-weight: 500; margin-bottom: 0.5rem;">Aucun avis trouvé</div>
-                    <div>Essayez de modifier vos critères de recherche</div>
+                <div class="text-center py-12 text-blue-600">
+                    <i class="fas fa-star text-5xl mb-4 text-blue-300"></i>
+                    <div class="text-lg font-medium mb-2 text-blue-900">Aucun avis trouvé</div>
+                    <div class="text-blue-700">Essayez de modifier vos critères de recherche</div>
                 </div>
             @endforelse
         </div>
+        
+        @if($reviews && $reviews->hasPages())
+            <div class="border-t border-blue-200 px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="text-blue-700 text-sm">
+                    Affichage de {{ $reviews->firstItem() }} à {{ $reviews->lastItem() }} sur {{ $reviews->total() }} résultats
+                </div>
+                <div>
+                    {{ $reviews->links() }}
+                </div>
+            </div>
+        @endif
     </div>
-    
-    @if($reviews && $reviews->hasPages())
-        <div style="padding: 1.5rem; border-top: 1px solid #e2e8f0; display: flex; justify-content: between; align-items: center;">
-            <div style="color: var(--secondary); font-size: 0.875rem;">
-                Affichage de {{ $reviews->firstItem() }} à {{ $reviews->lastItem() }} sur {{ $reviews->total() }} résultats
-            </div>
-            <div>
-                {{ $reviews->links() }}
-            </div>
-        </div>
-    @endif
 </div>
 
 <!-- Bulk Actions -->
-<div id="bulkActions" style="position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: white; padding: 1rem 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); display: none; z-index: 1000;">
-    <div style="display: flex; align-items: center; gap: 1rem;">
-        <span style="font-weight: 500;">Actions groupées :</span>
-        <button class="btn btn-success" onclick="bulkApprove()">
-            <i class="fas fa-check"></i>
+<div id="bulkActions" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-white rounded-xl shadow-2xl border border-blue-200 px-6 py-4 hidden z-50">
+    <div class="flex flex-wrap items-center gap-4">
+        <span class="font-medium text-blue-900">Actions groupées :</span>
+        <button class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 flex items-center" onclick="bulkApprove()">
+            <i class="fas fa-check mr-2"></i>
             Approuver
         </button>
-        <button class="btn btn-danger" onclick="bulkReject()">
-            <i class="fas fa-times"></i>
+        <button class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 flex items-center" onclick="bulkReject()">
+            <i class="fas fa-times mr-2"></i>
             Rejeter
         </button>
-        <button class="btn btn-outline" onclick="bulkDelete()">
-            <i class="fas fa-trash"></i>
+        <button class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 flex items-center" onclick="bulkDelete()">
+            <i class="fas fa-trash mr-2"></i>
             Supprimer
         </button>
-        <button class="btn btn-outline" onclick="clearSelection()">
-            <i class="fas fa-times"></i>
+        <button class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-medium py-2 px-4 rounded-lg transition duration-200 flex items-center" onclick="clearSelection()">
+            <i class="fas fa-times mr-2"></i>
             Annuler
         </button>
     </div>
+</div>
 </div>
 @endsection
 

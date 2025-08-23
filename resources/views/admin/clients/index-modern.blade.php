@@ -5,269 +5,290 @@
 @section('content')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
-<!-- Header Actions -->
-<div class="page-header">
-    <div class="page-header-content">
-        <h2 class="page-title">Clients</h2>
-        <p class="page-subtitle">Gérez tous les clients de la plateforme</p>
+<div class="bg-blue-50 min-h-screen">
+    <!-- Bannière d'en-tête -->
+    <div class="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-6 sm:mb-8 text-center">
+                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-blue-900 mb-2 leading-tight">
+                    Gestion des Clients
+                </h1>
+                <p class="text-base sm:text-lg text-blue-700 max-w-2xl mx-auto">
+                    Gérez tous les clients de la plateforme avec des outils avancés
+                </p>
+            </div>
+            <div class="flex justify-center">
+                <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center text-sm sm:text-base" onclick="toggleFilters()">
+                    <i class="fas fa-filter mr-2"></i>
+                    <span>Filtres</span>
+                </button>
+            </div>
+        </div>
     </div>
-    <div class="page-actions">
-        <button class="btn btn-outline" onclick="toggleFilters()">
-            <i class="fas fa-filter"></i>
-            <span class="btn-text">Filtres</span>
-        </button>
-    </div>
-</div>
 
-<!-- Stats Cards -->
-<div class="stats-grid" style="margin-bottom: 2rem;">
-    <div class="stat-card primary">
-        <div class="stat-header">
-            <div>
-                <div class="stat-title">Total Clients</div>
-                <div class="stat-value">{{ $clients->total() ?? 0 }}</div>
+    <!-- Stats Cards -->
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 mb-6 sm:mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-sm font-medium text-blue-700 mb-1">Total Clients</div>
+                        <div class="text-2xl font-bold text-blue-900">{{ $clients->total() ?? 0 }}</div>
+                    </div>
+                    <div class="bg-blue-100 p-3 rounded-lg">
+                        <i class="fas fa-users text-blue-600 text-xl"></i>
+                    </div>
+                </div>
             </div>
-            <div class="stat-icon primary">
-                <i class="fas fa-users"></i>
+            
+            <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-sm font-medium text-blue-700 mb-1">Clients Actifs</div>
+                        <div class="text-2xl font-bold text-blue-900">{{ $clients->where('blocked_at', null)->count() ?? 0 }}</div>
+                    </div>
+                    <div class="bg-green-100 p-3 rounded-lg">
+                        <i class="fas fa-user-check text-green-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-sm font-medium text-blue-700 mb-1">Demandes Totales</div>
+                        <div class="text-2xl font-bold text-blue-900">{{ $totalRequests ?? 0 }}</div>
+                    </div>
+                    <div class="bg-yellow-100 p-3 rounded-lg">
+                        <i class="fas fa-file-alt text-yellow-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-sm font-medium text-blue-700 mb-1">Nouveaux ce mois</div>
+                        <div class="text-2xl font-bold text-blue-900">{{ $clients->where('created_at', '>=', now()->startOfMonth())->count() ?? 0 }}</div>
+                    </div>
+                    <div class="bg-indigo-100 p-3 rounded-lg">
+                        <i class="fas fa-user-plus text-indigo-600 text-xl"></i>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    
-    <div class="stat-card success">
-        <div class="stat-header">
-            <div>
-                <div class="stat-title">Clients Actifs</div>
-                <div class="stat-value">{{ $clients->where('blocked_at', null)->count() ?? 0 }}</div>
-            </div>
-            <div class="stat-icon success">
-                <i class="fas fa-user-check"></i>
-            </div>
-        </div>
-    </div>
-    
-    <div class="stat-card warning">
-        <div class="stat-header">
-            <div>
-                <div class="stat-title">Demandes Totales</div>
-                <div class="stat-value">{{ $totalRequests ?? 0 }}</div>
-            </div>
-            <div class="stat-icon warning">
-                <i class="fas fa-file-alt"></i>
-            </div>
-        </div>
-    </div>
-    
-    <div class="stat-card info">
-        <div class="stat-header">
-            <div>
-                <div class="stat-title">Nouveaux ce mois</div>
-                <div class="stat-value">{{ $clients->where('created_at', '>=', now()->startOfMonth())->count() ?? 0 }}</div>
-            </div>
-            <div class="stat-icon info">
-                <i class="fas fa-user-plus"></i>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Filters Panel -->
-<div id="filtersPanel" class="chart-card" style="display: none; margin-bottom: 2rem;">
-    <div class="chart-header">
-        <div class="chart-title">Filtres de recherche</div>
-        <button class="btn btn-outline" onclick="clearFilters()">
-            <i class="fas fa-times"></i>
-            Effacer
-        </button>
+    <!-- Filters Panel -->
+    <div id="filtersPanel" class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8" style="display: none;">
+        <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6 mb-6 sm:mb-8">
+            <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div class="text-center sm:text-left">
+                    <h3 class="text-xl sm:text-2xl font-bold text-blue-800 mb-1 sm:mb-2">Filtres de recherche</h3>
+                    <p class="text-sm sm:text-base lg:text-lg text-blue-700">Affinez votre recherche pour trouver les clients</p>
+                </div>
+                <button class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm sm:text-base" onclick="clearFilters()">
+                    <i class="fas fa-times mr-2"></i>
+                    Effacer
+                </button>
+            </div>
+            <form action="{{ route('administrateur.clients.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-blue-800 mb-2">Nom</label>
+                    <input type="text" name="name" value="{{ request('name') }}" placeholder="Rechercher par nom..." class="w-full px-3 py-2.5 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-blue-800 mb-2">Email</label>
+                    <input type="email" name="email" value="{{ request('email') }}" placeholder="Rechercher par email..." class="w-full px-3 py-2.5 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-blue-800 mb-2">Statut</label>
+                    <select name="status" class="w-full px-3 py-2.5 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                        <option value="">Tous les statuts</option>
+                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Actif</option>
+                        <option value="blocked" {{ request('status') == 'blocked' ? 'selected' : '' }}>Bloqué</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-blue-800 mb-2">Trier par</label>
+                    <select name="sort" class="w-full px-3 py-2.5 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                        <option value="created_at" {{ request('sort') == 'created_at' ? 'selected' : '' }}>Date d'inscription</option>
+                        <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Nom</option>
+                        <option value="email" {{ request('sort') == 'email' ? 'selected' : '' }}>Email</option>
+                        <option value="requests_count" {{ request('sort') == 'requests_count' ? 'selected' : '' }}>Nombre de demandes</option>
+                        <option value="reviews_count" {{ request('sort') == 'reviews_count' ? 'selected' : '' }}>Nombre d'avis</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-blue-800 mb-2">Ordre</label>
+                    <select name="direction" class="w-full px-3 py-2.5 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                        <option value="desc" {{ request('direction') == 'desc' ? 'selected' : '' }}>Décroissant</option>
+                        <option value="asc" {{ request('direction') == 'asc' ? 'selected' : '' }}>Croissant</option>
+                    </select>
+                </div>
+                
+                <div class="col-span-1 sm:col-span-2 lg:col-span-3 flex flex-col sm:flex-row gap-3 pt-4">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm">
+                        <i class="fas fa-search mr-2"></i>
+                        Rechercher
+                    </button>
+                    <a href="{{ route('administrateur.clients.index') }}" class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2.5 px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm">
+                        <i class="fas fa-redo mr-2"></i>
+                        Réinitialiser
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
-    <form action="{{ route('administrateur.clients.index') }}" method="GET" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; padding: 1rem 0;">
-        <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark);">Nom</label>
-            <input type="text" name="name" value="{{ request('name') }}" placeholder="Rechercher par nom..." style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
-        </div>
-        
-        <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark);">Email</label>
-            <input type="email" name="email" value="{{ request('email') }}" placeholder="Rechercher par email..." style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
-        </div>
-        
-        <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark);">Statut</label>
-            <select name="status" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
-                <option value="">Tous les statuts</option>
-                <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Actif</option>
-                <option value="blocked" {{ request('status') == 'blocked' ? 'selected' : '' }}>Bloqué</option>
-            </select>
-        </div>
-        
-        <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark);">Trier par</label>
-            <select name="sort" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
-                <option value="created_at" {{ request('sort') == 'created_at' ? 'selected' : '' }}>Date d'inscription</option>
-                <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Nom</option>
-                <option value="email" {{ request('sort') == 'email' ? 'selected' : '' }}>Email</option>
-                <option value="requests_count" {{ request('sort') == 'requests_count' ? 'selected' : '' }}>Nombre de demandes</option>
-                <option value="reviews_count" {{ request('sort') == 'reviews_count' ? 'selected' : '' }}>Nombre d'avis</option>
-            </select>
-        </div>
-        
-        <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark);">Ordre</label>
-            <select name="direction" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
-                <option value="desc" {{ request('direction') == 'desc' ? 'selected' : '' }}>Décroissant</option>
-                <option value="asc" {{ request('direction') == 'asc' ? 'selected' : '' }}>Croissant</option>
-            </select>
-        </div>
-        
-        <div style="grid-column: 1 / -1; display: flex; gap: 1rem;">
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-search"></i>
-                Rechercher
+
+    <!-- Items Per Page & Export -->
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 mb-6">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <div class="flex items-center gap-2">
+                <label class="text-sm text-blue-700">Afficher</label>
+                <select onchange="changeItemsPerPage(this.value)" class="px-3 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                    <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
+                    <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                    <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                </select>
+                <span class="text-sm text-blue-700">éléments</span>
+            </div>
+            
+            <button class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2.5 px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm" onclick="exportClients()">
+                <i class="fas fa-download mr-2"></i>
+                Exporter
             </button>
-            <a href="{{ route('administrateur.clients.index') }}" class="btn btn-outline">
-                <i class="fas fa-redo"></i>
-                Réinitialiser
-            </a>
         </div>
-    </form>
-</div>
-
-<!-- Items Per Page & Export -->
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-    <div>
-        <label style="font-size: 0.875rem; color: var(--secondary);">Afficher</label>
-        <select onchange="changeItemsPerPage(this.value)" style="padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
-            <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
-            <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
-            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
-            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
-        </select>
-        <span style="font-size: 0.875rem; color: var(--secondary);">éléments</span>
     </div>
-    
-    <button class="btn btn-outline" onclick="exportClients()">
-        <i class="fas fa-download"></i>
-        Exporter
-    </button>
-</div>
 
-<!-- Main Content -->
-<div class="content-card">
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th style="width: 40px;">
-                        <input type="checkbox" id="selectAll" onchange="toggleAllCheckboxes()">
-                    </th>
-                    <th>Client</th>
-                    <th>Demandes</th>
-                    <th>Avis</th>
-                    <th>Statut</th>
-                    <th>Date d'inscription</th>
-                    <th style="width: 120px;">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($clients as $client)
-                <tr>
-                    <td>
-                        <input type="checkbox" class="client-checkbox" value="{{ $client->id }}" onchange="updateBulkActionsVisibility()">
-                    </td>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 0.75rem;">
-                            <div class="avatar">
-                                @if($client->user->profile_photo_url)
-                                    <img src="{{ $client->user->profile_photo_url }}" alt="{{ $client->user->name }}">
-                                @else
-                                    <div class="avatar-initials">
-                                        {{ substr($client->user->name, 0, 1) }}
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
+        <div class="bg-white rounded-xl shadow-lg border border-blue-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-blue-50">
+                        <tr>
+                            <th class="w-10 px-4 py-3 text-left">
+                                <input type="checkbox" id="selectAll" onchange="toggleAllCheckboxes()" class="rounded border-blue-300 text-blue-600 focus:ring-blue-500">
+                            </th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-blue-900">Client</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-blue-900">Demandes</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-blue-900">Avis</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-blue-900">Statut</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-blue-900">Date d'inscription</th>
+                            <th class="w-32 px-4 py-3 text-left text-sm font-semibold text-blue-900">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-blue-100">
+                        @forelse($clients as $client)
+                        <tr class="hover:bg-blue-25 transition-colors duration-150">
+                            <td class="px-4 py-3">
+                                <input type="checkbox" class="client-checkbox rounded border-blue-300 text-blue-600 focus:ring-blue-500" value="{{ $client->id }}" onchange="updateBulkActionsVisibility()">
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full overflow-hidden bg-blue-100 flex items-center justify-center">
+                                        @if($client->user->profile_photo_url)
+                                            <img src="{{ $client->user->profile_photo_url }}" alt="{{ $client->user->name }}" class="w-full h-full object-cover">
+                                        @else
+                                            <span class="text-blue-600 font-semibold text-sm">
+                                                {{ substr($client->user->name, 0, 1) }}
+                                            </span>
+                                        @endif
                                     </div>
-                                @endif
-                            </div>
-                            <div>
-                                <div style="font-weight: 600; color: var(--dark);">{{ $client->user->name }}</div>
-                                <div style="font-size: 0.875rem; color: var(--secondary);">{{ $client->user->email }}</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <span class="badge primary">{{ $client->client_requests_count ?? $client->clientRequests->count() }}</span>
-                    </td>
-                    <td>
-                        <span class="badge info">{{ $client->reviews_count ?? $client->reviews->count() }}</span>
-                    </td>
-                    <td>
-                        @if($client->user->is_blocked)
-            <span class="badge danger">Bloqué</span>
-        @else
-            <span class="badge success">Actif</span>
-        @endif
-                    </td>
-                    <td>{{ $client->created_at->format('d/m/Y') }}</td>
-                    <td>
-                        <div class="actions-dropdown">
-                            <button class="btn btn-icon" onclick="toggleDropdown('clientMenu{{ $client->id }}')">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                            <div id="clientMenu{{ $client->id }}" class="dropdown-menu" style="display: none;">
-                                <a href="{{ route('administrateur.clients.show', $client->id) }}" class="dropdown-item">
-                                    <i class="fas fa-eye"></i> Voir détails
-                                </a>
-                                @if(auth()->id() != $client->user_id)
-                                    <button onclick="toggleBlockClient('{{ $client->id }}', '{{ $client->user->is_blocked ? 'unblock' : 'block' }}')" class="dropdown-item">
-                                        <i class="fas {{ $client->user->is_blocked ? 'fa-unlock' : 'fa-lock' }}"></i> 
-                                        {{ $client->user->is_blocked ? 'Débloquer' : 'Bloquer' }}
+                                    <div>
+                                        <div class="font-semibold text-blue-900">{{ $client->user->name }}</div>
+                                        <div class="text-sm text-blue-600">{{ $client->user->email }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{{ $client->bookings->count() }}</span>
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">{{ $client->reviews_count ?? $client->reviews->count() }}</span>
+                            </td>
+                            <td class="px-4 py-3">
+                                @if($client->user->is_blocked)
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Bloqué</span>
+                @else
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Actif</span>
+                @endif
+                            </td>
+                            <td class="px-4 py-3 text-sm text-blue-700">{{ $client->created_at->format('d/m/Y') }}</td>
+                            <td class="px-4 py-3">
+                                <div class="relative">
+                                    <button class="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors duration-150" onclick="toggleDropdown('clientMenu{{ $client->id }}')">
+                                        <i class="fas fa-ellipsis-v"></i>
                                     </button>
-                                    <button onclick="deleteClient('{{ $client->id }}')" class="dropdown-item text-danger">
-                                        <i class="fas fa-trash"></i> Supprimer
-                                    </button>
-                                @endif
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="7" class="text-center py-4">
-                        <div style="color: var(--secondary); font-size: 1rem;">
-                            <i class="fas fa-info-circle mr-1"></i> Aucun client trouvé
-                        </div>
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-    
-    <!-- Pagination -->
-    <div style="padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
-        <div style="font-size: 0.875rem; color: var(--secondary);">
-            Affichage de {{ $clients->firstItem() ?? 0 }} à {{ $clients->lastItem() ?? 0 }} sur {{ $clients->total() }} entrées
+                                    <div id="clientMenu{{ $client->id }}" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-blue-200 z-10" style="display: none;">
+                                        <a href="{{ route('administrateur.clients.show', $client->id) }}" class="flex items-center px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 rounded-t-lg">
+                                            <i class="fas fa-eye mr-2"></i> Voir détails
+                                        </a>
+                                        @if(auth()->id() != $client->user_id)
+                                            <button onclick="toggleBlockClient('{{ $client->id }}', '{{ $client->user->is_blocked ? 'unblock' : 'block' }}')" class="w-full flex items-center px-4 py-2 text-sm text-blue-700 hover:bg-blue-50">
+                                                <i class="fas {{ $client->user->is_blocked ? 'fa-unlock' : 'fa-lock' }} mr-2"></i> 
+                                                {{ $client->user->is_blocked ? 'Débloquer' : 'Bloquer' }}
+                                            </button>
+                                            <button onclick="deleteClient('{{ $client->id }}')" class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-b-lg">
+                                                <i class="fas fa-trash mr-2"></i> Supprimer
+                                            </button>
+                                        @endif
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="7" class="px-4 py-8 text-center">
+                                <div class="text-blue-600">
+                                    <i class="fas fa-info-circle mr-2"></i> Aucun client trouvé
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="px-4 py-4 bg-blue-25 border-t border-blue-200 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="text-sm text-blue-700">
+                    Affichage de {{ $clients->firstItem() ?? 0 }} à {{ $clients->lastItem() ?? 0 }} sur {{ $clients->total() }} entrées
+                </div>
+                <div class="pagination-wrapper">
+                    {{ $clients->appends(request()->query())->links() }}
+                </div>
+            </div>
         </div>
-        {{ $clients->appends(request()->query())->links() }}
     </div>
-</div>
 
-<!-- Bulk Actions -->
-<div id="bulkActions" style="position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: white; padding: 1rem 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); display: none; z-index: 1000;">
-    <div style="display: flex; gap: 1rem; align-items: center;">
-        <span id="selectedCount" style="font-weight: 500;">0 sélectionné(s)</span>
-        <button class="btn btn-outline" onclick="clearSelection()">
-            <i class="fas fa-times"></i>
-            Annuler
-        </button>
-        <button class="btn btn-success" onclick="bulkUnblock()">
-            <i class="fas fa-unlock"></i>
-            Débloquer
-        </button>
-        <button class="btn btn-warning" onclick="bulkBlock()">
-            <i class="fas fa-lock"></i>
-            Bloquer
-        </button>
-        <button class="btn btn-danger" onclick="bulkDelete()">
-            <i class="fas fa-trash"></i>
-            Supprimer
-        </button>
+    <!-- Bulk Actions -->
+    <div id="bulkActions" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-white rounded-xl shadow-lg border border-blue-200 px-6 py-4 z-50" style="display: none;">
+        <div class="flex flex-wrap gap-3 items-center">
+            <span id="selectedCount" class="font-medium text-blue-900">0 sélectionné(s)</span>
+            <button class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2 px-4 rounded-lg transition duration-200 flex items-center text-sm" onclick="clearSelection()">
+                <i class="fas fa-times mr-2"></i>
+                Annuler
+            </button>
+            <button class="bg-green-100 hover:bg-green-200 text-green-800 font-bold py-2 px-4 rounded-lg transition duration-200 flex items-center text-sm" onclick="bulkUnblock()">
+                <i class="fas fa-unlock mr-2"></i>
+                Débloquer
+            </button>
+            <button class="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 font-bold py-2 px-4 rounded-lg transition duration-200 flex items-center text-sm" onclick="bulkBlock()">
+                <i class="fas fa-lock mr-2"></i>
+                Bloquer
+            </button>
+            <button class="bg-red-100 hover:bg-red-200 text-red-800 font-bold py-2 px-4 rounded-lg transition duration-200 flex items-center text-sm" onclick="bulkDelete()">
+                <i class="fas fa-trash mr-2"></i>
+                Supprimer
+            </button>
+        </div>
     </div>
 </div>
 

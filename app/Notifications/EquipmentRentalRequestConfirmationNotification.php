@@ -32,7 +32,7 @@ class EquipmentRentalRequestConfirmationNotification extends Notification implem
      */
     public function via($notifiable)
     {
-        return ['database', 'mail'];
+        return ['database'];
     }
 
     /**

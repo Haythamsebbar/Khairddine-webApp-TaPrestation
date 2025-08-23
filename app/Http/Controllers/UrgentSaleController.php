@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Validator;
 class UrgentSaleController extends Controller
 {
     /**
-     * Afficher la liste des ventes urgentes publiques
+     * Afficher la liste des annonces publiques
      */
     public function index(Request $request)
     {
@@ -34,6 +34,29 @@ class UrgentSaleController extends Controller
             });
         }
         
+        // Recherche géolocalisée
+        if ($request->filled('latitude') && $request->filled('longitude')) {
+            $latitude = $request->latitude;
+            $longitude = $request->longitude;
+            $radius = $request->filled('radius') ? $request->radius : 50; // 50km par défaut
+
+            // Utilisation de la formule de Haversine pour calculer la distance
+            $query->whereHas('prestataire', function($q) use ($latitude, $longitude, $radius) {
+                $q->selectRaw(
+                    'prestataires.*, 
+                    ( 6371 * acos( cos( radians(?) ) * 
+                      cos( radians( latitude ) ) * 
+                      cos( radians( longitude ) - radians(?) ) + 
+                      sin( radians(?) ) * 
+                      sin( radians( latitude ) ) ) ) AS distance',
+                    [$latitude, $longitude, $latitude]
+                )
+                ->whereNotNull('latitude')
+                ->whereNotNull('longitude')
+                ->havingRaw('distance <= ?', [$radius]);
+            });
+        }
+        
         // Filtrage par prix
         if ($request->filled('price_min')) {
             $query->where('price', '>=', $request->price_min);
@@ -48,10 +71,7 @@ class UrgentSaleController extends Controller
             $query->where('condition', $request->condition);
         }
         
-        // Filtres spéciaux
-        if ($request->filled('urgent_only')) {
-            $query->where('is_urgent', true);
-        }
+
         
         // Tri
         $sortBy = $request->get('sort', 'created_at');
@@ -64,15 +84,19 @@ class UrgentSaleController extends Controller
                 $query->orderBy('price', 'desc');
                 break;
             case 'urgent':
-                $query->orderBy('is_urgent', 'desc')
-                      ->orderBy('created_at', 'desc');
+                $query->orderBy('created_at', 'desc');
                 break;
             case 'recent':
                 $query->orderBy('created_at', 'desc');
                 break;
+            case 'distance':
+                // Le tri par distance est géré dans la requête géolocalisée
+                if (!$request->filled('latitude') || !$request->filled('longitude')) {
+                    $query->orderBy('created_at', 'desc');
+                }
+                break;
             default:
-                $query->orderBy('is_urgent', 'desc')
-                      ->orderBy('created_at', 'desc');
+                $query->orderBy('created_at', 'desc');
         }
         
         $urgentSales = $query->paginate(12)->withQueryString();
@@ -81,8 +105,8 @@ class UrgentSaleController extends Controller
         $priceRange = UrgentSale::active()->selectRaw('MIN(price) as min_price, MAX(price) as max_price')->first();
         $conditions = UrgentSale::CONDITION_OPTIONS;
         
-        // Ventes urgentes en vedette
-        $featuredSales = UrgentSale::active()->urgent()
+        // Annonces en vedette
+        $featuredSales = UrgentSale::active()
                                   ->with(['prestataire.user'])
                                   ->limit(6)
                                   ->get();

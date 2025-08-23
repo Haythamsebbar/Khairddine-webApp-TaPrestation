@@ -119,7 +119,7 @@
                 <div class="flex space-x-2">
                     <button type="submit" 
                             class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200">
-                        🔍 Filtrer
+                        Filtrer
                     </button>
                     <a href="{{ route('client.equipment-rentals.index') }}" 
                        class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg font-medium transition-colors duration-200">
@@ -221,15 +221,15 @@
                                 </span>
                                 @elseif($rental->status === 'active')
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                    ✅ En cours
+                                    En cours
                                 </span>
                                 @elseif($rental->status === 'completed')
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                    🏁 Terminée
+                                    Terminée
                                 </span>
                                 @elseif($rental->status === 'cancelled')
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                    ❌ Annulée
+                                    Annulée
                                 </span>
                                 @endif
                             </td>
@@ -240,7 +240,7 @@
                                 <div class="flex items-center justify-end space-x-2">
                                     <a href="{{ route('client.equipment-rentals.show', $rental) }}" 
                                        class="text-blue-600 hover:text-blue-900 font-medium">
-                                        👁️ Voir
+                                        Voir
                                     </a>
                                     
                                     @if($rental->status === 'active')
@@ -251,7 +251,7 @@
                                         @csrf
                                         <button type="submit" 
                                                 class="text-green-600 hover:text-green-900 font-medium">
-                                            📦 Confirmer retour
+                                            Confirmer retour
                                         </button>
                                     </form>
                                     @endif

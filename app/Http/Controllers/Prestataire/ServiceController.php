@@ -75,7 +75,7 @@ class ServiceController extends Controller
             'confirmed_bookings' => Booking::whereIn('service_id', $prestataire->services->pluck('id'))->where('status', 'confirmed')->count(),
         ];
 
-        $categories = Category::all();
+        $categories = Category::orderBy('name')->get();
 
         return view('prestataire.services.index', [
             'services' => $services,
@@ -92,10 +92,159 @@ class ServiceController extends Controller
      */
     public function create()
     {
-        $categories = Category::all();
+        // Nettoyer les données de session précédentes
+        session()->forget('service_creation');
+        
+        $categories = Category::orderBy('name')->get();
         
         return view('prestataire.services.create', [
             'categories' => $categories
+        ]);
+    }
+
+    /**
+     * Affiche l'étape 1 de création de service (Informations de base)
+     */
+    public function createStep1()
+    {
+        return view('prestataire.services.create-step1');
+    }
+
+    /**
+     * Traite l'étape 1 de création de service
+     */
+    public function storeStep1(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string|min:10',
+            'delivery_time' => 'required|integer|min:1'
+        ]);
+
+        // Stocker les données dans la session
+        session(['service_creation.step1' => [
+            'title' => $request->title,
+            'description' => $request->description,
+            'reservable' => $request->has('reservable'),
+            'delivery_time' => $request->delivery_time
+        ]]);
+
+        return redirect()->route('prestataire.services.create.step2');
+    }
+
+    /**
+     * Affiche l'étape 2 de création de service (Prix et Catégorie)
+     */
+    public function createStep2()
+    {
+        // Vérifier que l'étape 1 est complétée
+        if (!session()->has('service_creation.step1')) {
+            return redirect()->route('prestataire.services.create.step1')
+                ->with('error', 'Veuillez d\'abord compléter l\'étape 1.');
+        }
+
+        $categories = Category::whereNull('parent_id')->orderBy('name')->get();
+        
+        return view('prestataire.services.create-step2', [
+            'categories' => $categories
+        ]);
+    }
+
+    /**
+     * Traite l'étape 2 de création de service
+     */
+    public function storeStep2(Request $request)
+    {
+        $request->validate([
+            'price' => 'required|numeric|min:0',
+            'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'nullable|exists:categories,id'
+        ]);
+
+        // Stocker les données dans la session
+        session(['service_creation.step2' => [
+            'price' => $request->price,
+            'category_id' => $request->category_id,
+            'subcategory_id' => $request->subcategory_id
+        ]]);
+
+        return redirect()->route('prestataire.services.create.step3');
+    }
+
+    /**
+     * Affiche l'étape 3 de création de service (Photos)
+     */
+    public function createStep3()
+    {
+        // Vérifier que les étapes précédentes sont complétées
+        if (!session()->has('service_creation.step1') || !session()->has('service_creation.step2')) {
+            return redirect()->route('prestataire.services.create.step1')
+                ->with('error', 'Veuillez compléter toutes les étapes précédentes.');
+        }
+
+        return view('prestataire.services.create-step3');
+    }
+
+    /**
+     * Traite l'étape 3 de création de service
+     */
+    public function storeStep3(Request $request)
+    {
+        $request->validate([
+            'images' => 'nullable|array|max:5',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        // Stocker les images temporairement
+        $imagePaths = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $index => $image) {
+                $fileName = 'temp_' . time() . '_' . $index . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                $path = $image->storeAs('temp/services', $fileName, 'public');
+                $imagePaths[] = [
+                    'path' => $path,
+                    'original_name' => $image->getClientOriginalName(),
+                    'size' => $image->getSize(),
+                    'mime_type' => $image->getMimeType()
+                ];
+            }
+        }
+
+        session(['service_creation.step3' => [
+            'images' => $imagePaths
+        ]]);
+
+        return redirect()->route('prestataire.services.create.step4');
+    }
+
+    /**
+     * Affiche l'étape 4 de création de service (Localisation)
+     */
+    public function createStep4()
+    {
+        // Vérifier que toutes les étapes précédentes sont complétées
+        if (!session()->has('service_creation.step1') || 
+            !session()->has('service_creation.step2') || 
+            !session()->has('service_creation.step3')) {
+            return redirect()->route('prestataire.services.create.step1')
+                ->with('error', 'Veuillez compléter toutes les étapes précédentes.');
+        }
+
+        // Récupérer toutes les données pour l'affichage du résumé
+        $step1Data = session('service_creation.step1');
+        $step2Data = session('service_creation.step2');
+        $step3Data = session('service_creation.step3');
+
+        // Récupérer les noms des catégories
+        $category = Category::find($step2Data['category_id']);
+        $subcategory = $step2Data['subcategory_id'] ? Category::find($step2Data['subcategory_id']) : null;
+
+        return view('prestataire.services.create-step4', [
+            'step1Data' => $step1Data,
+            'step2Data' => $step2Data,
+            'step3Data' => $step3Data,
+            'category' => $category,
+            'subcategory' => $subcategory
         ]);
     }
 
@@ -105,22 +254,104 @@ class ServiceController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(StoreServiceRequest $request)
+    public function store(Request $request)
     {
         $prestataire = Auth::user()->prestataire;
 
-        $data = $request->validated();
+        // Vérifier si nous utilisons le processus multi-étapes
+        if (session()->has('service_creation')) {
+            return $this->storeFromSession($request);
+        }
+
+        // Processus de création classique (pour compatibilité)
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string|min:10',
+            'price' => 'required|numeric|min:0',
+            'delivery_time' => 'required|integer|min:1',
+            'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'nullable|exists:categories,id',
+            'images' => 'nullable|array|max:5',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        $data = $request->only(['title', 'description', 'price', 'delivery_time', 'latitude', 'longitude', 'address']);
         $data['reservable'] = $request->has('reservable');
 
         $service = $prestataire->services()->create($data);
 
-        if ($request->has('categories')) {
-            $service->categories()->sync($request->validated()['categories']);
+        // Gérer les catégories
+        $categoriesToSync = [];
+        
+        if ($request->filled('category_id')) {
+            $categoriesToSync[] = $request->category_id;
+        }
+        
+        if ($request->filled('subcategory_id')) {
+            $categoriesToSync[] = $request->subcategory_id;
+        }
+        
+        if (!empty($categoriesToSync)) {
+            $service->categories()->sync($categoriesToSync);
         }
 
         if ($request->hasFile('images')) {
             $this->handleImageUpload($request->file('images'), $service);
         }
+
+        return redirect()->route('prestataire.services.index')
+            ->with('success', 'Service créé avec succès.');
+    }
+
+    /**
+     * Enregistre un service à partir des données de session (processus multi-étapes)
+     */
+    private function storeFromSession(Request $request)
+    {
+        $request->validate([
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
+            'address' => 'nullable|string|max:255'
+        ]);
+
+        $prestataire = Auth::user()->prestataire;
+
+        // Récupérer toutes les données des étapes
+        $step1Data = session('service_creation.step1');
+        $step2Data = session('service_creation.step2');
+        $step3Data = session('service_creation.step3');
+
+        // Créer le service avec toutes les données
+        $serviceData = array_merge($step1Data, $step2Data, [
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'address' => $request->address
+        ]);
+
+        $service = $prestataire->services()->create($serviceData);
+
+        // Gérer les catégories
+        $categoriesToSync = [];
+        
+        if (!empty($step2Data['category_id'])) {
+            $categoriesToSync[] = $step2Data['category_id'];
+        }
+        
+        if (!empty($step2Data['subcategory_id'])) {
+            $categoriesToSync[] = $step2Data['subcategory_id'];
+        }
+        
+        if (!empty($categoriesToSync)) {
+            $service->categories()->sync($categoriesToSync);
+        }
+
+        // Gérer les images temporaires
+        if (!empty($step3Data['images'])) {
+            $this->handleTempImageUpload($step3Data['images'], $service);
+        }
+
+        // Nettoyer la session
+        session()->forget('service_creation');
 
         return redirect()->route('prestataire.services.index')
             ->with('success', 'Service créé avec succès.');
@@ -137,7 +368,7 @@ class ServiceController extends Controller
         // Vérifier que le service appartient bien au prestataire connecté
         $this->authorize('update', $service);
         
-        $categories = Category::all();
+        $categories = Category::orderBy('name')->get();
         $selectedCategories = $service->categories->pluck('id')->toArray();
 
         return view('prestataire.services.edit', [
@@ -163,11 +394,18 @@ class ServiceController extends Controller
 
         $service->update($data);
 
-        if ($request->has('categories')) {
-            $service->categories()->sync($request->validated()['categories']);
-        } else {
-            $service->categories()->sync([]);
+        // Gérer les catégories avec la nouvelle logique à deux champs
+        $categoriesToSync = [];
+        
+        if ($request->filled('category_id')) {
+            $categoriesToSync[] = $request->category_id;
         }
+        
+        if ($request->filled('subcategory_id')) {
+            $categoriesToSync[] = $request->subcategory_id;
+        }
+        
+        $service->categories()->sync($categoriesToSync);
 
         if ($request->hasFile('images')) {
             $this->handleImageUpload($request->file('images'), $service);
@@ -229,6 +467,43 @@ class ServiceController extends Controller
                 'mime_type' => $image->getMimeType(),
                 'order' => ++$lastOrder,
             ]);
+        }
+    }
+
+    /**
+     * Gère le déplacement des images temporaires vers le dossier final.
+     *
+     * @param  array  $tempImages
+     * @param  \App\Models\Service  $service
+     * @return void
+     */
+    private function handleTempImageUpload(array $tempImages, Service $service)
+    {
+        $lastOrder = $service->images()->max('order') ?? 0;
+
+        foreach ($tempImages as $index => $imageData) {
+            // Déplacer l'image du dossier temporaire vers le dossier final
+            $tempPath = $imageData['path'];
+            $fileName = time() . '_' . $index . '_' . uniqid() . '.' . pathinfo($imageData['original_name'], PATHINFO_EXTENSION);
+            $finalPath = 'services/' . $fileName;
+            
+            // Copier le fichier temporaire vers le dossier final
+            if (Storage::disk('public')->exists($tempPath)) {
+                Storage::disk('public')->copy($tempPath, $finalPath);
+                
+                // Créer l'enregistrement en base
+                ServiceImage::create([
+                    'service_id' => $service->id,
+                    'image_path' => $finalPath,
+                    'original_name' => $imageData['original_name'],
+                    'file_size' => $imageData['size'],
+                    'mime_type' => $imageData['mime_type'],
+                    'order' => ++$lastOrder,
+                ]);
+                
+                // Supprimer le fichier temporaire
+                Storage::disk('public')->delete($tempPath);
+            }
         }
     }
 }

@@ -9,8 +9,7 @@ use App\Models\Prestataire;
 use App\Models\Client;
 use App\Models\Service;
 use App\Models\Booking;
-use App\Models\ClientRequest;
-use App\Models\Offer;
+
 use App\Models\Review;
 use App\Models\Message;
 use App\Models\Category;
@@ -386,14 +385,10 @@ class ReportController extends Controller
      */
     private function getConversionStats()
     {
-        $totalRequests = ClientRequest::count();
-        $totalOffers = Offer::count();
-        $acceptedOffers = Offer::where('status', 'accepted')->count();
+        $totalServices = Service::count();
         $completedBookings = Booking::where('status', 'completed')->count();
         
         return [
-            'request_to_offer' => $totalRequests > 0 ? round(($totalOffers / $totalRequests) * 100, 1) : 0,
-            'offer_to_acceptance' => $totalOffers > 0 ? round(($acceptedOffers / $totalOffers) * 100, 1) : 0,
             'booking_completion' => Booking::count() > 0 ? round(($completedBookings / Booking::count()) * 100, 1) : 0,
         ];
     }

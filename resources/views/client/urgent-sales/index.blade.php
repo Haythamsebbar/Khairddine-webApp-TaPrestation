@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Ventes urgentes')
+@section('title', 'Annonces')
 
 @section('content')
 <div class="bg-gray-50 min-h-screen">
@@ -9,10 +9,10 @@
         <div class="container mx-auto px-4 py-12">
             <div class="text-center">
                 <h1 class="text-4xl md:text-5xl font-bold mb-4">
-                    <i class="fas fa-bolt mr-3"></i>Ventes Urgentes
+                    <i class="fas fa-bolt mr-3"></i>Annonces
                 </h1>
                 <p class="text-xl md:text-2xl mb-6 opacity-90">
-                    Découvrez les meilleures affaires des prestataires événementiels
+                    Découvrez les meilleures annonces
                 </p>
                 <div class="flex justify-center items-center space-x-6 text-lg">
                     <div class="flex items-center">
@@ -41,7 +41,7 @@
             </div>
             <div class="bg-white rounded-lg shadow p-6 text-center">
                 <div class="text-3xl font-bold text-red-600 mb-2">{{ $urgentSales }}</div>
-                <div class="text-gray-600">Ventes urgentes</div>
+                <div class="text-gray-600">Annonces</div>
             </div>
             <div class="bg-white rounded-lg shadow p-6 text-center">
                 <div class="text-3xl font-bold text-green-600 mb-2">{{ $newToday }}</div>
@@ -159,12 +159,6 @@
                                 
                                 <!-- Badges -->
                                 <div class="absolute top-2 left-2 space-y-1">
-                                    @if($sale->is_urgent)
-                                        <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
-                                            <i class="fas fa-bolt mr-1"></i>URGENT
-                                        </span>
-                                    @endif
-                                    
                                     @if($sale->created_at->isToday())
                                         <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold">
                                             <i class="fas fa-star mr-1"></i>NOUVEAU
@@ -202,7 +196,7 @@
                                         <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-2">
                                             <i class="fas fa-user text-gray-600 text-xs"></i>
                                         </div>
-                                        <span class="text-sm font-medium text-gray-900">{{ $sale->prestataire->user->name }}</span>
+                                        <span class="text-sm font-medium text-gray-900">{{ $sale->prestataire->user->name ?? 'Prestataire' }}</span>
                                     </div>
                                     
                                     <div class="flex items-center text-xs text-gray-500">

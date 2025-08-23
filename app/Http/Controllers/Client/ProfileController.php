@@ -164,4 +164,41 @@ class ProfileController extends Controller
         return redirect()->route('client.profile.edit')
             ->with('success', 'Avatar supprimé avec succès.');
     }
+
+    /**
+     * Supprime définitivement le compte client.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|current_password',
+            'confirmation' => 'required|in:DELETE'
+        ]);
+
+        $user = Auth::user();
+        $client = $user->client;
+
+        // Supprimer les fichiers associés
+        if ($client && $client->avatar) {
+            if (Storage::disk('public')->exists($client->avatar)) {
+                Storage::disk('public')->delete($client->avatar);
+            }
+        }
+
+        // Déconnecter l'utilisateur
+        Auth::logout();
+
+        // Supprimer l'utilisateur (cascade sur le client)
+        $user->delete();
+
+        // Invalider la session
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('home')
+            ->with('success', 'Votre compte a été supprimé avec succès.');
+    }
 }

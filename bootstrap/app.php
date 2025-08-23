@@ -16,6 +16,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'client' => \App\Http\Middleware\ClientMiddleware::class,
             'refresh.csrf' => \App\Http\Middleware\RefreshCsrfToken::class,
             'check.file.upload' => \App\Http\Middleware\CheckFileUploadSize::class,
+            'update.online.status' => \App\Http\Middleware\UpdateUserOnlineStatus::class,
+        ]);
+        
+        // Apply online status middleware to web routes
+        $middleware->web(append: [
+            \App\Http\Middleware\UpdateUserOnlineStatus::class,
         ]);
         
         // Use custom CSRF middleware with register route exception

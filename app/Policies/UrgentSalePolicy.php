@@ -13,7 +13,7 @@ class UrgentSalePolicy
      */
     public function viewAny(User $user): bool
     {
-        return (bool) $user->prestataire;
+        return $user->role === 'prestataire' && $user->prestataire !== null;
     }
 
     /**
@@ -21,7 +21,9 @@ class UrgentSalePolicy
      */
     public function view(User $user, UrgentSale $urgentSale): bool
     {
-        return $user->prestataire && $user->prestataire->id === $urgentSale->prestataire_id;
+        return $user->role === 'prestataire' && 
+               $user->prestataire !== null && 
+               $user->prestataire->id === $urgentSale->prestataire_id;
     }
 
     /**
@@ -29,7 +31,7 @@ class UrgentSalePolicy
      */
     public function create(User $user): bool
     {
-        return (bool) $user->prestataire;
+        return $user->role === 'prestataire' && $user->prestataire !== null;
     }
 
     /**
@@ -37,7 +39,9 @@ class UrgentSalePolicy
      */
     public function update(User $user, UrgentSale $urgentSale): bool
     {
-        return $user->prestataire && $user->prestataire->id === $urgentSale->prestataire_id;
+        return $user->role === 'prestataire' && 
+               $user->prestataire !== null && 
+               $user->prestataire->id === $urgentSale->prestataire_id;
     }
 
     /**
@@ -45,7 +49,9 @@ class UrgentSalePolicy
      */
     public function delete(User $user, UrgentSale $urgentSale): bool
     {
-        return $user->prestataire && $user->prestataire->id === $urgentSale->prestataire_id;
+        return $user->role === 'prestataire' && 
+               $user->prestataire !== null && 
+               $user->prestataire->id === $urgentSale->prestataire_id;
     }
 
     /**
@@ -53,7 +59,9 @@ class UrgentSalePolicy
      */
     public function restore(User $user, UrgentSale $urgentSale): bool
     {
-        return $user->prestataire && $user->prestataire->id === $urgentSale->prestataire_id;
+        return $user->role === 'prestataire' && 
+               $user->prestataire !== null && 
+               $user->prestataire->id === $urgentSale->prestataire_id;
     }
 
     /**
@@ -61,6 +69,8 @@ class UrgentSalePolicy
      */
     public function forceDelete(User $user, UrgentSale $urgentSale): bool
     {
-        return $user->prestataire && $user->prestataire->id === $urgentSale->prestataire_id;
+        return $user->role === 'prestataire' && 
+               $user->prestataire !== null && 
+               $user->prestataire->id === $urgentSale->prestataire_id;
     }
 }

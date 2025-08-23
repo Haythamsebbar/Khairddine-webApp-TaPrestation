@@ -104,13 +104,13 @@
             </div>
             
             <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200">
-                🔍 Filtrer
+                Filtrer
             </button>
             
             @if(request()->hasAny(['search', 'status', 'equipment_id']))
             <a href="{{ route('prestataire.equipment-rentals.index') }}" 
                class="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors duration-200">
-                ✖️ Effacer
+                Effacer
             </a>
             @endif
         </form>
@@ -198,7 +198,7 @@
                                 <a href="{{ route('prestataire.equipment-rentals.show', $rental) }}" 
                                    class="text-blue-600 hover:text-blue-900 transition-colors duration-200"
                                    title="Voir les détails">
-                                    👁️
+                                    Voir
                                 </a>
                                 
                                 @if($rental->status === 'pending_start')
@@ -222,7 +222,7 @@
                                             class="text-blue-600 hover:text-blue-900 transition-colors duration-200"
                                             title="Marquer comme terminée"
                                             onclick="return confirm('Marquer cette location comme terminée ?')">
-                                        ✅
+                                        Terminer
                                     </button>
                                 </form>
                                 @endif
@@ -232,7 +232,7 @@
                                         class="text-red-600 hover:text-red-900 transition-colors duration-200"
                                         title="Signaler un problème"
                                         onclick="reportProblem({{ $rental->id }})">
-                                    ⚠️
+                                    Problème
                                 </button>
                                 @endif
                             </div>

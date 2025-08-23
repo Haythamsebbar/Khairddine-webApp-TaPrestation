@@ -144,7 +144,7 @@ class RegisterController extends Controller
                 $prestatairePhotoPath = $request->file('prestataire_profile_photo')->store('profile_photos/prestataires', 'public');
             }
 
-            // Récupérer la catégorie et sous-catégorie
+            // Récupérer la catégorie principale et la sous-catégorie
             $category = \App\Models\Category::find($request->category_id);
             $subcategory = $request->subcategory_id ? \App\Models\Category::find($request->subcategory_id) : null;
 
@@ -155,7 +155,7 @@ class RegisterController extends Controller
                 'city' => $request->city,
                 'photo' => $prestatairePhotoPath,
                 'secteur_activite' => $category ? $category->name : '',
-                'competences' => $subcategory ? $subcategory->name : '',
+                'competences' => $subcategory ? $subcategory->name : ($category ? $category->name : ''),
                 'description' => $request->description,
                 'portfolio_url' => $request->portfolio_url,
             ]);

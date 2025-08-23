@@ -32,7 +32,7 @@ class EquipmentRental extends Model
         'unit_price',
         'base_amount',
         'security_deposit',
-        'delivery_fee',
+
         'pickup_fee',
         'late_fee',
         'damage_fee',
@@ -43,18 +43,18 @@ class EquipmentRental extends Model
         'final_amount',
         'deposit_returned',
         'deposit_retained',
-        'delivery_address',
+
         'pickup_address',
-        'delivered_at',
+
         'picked_up_at',
-        'delivered_by',
+
         'picked_up_by',
         'status',
         'payment_status',
-        'delivery_notes',
+
         'pickup_notes',
         'condition_notes',
-        'delivery_photos',
+
         'pickup_photos',
         'equipment_condition_delivered',
         'equipment_condition_returned',
@@ -63,11 +63,11 @@ class EquipmentRental extends Model
         'late_return',
         'late_days',
         'late_hours',
-        'client_signature_delivery',
+
         'client_signature_pickup',
-        'prestataire_signature_delivery',
+
         'prestataire_signature_pickup',
-        'client_validated_delivery_at',
+
         'client_validated_pickup_at',
         'metadata',
         'internal_notes',
@@ -86,12 +86,12 @@ class EquipmentRental extends Model
         'end_date' => 'date',
         'actual_start_datetime' => 'datetime',
         'actual_end_datetime' => 'datetime',
-        'delivered_at' => 'datetime',
+
         'picked_up_at' => 'datetime',
         'unit_price' => 'decimal:2',
         'base_amount' => 'decimal:2',
         'security_deposit' => 'decimal:2',
-        'delivery_fee' => 'decimal:2',
+
         'pickup_fee' => 'decimal:2',
         'late_fee' => 'decimal:2',
         'damage_fee' => 'decimal:2',
@@ -107,11 +107,11 @@ class EquipmentRental extends Model
         'late_days' => 'integer',
         'late_hours' => 'integer',
         'late_return' => 'boolean',
-        'delivery_photos' => 'array',
+
         'pickup_photos' => 'array',
         'damage_photos' => 'array',
         'metadata' => 'array',
-        'client_validated_delivery_at' => 'datetime',
+
         'client_validated_pickup_at' => 'datetime',
         'cancelled_at' => 'datetime'
     ];
@@ -121,8 +121,8 @@ class EquipmentRental extends Model
      */
     const STATUS_CONFIRMED = 'confirmed';
     const STATUS_PREPARING = 'preparing';
-    const STATUS_READY_FOR_DELIVERY = 'ready_for_delivery';
-    const STATUS_DELIVERED = 'delivered';
+
+
     const STATUS_ACTIVE = 'active';
     const STATUS_OVERDUE = 'overdue';
     const STATUS_RETURNED = 'returned';
@@ -198,7 +198,7 @@ class EquipmentRental extends Model
      */
     public function scopeActive($query)
     {
-        return $query->whereIn('status', [self::STATUS_DELIVERED, self::STATUS_ACTIVE]);
+        return $query->whereIn('status', [self::STATUS_ACTIVE]);
     }
 
     /**
@@ -208,7 +208,7 @@ class EquipmentRental extends Model
     {
         return $query->where('status', self::STATUS_OVERDUE)
                     ->orWhere(function($q) {
-                        $q->whereIn('status', [self::STATUS_DELIVERED, self::STATUS_ACTIVE])
+                        $q->whereIn('status', [self::STATUS_ACTIVE])
                           ->where('end_date', '<', now()->toDateString());
                     });
     }
@@ -226,7 +226,7 @@ class EquipmentRental extends Model
      */
     public function scopePreparing($query)
     {
-        return $query->whereIn('status', [self::STATUS_CONFIRMED, self::STATUS_PREPARING, self::STATUS_READY_FOR_DELIVERY]);
+        return $query->whereIn('status', [self::STATUS_CONFIRMED, self::STATUS_PREPARING]);
     }
 
     /**
@@ -234,7 +234,7 @@ class EquipmentRental extends Model
      */
     public function isActive()
     {
-        return in_array($this->status, [self::STATUS_DELIVERED, self::STATUS_ACTIVE]);
+        return in_array($this->status, [self::STATUS_ACTIVE]);
     }
 
     /**
@@ -254,20 +254,7 @@ class EquipmentRental extends Model
         return $this->status === self::STATUS_COMPLETED;
     }
 
-    /**
-     * Marque la location comme livrée
-     */
-    public function markAsDelivered()
-    {
-        $this->update([
-            'status' => self::STATUS_DELIVERED,
-            'delivered_at' => now(),
-            'actual_start_date' => now()->toDateString()
-        ]);
 
-        // Mettre à jour le statut de l'équipement
-        $this->equipment->update(['availability_status' => 'rented']);
-    }
 
     /**
      * Marque la location comme retournée
@@ -355,8 +342,6 @@ class EquipmentRental extends Model
         $statuses = [
             self::STATUS_CONFIRMED => 'Confirmée',
             self::STATUS_PREPARING => 'En préparation',
-            self::STATUS_READY_FOR_DELIVERY => 'Prête pour livraison',
-            self::STATUS_DELIVERED => 'Livrée',
             self::STATUS_ACTIVE => 'En cours',
             self::STATUS_OVERDUE => 'En retard',
             self::STATUS_RETURNED => 'Retournée',
@@ -376,8 +361,6 @@ class EquipmentRental extends Model
         $colors = [
             self::STATUS_CONFIRMED => 'blue',
             self::STATUS_PREPARING => 'yellow',
-            self::STATUS_READY_FOR_DELIVERY => 'indigo',
-            self::STATUS_DELIVERED => 'green',
             self::STATUS_ACTIVE => 'green',
             self::STATUS_OVERDUE => 'red',
             self::STATUS_RETURNED => 'purple',
@@ -413,7 +396,7 @@ class EquipmentRental extends Model
         return in_array($this->status, [
             self::STATUS_CONFIRMED,
             self::STATUS_PREPARING,
-            self::STATUS_READY_FOR_DELIVERY
+
         ]);
     }
 

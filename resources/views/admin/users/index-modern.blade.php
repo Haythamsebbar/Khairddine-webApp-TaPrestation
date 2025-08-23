@@ -7,270 +7,331 @@
 @endpush
 
 @section('content')
-<!-- Header Actions -->
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-    <div>
-        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--dark); margin: 0;">Utilisateurs</h2>
-        <p style="color: var(--secondary); margin: 0.5rem 0 0 0;">Gérez tous les utilisateurs de la plateforme</p>
-    </div>
-    <div style="display: flex; gap: 1rem;">
-        <button class="btn btn-outline" onclick="toggleFilters()">
-            <i class="fas fa-filter"></i>
-            Filtres
-        </button>
-        <a href="{{ route('administrateur.users.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus"></i>
-            Nouvel utilisateur
-        </a>
-    </div>
-</div>
-
-<!-- Stats Cards -->
-<div class="stats-grid" style="margin-bottom: 2rem;">
-    <div class="stat-card primary">
-        <div class="stat-header">
-            <div>
-                <div class="stat-title">Total Utilisateurs</div>
-                <div class="stat-value">{{ $users->total() ?? 0 }}</div>
+<div class="bg-blue-50">
+    <!-- Bannière d'en-tête -->
+    <div class="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-6 sm:mb-8 text-center">
+                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-blue-900 mb-2 leading-tight">
+                    Gestion des Utilisateurs
+                </h1>
+                <p class="text-base sm:text-lg text-blue-700 max-w-2xl mx-auto">
+                    Gérez tous les utilisateurs de la plateforme TaPrestation.
+                </p>
             </div>
-            <div class="stat-icon primary">
-                <i class="fas fa-users"></i>
-            </div>
-        </div>
-    </div>
-    
-    <div class="stat-card success">
-        <div class="stat-header">
-            <div>
-                <div class="stat-title">Utilisateurs Actifs</div>
-                <div class="stat-value">{{ $users->where('is_blocked', false)->count() ?? 0 }}</div>
-            </div>
-            <div class="stat-icon success">
-                <i class="fas fa-user-check"></i>
-            </div>
-        </div>
-    </div>
-    
-    <div class="stat-card warning">
-        <div class="stat-header">
-            <div>
-                <div class="stat-title">Administrateurs</div>
-                <div class="stat-value">{{ $users->where('role', 'administrateur')->count() ?? 0 }}</div>
-            </div>
-            <div class="stat-icon warning">
-                <i class="fas fa-user-shield"></i>
-            </div>
-        </div>
-    </div>
-    
-    <div class="stat-card info">
-        <div class="stat-header">
-            <div>
-                <div class="stat-title">Nouveaux ce mois</div>
-                <div class="stat-value">{{ $users->where('created_at', '>=', now()->startOfMonth())->count() ?? 0 }}</div>
-            </div>
-            <div class="stat-icon info">
-                <i class="fas fa-user-plus"></i>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Filters Panel -->
-<div id="filtersPanel" class="chart-card" style="display: none; margin-bottom: 2rem;">
-    <div class="chart-header">
-        <div class="chart-title">Filtres de recherche</div>
-        <button class="btn btn-outline" onclick="clearFilters()">
-            <i class="fas fa-times"></i>
-            Effacer
-        </button>
-    </div>
-    <form action="{{ route('administrateur.users.index') }}" method="GET" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; padding: 1rem 0;">
-        <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark);">Nom</label>
-            <input type="text" name="name" value="{{ request('name') }}" placeholder="Rechercher par nom..." style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
-        </div>
-        
-        <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark);">Email</label>
-            <input type="email" name="email" value="{{ request('email') }}" placeholder="Rechercher par email..." style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
-        </div>
-        
-        <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark);">Rôle</label>
-            <select name="role" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
-                <option value="">Tous les rôles</option>
-                <option value="administrateur" {{ request('role') == 'administrateur' ? 'selected' : '' }}>Administrateur</option>
-                <option value="client" {{ request('role') == 'client' ? 'selected' : '' }}>Client</option>
-                <option value="prestataire" {{ request('role') == 'prestataire' ? 'selected' : '' }}>Prestataire</option>
-            </select>
-        </div>
-        
-        <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark);">Statut</label>
-            <select name="is_blocked" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
-                <option value="">Tous</option>
-                <option value="0" {{ request('is_blocked') == '0' ? 'selected' : '' }}>Actif</option>
-                <option value="1" {{ request('is_blocked') == '1' ? 'selected' : '' }}>Bloqué</option>
-            </select>
-        </div>
-        
-        <div style="display: flex; align-items: end; gap: 1rem;">
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-search"></i>
-                Rechercher
-            </button>
-        </div>
-    </form>
-</div>
-
-<!-- Users Table -->
-<div class="table-card">
-    <div class="table-header">
-        <div class="table-title">Liste des utilisateurs ({{ $users->total() ?? 0 }})</div>
-        <div style="display: flex; gap: 1rem; align-items: center;">
-            <select onchange="changePerPage(this.value)" style="padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.875rem;">
-                <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 par page</option>
-                <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 par page</option>
-                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 par page</option>
-                <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 par page</option>
-            </select>
             
-            <button class="btn btn-outline" onclick="exportUsers()">
-                <i class="fas fa-download"></i>
-                Exporter
-            </button>
+            <!-- Actions Header -->
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs sm:text-sm font-semibold text-blue-800">Total :</span>
+                    <span class="px-2 sm:px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs sm:text-sm font-bold">
+                        {{ $users->total() ?? 0 }} utilisateur(s)
+                    </span>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="toggleFilters()" class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm sm:text-base">
+                        <i class="fas fa-filter mr-2"></i>Filtres
+                    </button>
+                    <a href="{{ route('administrateur.users.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center text-sm sm:text-base">
+                        <i class="fas fa-plus mr-2"></i>Nouvel utilisateur
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- Stats Cards -->
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 mb-6 sm:mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs sm:text-sm font-medium text-blue-600 mb-1">Total Utilisateurs</p>
+                        <p class="text-2xl sm:text-3xl font-bold text-blue-900">{{ $users->total() ?? 0 }}</p>
+                        <p class="text-xs text-blue-500 mt-1">+ 8% ce mois</p>
+                    </div>
+                    <div class="bg-blue-100 p-3 rounded-full">
+                        <i class="fas fa-users text-blue-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg border border-green-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs sm:text-sm font-medium text-green-600 mb-1">Utilisateurs Actifs</p>
+                        <p class="text-2xl sm:text-3xl font-bold text-green-900">{{ $users->where('is_blocked', false)->count() ?? 0 }}</p>
+                        <p class="text-xs text-green-500 mt-1">+ 12% ce mois</p>
+                    </div>
+                    <div class="bg-green-100 p-3 rounded-full">
+                        <i class="fas fa-user-check text-green-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg border border-orange-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs sm:text-sm font-medium text-orange-600 mb-1">Administrateurs</p>
+                        <p class="text-2xl sm:text-3xl font-bold text-orange-900">{{ $users->where('role', 'administrateur')->count() ?? 0 }}</p>
+                        <p class="text-xs text-orange-500 mt-1">Stable</p>
+                    </div>
+                    <div class="bg-orange-100 p-3 rounded-full">
+                        <i class="fas fa-user-shield text-orange-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg border border-purple-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs sm:text-sm font-medium text-purple-600 mb-1">Nouveaux ce mois</p>
+                        <p class="text-2xl sm:text-3xl font-bold text-purple-900">{{ $users->where('created_at', '>=', now()->startOfMonth())->count() ?? 0 }}</p>
+                        <p class="text-xs text-purple-500 mt-1">+ 15% vs mois dernier</p>
+                    </div>
+                    <div class="bg-purple-100 p-3 rounded-full">
+                        <i class="fas fa-user-plus text-purple-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section des filtres -->
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
+        <div id="filtersPanel" class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6 mb-6 sm:mb-8" style="display: none;">
+            <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div class="text-center sm:text-left">
+                    <h3 class="text-xl sm:text-2xl font-bold text-blue-800 mb-1 sm:mb-2">Filtres de recherche</h3>
+                    <p class="text-sm sm:text-base lg:text-lg text-blue-700">Affinez votre recherche pour trouver l'utilisateur parfait</p>
+                </div>
+                <button type="button" onclick="clearFilters()" class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm sm:text-base">
+                    <i class="fas fa-times mr-2"></i>Effacer tout
+                </button>
+            </div>
+            
+            <form method="GET" action="{{ route('administrateur.users.index') }}" class="space-y-4 sm:space-y-6">
+                <!-- Première ligne de filtres -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                    <!-- Nom -->
+                    <div>
+                        <label for="name" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Nom</label>
+                        <div class="relative">
+                            <i class="fas fa-user absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <input type="text" name="name" id="name" value="{{ request('name') }}" placeholder="Rechercher par nom..." class="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-sm sm:text-base">
+                        </div>
+                    </div>
+                    
+                    <!-- Email -->
+                    <div>
+                        <label for="email" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Email</label>
+                        <div class="relative">
+                            <i class="fas fa-envelope absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <input type="email" name="email" id="email" value="{{ request('email') }}" placeholder="Rechercher par email..." class="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-sm sm:text-base">
+                        </div>
+                    </div>
+                    
+                    <!-- Rôle -->
+                    <div>
+                        <label for="role" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Rôle</label>
+                        <div class="relative">
+                            <i class="fas fa-user-tag absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <select name="role" id="role" class="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-sm sm:text-base appearance-none bg-white">
+                                <option value="">Tous les rôles</option>
+                                <option value="administrateur" {{ request('role') == 'administrateur' ? 'selected' : '' }}>Administrateur</option>
+                                <option value="client" {{ request('role') == 'client' ? 'selected' : '' }}>Client</option>
+                                <option value="prestataire" {{ request('role') == 'prestataire' ? 'selected' : '' }}>Prestataire</option>
+                            </select>
+                            <i class="fas fa-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Statut -->
+                    <div>
+                        <label for="is_blocked" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Statut</label>
+                        <div class="relative">
+                            <i class="fas fa-toggle-on absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <select name="is_blocked" id="is_blocked" class="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-sm sm:text-base appearance-none bg-white">
+                                <option value="">Tous</option>
+                                <option value="0" {{ request('is_blocked') == '0' ? 'selected' : '' }}>Actif</option>
+                                <option value="1" {{ request('is_blocked') == '1' ? 'selected' : '' }}>Bloqué</option>
+                            </select>
+                            <i class="fas fa-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Boutons d'action -->
+                <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 border-t border-gray-200">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm sm:text-base">
+                        <i class="fas fa-search mr-2"></i>Appliquer les filtres
+                    </button>
+                    <a href="{{ route('administrateur.users.index') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm sm:text-base">
+                        <i class="fas fa-undo mr-2"></i>Réinitialiser
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Section des résultats -->
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
+        <div class="bg-white rounded-xl shadow-lg border border-blue-200 overflow-hidden">
+            <!-- En-tête du tableau -->
+            <div class="bg-gradient-to-r from-blue-50 to-blue-100 px-4 sm:px-6 py-4 border-b border-blue-200">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div class="text-center sm:text-left">
+                        <h3 class="text-xl sm:text-2xl font-bold text-blue-800 mb-1">Liste des utilisateurs</h3>
+                        <p class="text-sm sm:text-base text-blue-700">{{ $users->total() ?? 0 }} utilisateur(s) trouvé(s)</p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                        <select onchange="changePerPage(this.value)" class="px-3 py-2 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-sm">
+                            <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 par page</option>
+                            <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 par page</option>
+                            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 par page</option>
+                            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 par page</option>
+                        </select>
+                        <button onclick="exportUsers()" class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2 px-4 rounded-lg transition duration-200 flex items-center justify-center text-sm">
+                            <i class="fas fa-download mr-2"></i>Exporter
+                        </button>
+                    </div>
+                </div>
+            </div>
     
-    <div class="table-responsive">
-        <table class="modern-table">
-            <thead>
-                <tr>
-                    <th>
-                        <input type="checkbox" onchange="toggleAllCheckboxes(this)" style="margin-right: 0.5rem;">
-                        Utilisateur
-                    </th>
-                    <th>Rôle</th>
-                    <th>Statut</th>
-                    <th>Dernière connexion</th>
-                    <th>Inscrit le</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($users ?? [] as $user)
-                    <tr>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 1rem;">
-                                <input type="checkbox" name="selected_users[]" value="{{ $user->id }}" class="user-checkbox">
-                                <div style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;
-                                    @if($user->role === 'administrateur') background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-                                    @elseif($user->role === 'prestataire') background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
-                                    @else background: linear-gradient(135deg, var(--info) 0%, #0891b2 100%); @endif">
-                                    {{ substr($user->name, 0, 1) }}
+            <!-- Tableau des utilisateurs -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <div class="flex items-center">
+                                    <input type="checkbox" onchange="toggleAllCheckboxes(this)" class="mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    Utilisateur
                                 </div>
-                                <div>
-                                    <div style="font-weight: 600; color: var(--dark);">{{ $user->name }}</div>
-                                    <div style="font-size: 0.875rem; color: var(--secondary);">{{ $user->email }}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <span style="padding: 0.375rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 500;
-                                @if($user->role === 'administrateur') background: rgba(79, 70, 229, 0.1); color: var(--primary);
-                                @elseif($user->role === 'prestataire') background: rgba(16, 185, 129, 0.1); color: var(--success);
-                                @else background: rgba(6, 182, 212, 0.1); color: var(--info); @endif">
-                                <i class="fas 
-                                    @if($user->role === 'administrateur') fa-user-shield
-                                    @elseif($user->role === 'prestataire') fa-user-tie
-                                    @else fa-user @endif" style="margin-right: 0.25rem;"></i>
-                                {{ ucfirst($user->role) }}
-                            </span>
-                        </td>
-                        <td>
-                            <span style="padding: 0.375rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 500;
-                                @if(!$user->is_blocked) background: rgba(16, 185, 129, 0.1); color: var(--success);
-                                @else background: rgba(239, 68, 68, 0.1); color: var(--danger); @endif">
-                                <i class="fas fa-circle" style="font-size: 0.5rem; margin-right: 0.5rem;"></i>
-                                {{ !$user->is_blocked ? 'Actif' : 'Bloqué' }}
-                            </span>
-                        </td>
-                        <td style="color: var(--secondary); font-size: 0.875rem;">
-                            {{ $user->last_login_at ? $user->last_login_at->diffForHumans() : 'Jamais' }}
-                        </td>
-                        <td style="color: var(--secondary); font-size: 0.875rem;">
-                            {{ $user->created_at->format('d/m/Y') }}
-                        </td>
-                        <td>
-                            <div style="display: flex; gap: 0.5rem;">
-                                <a href="{{ route('administrateur.users.show', $user->id) }}" class="btn btn-outline" style="padding: 0.375rem 0.75rem; font-size: 0.8rem;" title="Voir les détails">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                
-                                @if(!$user->is_blocked)
-                                    <button onclick="toggleBlockUser({{ $user->id }})" class="btn btn-danger" style="padding: 0.375rem 0.75rem; font-size: 0.8rem;" title="Bloquer">
-                                        <i class="fas fa-ban"></i>
-                                    </button>
-                                @else
-                                    <button onclick="toggleBlockUser({{ $user->id }})" class="btn btn-success" style="padding: 0.375rem 0.75rem; font-size: 0.8rem;" title="Débloquer">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                @endif
-                                
-                                <button onclick="deleteUser({{ $user->id }})" class="btn btn-danger" style="padding: 0.375rem 0.75rem; font-size: 0.8rem;" title="Supprimer">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" style="text-align: center; padding: 3rem; color: var(--secondary);">
-                            <i class="fas fa-users" style="font-size: 3rem; margin-bottom: 1rem; color: #e2e8f0;"></i>
-                            <div style="font-size: 1.125rem; font-weight: 500; margin-bottom: 0.5rem;">Aucun utilisateur trouvé</div>
-                            <div>Essayez de modifier vos critères de recherche</div>
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
+                            </th>
+                            <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rôle</th>
+                            <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                            <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Dernière connexion</th>
+                            <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Inscrit le</th>
+                            <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @forelse($users ?? [] as $user)
+                            <tr class="hover:bg-gray-50 transition-colors duration-200">
+                                <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="selected_users[]" value="{{ $user->id }}" class="user-checkbox h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm
+                                            @if($user->role === 'administrateur') bg-gradient-to-br from-blue-500 to-blue-700
+                                            @elseif($user->role === 'prestataire') bg-gradient-to-br from-green-500 to-green-700
+                                            @else bg-gradient-to-br from-cyan-500 to-cyan-700 @endif">
+                                            {{ substr($user->name, 0, 1) }}
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="text-sm font-medium text-gray-900 truncate">{{ $user->name }}</div>
+                                            <div class="text-sm text-gray-500 truncate">{{ $user->email }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                        @if($user->role === 'administrateur') bg-blue-100 text-blue-800
+                                        @elseif($user->role === 'prestataire') bg-green-100 text-green-800
+                                        @else bg-cyan-100 text-cyan-800 @endif">
+                                        <i class="fas 
+                                            @if($user->role === 'administrateur') fa-user-shield
+                                            @elseif($user->role === 'prestataire') fa-user-tie
+                                            @else fa-user @endif mr-1"></i>
+                                        {{ ucfirst($user->role) }}
+                                    </span>
+                                </td>
+                                <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                        @if(!$user->is_blocked) bg-green-100 text-green-800
+                                        @else bg-red-100 text-red-800 @endif">
+                                        <i class="fas fa-circle text-xs mr-2"></i>
+                                        {{ !$user->is_blocked ? 'Actif' : 'Bloqué' }}
+                                    </span>
+                                </td>
+                                <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden md:table-cell">
+                                    {{ $user->last_login_at ? $user->last_login_at->diffForHumans() : 'Jamais' }}
+                                </td>
+                                <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
+                                    {{ $user->created_at->format('d/m/Y') }}
+                                </td>
+                                <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex items-center space-x-2">
+                                        <a href="{{ route('administrateur.users.show', $user->id) }}" class="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors" title="Voir les détails">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        
+                                        @if(!$user->is_blocked)
+                                            <button onclick="toggleBlockUser({{ $user->id }})" class="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors" title="Bloquer">
+                                                <i class="fas fa-ban"></i>
+                                            </button>
+                                        @else
+                                            <button onclick="toggleBlockUser({{ $user->id }})" class="text-green-600 hover:text-green-900 p-2 rounded-lg hover:bg-green-50 transition-colors" title="Débloquer">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        @endif
+                                        
+                                        <button onclick="deleteUser({{ $user->id }})" class="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors" title="Supprimer">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="px-6 py-12 text-center">
+                                    <div class="text-gray-400">
+                                        <i class="fas fa-users text-5xl mb-4"></i>
+                                        <div class="text-lg font-medium text-gray-900 mb-2">Aucun utilisateur trouvé</div>
+                                        <div class="text-gray-500">Essayez de modifier vos critères de recherche</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
         </table>
     </div>
     
-    @if($users && $users->hasPages())
-        <div style="padding: 1.5rem; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
-            <div style="color: var(--secondary); font-size: 0.875rem;">
-                Affichage de {{ $users->firstItem() }} à {{ $users->lastItem() }} sur {{ $users->total() }} résultats
-            </div>
-            <div>
-                {{ $users->links() }}
+                @if($users && $users->hasPages())
+                    <!-- Pagination -->
+                    <div class="bg-gray-50 px-4 sm:px-6 py-3 border-t border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                        <div class="text-sm text-gray-700 mb-3 sm:mb-0 text-center sm:text-left">
+                            Affichage de <span class="font-medium">{{ $users->firstItem() }}</span> à <span class="font-medium">{{ $users->lastItem() }}</span> sur <span class="font-medium">{{ $users->total() }}</span> résultats
+                        </div>
+                        <div class="flex justify-center sm:justify-end">
+                            {{ $users->links() }}
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
-    @endif
-</div>
-
-<!-- Bulk Actions -->
-<div id="bulkActions" style="position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: white; padding: 1rem 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); display: none; z-index: 1000;">
-    <div style="display: flex; align-items: center; gap: 1rem;">
-        <span style="font-weight: 500;">Actions groupées :</span>
-        <button class="btn btn-danger" onclick="bulkDelete()">
-            <i class="fas fa-trash"></i>
-            Supprimer
-        </button>
-        <button class="btn btn-warning" onclick="bulkBlock()">
-            <i class="fas fa-ban"></i>
-            Bloquer
-        </button>
-        <button class="btn btn-success" onclick="bulkUnblock()">
-            <i class="fas fa-check"></i>
-            Débloquer
-        </button>
-        <button class="btn btn-outline" onclick="clearSelection()">
-            <i class="fas fa-times"></i>
-            Annuler
-        </button>
     </div>
-</div>
+
+    <!-- Actions groupées -->
+    <div id="bulkActions" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white rounded-xl shadow-2xl border border-gray-200 px-4 sm:px-6 py-3 sm:py-4 z-50" style="display: none;">
+        <div class="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
+            <span class="text-sm font-medium text-gray-700">Actions groupées :</span>
+            <div class="flex flex-wrap gap-2 justify-center">
+                <button onclick="bulkDelete()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-3 rounded-lg transition duration-200 flex items-center text-sm">
+                    <i class="fas fa-trash mr-2"></i>Supprimer
+                </button>
+                <button onclick="bulkBlock()" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-3 rounded-lg transition duration-200 flex items-center text-sm">
+                    <i class="fas fa-ban mr-2"></i>Bloquer
+                </button>
+                <button onclick="bulkUnblock()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-3 rounded-lg transition duration-200 flex items-center text-sm">
+                    <i class="fas fa-check mr-2"></i>Débloquer
+                </button>
+                <button onclick="clearSelection()" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-3 rounded-lg transition duration-200 flex items-center text-sm">
+                    <i class="fas fa-times mr-2"></i>Annuler
+                </button>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('styles')

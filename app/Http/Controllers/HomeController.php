@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Article;
+
 use App\Models\Category;
 use App\Models\Service;
 use App\Models\Prestataire;
@@ -16,19 +16,15 @@ class HomeController extends Controller
      */
     public function index()
     {
-        // Récupérer les derniers articles publiés pour la section actualités
-        $recentArticles = Article::published()
-            ->with('author')
-            ->recent(3)
-            ->get();
+        // Articles supprimés - fonctionnalité désactivée
+        $recentArticles = collect();
         
         // Récupérer les catégories principales pour l'affichage
-        // $categories = Category::whereHas('services')
-        //     ->withCount('services')
-        //     ->orderBy('services_count', 'desc')
-        //     ->limit(6)
-        //     ->get();
-        $categories = []; // Initialize as empty array to avoid errors in the view
+        $categories = Category::whereNull('parent_id')
+            ->withCount('services')
+            ->orderBy('services_count', 'desc')
+            ->limit(6)
+            ->get();
         
         // Récupérer quelques prestataires en vedette
         $featuredPrestataires = Prestataire::where('is_approved', true)
@@ -62,29 +58,5 @@ class HomeController extends Controller
         ));
     }
     
-    /**
-     * API pour récupérer les articles récents (AJAX)
-     */
-    public function getRecentArticles(Request $request)
-    {
-        $limit = $request->get('limit', 3);
-        
-        $articles = Article::published()
-            ->with('author')
-            ->recent($limit)
-            ->get()
-            ->map(function($article) {
-                return [
-                    'id' => $article->id,
-                    'title' => $article->title,
-                    'excerpt' => $article->formatted_excerpt,
-                    'url' => route('articles.show', $article->slug),
-                    'featured_image' => $article->featured_image ? asset('storage/' . $article->featured_image) : null,
-                    'published_at' => $article->published_at->format('d/m/Y'),
-                    'author' => $article->author->name
-                ];
-            });
-        
-        return response()->json($articles);
-    }
+
 }

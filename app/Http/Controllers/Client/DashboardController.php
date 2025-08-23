@@ -12,7 +12,7 @@ use App\Models\Booking;
 use App\Models\ClientRequest;
 use App\Models\Message;
 use App\Models\Review;
-use App\Models\Offer;
+
 use App\Models\EquipmentRentalRequest;
 use App\Models\UrgentSaleContact;
 
@@ -87,7 +87,7 @@ class DashboardController extends Controller
                 'id' => $booking->id,
                 'type' => 'service',
                 'title' => $booking->service->title,
-                'prestataire' => $booking->prestataire->user->name,
+                'prestataire' => $booking->prestataire->user->name ?? 'Prestataire',
                 'date' => $booking->start_datetime,
                 'status' => $booking->status,
                 'created_at' => $booking->created_at,
@@ -102,12 +102,12 @@ class DashboardController extends Controller
             $allRequests->push([
                 'id' => $rental->id,
                 'type' => 'equipment',
-                'title' => $rental->equipment->name,
-                'prestataire' => $rental->equipment->prestataire->user->name,
+                'title' => $rental->equipment ? $rental->equipment->name : 'Équipement',
+                'prestataire' => $rental->equipment && $rental->equipment->prestataire && $rental->equipment->prestataire->user ? $rental->equipment->prestataire->user->name : 'Prestataire',
                 'date' => $rental->created_at,
                 'status' => $rental->status,
                 'created_at' => $rental->created_at,
-                'image' => $rental->equipment->image ?? null,
+                'image' => $rental->equipment ? $rental->equipment->image : null,
                 'badge_color' => 'bg-green-100 text-green-800',
                 'badge_text' => 'Matériel'
             ]);
@@ -118,12 +118,12 @@ class DashboardController extends Controller
             $allRequests->push([
                 'id' => $contact->id,
                 'type' => 'urgent_sale',
-                'title' => $contact->urgentSale->title,
-                'prestataire' => $contact->urgentSale->prestataire->user->name,
+                'title' => $contact->urgentSale ? $contact->urgentSale->title : 'Vente urgente',
+                'prestataire' => $contact->urgentSale && $contact->urgentSale->prestataire && $contact->urgentSale->prestataire->user ? $contact->urgentSale->prestataire->user->name : 'Prestataire',
                 'date' => $contact->created_at,
                 'status' => $contact->status,
                 'created_at' => $contact->created_at,
-                'image' => $contact->urgentSale->image ?? null,
+                'image' => $contact->urgentSale ? $contact->urgentSale->image : null,
                 'badge_color' => 'bg-red-100 text-red-800',
                 'badge_text' => 'Vente urgente'
             ]);
@@ -185,9 +185,10 @@ class DashboardController extends Controller
         foreach ($allBookings as $booking) {
             $allUnifiedRequests->push([
                 'id' => $booking->id,
+
                 'type' => 'service',
-                'title' => $booking->service->title,
-                'prestataire' => 'Avec ' . $booking->prestataire->user->name,
+                'title' => $booking->service ? $booking->service->title : 'Service',
+                'prestataire' => 'Avec ' . ($booking->prestataire && $booking->prestataire->user ? $booking->prestataire->user->name : 'Prestataire'),
                 'date' => $booking->start_datetime,
                 'status' => $booking->status,
                 'badge_text' => 'Service',
@@ -201,8 +202,8 @@ class DashboardController extends Controller
             $allUnifiedRequests->push([
                 'id' => $request->id,
                 'type' => 'equipment',
-                'title' => $request->equipment->name,
-                'prestataire' => 'Auprès de ' . $request->equipment->prestataire->user->name,
+                'title' => $request->equipment ? $request->equipment->name : 'Équipement',
+                'prestataire' => 'Auprès de ' . ($request->equipment && $request->equipment->prestataire && $request->equipment->prestataire->user ? $request->equipment->prestataire->user->name : 'Prestataire'),
                 'date' => $request->created_at,
                 'status' => $request->status,
                 'badge_text' => 'Matériel',
@@ -216,8 +217,8 @@ class DashboardController extends Controller
             $allUnifiedRequests->push([
                 'id' => $contact->id,
                 'type' => 'urgent_sale',
-                'title' => $contact->urgentSale->title,
-                'prestataire' => 'Contact avec ' . $contact->urgentSale->prestataire->user->name,
+                'title' => $contact->urgentSale ? $contact->urgentSale->title : 'Vente urgente',
+                'prestataire' => 'Contact avec ' . ($contact->urgentSale && $contact->urgentSale->prestataire && $contact->urgentSale->prestataire->user ? $contact->urgentSale->prestataire->user->name : 'Prestataire'),
                 'date' => $contact->created_at,
                 'status' => $contact->status,
                 'badge_text' => 'Vente urgente',
@@ -269,7 +270,7 @@ class DashboardController extends Controller
         }
         
         $prestataires = $query->with(['user', 'skills', 'services'])->paginate(12);
-        $categories = Category::all();
+        $categories = Category::orderBy('name')->get();
         $sectors = Prestataire::where('is_approved', true)
             ->select('sector')
             ->distinct()

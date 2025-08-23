@@ -105,11 +105,11 @@
                             <div class="relative mr-3">
                                 @if($service->prestataire->photo)
                                     <img src="{{ asset('storage/' . $service->prestataire->photo) }}" 
-                                         alt="{{ $service->prestataire->user->name }}" 
+                                         alt="{{ $service->prestataire->user->name ?? 'Prestataire' }}" 
                                          class="w-8 h-8 rounded-full object-cover">
                                 @elseif($service->prestataire->user->avatar)
                                     <img src="{{ asset('storage/' . $service->prestataire->user->avatar) }}" 
-                                         alt="{{ $service->prestataire->user->name }}" 
+                                         alt="{{ $service->prestataire->user->name ?? 'Prestataire' }}" 
                                          class="w-8 h-8 rounded-full object-cover">
                                 @else
                                     <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
@@ -128,7 +128,7 @@
                             </div>
                             <div>
                                 <div class="flex items-center">
-                                    <p class="text-sm font-medium text-gray-900 mr-2">{{ $service->prestataire->user->name }}</p>
+                                    <p class="text-sm font-medium text-gray-900 mr-2">{{ $service->prestataire->user->name ?? 'Prestataire' }}</p>
                                     @if($service->prestataire->isVerified())
                                         <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                             <svg class="w-2.5 h-2.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -178,11 +178,11 @@
                             <div class="relative mr-4">
                                 @if($prestataire->photo)
                                     <img src="{{ asset('storage/' . $prestataire->photo) }}" 
-                                         alt="{{ $prestataire->user->name }}" 
+                                         alt="{{ $prestataire->user->name ?? 'Prestataire' }}" 
                                          class="w-12 h-12 rounded-full object-cover">
                                 @elseif($prestataire->user->avatar)
                                     <img src="{{ asset('storage/' . $prestataire->user->avatar) }}" 
-                                         alt="{{ $prestataire->user->name }}" 
+                                         alt="{{ $prestataire->user->name ?? 'Prestataire' }}" 
                                          class="w-12 h-12 rounded-full object-cover">
                                 @else
                                     <div class="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center">
@@ -199,7 +199,7 @@
                             </div>
                             <div>
                                 <div class="flex items-center">
-                                    <h4 class="font-semibold text-gray-900 mr-2">{{ $prestataire->user->name }}</h4>
+                                    <h4 class="font-semibold text-gray-900 mr-2">{{ $prestataire->user->name ?? 'Prestataire' }}</h4>
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>

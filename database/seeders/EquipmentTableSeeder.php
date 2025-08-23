@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Equipment;
 use App\Models\Prestataire;
-use App\Models\EquipmentCategory;
+use App\Models\Category;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
@@ -26,7 +26,7 @@ class EquipmentTableSeeder extends Seeder
 
         // Récupérer les prestataires et catégories
         $prestataires = Prestataire::all();
-        $categories = EquipmentCategory::whereNotNull('parent_id')->get(); // Sous-catégories uniquement
+        $categories = Category::whereNotNull('parent_id')->get(); // Sous-catégories uniquement
 
         if ($prestataires->isEmpty() || $categories->isEmpty()) {
             $this->command->warn('Aucun prestataire ou catégorie trouvé. Veuillez d\'abord exécuter les seeders correspondants.');
@@ -138,8 +138,7 @@ class EquipmentTableSeeder extends Seeder
                     'city' => 'Paris',
                     'postal_code' => '75001',
                     'country' => 'France',
-                    'delivery_radius' => 50,
-                    'delivery_fee' => 10.00,
+
                     'security_deposit' => $data['daily_rate'] * 5, // Caution = 5 jours de location
                     'minimum_rental_duration' => 1,
                     'maximum_rental_duration' => 30,
@@ -147,9 +146,18 @@ class EquipmentTableSeeder extends Seeder
                 ]
             );
 
-            // Attacher la catégorie si elle n'est pas déjà attachée
-            if (!$equipment->categories()->where('equipment_category_id', $category->id)->exists()) {
-                $equipment->categories()->attach($category->id);
+            // Assigner la catégorie
+            if ($category->parent_id) {
+                // C'est une sous-catégorie
+                $equipment->update([
+                    'category_id' => $category->parent_id,
+                    'subcategory_id' => $category->id
+                ]);
+            } else {
+                // C'est une catégorie principale
+                $equipment->update([
+                    'category_id' => $category->id
+                ]);
             }
         }
 

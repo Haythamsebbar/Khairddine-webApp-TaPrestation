@@ -4,38 +4,38 @@
 
 @section('content')
 <div class="min-h-screen bg-blue-50">
-    <div class="container mx-auto py-8 px-4">
-        <!-- En-tête amélioré -->
-        <div class="mb-8">
-            <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
-                <div class="flex items-center gap-4">
-                    <div class="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl shadow-lg">
-                        <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <div class="container mx-auto py-4 sm:py-6 md:py-8 px-2 sm:px-4">
+        <!-- En-tête amélioré responsive -->
+        <div class="mb-6 md:mb-8">
+            <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-3 sm:gap-4">
+                <div class="flex items-center gap-3 sm:gap-4">
+                    <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl shadow-lg">
+                        <svg class="h-5 w-5 sm:h-6 sm:w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 8a2 2 0 100-4 2 2 0 000 4zm6-6V7a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-3" />
                         </svg>
                     </div>
                     <div>
-                        <h1 class="text-4xl font-extrabold text-blue-900 mb-2">
+                        <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-blue-900 mb-1 sm:mb-2">
                             Mon Agenda
                         </h1>
-                        <p class="text-lg text-blue-700">Gérez vos réservations et planifiez vos prestations</p>
+                        <p class="text-sm sm:text-base md:text-lg text-blue-700">Gérez vos réservations et planifiez vos prestations</p>
                     </div>
                 </div>
                 
-                <!-- Navigation et boutons de vue -->
-                <div class="flex flex-col sm:flex-row gap-3">
+                <!-- Navigation et boutons de vue responsive -->
+                <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
                     <!-- Boutons de navigation -->
                     <div class="flex items-center bg-white rounded-xl shadow-lg border border-blue-200 p-1">
-                        <button onclick="navigateCalendar('prev')" class="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition duration-200">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <button onclick="navigateCalendar('prev')" class="p-1.5 sm:p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition duration-200">
+                            <svg class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                             </svg>
                         </button>
-                        <button onclick="navigateCalendar('today')" class="px-3 py-2 text-sm font-bold text-blue-800 hover:text-blue-900 hover:bg-blue-50 rounded-lg transition duration-200">
-                            Aujourd'hui
+                        <button onclick="navigateCalendar('today')" class="px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-bold text-blue-800 hover:text-blue-900 hover:bg-blue-50 rounded-lg transition duration-200">
+                            <span class="hidden sm:inline">Aujourd'hui</span><span class="sm:hidden">Auj.</span>
                         </button>
-                        <button onclick="navigateCalendar('next')" class="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition duration-200">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <button onclick="navigateCalendar('next')" class="p-1.5 sm:p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition duration-200">
+                            <svg class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                             </svg>
                         </button>
@@ -43,13 +43,13 @@
                     
                     <!-- Sélecteur de vue (onglets arrondis) -->
                     <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-1 flex">
-                        <button onclick="changeView('month')" class="view-btn px-4 py-2 text-sm font-bold rounded-lg transition duration-200 {{ $view === 'month' ? 'bg-blue-600 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5' : 'text-blue-800 hover:text-blue-900 hover:bg-blue-50' }}">
+                        <button onclick="changeView('month')" class="view-btn px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-lg transition duration-200 {{ $view === 'month' ? 'bg-blue-600 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5' : 'text-blue-800 hover:text-blue-900 hover:bg-blue-50' }}">
                             Mois
                         </button>
-                        <button onclick="changeView('week')" class="view-btn px-4 py-2 text-sm font-bold rounded-lg transition duration-200 {{ $view === 'week' ? 'bg-blue-600 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5' : 'text-blue-800 hover:text-blue-900 hover:bg-blue-50' }}">
-                            Semaine
+                        <button onclick="changeView('week')" class="view-btn px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-lg transition duration-200 {{ $view === 'week' ? 'bg-blue-600 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5' : 'text-blue-800 hover:text-blue-900 hover:bg-blue-50' }}">
+                            <span class="hidden sm:inline">Semaine</span><span class="sm:hidden">Sem.</span>
                         </button>
-                        <button onclick="changeView('day')" class="view-btn px-4 py-2 text-sm font-bold rounded-lg transition duration-200 {{ $view === 'day' ? 'bg-blue-600 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5' : 'text-blue-800 hover:text-blue-900 hover:bg-blue-50' }}">
+                        <button onclick="changeView('day')" class="view-btn px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-lg transition duration-200 {{ $view === 'day' ? 'bg-blue-600 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5' : 'text-blue-800 hover:text-blue-900 hover:bg-blue-50' }}">
                             Jour
                         </button>
                     </div>
@@ -57,71 +57,73 @@
             </div>
         </div>
 
-        <!-- Légende des couleurs -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                🎨 Code couleur des événements
+        <!-- Légende des couleurs responsive -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 mb-6 md:mb-8">
+            <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
+                <span class="hidden sm:inline">Code couleur des événements</span>
+                <span class="sm:hidden">Légende</span>
             </h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="flex items-center gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                    <div class="w-4 h-4 bg-blue-500 rounded-full"></div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                <div class="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <div class="w-3 h-3 sm:w-4 sm:h-4 bg-blue-500 rounded-full flex-shrink-0"></div>
                     <div>
-                        <span class="text-sm font-medium text-blue-800">🛠️ Services</span>
-                        <p class="text-xs text-blue-600">Prestations de services</p>
+                        <span class="text-xs sm:text-sm font-medium text-blue-800">Services</span>
+                        <p class="text-xs text-blue-600 hidden sm:block">Prestations de services</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-3 p-3 bg-green-50 rounded-lg border border-green-200">
-                    <div class="w-4 h-4 bg-green-500 rounded-full"></div>
+                <div class="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-green-50 rounded-lg border border-green-200">
+                    <div class="w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full flex-shrink-0"></div>
                     <div>
-                        <span class="text-sm font-medium text-green-800">⚙️ Équipements</span>
-                        <p class="text-xs text-green-600">Locations d'équipements</p>
+                        <span class="text-xs sm:text-sm font-medium text-green-800">Équipements</span>
+                        <p class="text-xs text-green-600 hidden sm:block">Locations d'équipements</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-3 p-3 bg-red-50 rounded-lg border border-red-200">
-                    <div class="w-4 h-4 bg-red-500 rounded-full"></div>
+                <div class="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-red-50 rounded-lg border border-red-200">
+                    <div class="w-3 h-3 sm:w-4 sm:h-4 bg-red-500 rounded-full flex-shrink-0"></div>
                     <div>
-                        <span class="text-sm font-medium text-red-800">⚡ Ventes urgentes</span>
-                        <p class="text-xs text-red-600">Ventes à traiter rapidement</p>
+                        <span class="text-xs sm:text-sm font-medium text-red-800">Annonces</span>
+                        <p class="text-xs text-red-600 hidden sm:block">Ventes à traiter rapidement</p>
                     </div>
                 </div>
             </div>
         </div>
         
         <!-- Disposition responsive : Desktop (liste à gauche, calendrier à droite) / Mobile (liste en haut, calendrier en dessous) -->
-        <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
+        <div class="grid grid-cols-1 xl:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
             <!-- Liste des demandes récentes (Desktop: gauche, Mobile: haut) -->
             <div class="xl:col-span-1 order-1 xl:order-1">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-4">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                            📋 Demandes récentes
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 xl:sticky xl:top-4">
+                    <div class="flex items-center justify-between mb-4 sm:mb-6">
+                        <h3 class="text-base sm:text-lg font-semibold text-gray-900 flex items-center gap-2">
+                            <span class="hidden sm:inline">Demandes récentes</span>
+                            <span class="sm:hidden">Demandes</span>
                         </h3>
-                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 sm:px-2.5 py-0.5 rounded-full">
                             {{ $recentBookings->count() }}
                         </span>
                     </div>
                     
-                    <!-- Filtre de recherche -->
-                    <div class="mb-4">
+                    <!-- Filtre de recherche responsive -->
+                    <div class="mb-3 sm:mb-4">
                         <div class="relative">
                             <input type="text" id="quickSearch" placeholder="Rechercher..." 
-                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                   class="w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm">
+                            <div class="absolute inset-y-0 left-0 pl-2 sm:pl-3 flex items-center pointer-events-none">
+                                <svg class="h-3 w-3 sm:h-4 sm:w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Liste des demandes -->
-                    <div class="space-y-3 max-h-96 overflow-y-auto">
+                    <!-- Liste des demandes responsive -->
+                    <div class="space-y-2 sm:space-y-3 max-h-80 sm:max-h-96 overflow-y-auto">
                         @forelse($recentBookings as $booking)
-                            <div class="p-3 border border-blue-200 rounded-lg hover:border-blue-400 hover:shadow-md transition-all duration-200 cursor-pointer bg-blue-50 hover:bg-blue-100" 
+                            <div class="p-2 sm:p-3 border border-blue-200 rounded-lg hover:border-blue-400 hover:shadow-md transition-all duration-200 cursor-pointer bg-blue-50 hover:bg-blue-100" 
                                  onclick="showBookingDetails({{ $booking->id }})">
-                                <div class="flex items-start justify-between">
+                                <div class="flex items-start justify-between gap-2">
                                     <div class="flex-1 min-w-0">
-                                        <h4 class="text-sm font-bold text-blue-900 truncate">
+                                        <h4 class="text-xs sm:text-sm font-bold text-blue-900 truncate">
                                             {{ $booking->service->title ?? 'Service' }}
                                         </h4>
                                         <p class="text-xs text-blue-700 mt-1">
@@ -131,32 +133,39 @@
                                              {{ $booking->start_datetime->format('d/m H:i') }}
                                          </p>
                                     </div>
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold
+                                    <span class="inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-xs font-bold flex-shrink-0
                                         @if($booking->status === 'confirmed') bg-green-100 text-green-800
                                         @elseif($booking->status === 'pending') bg-orange-100 text-orange-800
                                         @elseif($booking->status === 'completed') bg-blue-100 text-blue-800
                                         @else bg-red-100 text-red-800 @endif">
-                                        {{ ucfirst($booking->status) }}
+                                        <span class="hidden sm:inline">{{ ucfirst($booking->status) }}</span>
+                                        <span class="sm:hidden">
+                                            @if($booking->status === 'confirmed') ✓
+                                            @elseif($booking->status === 'pending') ⏳
+                                            @elseif($booking->status === 'completed') ✅
+                                            @else ❌ @endif
+                                        </span>
                                     </span>
                                 </div>
                             </div>
                         @empty
-                            <div class="text-center py-8">
-                                <svg class="mx-auto h-12 w-12 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div class="text-center py-6 sm:py-8">
+                                <svg class="mx-auto h-8 w-8 sm:h-12 sm:w-12 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 8a2 2 0 100-4 2 2 0 000 4zm6-6V7a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-3" />
                                 </svg>
-                                <h3 class="mt-2 text-sm font-bold text-blue-900">Aucune demande</h3>
-                                <p class="mt-1 text-sm text-blue-600">Aucune demande récente trouvée.</p>
+                                <h3 class="mt-2 text-xs sm:text-sm font-bold text-blue-900">Aucune demande</h3>
+                                <p class="mt-1 text-xs sm:text-sm text-blue-600">Aucune demande récente trouvée.</p>
                             </div>
                         @endforelse
                     </div>
                     
-                    <!-- Lien vers toutes les demandes -->
-                    <div class="mt-4 pt-4 border-t border-gray-200">
+                    <!-- Lien vers toutes les demandes responsive -->
+                    <div class="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200">
                         <a href="{{ route('prestataire.bookings.index') }}" 
-                           class="w-full inline-flex items-center justify-center px-4 py-2 border border-blue-300 text-sm font-medium rounded-lg text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors">
-                            Voir toutes les demandes
-                            <svg class="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                           class="w-full inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-blue-300 text-xs sm:text-sm font-medium rounded-lg text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors">
+                            <span class="hidden sm:inline">Voir toutes les demandes</span>
+                            <span class="sm:hidden">Toutes les demandes</span>
+                            <svg class="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                             </svg>
                         </a>
@@ -164,10 +173,10 @@
                 </div>
             </div>
             
-            <!-- Calendrier principal (Desktop: droite, Mobile: dessous) -->
+            <!-- Calendrier principal responsive (Desktop: droite, Mobile: dessous) -->
             <div class="xl:col-span-3 order-2 xl:order-2">
                 <div class="bg-white rounded-xl shadow-lg border border-blue-200 overflow-hidden">
-                    <div class="p-6">
+                    <div class="p-3 sm:p-4 md:p-6">
                         <div id="calendar"></div>
                     </div>
                 </div>
@@ -178,14 +187,14 @@
         </div>
     </div>
 
-<!-- Modal pour les détails de réservation -->
+<!-- Modal responsive pour les détails de réservation -->
 <div id="bookingModal" class="fixed inset-0 bg-blue-900 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-    <div class="relative top-20 mx-auto p-5 border border-blue-200 w-11/12 md:w-3/4 lg:w-1/2 shadow-2xl rounded-xl bg-white">
-        <div class="mt-3">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-blue-900" id="modalTitle">Détails de la réservation</h3>
-                <button onclick="closeModal()" class="text-blue-400 hover:text-blue-600 transition duration-200">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <div class="relative top-4 sm:top-10 md:top-20 mx-auto p-3 sm:p-4 md:p-5 border border-blue-200 w-11/12 sm:w-10/12 md:w-3/4 lg:w-1/2 shadow-2xl rounded-xl bg-white">
+        <div class="mt-2 sm:mt-3">
+            <div class="flex justify-between items-center mb-3 sm:mb-4">
+                <h3 class="text-base sm:text-lg font-bold text-blue-900" id="modalTitle">Détails de la réservation</h3>
+                <button onclick="closeModal()" class="text-blue-400 hover:text-blue-600 transition duration-200 p-1">
+                    <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>

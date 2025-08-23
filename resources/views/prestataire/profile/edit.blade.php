@@ -294,34 +294,121 @@
                         </div>
                     </div>
                     
-                    <button type="button" onclick="addPortfolioItem()" class="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:from-purple-700 hover:to-indigo-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <button type="button" onclick="addPortfolioItem()" class="mt-6 inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:from-purple-700 hover:to-indigo-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200 w-full sm:w-auto justify-center">
+                        <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
-                        Ajouter une réalisation
+                        <span class="hidden sm:inline">Ajouter une réalisation</span>
+                        <span class="sm:hidden">Ajouter</span>
                     </button>
-                    <p class="mt-3 text-sm text-purple-700">Maximum 10 réalisations. Taille max par image : 5MB</p>
+                    <p class="mt-3 text-xs sm:text-sm text-purple-700">Maximum 10 réalisations. Taille max par image : 5MB</p>
                 </div>
                         
                 <!-- Boutons d'action -->
                 <div class="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 pt-6 border-t border-purple-100">
-                    <a href="{{ route('prestataire.dashboard') }}" class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border-2 border-purple-200 text-purple-700 font-bold rounded-xl shadow-lg hover:bg-purple-50 hover:border-purple-300 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="{{ route('prestataire.dashboard') }}" class="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base bg-white border-2 border-purple-200 text-purple-700 font-bold rounded-xl shadow-lg hover:bg-purple-50 hover:border-purple-300 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
+                        <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
-                        Annuler
+                        <span class="hidden sm:inline">Annuler</span>
+                        <span class="sm:hidden">Annuler</span>
                     </a>
-                    <button type="submit" class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:from-purple-700 hover:to-indigo-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:from-purple-700 hover:to-indigo-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
+                        <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                         </svg>
-                        Enregistrer les modifications
+                        <span class="hidden sm:inline">Enregistrer les modifications</span>
+                        <span class="sm:hidden">Enregistrer</span>
                     </button>
                 </div>
                     </div>
         </form>
+        
+        <!-- Section Suppression du compte -->
+        <div class="bg-white rounded-2xl shadow-xl border border-red-100 mt-6 sm:mt-8">
+            <div class="px-4 sm:px-8 py-4 sm:py-6 border-b border-red-100">
+                <h3 class="text-lg sm:text-xl font-bold text-red-600">Zone dangereuse</h3>
+                <p class="mt-2 text-xs sm:text-sm text-gray-600">Actions irréversibles concernant votre compte.</p>
+            </div>
+            <div class="px-4 sm:px-8 py-4 sm:py-6">
+                <div class="bg-red-50 border border-red-200 rounded-xl p-4 sm:p-6">
+                    <div class="flex flex-col sm:flex-row">
+                        <div class="flex-shrink-0 mb-3 sm:mb-0">
+                            <svg class="h-5 w-5 sm:h-6 sm:w-6 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="sm:ml-4">
+                            <h3 class="text-base sm:text-lg font-semibold text-red-800">Supprimer définitivement mon compte</h3>
+                            <div class="mt-2 sm:mt-3 text-xs sm:text-sm text-red-700">
+                                <p class="mb-2 sm:mb-3">Cette action est irréversible. Toutes vos données seront définitivement supprimées :</p>
+                                <ul class="list-disc list-inside space-y-1 text-xs sm:text-sm">
+                                    <li>Vos informations personnelles et profil</li>
+                                    <li>Tous vos services et offres</li>
+                                    <li>Votre historique de missions</li>
+                                    <li>Vos messages et conversations</li>
+                                    <li>Vos évaluations et avis reçus</li>
+                                    <li>Votre portfolio et réalisations</li>
+                                </ul>
+                            </div>
+                            <div class="mt-4 sm:mt-6">
+                                <button type="button" onclick="openDeleteModal()" class="inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200 w-full sm:w-auto justify-center">
+                                    <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    <span class="hidden sm:inline">Supprimer mon compte</span>
+                                    <span class="sm:hidden">Supprimer</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </main>
+</div>
+
+<!-- Modal de confirmation de suppression -->
+<div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-10 sm:top-20 mx-auto p-4 sm:p-5 border w-11/12 max-w-md sm:w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3 text-center">
+            <div class="mx-auto flex items-center justify-center h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-red-100">
+                <svg class="h-5 w-5 sm:h-6 sm:w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+            </div>
+            <h3 class="text-base sm:text-lg font-medium text-gray-900 mt-2">Confirmer la suppression</h3>
+            <div class="mt-2 px-3 sm:px-7 py-3">
+                <p class="text-xs sm:text-sm text-gray-500 mb-4">
+                    Pour confirmer la suppression de votre compte, veuillez :
+                </p>
+                <form id="deleteForm" method="POST" action="{{ route('prestataire.profile.destroy') }}">
+                    @csrf
+                    @method('DELETE')
+                    
+                    <div class="mb-4">
+                        <label for="password" class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Saisissez votre mot de passe :</label>
+                        <input type="password" id="password" name="password" required class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="confirmation" class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Tapez "DELETE" pour confirmer :</label>
+                        <input type="text" id="confirmation" name="confirmation" required class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500" placeholder="DELETE">
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row justify-center gap-3 sm:space-x-4 mt-6">
+                        <button type="button" onclick="closeDeleteModal()" class="px-4 py-2 text-sm bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors order-2 sm:order-1">
+                            Annuler
+                        </button>
+                        <button type="submit" class="px-4 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors order-1 sm:order-2">
+                            Supprimer définitivement
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -407,5 +494,21 @@ function deletePortfolioItem(index) {
         });
     }
 }
+
+function openDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('hidden');
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.add('hidden');
+    document.getElementById('deleteForm').reset();
+}
+
+// Fermer le modal en cliquant à l'extérieur
+document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeDeleteModal();
+    }
+});
 </script>
 @endsection

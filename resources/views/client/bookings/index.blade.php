@@ -2,42 +2,51 @@
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
-<div class="container mx-auto px-4 py-8">
+<div class="container mx-auto px-4 py-6 sm:py-8">
     <div class="max-w-6xl mx-auto">
         <!-- Header -->
-        <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl shadow-lg border border-blue-200 p-6 md:p-8 mb-8">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-                <div class="text-center md:text-left">
-                    <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Historique de mes réservations</h1>
-                    <p class="text-gray-600 text-base md:text-lg">Consultez et gérez l'ensemble de vos réservations de services</p>
+        <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                <div class="text-center sm:text-left">
+                    <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
+                        <span class="hidden sm:inline">Historique de mes réservations</span>
+                        <span class="sm:hidden">Mes réservations</span>
+                    </h1>
+                    <p class="text-gray-600 text-sm sm:text-base lg:text-lg">
+                        <span class="hidden sm:inline">Consultez et gérez l'ensemble de vos réservations de services</span>
+                        <span class="sm:hidden">Gérez vos réservations</span>
+                    </p>
                 </div>
-                <div class="flex justify-center md:justify-end">
-                    <a href="{{ route('services.index') }}" class="bg-blue-600 text-white px-6 py-3 md:px-6 md:py-3 rounded-xl hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl border border-blue-700 font-semibold text-base md:text-lg flex items-center justify-center w-full md:w-auto" style="min-height: 44px;">
-                        <i class="fas fa-plus mr-3"></i>
-                        Nouvelle réservation
+                <div class="flex justify-center sm:justify-end">
+                    <a href="{{ route('services.index') }}" class="bg-blue-600 text-white px-4 sm:px-6 py-3 rounded-xl hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl border border-blue-700 font-semibold text-sm sm:text-base lg:text-lg flex items-center justify-center w-full sm:w-auto" style="min-height: 44px;">
+                        <i class="fas fa-plus mr-2 sm:mr-3"></i>
+                        <span class="hidden sm:inline">Nouvelle réservation</span>
+                        <span class="sm:hidden">Nouveau</span>
                     </a>
                 </div>
             </div>
         </div>
 
         @if(session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4 sm:mb-6 text-sm sm:text-base">
                 {{ session('success') }}
             </div>
         @endif
 
         @if(session('error'))
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 sm:mb-6 text-sm sm:text-base">
                 {{ session('error') }}
             </div>
         @endif
         
         <!-- Filtres de réservation -->
-        <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-4 md:p-6 mb-8">
-            <form action="{{ route('client.bookings.index') }}" method="GET" class="space-y-4 md:space-y-0 md:flex md:flex-wrap md:items-end md:gap-6">
-                <div class="flex-1 min-w-full md:min-w-[220px]">
-                    <label for="status" class="block text-sm font-semibold text-gray-700 mb-2">Statut</label>
-                    <select id="status" name="status" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 py-3 px-4 text-gray-700" style="min-height: 44px;">
+        <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6 mb-6 sm:mb-8">
+            <form action="{{ route('client.bookings.index') }}" method="GET" class="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-1 lg:grid-cols-3 sm:gap-4 lg:gap-6 sm:items-end">
+                <div class="space-y-2">
+                    <label for="status" class="block text-xs sm:text-sm font-semibold text-gray-700">
+                        <i class="fas fa-filter mr-1 sm:mr-2 text-blue-600"></i>Statut
+                    </label>
+                    <select id="status" name="status" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 py-2.5 sm:py-3 px-3 sm:px-4 text-sm sm:text-base text-gray-700" style="min-height: 44px;">
                         <option value="">Tous les statuts</option>
                         <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>En attente</option>
                         <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }}>Confirmée</option>
@@ -47,9 +56,11 @@
                     </select>
                 </div>
                 
-                <div class="flex-1 min-w-full md:min-w-[220px]">
-                    <label for="date_range" class="block text-sm font-semibold text-gray-700 mb-2">Période</label>
-                    <select id="date_range" name="date_range" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 py-3 px-4 text-gray-700" style="min-height: 44px;">
+                <div class="space-y-2">
+                    <label for="date_range" class="block text-xs sm:text-sm font-semibold text-gray-700">
+                        <i class="fas fa-calendar-alt mr-1 sm:mr-2 text-blue-600"></i>Période
+                    </label>
+                    <select id="date_range" name="date_range" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 py-2.5 sm:py-3 px-3 sm:px-4 text-sm sm:text-base text-gray-700" style="min-height: 44px;">
                         <option value="">Toutes les dates</option>
                         <option value="upcoming" {{ request('date_range') == 'upcoming' ? 'selected' : '' }}>À venir</option>
                         <option value="past" {{ request('date_range') == 'past' ? 'selected' : '' }}>Passées</option>
@@ -58,14 +69,18 @@
                     </select>
                 </div>
                 
-                <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
-                    <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl border border-blue-700 font-semibold flex items-center justify-center" style="min-height: 44px;">
-                        <i class="fas fa-filter mr-2"></i>Filtrer
+                <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                    <button type="submit" class="bg-blue-600 text-white px-3 sm:px-4 lg:px-6 py-2.5 sm:py-3 rounded-lg hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl border border-blue-700 font-semibold text-sm sm:text-base flex items-center justify-center" style="min-height: 44px;">
+                        <i class="fas fa-filter mr-1 sm:mr-2"></i>
+                        <span class="hidden sm:inline">Filtrer</span>
+                        <span class="sm:hidden">OK</span>
                     </button>
                     
                     @if(request('status') || request('date_range'))
-                        <a href="{{ route('client.bookings.index') }}" class="text-gray-600 px-6 py-3 rounded-lg hover:bg-gray-100 transition-all duration-300 border border-gray-300 shadow-sm hover:shadow-md font-medium flex items-center justify-center" style="min-height: 44px;">
-                            <i class="fas fa-times mr-2"></i>Réinitialiser
+                        <a href="{{ route('client.bookings.index') }}" class="text-gray-600 px-3 sm:px-4 lg:px-6 py-2.5 sm:py-3 rounded-lg hover:bg-gray-100 transition-all duration-300 border border-gray-300 shadow-sm hover:shadow-md font-medium text-sm sm:text-base flex items-center justify-center" style="min-height: 44px;">
+                            <i class="fas fa-times mr-1 sm:mr-2"></i>
+                            <span class="hidden sm:inline">Réinitialiser</span>
+                            <span class="sm:hidden">Reset</span>
                         </a>
                     @endif
                 </div>
@@ -73,16 +88,16 @@
             
             <!-- Indicateur de filtres actifs -->
             @if(request('status') || request('date_range'))
-                <div class="mt-4 pt-4 border-t border-gray-100">
-                    <div class="flex flex-wrap items-center gap-2">
-                        <span class="text-sm text-gray-600 font-medium">Filtres actifs :</span>
+                <div class="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-100">
+                    <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                        <span class="text-xs sm:text-sm text-gray-600 font-medium">Filtres actifs :</span>
                         @if(request('status'))
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                            <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
                                 Statut: {{ ucfirst(request('status')) }}
                             </span>
                         @endif
                         @if(request('date_range'))
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                            <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
                                 Période: {{ ucfirst(str_replace('_', ' ', request('date_range'))) }}
                             </span>
                         @endif

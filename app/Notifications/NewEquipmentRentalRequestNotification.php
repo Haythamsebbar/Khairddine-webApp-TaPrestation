@@ -32,7 +32,7 @@ class NewEquipmentRentalRequestNotification extends Notification implements Shou
      */
     public function via($notifiable)
     {
-        return ['database', 'mail'];
+        return ['database'];
     }
 
     /**

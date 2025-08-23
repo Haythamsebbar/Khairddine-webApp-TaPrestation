@@ -1,159 +1,181 @@
 @extends('layouts.admin-modern')
 
 @section('title', 'Gestion des Prestataires')
-@section('page-title', 'Gestion des Prestataires')
+
+@push('head')
+<meta name="csrf-token" content="{{ csrf_token() }}">
+@endpush
 
 @section('content')
-<div class="container-fluid">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <!-- Header Actions -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3 mb-0 text-gray-800">Gestion des Prestataires</h1>
-            <p class="text-muted mb-0">Gérez et supervisez tous les prestataires de la plateforme</p>
-        </div>
-        <div class="d-flex gap-2">
-            <a href="{{ route('administrateur.prestataires.pending') }}" class="btn btn-warning d-flex align-items-center">
-                <i class="fas fa-clock me-2"></i>En attente ({{ $stats['pending'] }})
-            </a>
-            <button type="button" class="btn btn-outline-secondary d-flex align-items-center" onclick="toggleFilters()">
-                <i class="fas fa-filter me-2"></i>Filtres
-            </button>
-            <button type="button" class="btn btn-primary d-flex align-items-center" onclick="exportPrestataires()">
-                <i class="fas fa-download me-2"></i>Exporter
-            </button>
+<div class="bg-blue-50">
+    <!-- Bannière d'en-tête -->
+    <div class="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-6 sm:mb-8 text-center">
+                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-blue-900 mb-2 leading-tight">
+                    Gestion des Prestataires
+                </h1>
+                <p class="text-base sm:text-lg text-blue-700 max-w-2xl mx-auto">
+                    Gérez et supervisez tous les prestataires de la plateforme TaPrestation.
+                </p>
+            </div>
+            
+            <!-- Actions Header -->
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs sm:text-sm font-semibold text-blue-800">Total :</span>
+                    <span class="px-2 sm:px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs sm:text-sm font-bold">
+                        {{ $stats['total'] ?? 0 }} prestataire(s)
+                    </span>
+                </div>
+                <div class="flex gap-3">
+                    <a href="{{ route('administrateur.prestataires.pending') }}" class="bg-orange-100 hover:bg-orange-200 text-orange-800 font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm sm:text-base">
+                        <i class="fas fa-clock mr-2"></i>En attente ({{ $stats['pending'] }})
+                    </a>
+                    <button onclick="toggleFilters()" class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm sm:text-base">
+                        <i class="fas fa-filter mr-2"></i>Filtres
+                    </button>
+                    <button onclick="exportPrestataires()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center text-sm sm:text-base">
+                        <i class="fas fa-download mr-2"></i>Exporter
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
-<!-- Stats Cards -->
-<div class="stats-grid" style="margin-bottom: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
-    <div class="stat-card primary">
-        <div class="stat-header">
-            <div>
-                <div class="stat-title">Total Prestataires</div>
-                <div class="stat-value">{{ $stats['total'] }}</div>
-                <div class="stats-trend">
-                    <i class="fas fa-chart-line"></i> Total inscrit
+    <!-- Stats Cards -->
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 mb-6 sm:mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs sm:text-sm font-medium text-blue-600 mb-1">Total Prestataires</p>
+                        <p class="text-2xl sm:text-3xl font-bold text-blue-900">{{ $stats['total'] }}</p>
+                        <p class="text-xs text-blue-500 mt-1">
+                            <i class="fas fa-chart-line mr-1"></i>Total inscrit
+                        </p>
+                    </div>
+                    <div class="bg-blue-100 p-3 rounded-full">
+                        <i class="fas fa-users text-blue-600 text-xl"></i>
+                    </div>
                 </div>
             </div>
-            <div class="stat-icon primary">
-                <i class="fas fa-users"></i>
+            
+            <div class="bg-white rounded-xl shadow-lg border border-green-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs sm:text-sm font-medium text-green-600 mb-1">Prestataires Approuvés</p>
+                        <p class="text-2xl sm:text-3xl font-bold text-green-900">{{ $stats['approved'] }}</p>
+                        <p class="text-xs text-green-500 mt-1">
+                            <i class="fas fa-thumbs-up mr-1"></i>{{ $stats['total'] > 0 ? round(($stats['approved'] / $stats['total']) * 100, 1) : 0 }}% du total
+                        </p>
+                    </div>
+                    <div class="bg-green-100 p-3 rounded-full">
+                        <i class="fas fa-user-check text-green-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg border border-orange-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs sm:text-sm font-medium text-orange-600 mb-1">Prestataires en Attente</p>
+                        <p class="text-2xl sm:text-3xl font-bold text-orange-900">{{ $stats['pending'] }}</p>
+                        <p class="text-xs text-orange-500 mt-1">
+                            <i class="fas fa-hourglass-half mr-1"></i>{{ $stats['total'] > 0 ? round(($stats['pending'] / $stats['total']) * 100, 1) : 0 }}% du total
+                        </p>
+                    </div>
+                    <div class="bg-orange-100 p-3 rounded-full">
+                        <i class="fas fa-clock text-orange-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg border border-purple-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs sm:text-sm font-medium text-purple-600 mb-1">Nouveaux ce mois</p>
+                        <p class="text-2xl sm:text-3xl font-bold text-purple-900">{{ $stats['new_this_month'] }}</p>
+                        <p class="text-xs text-purple-500 mt-1">
+                            <i class="fas fa-calendar-alt mr-1"></i>{{ now()->format('F Y') }}
+                        </p>
+                    </div>
+                    <div class="bg-purple-100 p-3 rounded-full">
+                        <i class="fas fa-user-plus text-purple-600 text-xl"></i>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    
-    <div class="stat-card success">
-        <div class="stat-header">
-            <div>
-                <div class="stat-title">Prestataires Approuvés</div>
-                <div class="stat-value">{{ $stats['approved'] }}</div>
-                <div class="stats-trend">
-                    <i class="fas fa-thumbs-up"></i> {{ $stats['total'] > 0 ? round(($stats['approved'] / $stats['total']) * 100, 1) : 0 }}% du total
-                </div>
-            </div>
-            <div class="stat-icon success">
-                <i class="fas fa-user-check"></i>
-            </div>
-        </div>
-    </div>
-    
-    <div class="stat-card warning">
-        <div class="stat-header">
-            <div>
-                <div class="stat-title">Prestataires en Attente</div>
-                <div class="stat-value">{{ $stats['pending'] }}</div>
-                <div class="stats-trend">
-                    <i class="fas fa-hourglass-half"></i> {{ $stats['total'] > 0 ? round(($stats['pending'] / $stats['total']) * 100, 1) : 0 }}% du total
-                </div>
-            </div>
-            <div class="stat-icon warning">
-                <i class="fas fa-clock"></i>
-            </div>
-        </div>
-    </div>
-    
-    <div class="stat-card info">
-        <div class="stat-header">
-            <div>
-                <div class="stat-title">Nouveaux ce mois</div>
-                <div class="stat-value">{{ $stats['new_this_month'] }}</div>
-                <div class="stats-trend">
-                    <i class="fas fa-calendar-alt"></i> {{ now()->format('F Y') }}
-                </div>
-            </div>
-            <div class="stat-icon info">
-                <i class="fas fa-user-plus"></i>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- Filters Panel -->
-<div id="filtersPanel" class="chart-card" style="display: none; margin-bottom: 2rem;">
-    <div class="chart-header">
-        <div class="chart-title">Filtres de recherche</div>
-        <button class="btn btn-outline" onclick="clearFilters()">
-            <i class="fas fa-times"></i>
+<div id="filtersPanel" class="hidden bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
+    <div class="flex items-center justify-between p-6 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900">Filtres de recherche</h3>
+        <button class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" onclick="clearFilters()">
+            <i class="fas fa-times mr-2"></i>
             Effacer
         </button>
     </div>
-    <form action="{{ route('administrateur.prestataires.index') }}" method="GET" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; padding: 1rem 0;">
-        <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark);">Nom</label>
-            <input type="text" name="name" value="{{ request('name') }}" placeholder="Rechercher par nom..." style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
+    <form action="{{ route('administrateur.prestataires.index') }}" method="GET" class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+                <input type="text" name="name" value="{{ request('name') }}" placeholder="Rechercher par nom..." class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <input type="email" name="email" value="{{ request('email') }}" placeholder="Rechercher par email..." class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Catégorie</label>
+                <select name="category_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option value="">Toutes les catégories</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
+                <select name="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option value="">Tous les statuts</option>
+                    <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Actif</option>
+                    <option value="blocked" {{ request('status') == 'blocked' ? 'selected' : '' }}>Bloqué</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Trier par</label>
+                <select name="sort" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option value="created_at" {{ request('sort') == 'created_at' ? 'selected' : '' }}>Date d'inscription</option>
+                    <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Nom</option>
+                    <option value="email" {{ request('sort') == 'email' ? 'selected' : '' }}>Email</option>
+                    <option value="services_count" {{ request('sort') == 'services_count' ? 'selected' : '' }}>Nombre de services</option>
+                    <option value="orders_count" {{ request('sort') == 'orders_count' ? 'selected' : '' }}>Nombre de commandes</option>
+                    <option value="rating" {{ request('sort') == 'rating' ? 'selected' : '' }}>Note moyenne</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Ordre</label>
+                <select name="direction" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option value="desc" {{ request('direction') == 'desc' ? 'selected' : '' }}>Décroissant</option>
+                    <option value="asc" {{ request('direction') == 'asc' ? 'selected' : '' }}>Croissant</option>
+                </select>
+            </div>
         </div>
         
-        <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark);">Email</label>
-            <input type="email" name="email" value="{{ request('email') }}" placeholder="Rechercher par email..." style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
-        </div>
-        
-        <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark);">Catégorie</label>
-            <select name="category_id" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
-                <option value="">Toutes les catégories</option>
-                @foreach($categories as $category)
-                    <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-                @endforeach
-            </select>
-        </div>
-        
-        <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark);">Statut</label>
-            <select name="status" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
-                <option value="">Tous les statuts</option>
-                <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Actif</option>
-                <option value="blocked" {{ request('status') == 'blocked' ? 'selected' : '' }}>Bloqué</option>
-            </select>
-        </div>
-        
-        <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark);">Trier par</label>
-            <select name="sort" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
-                <option value="created_at" {{ request('sort') == 'created_at' ? 'selected' : '' }}>Date d'inscription</option>
-                <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Nom</option>
-                <option value="email" {{ request('sort') == 'email' ? 'selected' : '' }}>Email</option>
-                <option value="services_count" {{ request('sort') == 'services_count' ? 'selected' : '' }}>Nombre de services</option>
-                <option value="orders_count" {{ request('sort') == 'orders_count' ? 'selected' : '' }}>Nombre de commandes</option>
-                <option value="rating" {{ request('sort') == 'rating' ? 'selected' : '' }}>Note moyenne</option>
-            </select>
-        </div>
-        
-        <div>
-            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--dark);">Ordre</label>
-            <select name="direction" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
-                <option value="desc" {{ request('direction') == 'desc' ? 'selected' : '' }}>Décroissant</option>
-                <option value="asc" {{ request('direction') == 'asc' ? 'selected' : '' }}>Croissant</option>
-            </select>
-        </div>
-        
-        <div style="grid-column: 1 / -1; display: flex; gap: 1rem;">
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-search"></i>
+        <div class="flex items-center gap-4 mt-6 pt-6 border-t border-gray-200">
+            <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <i class="fas fa-search mr-2"></i>
                 Rechercher
             </button>
-            <a href="{{ route('administrateur.prestataires.index') }}" class="btn btn-outline">
-                <i class="fas fa-redo"></i>
+            <a href="{{ route('administrateur.prestataires.index') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <i class="fas fa-redo mr-2"></i>
                 Réinitialiser
             </a>
         </div>
@@ -161,162 +183,163 @@
 </div>
 
 <!-- Items Per Page & Export -->
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
-    <div>
-        <label style="font-size: 0.875rem; color: var(--secondary);">Afficher</label>
-        <select onchange="changeItemsPerPage(this.value)" style="padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.875rem;">
+<div class="flex justify-between items-center mb-6 flex-wrap gap-4">
+    <div class="flex items-center gap-2">
+        <label class="text-sm text-gray-600">Afficher</label>
+        <select onchange="changeItemsPerPage(this.value)" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
             <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
             <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
             <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
             <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
         </select>
-        <span style="font-size: 0.875rem; color: var(--secondary);">éléments</span>
+        <span class="text-sm text-gray-600">éléments</span>
     </div>
     
-    <button class="btn btn-outline" onclick="exportPrestataires()">
-        <i class="fas fa-download"></i>
-        <span class="d-none d-sm-inline">Exporter</span>
+    <button class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" onclick="exportPrestataires()">
+        <i class="fas fa-download mr-2"></i>
+        <span class="hidden sm:inline">Exporter</span>
     </button>
 </div>
 
 <!-- Main Content -->
-<div class="content-card">
+<div class="bg-white rounded-xl shadow-sm border border-gray-200">
     <!-- Cards Layout -->
-    <div class="prestataires-grid">
+    <div class="p-6">
         <!-- Select All Header -->
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; padding: 1rem; background: var(--light); border-radius: 8px;">
-            <div style="display: flex; align-items: center;">
-                <input type="checkbox" id="selectAll" onchange="toggleAllCheckboxes()" style="margin-right: 0.5rem;">
-                <label for="selectAll" style="font-weight: 600; margin: 0;">Sélectionner tout</label>
+        <div class="flex items-center justify-between mb-6 p-4 bg-gray-50 rounded-lg">
+            <div class="flex items-center">
+                <input type="checkbox" id="selectAll" onchange="toggleAllCheckboxes()" class="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                <label for="selectAll" class="font-semibold text-gray-900">Sélectionner tout</label>
             </div>
-            <div style="color: var(--secondary);">
+            <div class="text-gray-600">
                 {{ $prestataires->count() }} prestataire(s) affiché(s)
             </div>
         </div>
 
+        <div class="space-y-4">
         @forelse($prestataires as $prestataire)
-            <div class="prestataire-card {{ $prestataire->user->created_at->isCurrentMonth() ? 'new' : '' }}">
-                <div style="display: flex; align-items: center; gap: 1rem;">
+            <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow duration-200 {{ $prestataire->user->created_at->isCurrentMonth() ? 'ring-2 ring-blue-100' : '' }}">
+                <div class="flex items-center gap-4">
                     <!-- Checkbox -->
                     <div>
-                        <input type="checkbox" value="{{ $prestataire->id }}" class="prestataire-checkbox" onchange="updateBulkActionsVisibility()">
+                        <input type="checkbox" value="{{ $prestataire->id }}" class="prestataire-checkbox h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" onchange="updateBulkActionsVisibility()">
                     </div>
                     
                     <!-- Avatar & Basic Info -->
-                    <div>
-                        <div class="avatar" style="position: relative;">
+                    <div class="flex-shrink-0">
+                        <div class="relative">
                             @if($prestataire->user->profile_photo_path)
-                                <img src="{{ asset('storage/' . $prestataire->user->profile_photo_path) }}" alt="{{ $prestataire->user->name }}" class="prestataire-avatar">
+                                <img src="{{ asset('storage/' . $prestataire->user->profile_photo_path) }}" alt="{{ $prestataire->user->name }}" class="w-16 h-16 rounded-xl object-cover">
                             @elseif($prestataire->photo)
-                                <img src="{{ asset('storage/' . $prestataire->photo) }}" alt="{{ $prestataire->user->name }}" class="prestataire-avatar">
+                                <img src="{{ asset('storage/' . $prestataire->photo) }}" alt="{{ $prestataire->user->name }}" class="w-16 h-16 rounded-xl object-cover">
                             @else
-                                <div class="avatar-initials" style="width: 64px; height: 64px; border-radius: 16px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 600;">
+                                <div class="w-16 h-16 rounded-xl bg-blue-600 text-white flex items-center justify-center text-xl font-semibold">
                                     {{ substr($prestataire->user->name, 0, 1) }}
                                 </div>
                             @endif
                             @if($prestataire->isVerified())
-                                <div style="position: absolute; top: -4px; right: -4px; width: 20px; height: 20px; background: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white;">
-                                    <i class="fas fa-check" style="font-size: 10px; color: white;"></i>
+                                <div class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center border-2 border-white">
+                                    <i class="fas fa-check text-xs text-white"></i>
                                 </div>
                             @endif
                         </div>
                     </div>
                     
                     <!-- Main Info -->
-                    <div style="flex: 1;">
-                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
-                            <h5 style="margin: 0; font-size: 1.125rem; font-weight: 600; color: var(--dark);">{{ $prestataire->user->name }}</h5>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 mb-1">
+                            <h5 class="text-lg font-semibold text-gray-900 truncate">{{ $prestataire->user->name }}</h5>
                             @if($prestataire->isVerified())
-                                <span class="badge success" style="font-size: 10px; padding: 4px 8px;">
-                                    <i class="fas fa-check"></i> Vérifié
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <i class="fas fa-check mr-1"></i> Vérifié
                                 </span>
                             @endif
                         </div>
-                        <div style="color: var(--secondary); font-size: 0.875rem; margin-bottom: 0.5rem;">{{ $prestataire->user->email }}</div>
+                        <div class="text-gray-600 text-sm mb-2 truncate">{{ $prestataire->user->email }}</div>
                         
                         <!-- Badges -->
-                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-
-                            
+                        <div class="flex gap-2 flex-wrap">
                             @if($prestataire->user->created_at->isCurrentMonth())
-                                <span class="badge info">
-                                    <i class="fas fa-star"></i> Nouveau ce mois
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    <i class="fas fa-star mr-1"></i> Nouveau ce mois
                                 </span>
                             @endif
                             
                             @if($prestataire->category)
-                                <span class="badge primary">{{ $prestataire->category->name }}</span>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">{{ $prestataire->category->name }}</span>
                             @endif
                         </div>
                     </div>
                     
                     <!-- Stats -->
-                    <div style="display: none;" class="d-md-block">
-                        <div class="prestataire-stats" style="display: flex; gap: 1.5rem;">
-                            <div style="text-align: center;">
-                                <div style="font-size: 1.25rem; font-weight: 600; color: var(--dark);">{{ $prestataire->services_count ?? $prestataire->services->count() }}</div>
-                                <div style="font-size: 0.75rem; color: var(--secondary);">Services</div>
+                    <div class="hidden md:block">
+                        <div class="flex gap-6">
+                            <div class="text-center">
+                                <div class="text-xl font-semibold text-gray-900">{{ $prestataire->services_count ?? $prestataire->services->count() }}</div>
+                                <div class="text-xs text-gray-600">Services</div>
                             </div>
-                            <div style="text-align: center;">
-                                <div style="font-size: 1.25rem; font-weight: 600; color: var(--dark);">{{ $prestataire->orders_count ?? 0 }}</div>
-                                <div style="font-size: 0.75rem; color: var(--secondary);">Commandes</div>
+                            <div class="text-center">
+                                <div class="text-xl font-semibold text-gray-900">{{ $prestataire->orders_count ?? 0 }}</div>
+                                <div class="text-xs text-gray-600">Commandes</div>
                             </div>
-                            <div style="text-align: center;">
-                                <div class="rating-display" style="display: flex; align-items: center; gap: 0.25rem; justify-content: center;">
-                                    <div class="rating-stars" style="color: #fbbf24;">
+                            <div class="text-center">
+                                <div class="flex items-center gap-1 justify-center">
+                                    <div class="flex text-yellow-400">
                                         @for($i = 1; $i <= 5; $i++)
                                             @if($i <= ($prestataire->rating ?? 0))
-                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star text-xs"></i>
                                             @else
-                                                <i class="far fa-star"></i>
+                                                <i class="far fa-star text-xs"></i>
                                             @endif
                                         @endfor
                                     </div>
-                                    <span style="font-weight: 600; color: var(--dark);">{{ number_format($prestataire->rating ?? 0, 1) }}</span>
+                                    <span class="font-semibold text-gray-900 text-sm">{{ number_format($prestataire->rating ?? 0, 1) }}</span>
                                 </div>
-                                <div style="font-size: 0.75rem; color: var(--secondary);">Note</div>
+                                <div class="text-xs text-gray-600">Note</div>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Status & Actions -->
-                    <div>
-                        <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div class="flex-shrink-0">
+                        <div class="flex items-center gap-4">
                             <!-- Status -->
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div class="flex items-center gap-2">
                                 @if($prestataire->user->blocked_at)
-                                    <span style="width: 8px; height: 8px; background: var(--danger); border-radius: 50%; display: inline-block;"></span>
-                                    <span style="color: var(--danger); font-weight: 600; font-size: 0.875rem;">Bloqué</span>
+                                    <span class="w-2 h-2 bg-red-500 rounded-full"></span>
+                                    <span class="text-red-600 font-semibold text-sm">Bloqué</span>
                                 @else
-                                    <span style="width: 8px; height: 8px; background: var(--success); border-radius: 50%; display: inline-block;"></span>
-                                    <span style="color: var(--success); font-weight: 600; font-size: 0.875rem;">Actif</span>
+                                    <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                                    <span class="text-green-600 font-semibold text-sm">Actif</span>
                                 @endif
                             </div>
                             
                             <!-- Actions -->
-                            <div class="actions-dropdown">
-                                <button class="btn btn-outline" onclick="toggleDropdown('dropdown-{{ $prestataire->id }}')" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
-                                    <i class="fas fa-cog"></i> Actions
+                            <div class="relative">
+                                <button class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" onclick="toggleDropdown('dropdown-{{ $prestataire->id }}')">
+                                    <i class="fas fa-cog mr-2"></i> Actions
                                 </button>
-                                <div class="dropdown-menu" id="dropdown-{{ $prestataire->id }}" style="display: none;">
-                                    <a href="{{ route('administrateur.prestataires.show', $prestataire->id) }}" class="dropdown-item">
-                                        <i class="fas fa-eye"></i> Voir profil
-                                    </a>
+                                <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 hidden" id="dropdown-{{ $prestataire->id }}">
+                                    <div class="py-1">
+                                        <a href="{{ route('administrateur.prestataires.show', $prestataire->id) }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                            <i class="fas fa-eye mr-3"></i> Voir profil
+                                        </a>
 
-                                    @if(auth()->id() != $prestataire->user_id)
-                                        @if($prestataire->user->blocked_at)
-                                            <button onclick="toggleBlockPrestataire('{{ $prestataire->id }}', 'unblock')" class="dropdown-item">
-                                                <i class="fas fa-unlock"></i> Débloquer
-                                            </button>
-                                        @else
-                                            <button onclick="toggleBlockPrestataire('{{ $prestataire->id }}', 'block')" class="dropdown-item">
-                                                <i class="fas fa-lock"></i> Désactiver
+                                        @if(auth()->id() != $prestataire->user_id)
+                                            @if($prestataire->user->blocked_at)
+                                                <button onclick="toggleBlockPrestataire('{{ $prestataire->id }}', 'unblock')" class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                                    <i class="fas fa-unlock mr-3"></i> Débloquer
+                                                </button>
+                                            @else
+                                                <button onclick="toggleBlockPrestataire('{{ $prestataire->id }}', 'block')" class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                                    <i class="fas fa-lock mr-3"></i> Désactiver
+                                                </button>
+                                            @endif
+                                            <button onclick="deletePrestataire('{{ $prestataire->id }}')" class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                                <i class="fas fa-trash mr-3"></i> Supprimer
                                             </button>
                                         @endif
-                                        <button onclick="deletePrestataire('{{ $prestataire->id }}')" class="dropdown-item text-danger">
-                                            <i class="fas fa-trash"></i> Supprimer
-                                        </button>
-                                    @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -324,48 +347,49 @@
                 </div>
                 
                 <!-- Mobile Stats -->
-                <div style="display: block; margin-top: 1rem;" class="d-md-none">
-                    <div style="display: flex; justify-content: space-around; text-align: center;">
+                <div class="block mt-4 md:hidden">
+                    <div class="flex justify-around text-center">
                         <div>
-                            <div style="font-size: 1.125rem; font-weight: 600; color: var(--dark);">{{ $prestataire->services_count ?? $prestataire->services->count() }}</div>
-                            <div style="font-size: 0.75rem; color: var(--secondary);">Services</div>
+                            <div class="text-lg font-semibold text-gray-900">{{ $prestataire->services_count ?? $prestataire->services->count() }}</div>
+                            <div class="text-xs text-gray-600">Services</div>
                         </div>
                         <div>
-                            <div style="font-size: 1.125rem; font-weight: 600; color: var(--dark);">{{ $prestataire->orders_count ?? 0 }}</div>
-                            <div style="font-size: 0.75rem; color: var(--secondary);">Commandes</div>
+                            <div class="text-lg font-semibold text-gray-900">{{ $prestataire->orders_count ?? 0 }}</div>
+                            <div class="text-xs text-gray-600">Commandes</div>
                         </div>
                         <div>
-                            <div class="rating-display" style="display: flex; align-items: center; gap: 0.25rem; justify-content: center;">
-                                <div class="rating-stars" style="color: #fbbf24;">
+                            <div class="flex items-center gap-1 justify-center">
+                                <div class="flex text-yellow-400">
                                     @for($i = 1; $i <= 5; $i++)
                                         @if($i <= ($prestataire->rating ?? 0))
-                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star text-xs"></i>
                                         @else
-                                            <i class="far fa-star"></i>
+                                            <i class="far fa-star text-xs"></i>
                                         @endif
                                     @endfor
                                 </div>
-                                <span style="font-weight: 600; color: var(--dark);">{{ number_format($prestataire->rating ?? 0, 1) }}</span>
+                                <span class="font-semibold text-gray-900 text-sm">{{ number_format($prestataire->rating ?? 0, 1) }}</span>
                             </div>
-                            <div style="font-size: 0.75rem; color: var(--secondary);">Note</div>
+                            <div class="text-xs text-gray-600">Note</div>
                         </div>
                     </div>
                 </div>
             </div>
         @empty
-            <div style="text-align: center; padding: 3rem 0;">
-                <div style="color: var(--secondary);">
-                    <i class="fas fa-users" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.5;"></i>
-                    <h4>Aucun prestataire trouvé</h4>
-                    <p>Aucun prestataire ne correspond aux critères de recherche.</p>
+            <div class="text-center py-12">
+                <div class="text-gray-500">
+                    <i class="fas fa-users text-6xl mb-4 opacity-50"></i>
+                    <h4 class="text-lg font-semibold mb-2">Aucun prestataire trouvé</h4>
+                    <p class="text-sm">Aucun prestataire ne correspond aux critères de recherche.</p>
                 </div>
             </div>
         @endforelse
+        </div>
     </div>
     
     <!-- Pagination -->
-    <div style="padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
-        <div style="font-size: 0.875rem; color: var(--secondary);">
+    <div class="px-6 py-4 flex justify-between items-center border-t border-gray-200">
+        <div class="text-sm text-gray-600">
             Affichage de {{ $prestataires->firstItem() ?? 0 }} à {{ $prestataires->lastItem() ?? 0 }} sur {{ $prestataires->total() }} entrées
         </div>
         {{ $prestataires->appends(request()->query())->links() }}
@@ -373,24 +397,24 @@
 </div>
 
 <!-- Bulk Actions -->
-<div id="bulkActions" style="position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: white; padding: 1rem 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); display: none; z-index: 1000; max-width: 90vw;">
-    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; justify-content: center;">
-        <span id="selectedCount" style="font-weight: 500; white-space: nowrap;">0 sélectionné(s)</span>
-        <button class="btn btn-outline" onclick="clearSelection()">
-            <i class="fas fa-times"></i>
-            <span class="d-none d-sm-inline">Annuler</span>
+<div id="bulkActions" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-white px-8 py-4 rounded-xl shadow-lg border border-gray-200 hidden z-50 max-w-[90vw]">
+    <div class="flex gap-4 items-center flex-wrap justify-center">
+        <span id="selectedCount" class="font-medium whitespace-nowrap text-gray-700">0 sélectionné(s)</span>
+        <button class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" onclick="clearSelection()">
+            <i class="fas fa-times mr-2"></i>
+            <span class="hidden sm:inline">Annuler</span>
         </button>
-        <button class="btn btn-success" onclick="bulkUnblock()">
-            <i class="fas fa-unlock"></i>
-            <span class="d-none d-sm-inline">Débloquer</span>
+        <button class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" onclick="bulkUnblock()">
+            <i class="fas fa-unlock mr-2"></i>
+            <span class="hidden sm:inline">Débloquer</span>
         </button>
-        <button class="btn btn-warning" onclick="bulkBlock()">
-            <i class="fas fa-lock"></i>
-            <span class="d-none d-sm-inline">Bloquer</span>
+        <button class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500" onclick="bulkBlock()">
+            <i class="fas fa-lock mr-2"></i>
+            <span class="hidden sm:inline">Bloquer</span>
         </button>
-        <button class="btn btn-danger" onclick="bulkDelete()">
-            <i class="fas fa-trash"></i>
-            <span class="d-none d-sm-inline">Supprimer</span>
+        <button class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" onclick="bulkDelete()">
+            <i class="fas fa-trash mr-2"></i>
+            <span class="hidden sm:inline">Supprimer</span>
         </button>
     </div>
 </div>

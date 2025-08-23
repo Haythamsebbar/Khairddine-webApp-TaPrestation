@@ -34,43 +34,50 @@
         @endif
 
         <!-- Breadcrumb -->
-        <nav class="flex mb-8" aria-label="Breadcrumb">
-            <ol class="inline-flex items-center space-x-1 md:space-x-3 bg-white rounded-lg shadow-sm px-4 py-2 border border-green-200">
+        <nav class="flex mb-6 sm:mb-8" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3 bg-white rounded-lg shadow-sm px-3 sm:px-4 py-2 border border-green-200 text-xs sm:text-sm">
                 <li class="inline-flex items-center">
-                    <a href="{{ route('client.dashboard') }}" class="inline-flex items-center text-sm font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200">
-                        <i class="fas fa-home mr-2 text-green-600"></i>
-                        Accueil
+                    <a href="{{ route('client.dashboard') }}" class="inline-flex items-center font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200">
+                        <i class="fas fa-home mr-1 sm:mr-2 text-green-600"></i>
+                        <span class="hidden sm:inline">Accueil</span>
+                        <span class="sm:hidden">Accueil</span>
                     </a>
                 </li>
                 <li>
                     <div class="flex items-center">
-                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                        <a href="{{ route('client.equipment-rental-requests.index') }}" class="text-sm font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200">Mes demandes</a>
+                        <i class="fas fa-chevron-right text-gray-400 mx-1 sm:mx-2"></i>
+                        <a href="{{ route('client.equipment-rental-requests.index') }}" class="font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200">
+                            <span class="hidden sm:inline">Mes demandes</span>
+                            <span class="sm:hidden">Demandes</span>
+                        </a>
                     </div>
                 </li>
                 <li aria-current="page">
                     <div class="flex items-center">
-                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                        <span class="text-sm font-semibold text-gray-500">Demande #{{ $request->id }}</span>
+                        <i class="fas fa-chevron-right text-gray-400 mx-1 sm:mx-2"></i>
+                        <span class="font-semibold text-gray-500">
+                            <span class="hidden sm:inline">Demande #{{ $request->id }}</span>
+                            <span class="sm:hidden">#{{ $request->id }}</span>
+                        </span>
                     </div>
                 </li>
             </ol>
         </nav>
 
         <!-- En-tête -->
-        <div class="bg-white rounded-xl shadow-lg border border-green-200 p-8 mb-8">
+        <div class="bg-white rounded-xl shadow-lg border border-green-200 p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                 <div class="flex-1">
                     <div class="flex items-center mb-4">
-                        <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-full mr-4 shadow-lg">
-                            <i class="fas fa-clipboard-list text-2xl text-green-600"></i>
+                        <div class="p-2 sm:p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-full mr-3 sm:mr-4 shadow-lg">
+                            <i class="fas fa-clipboard-list text-xl sm:text-2xl text-green-600"></i>
                         </div>
                         <div>
-                            <h1 class="text-3xl font-bold text-green-900">Demande #{{ $request->id }}</h1>
-                            <p class="text-green-700 font-medium">Demande de location d'équipement</p>
+                            <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-green-900">Demande #{{ $request->id }}</h1>
+                            <p class="text-sm sm:text-base text-green-700 font-medium">Demande de location d'équipement</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm">
                         <div class="flex items-center text-green-700">
                             <i class="fas fa-calendar-plus mr-2 text-green-600"></i>
                             <span class="font-medium">Créée le {{ $request->created_at->format('d/m/Y à H:i') }}</span>
@@ -82,8 +89,8 @@
                     </div>
                 </div>
                 
-                <div class="mt-6 lg:mt-0 lg:ml-8">
-                    <div class="flex flex-col sm:flex-row gap-3">
+                <div class="mt-4 sm:mt-6 lg:mt-0 lg:ml-8">
+                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
                         @if($request->status === 'pending')
                             <span class="inline-flex items-center px-4 py-3 rounded-full text-sm font-bold bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 shadow-lg">
                                 <i class="fas fa-clock mr-2"></i>

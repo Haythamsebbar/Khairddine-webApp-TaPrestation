@@ -11,7 +11,7 @@
                 <li class="inline-flex items-center">
                     <a href="{{ route('urgent-sales.index') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
                         <i class="fas fa-bolt mr-2"></i>
-                        Ventes urgentes
+                        Annonces
                     </a>
                 </li>
                 <li>
@@ -34,12 +34,6 @@
                                 <h1 class="text-3xl font-bold text-gray-900 mb-3">{{ $urgentSale->title }}</h1>
                                 
                                 <div class="flex flex-wrap items-center gap-3 mb-4">
-                                    @if($urgentSale->is_urgent)
-                                        <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                                            <i class="fas fa-bolt mr-1"></i>VENTE URGENTE
-                                        </span>
-                                    @endif
-                                    
                                     <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">
                                         {{ $urgentSale->condition_label }}
                                     </span>
@@ -132,11 +126,7 @@
                                                 <h3 class="font-semibold text-gray-900 mb-1 line-clamp-2">{{ $similar->title }}</h3>
                                                 <div class="text-blue-600 font-bold mb-1">{{ number_format($similar->price, 0, ',', ' ') }}€</div>
                                                 <div class="text-sm text-gray-600">{{ $similar->location }}</div>
-                                                @if($similar->is_urgent)
-                                                    <span class="inline-block bg-red-100 text-red-800 px-2 py-1 rounded text-xs font-semibold mt-1">
-                                                        <i class="fas fa-bolt mr-1"></i>URGENT
-                                                    </span>
-                                                @endif
+
                                             </div>
                                         </div>
                                     </a>
@@ -159,8 +149,8 @@
                                 <i class="fas fa-user text-gray-600 text-xl"></i>
                             </div>
                             <div>
-                                <h3 class="font-semibold text-gray-900">{{ $urgentSale->prestataire->user->name }}</h3>
-                                <p class="text-gray-600 text-sm">Prestataire événementiel</p>
+                                <h3 class="font-semibold text-gray-900">{{ $urgentSale->prestataire->user->name ?? 'Prestataire' }}</h3>
+                                <p class="text-gray-600 text-sm">Annonce</p>
                                 @if($urgentSale->prestataire->user->email_verified_at)
                                     <span class="inline-flex items-center text-green-600 text-sm">
                                         <i class="fas fa-check-circle mr-1"></i>Vérifié

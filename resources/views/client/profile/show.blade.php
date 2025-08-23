@@ -11,14 +11,14 @@
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
                                 @if($client->avatar)
-                                    <img class="h-20 w-20 rounded-full" src="{{ Storage::url($client->avatar) }}" alt="{{ $client->user->name }}">
+                                    <img class="h-20 w-20 rounded-full" src="{{ Storage::url($client->avatar) }}" alt="{{ $client->user->name ?? 'Client' }}">
                                 @else
                                     <div class="h-20 w-20 rounded-full bg-gray-300 flex items-center justify-center">
-                                        <span class="text-2xl font-medium text-gray-700">{{ substr($client->user->name, 0, 1) }}</span>
+                                        <span class="text-2xl font-medium text-gray-700">{{ $client->user->name ? substr($client->user->name, 0, 1) : 'C' }}</span>
                                     </div>
                                 @endif
                                 <div class="ml-6">
-                                    <h1 class="text-3xl font-bold text-gray-900">{{ $client->user->name }}</h1>
+                                    <h1 class="text-3xl font-bold text-gray-900">{{ $client->user->name ?? 'Client' }}</h1>
                                     <p class="text-lg text-gray-600">Client</p>
                                     @if($client->location)
                                         <p class="text-sm text-gray-500 mt-1">
@@ -108,15 +108,15 @@
                                             <div class="border border-gray-200 rounded-lg p-4">
                                                 <div class="flex items-start">
                                                     @if($review->prestataire->photo)
-                                                        <img class="h-10 w-10 rounded-full" src="{{ Storage::url($review->prestataire->photo) }}" alt="{{ $review->prestataire->user->name }}">
+                                                        <img class="h-10 w-10 rounded-full" src="{{ Storage::url($review->prestataire->photo) }}" alt="{{ $review->prestataire->user->name ?? 'Prestataire' }}">
                                                     @else
                                                         <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                                                            <span class="text-sm font-medium text-gray-700">{{ substr($review->prestataire->user->name, 0, 1) }}</span>
+                                                            <span class="text-sm font-medium text-gray-700">{{ $review->prestataire->user->name ? substr($review->prestataire->user->name, 0, 1) : 'P' }}</span>
                                                         </div>
                                                     @endif
                                                     <div class="ml-4 flex-1">
                                                         <div class="flex items-center justify-between">
-                                                            <h4 class="text-sm font-medium text-gray-900">{{ $review->prestataire->user->name }}</h4>
+                                                            <h4 class="text-sm font-medium text-gray-900">{{ $review->prestataire->user->name ?? 'Prestataire' }}</h4>
                                                             <div class="flex items-center">
                                                                 @for($i = 1; $i <= 5; $i++)
                                                                     <svg class="h-4 w-4 {{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
@@ -185,7 +185,7 @@
                                     <div class="px-4 py-5 sm:p-6">
                                         <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Contact</h3>
                                         <div class="space-y-3">
-                                            <a href="{{ route('prestataire.messaging.start-conversation-from-request', $client->user_id) }}" class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                            <a href="{{ route('messaging.start-conversation-from-request', $client->user_id) }}" class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                                 <i class="fas fa-envelope mr-2"></i>
                                                 Envoyer un message
                                             </a>

@@ -55,8 +55,8 @@
                     <!-- Boutons redessinés - plus plats et moins massifs -->
                     <div class="flex flex-col sm:flex-row gap-3">
                         <!-- Bouton de recherche supprimé -->
-                        <a href="{{ route('client.requests.create') }}" class="hero-button flex-1 bg-green-600 hover:bg-green-500 hover:shadow-lg text-white font-medium py-3 px-8 rounded-xl transition-all duration-300 text-center focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 border-b-2 border-green-700 hover:border-green-600 transform hover:-translate-y-0.5">
-                            <i class="fas fa-plus mr-2" aria-hidden="true"></i>Publier une demande de prestation
+                        <a href="{{ route('client.equipment-rental-requests.index') }}" class="hero-button flex-1 bg-green-600 hover:bg-green-500 hover:shadow-lg text-white font-medium py-3 px-8 rounded-xl transition-all duration-300 text-center focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 border-b-2 border-green-700 hover:border-green-600 transform hover:-translate-y-0.5">
+                            <i class="fas fa-plus mr-2" aria-hidden="true"></i>Publier une demande
                         </a>
                     </div>
                 </form>
@@ -175,7 +175,7 @@
             </p>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div class="text-center p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition duration-300">
                 <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <i class="fas fa-shield-alt text-2xl text-blue-600" aria-hidden="true"></i>
@@ -239,7 +239,7 @@
             </p>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($featuredPrestataires as $prestataire)
             <div class="bg-white rounded-xl shadow-lg p-6 text-center transform hover:-translate-y-2 transition-transform duration-300">
                 <div class="mb-4">

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 class UrgentSaleReportController extends Controller
 {
     /**
-     * Afficher la liste des signalements de ventes urgentes
+     * Afficher la liste des signalements d'annonces
      */
     public function index(Request $request)
     {

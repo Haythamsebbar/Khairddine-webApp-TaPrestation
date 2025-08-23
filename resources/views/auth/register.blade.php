@@ -421,16 +421,16 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="category_id" class="form-label">Catégorie de service *</label>
+                            <label for="category_id" class="form-label">Catégorie principale *</label>
                             <select id="category_id" name="category_id" required class="form-control">
-                                <option value="">Sélectionnez une catégorie</option>
+                                <option value="">Sélectionnez une catégorie principale</option>
                             </select>
                         </div>
                         
                         <div class="form-group" id="subcategory-group" style="display: none;">
-                            <label for="subcategory_id" class="form-label">Sous-catégorie *</label>
-                            <select id="subcategory_id" name="subcategory_id" class="form-control">
-                                <option value="">Sélectionnez une sous-catégorie</option>
+                            <label for="subcategory_id" class="form-label">Sous-catégorie</label>
+                            <select id="subcategory_id" name="subcategory_id" class="form-control" disabled>
+                                <option value="">Veuillez d'abord choisir une catégorie</option>
                             </select>
                         </div>
                         
@@ -687,20 +687,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Gestion des catégories pour prestataires
     const categorySelect = document.getElementById('category_id');
     const subcategorySelect = document.getElementById('subcategory_id');
-    const subcategoryGroup = document.getElementById('subcategory-group');
     
     // Charger les catégories principales
     if (categorySelect) {
         loadMainCategories();
         
+        // Gérer le changement de catégorie principale
         categorySelect.addEventListener('change', function() {
             const categoryId = this.value;
-            if (categoryId) {
-                loadSubcategories(categoryId);
-            } else {
-                subcategoryGroup.style.display = 'none';
-                subcategorySelect.innerHTML = '<option value="">Sélectionnez une sous-catégorie</option>';
-            }
+            loadSubcategories(categoryId);
         });
     }
     
@@ -921,7 +916,7 @@ function loadMainCategories() {
         .then(response => response.json())
         .then(categories => {
             const categorySelect = document.getElementById('category_id');
-            categorySelect.innerHTML = '<option value="">Sélectionnez une catégorie</option>';
+            categorySelect.innerHTML = '<option value="">Sélectionnez une catégorie principale</option>';
             
             categories.forEach(category => {
                 const option = document.createElement('option');
@@ -936,12 +931,19 @@ function loadMainCategories() {
 }
 
 function loadSubcategories(categoryId) {
+    const subcategorySelect = document.getElementById('subcategory_id');
+    const subcategoryGroup = document.getElementById('subcategory-group');
+    
+    if (!categoryId) {
+        subcategoryGroup.style.display = 'none';
+        subcategorySelect.disabled = true;
+        subcategorySelect.innerHTML = '<option value="">Veuillez d\'abord choisir une catégorie</option>';
+        return;
+    }
+    
     fetch(`/api/categories/${categoryId}/subcategories`)
         .then(response => response.json())
         .then(subcategories => {
-            const subcategorySelect = document.getElementById('subcategory_id');
-            const subcategoryGroup = document.getElementById('subcategory-group');
-            
             subcategorySelect.innerHTML = '<option value="">Sélectionnez une sous-catégorie</option>';
             
             if (subcategories.length > 0) {
@@ -952,16 +954,22 @@ function loadSubcategories(categoryId) {
                     subcategorySelect.appendChild(option);
                 });
                 subcategoryGroup.style.display = 'block';
+                subcategorySelect.disabled = false;
             } else {
-                subcategoryGroup.style.display = 'none';
+                subcategorySelect.innerHTML = '<option value="">Pas de sous-catégorie disponible</option>';
+                subcategoryGroup.style.display = 'block';
+                subcategorySelect.disabled = true;
             }
         })
         .catch(error => {
             console.error('Erreur lors du chargement des sous-catégories:', error);
-            const subcategoryGroup = document.getElementById('subcategory-group');
-            subcategoryGroup.style.display = 'none';
+            subcategorySelect.innerHTML = '<option value="">Erreur de chargement</option>';
+            subcategoryGroup.style.display = 'block';
+            subcategorySelect.disabled = true;
         });
 }
+
+
 
 // CSRF Token Refresh Function
 function refreshCSRFToken() {

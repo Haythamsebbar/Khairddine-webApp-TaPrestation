@@ -6,7 +6,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                    <a href="{{ route('client.messaging.index') }}" class="mr-4 text-gray-500 hover:text-gray-700">
+                    <a href="{{ route('messaging.index') }}" class="mr-4 text-gray-500 hover:text-gray-700">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                         </svg>
@@ -47,7 +47,7 @@
                                     <p class="text-xs {{ $message->sender_id == auth()->id() ? 'text-indigo-200' : 'text-gray-500' }} mt-1">
                                         {{ $message->created_at->format('d/m/Y H:i') }}
                                         @if($message->sender_id == auth()->id() && $message->read_at)
-                                            <span class="ml-1">✓ Lu</span>
+                                            <span class="ml-1">Lu</span>
                                         @endif
                                     </p>
                                 </div>
@@ -81,7 +81,7 @@
                             </div>
                         @endif
                         
-                        <form action="{{ route('client.messaging.store', $otherUser->id) }}" method="POST">
+                        <form action="{{ route('messaging.store', $otherUser->id) }}" method="POST">
                             @csrf
                             
                             

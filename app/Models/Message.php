@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\ClientRequest;
 
 class Message extends Model
 {
@@ -20,6 +21,7 @@ class Message extends Model
         'moderation_reason',
         'moderated_at',
         'moderated_by',
+        'client_request_id',
     ];
 
     protected $casts = [
@@ -44,7 +46,13 @@ class Message extends Model
         return $this->belongsTo(User::class, 'receiver_id');
     }
 
-    
+    /**
+     * Get the client request associated with this message.
+     */
+    public function clientRequest(): BelongsTo
+    {
+        return $this->belongsTo(ClientRequest::class, 'client_request_id');
+    }
 
     /**
      * Get the moderator who moderated this message.

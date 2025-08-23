@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Validator;
 class UrgentSaleController extends Controller
 {
     /**
-     * Afficher la liste des ventes urgentes
+     * Afficher la liste des annonces
      */
     public function index(Request $request)
     {

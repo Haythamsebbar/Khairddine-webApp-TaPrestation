@@ -9,12 +9,12 @@
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900 mb-2">📋 Demandes de location</h1>
+                    <h1 class="text-2xl font-bold text-gray-900 mb-2">Demandes de location</h1>
                     <p class="text-gray-600">Gérez les demandes de location de vos équipements</p>
                 </div>
                 <a href="{{ route('prestataire.equipment.index') }}" 
                    class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors duration-200">
-                    🔧 Mes équipements
+                    Mes équipements
                 </a>
             </div>
         </div>
@@ -80,7 +80,18 @@
 
         <!-- Filtres -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <form method="GET" action="{{ route('prestataire.equipment-rental-requests.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div class="text-center sm:text-left">
+                    <h2 class="text-lg sm:text-xl font-semibold text-gray-700 mb-1">Filtrer les demandes</h2>
+                    <p class="text-sm text-gray-600">Affinez votre recherche pour trouver les demandes spécifiques</p>
+                </div>
+                <button type="button" id="toggleFilters" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center text-sm sm:text-base">
+                    <span id="filterButtonText">Afficher les filtres</span>
+                    <i class="fas fa-chevron-down ml-2" id="filterChevron"></i>
+                </button>
+            </div>
+            
+            <form method="GET" action="{{ route('prestataire.equipment-rental-requests.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4" id="filtersForm" style="display: none;">
                 <div>
                     <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Recherche</label>
                     <input type="text" id="search" name="search" value="{{ request('search') }}"
@@ -112,7 +123,7 @@
                 
                 <div class="flex items-end">
                     <button type="submit" class="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors duration-200">
-                        🔍 Filtrer
+                        Filtrer
                     </button>
                 </div>
             </form>
@@ -155,8 +166,8 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">{{ $request->equipment->name }}</div>
-                                <div class="text-sm text-gray-500">{{ $request->equipment->brand }} {{ $request->equipment->model }}</div>
+                                <div class="text-sm font-medium text-gray-900">{{ $request->equipment->name ?? 'Équipement supprimé' }}</div>
+                                <div class="text-sm text-gray-500">{{ $request->equipment ? ($request->equipment->brand . ' ' . $request->equipment->model) : 'N/A' }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-900">
@@ -191,7 +202,7 @@
                                 <div class="flex items-center space-x-2">
                                     <a href="{{ route('prestataire.equipment-rental-requests.show', $request) }}" 
                                        class="text-green-600 hover:text-green-900 transition-colors duration-200">
-                                        👁️
+                                        Voir
                                     </a>
                                     
                                     @if($request->status === 'pending')
@@ -201,7 +212,7 @@
                                         <button type="submit" 
                                                 class="text-green-600 hover:text-green-900 transition-colors duration-200"
                                                 onclick="return confirm('Accepter cette demande de location ?')">
-                                            ✅
+                                            Accepter
                                         </button>
                                     </form>
                                     
@@ -211,7 +222,7 @@
                                         <button type="submit" 
                                                 class="text-red-600 hover:text-red-900 transition-colors duration-200"
                                                 onclick="return confirm('Refuser cette demande de location ?')">
-                                            ❌
+                                            Refuser
                                         </button>
                                     </form>
                                     @endif
@@ -241,13 +252,42 @@
             <p class="text-gray-600 mb-6">Vous n'avez pas encore reçu de demandes de location pour vos équipements.</p>
             <a href="{{ route('prestataire.equipment.index') }}" 
                class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors duration-200">
-                🔧 Gérer mes équipements
+                Gérer mes équipements
             </a>
         </div>
         @endif
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleButton = document.getElementById('toggleFilters');
+        const filtersForm = document.getElementById('filtersForm');
+        const buttonText = document.getElementById('filterButtonText');
+        const chevron = document.getElementById('filterChevron');
+        
+        let filtersVisible = false;
+        
+        toggleButton.addEventListener('click', function() {
+            filtersVisible = !filtersVisible;
+            
+            if (filtersVisible) {
+                filtersForm.style.display = 'grid';
+                buttonText.textContent = 'Masquer les filtres';
+                chevron.classList.remove('fa-chevron-down');
+                chevron.classList.add('fa-chevron-up');
+            } else {
+                filtersForm.style.display = 'none';
+                buttonText.textContent = 'Afficher les filtres';
+                chevron.classList.remove('fa-chevron-up');
+                chevron.classList.add('fa-chevron-down');
+            }
+        });
+    });
+</script>
+@endpush
 
 @push('scripts')
 <script>

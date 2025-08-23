@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Equipment;
-use App\Models\EquipmentCategory;
+use App\Models\Category;
 use App\Models\EquipmentReport;
 use App\Models\EquipmentReview;
 use App\Models\EquipmentRental;
@@ -36,7 +36,7 @@ class EquipmentController extends Controller
         ];
         
         // Équipements récemment ajoutés
-        $recentEquipment = Equipment::with(['prestataire.user', 'categories'])
+        $recentEquipment = Equipment::with(['prestataire.user', 'category', 'subcategory'])
                                   ->latest()
                                   ->limit(5)
                                   ->get();
@@ -79,7 +79,7 @@ class EquipmentController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Equipment::with(['prestataire.user', 'categories']);
+        $query = Equipment::with(['prestataire.user', 'category', 'subcategory']);
         
         // Filtres
         if ($request->filled('status')) {
@@ -91,8 +91,9 @@ class EquipmentController extends Controller
         }
         
         if ($request->filled('category')) {
-            $query->whereHas('categories', function ($q) use ($request) {
-                $q->where('equipment_categories.id', $request->category);
+            $query->where(function ($q) use ($request) {
+                $q->where('category_id', $request->category)
+                  ->orWhere('subcategory_id', $request->category);
             });
         }
         
@@ -154,7 +155,7 @@ class EquipmentController extends Controller
         $equipment = $query->paginate(20)->withQueryString();
         
         // Données pour les filtres
-        $categories = EquipmentCategory::active()->main()->get(['id', 'name']);
+        $categories = \App\Models\Category::whereNull('parent_id')->get(['id', 'name']);
         
         return view('admin.equipment.index', compact('equipment', 'categories'));
     }
@@ -355,7 +356,8 @@ class EquipmentController extends Controller
     {
         $report->load([
             'equipment.prestataire.user',
-            'equipment.categories'
+            'equipment.category',
+            'equipment.subcategory'
         ]);
         
         return view('admin.equipment.reports.show', compact('report'));
@@ -451,7 +453,7 @@ class EquipmentController extends Controller
             'total_equipment' => Equipment::count(),
             'active_equipment' => Equipment::active()->count(),
             'total_prestataires' => Equipment::distinct('prestataire_id')->count(),
-            'total_categories' => EquipmentCategory::count(),
+            'total_categories' => \App\Models\Category::count(),
             'total_rentals' => EquipmentRental::count(),
             'total_revenue' => EquipmentRental::where('payment_status', 'paid')->sum('final_amount'),
             'average_rating' => EquipmentReview::avg('overall_rating'),
@@ -480,10 +482,16 @@ class EquipmentController extends Controller
         ];
         
         // Top catégories
-        $topCategories = EquipmentCategory::withCount('equipment')
-                                         ->orderBy('equipment_count', 'desc')
-                                         ->limit(10)
-                                         ->get();
+        $topCategories = \App\Models\Category::whereNull('parent_id')
+                                             ->withCount(['equipmentsAsCategory', 'equipmentsAsSubcategory'])
+                                             ->get()
+                                             ->map(function ($category) {
+                                                 $category->equipment_count = $category->equipments_as_category_count + $category->equipments_as_subcategory_count;
+                                                 return $category;
+                                             })
+                                             ->sortByDesc('equipment_count')
+                                             ->take(10)
+                                             ->values();
         
         // Top prestataires
         $topPrestataires = DB::table('prestataires')
@@ -539,7 +547,7 @@ class EquipmentController extends Controller
     
     private function exportEquipment(Request $request)
     {
-        $equipment = Equipment::with(['prestataire.user', 'categories'])->get();
+        $equipment = Equipment::with(['prestataire.user', 'category', 'subcategory'])->get();
         
         $filename = 'equipements_' . now()->format('Y-m-d') . '.csv';
         

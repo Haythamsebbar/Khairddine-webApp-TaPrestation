@@ -57,13 +57,13 @@
                                 </h3>
                                 <div class="flex items-center">
                                     @for($i = 1; $i <= 5; $i++)
-                                        <span class="text-lg {{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-300' }}">★</span>
+                                        <span class="text-lg {{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-300' }}">*</span>
                                     @endfor
                                     <span class="ml-2 text-sm text-gray-600">{{ $review->rating }}/5</span>
                                 </div>
                                 @if($review->verified)
                                 <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
-                                    ✓ Vérifié
+                                    Vérifié
                                 </span>
                                 @endif
                             </div>
@@ -80,11 +80,11 @@
                         <div class="flex space-x-2">
                             <button onclick="moderateReview({{ $review->id }}, 'approved')" 
                                     class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm transition duration-200">
-                                ✓ Approuver
+                                Approuver
                             </button>
                             <button onclick="moderateReview({{ $review->id }}, 'rejected')" 
                                     class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm transition duration-200">
-                                ✗ Rejeter
+                                Rejeter
                             </button>
                         </div>
                     </div>
@@ -142,7 +142,7 @@
                                      class="w-20 h-20 object-cover rounded-lg shadow-md group-hover:shadow-lg transition duration-200">
                                 <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-lg transition duration-200 flex items-center justify-center">
                                     <span class="text-white opacity-0 group-hover:opacity-100 transition duration-200 text-xs">
-                                        🔍
+                                        Rechercher
                                     </span>
                                 </div>
                             </div>
@@ -180,7 +180,7 @@
         </div>
         @else
         <div class="text-center py-12">
-            <div class="text-gray-400 text-6xl mb-4">✅</div>
+            <div class="text-gray-400 text-6xl mb-4">OK</div>
             <h3 class="text-xl font-semibold text-gray-600 mb-2">Aucun avis en attente</h3>
             <p class="text-gray-500">Tous les avis ont été modérés.</p>
         </div>

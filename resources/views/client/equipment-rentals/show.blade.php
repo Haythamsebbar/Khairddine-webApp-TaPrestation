@@ -29,7 +29,7 @@
             <div class="flex flex-col md:flex-row md:items-center md:justify-between">
                 <div>
                     <h1 class="text-2xl font-bold text-gray-900 mb-2">
-                        📦 Location #{{ $rental->id }}
+                        Location #{{ $rental->id }}
                     </h1>
                     <div class="flex items-center space-x-4">
                         @if($rental->status === 'pending')
@@ -38,15 +38,15 @@
                         </span>
                         @elseif($rental->status === 'active')
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                            ✅ En cours
+                            En cours
                         </span>
                         @elseif($rental->status === 'completed')
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                            🏁 Terminée
+                            Terminée
                         </span>
                         @elseif($rental->status === 'cancelled')
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
-                            ❌ Annulée
+                            Annulée
                         </span>
                         @endif
                         
@@ -64,7 +64,7 @@
                         @csrf
                         <button type="submit" 
                                 class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors duration-200">
-                            📦 Confirmer réception
+                            Confirmer réception
                         </button>
                     </form>
                     @endif
@@ -76,7 +76,7 @@
                         @csrf
                         <button type="submit" 
                                 class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200">
-                            📤 Confirmer retour
+                            Confirmer retour
                         </button>
                     </form>
                     @endif
@@ -96,7 +96,7 @@
             <div class="lg:col-span-2 space-y-6">
                 <!-- Informations de l'équipement -->
                 <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4">🔧 Équipement loué</h2>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Équipement loué</h2>
                     <div class="flex items-start space-x-4">
                         <div class="flex-shrink-0">
                             @if($rental->equipment->photos && count($rental->equipment->photos) > 0)
@@ -132,7 +132,7 @@
                 
                 <!-- Détails de la location -->
                 <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4">📅 Détails de la location</h2>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Détails de la location</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <h3 class="font-medium text-gray-900 mb-3">Période de location</h3>
@@ -164,34 +164,12 @@
                             </div>
                         </div>
                         
-                        <div>
-                            <h3 class="font-medium text-gray-900 mb-3">Options de livraison</h3>
-                            <div class="space-y-2 text-sm">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">Livraison:</span>
-                                    <span class="font-medium">
-                                        @if($rental->delivery_required)
-                                        <span class="text-green-600">✅ Oui</span>
-                                        @else
-                                        <span class="text-gray-500">❌ Non</span>
-                                        @endif
-                                    </span>
-                                </div>
-                                @if($rental->delivery_required)
-                                <div class="mt-3">
-                                    <span class="text-gray-600 block mb-1">Adresse de livraison:</span>
-                                    <div class="bg-gray-50 p-3 rounded-lg text-sm">
-                                        {{ $rental->delivery_address }}
-                                    </div>
-                                </div>
-                                @endif
-                            </div>
-                        </div>
+
                     </div>
                     
                     @if($rental->notes)
                     <div class="mt-6">
-                        <h3 class="font-medium text-gray-900 mb-3">📝 Notes</h3>
+                        <h3 class="font-medium text-gray-900 mb-3">Notes</h3>
                         <div class="bg-gray-50 p-4 rounded-lg text-sm text-gray-700">
                             {{ $rental->notes }}
                         </div>
@@ -202,7 +180,7 @@
                 <!-- Problèmes signalés -->
                 @if($rental->issues->count() > 0)
                 <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4">⚠️ Problèmes signalés</h2>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Problèmes signalés</h2>
                     <div class="space-y-4">
                         @foreach($rental->issues as $issue)
                         <div class="border border-red-200 rounded-lg p-4 bg-red-50">
@@ -254,7 +232,7 @@
                 
                 <!-- Historique -->
                 <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4">📋 Historique</h2>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Historique</h2>
                     <div class="space-y-4">
                         <div class="flex items-start space-x-3">
                             <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
@@ -301,19 +279,14 @@
             <div class="space-y-6">
                 <!-- Récapitulatif financier -->
                 <div class="bg-white rounded-lg shadow-md p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">💰 Récapitulatif</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Récapitulatif</h3>
                     <div class="space-y-3 text-sm">
                         <div class="flex justify-between">
                             <span class="text-gray-600">Location ({{ $rental->duration_days }} jour{{ $rental->duration_days > 1 ? 's' : '' }}):</span>
                             <span class="font-medium">{{ number_format($rental->rental_amount, 0) }}€</span>
                         </div>
                         
-                        @if($rental->delivery_cost > 0)
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Livraison:</span>
-                            <span class="font-medium">{{ number_format($rental->delivery_cost, 0) }}€</span>
-                        </div>
-                        @endif
+
                         
                         @if($rental->equipment->deposit_amount > 0)
                         <div class="flex justify-between">
@@ -340,7 +313,7 @@
                 
                 <!-- Informations du prestataire -->
                 <div class="bg-white rounded-lg shadow-md p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">👤 Prestataire</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Prestataire</h3>
                     <div class="flex items-start space-x-3">
                         <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                             <span class="text-blue-600 font-bold">
@@ -360,13 +333,13 @@
                     <div class="mt-4 space-y-2">
                         <a href="mailto:{{ $rental->equipment->prestataire->email }}" 
                            class="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors duration-200 text-center block">
-                            📧 Contacter par email
+                            Contacter par email
                         </a>
                         
                         @if($rental->equipment->prestataire->phone)
                         <a href="tel:{{ $rental->equipment->prestataire->phone }}" 
                            class="w-full px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors duration-200 text-center block">
-                            📞 Appeler
+                            Appeler
                         </a>
                         @endif
                     </div>
@@ -374,17 +347,17 @@
                 
                 <!-- Actions rapides -->
                 <div class="bg-white rounded-lg shadow-md p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">⚡ Actions rapides</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Actions rapides</h3>
                     <div class="space-y-3">
                         <a href="{{ route('equipment.show', $rental->equipment) }}" 
                            class="w-full px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-colors duration-200 text-center block">
-                            🔧 Voir l'équipement
+                            Voir l'équipement
                         </a>
                         
                         @if($rental->status === 'active')
                         <button onclick="openIssueModal()" 
                                 class="w-full px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors duration-200">
-                            ⚠️ Signaler un problème
+                            Signaler un problème
                         </button>
                         @endif
                         
@@ -463,7 +436,7 @@
 <div id="issueModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
     <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
         <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">⚠️ Signaler un problème</h3>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Signaler un problème</h3>
             <form method="POST" action="{{ route('client.equipment-rentals.report-issue', $rental) }}">
                 @csrf
                 <div class="mb-4">
@@ -513,7 +486,7 @@
         <img id="modalPhoto" src="" alt="" class="max-w-full max-h-full object-contain">
         <button onclick="closePhotoModal()" 
                 class="absolute top-4 right-4 text-white text-2xl hover:text-gray-300">
-            ✕
+            Fermer
         </button>
     </div>
 </div>

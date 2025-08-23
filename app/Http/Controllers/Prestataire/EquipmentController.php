@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Prestataire;
 
 use App\Http\Controllers\Controller;
 use App\Models\Equipment;
-use App\Models\EquipmentCategory;
+
 use App\Models\EquipmentRentalRequest;
 use App\Models\EquipmentRental;
 use App\Models\EquipmentReview;
@@ -28,7 +28,7 @@ class EquipmentController extends Controller
         
         
         $query = $prestataire->equipments()
-                            ->with(['categories', 'rentalRequests', 'rentals'])
+                            ->with(['category', 'subcategory', 'rentalRequests', 'rentals'])
                             ->withCount(['rentalRequests', 'rentals', 'reviews']);
         
         // Filtres
@@ -37,8 +37,9 @@ class EquipmentController extends Controller
         }
         
         if ($request->filled('category')) {
-            $query->whereHas('categories', function ($q) use ($request) {
-                $q->where('equipment_categories.id', $request->category);
+            $query->where(function ($q) use ($request) {
+                $q->where('category_id', $request->category)
+                  ->orWhere('subcategory_id', $request->category);
             });
         }
         
@@ -71,7 +72,7 @@ class EquipmentController extends Controller
         }
         
         $equipment = $query->paginate(12);
-        $categories = EquipmentCategory::active()->main()->with('children')->get();
+        $categories = \App\Models\Category::whereNull('parent_id')->with('children')->orderBy('name')->get();
 
         $rentalRequests = $prestataire->equipmentRentalRequests()
             ->with(['equipment', 'client.user'])
@@ -95,21 +96,177 @@ class EquipmentController extends Controller
      */
     public function create()
     {
-        $categories = EquipmentCategory::with('children')->get();
+        $categories = \App\Models\Category::whereNull('parent_id')->with('children')->orderBy('name')->get();
         return view('prestataire.equipment.create', compact('categories'));
     }
 
     /**
-     * Enregistre un nouvel équipement
+     * Étape 1 : Informations de base
      */
-    public function store(StoreEquipmentRequest $request, EquipmentService $equipmentService)
+    public function createStep1()
+    {
+        $categories = \App\Models\Category::whereNull('parent_id')->with('children')->orderBy('name')->get();
+        return view('prestataire.equipment.create-step1', compact('categories'));
+    }
+
+    public function storeStep1(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string|min:50',
+            'technical_specifications' => 'nullable|string',
+            'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'nullable|exists:categories,id',
+        ]);
+
+        session(['equipment_step1' => $validated]);
+        return redirect()->route('prestataire.equipment.create.step2');
+    }
+
+    /**
+     * Étape 2 : Tarifs et conditions
+     */
+    public function createStep2()
+    {
+        if (!session('equipment_step1')) {
+            return redirect()->route('prestataire.equipment.create.step1')
+                           ->with('error', 'Veuillez d\'abord compléter l\'étape 1.');
+        }
+        return view('prestataire.equipment.create-step2');
+    }
+
+    public function storeStep2(Request $request)
+    {
+        $validated = $request->validate([
+            'price_per_hour' => 'nullable|numeric|min:0',
+            'price_per_day' => 'required|numeric|min:1',
+            'price_per_week' => 'nullable|numeric|min:0',
+            'price_per_month' => 'nullable|numeric|min:0',
+            'security_deposit' => 'required|numeric|min:0',
+            'condition' => 'required|in:excellent,very_good,good,fair,poor',
+            'delivery_included' => 'boolean',
+            'license_required' => 'boolean',
+            'is_available' => 'boolean',
+            'available_from' => 'nullable|date',
+            'available_until' => 'nullable|date|after_or_equal:available_from',
+            'rental_conditions' => 'nullable|string',
+        ]);
+
+        session(['equipment_step2' => $validated]);
+        return redirect()->route('prestataire.equipment.create.step3');
+    }
+
+    /**
+     * Étape 3 : Photos
+     */
+    public function createStep3()
+    {
+        if (!session('equipment_step1') || !session('equipment_step2')) {
+            return redirect()->route('prestataire.equipment.create.step1')
+                           ->with('error', 'Veuillez compléter les étapes précédentes.');
+        }
+        return view('prestataire.equipment.create-step3');
+    }
+
+    public function storeStep3(Request $request)
+    {
+        $validated = $request->validate([
+            'main_photo' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
+        ]);
+
+        // Stocker temporairement l'image
+        $tempImagePath = null;
+        if ($request->hasFile('main_photo')) {
+            $tempImagePath = $request->file('main_photo')->store('temp_equipment_photos', 'public');
+        }
+
+        // Ne pas stocker l'objet UploadedFile dans la session, seulement le chemin
+        session(['equipment_step3' => ['temp_image_path' => $tempImagePath]]);
+        return redirect()->route('prestataire.equipment.create.step4');
+    }
+
+    /**
+     * Étape 4 : Localisation et résumé
+     */
+    public function createStep4()
+    {
+        if (!session('equipment_step1') || !session('equipment_step2') || !session('equipment_step3')) {
+            return redirect()->route('prestataire.equipment.create.step1')
+                           ->with('error', 'Veuillez compléter les étapes précédentes.');
+        }
+
+        // Récupérer les noms des catégories pour l'affichage
+        $step1 = session('equipment_step1');
+        $categoryName = null;
+        $subcategoryName = null;
+
+        if ($step1['category_id']) {
+            $category = \App\Models\Category::find($step1['category_id']);
+            $categoryName = $category ? $category->name : null;
+        }
+
+        if ($step1['subcategory_id']) {
+            $subcategory = \App\Models\Category::find($step1['subcategory_id']);
+            $subcategoryName = $subcategory ? $subcategory->name : null;
+        }
+
+        return view('prestataire.equipment.create-step4', compact('categoryName', 'subcategoryName'));
+    }
+
+    /**
+     * Enregistre un nouvel équipement (version multi-étapes)
+     */
+    public function store(Request $request)
     {
         $prestataire = Auth::user()->prestataire;
         if (!$prestataire) {
             return redirect()->back()->with('error', 'Vous devez être un prestataire pour ajouter un équipement.');
         }
 
-        $equipment = $equipmentService->createEquipment($request->validated());
+        // Validation de l'étape 4
+        $step4Validated = $request->validate([
+            'address' => 'nullable|string|max:255',
+            'city' => 'required|string|max:100',
+            'country' => 'required|string|max:100',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
+        ]);
+
+        // Récupérer toutes les données des sessions
+        $step1 = session('equipment_step1');
+        $step2 = session('equipment_step2');
+        $step3 = session('equipment_step3');
+
+        if (!$step1 || !$step2 || !$step3) {
+            return redirect()->route('prestataire.equipment.create.step1')
+                           ->with('error', 'Données de session manquantes. Veuillez recommencer.');
+        }
+
+        // Combiner toutes les données
+        $allData = array_merge($step1, $step2, $step4Validated);
+
+        // Gérer l'image principale
+        if (isset($step3['temp_image_path'])) {
+            // Déplacer l'image temporaire vers le dossier final
+            $tempPath = $step3['temp_image_path'];
+            $finalPath = str_replace('temp_equipment_photos/', 'equipment_photos/', $tempPath);
+            
+            if (Storage::disk('public')->exists($tempPath)) {
+                Storage::disk('public')->move($tempPath, $finalPath);
+                $allData['main_photo'] = $finalPath;
+            }
+        }
+
+        // Générer un slug unique
+        $allData['slug'] = $this->generateUniqueSlug($allData['name']);
+        $allData['prestataire_id'] = $prestataire->id;
+        $allData['status'] = 'active';
+
+        // Créer l'équipement
+        $equipment = Equipment::create($allData);
+
+        // Nettoyer les sessions
+        session()->forget(['equipment_step1', 'equipment_step2', 'equipment_step3']);
 
         return redirect()->route('prestataire.equipment.show', $equipment)
                         ->with('success', 'Équipement ajouté avec succès!');
@@ -123,7 +280,8 @@ class EquipmentController extends Controller
         // $this->authorize('view', $equipment);
         
         $equipment->load([
-            'categories',
+            'category',
+            'subcategory',
             'rentalRequests' => function ($query) {
                 $query->latest()->with('client.user');
             },
@@ -156,10 +314,8 @@ class EquipmentController extends Controller
     {
         // $this->authorize('update', $equipment);
         
-        $categories = EquipmentCategory::active()->main()->with('children')->get();
-        $selectedCategories = $equipment->categories->pluck('id')->toArray();
-        
-        return view('prestataire.equipment.edit', compact('equipment', 'categories', 'selectedCategories'));
+        $categories = \App\Models\Category::whereNull('parent_id')->with('children')->orderBy('name')->get();
+        return view('prestataire.equipment.edit', compact('equipment', 'categories'));
     }
     
     /**
@@ -173,8 +329,8 @@ class EquipmentController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string|min:50',
             'technical_specifications' => 'nullable|string',
-            'categories' => 'required|array|min:1',
-            'categories.*' => 'exists:equipment_categories,id',
+            'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'nullable|exists:categories,id',
             'photos' => 'nullable|array|max:5',
             'photos.*' => 'image|mimes:jpeg,png,webp|max:5120',
             'main_photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
@@ -193,8 +349,7 @@ class EquipmentController extends Controller
             'price_per_week' => 'nullable|numeric|min:0',
             'price_per_month' => 'nullable|numeric|min:0',
             'deposit_amount' => 'required|numeric|min:0',
-            'delivery_cost' => 'nullable|numeric|min:0',
-            'delivery_available' => 'boolean',
+
             
             // État et disponibilité
             'condition' => 'required|in:new,excellent,very_good,good,fair,poor',
@@ -208,7 +363,7 @@ class EquipmentController extends Controller
             'city' => 'required|string|max:100',
             'postal_code' => 'nullable|string|max:10',
             'country' => 'required|string|max:100',
-            'delivery_radius' => 'nullable|integer|min:0|max:200',
+
             
             // Conditions de location
             'minimum_rental_days' => 'nullable|integer|min:1',
@@ -260,7 +415,13 @@ class EquipmentController extends Controller
         $equipment->update($validated);
         
         // Mise à jour des catégories
-        $equipment->categories()->sync($validated['categories']);
+        $equipment->category_id = $validated['category_id'];
+        if (isset($validated['subcategory_id']) && !empty($validated['subcategory_id'])) {
+            $equipment->subcategory_id = $validated['subcategory_id'];
+        } else {
+            $equipment->subcategory_id = null;
+        }
+        $equipment->save();
         
         return redirect()->route('prestataire.equipment.show', $equipment)
                         ->with('success', 'Équipement mis à jour avec succès!');
@@ -329,7 +490,9 @@ class EquipmentController extends Controller
         $newEquipment->save();
         
         // Copier les catégories
-        $newEquipment->categories()->attach($equipment->categories->pluck('id'));
+        $newEquipment->category_id = $equipment->category_id;
+        $newEquipment->subcategory_id = $equipment->subcategory_id;
+        $newEquipment->save();
         
         return redirect()->route('prestataire.equipment.edit', $newEquipment)
                         ->with('success', 'Équipement dupliqué avec succès!');

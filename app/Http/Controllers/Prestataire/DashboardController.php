@@ -40,7 +40,7 @@ class DashboardController extends Controller
             ->whereYear('completed_at', now()->year)
             ->sum('total_amount');
         
-        // Statistiques pour les ventes urgentes
+        // Statistiques pour les annonces
         $urgentSalesCount = UrgentSale::where('prestataire_id', $prestataire->id)
             ->where('status', 'active')
             ->count();

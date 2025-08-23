@@ -91,7 +91,7 @@ class EquipmentRentalController extends Controller
         $stats = [
             'total' => EquipmentRental::where('client_id', Auth::user()->client->id)->count(),
             'active' => EquipmentRental::where('client_id', Auth::user()->client->id)
-                                     ->whereIn('status', ['confirmed', 'in_preparation', 'delivered'])
+                                     ->whereIn('status', ['confirmed', 'in_preparation'])
                                      ->count(),
             'completed' => EquipmentRental::where('client_id', Auth::user()->client->id)
                                         ->where('status', 'completed')
@@ -130,47 +130,7 @@ class EquipmentRentalController extends Controller
         return view('client.equipment.rentals.show', compact('rental'));
     }
     
-    /**
-     * Confirme la réception de l'équipement
-     */
-    public function confirmDelivery(Request $request, EquipmentRental $rental)
-    {
-        // if ($rental->client_id !== Auth::user()->client->id) {
-        //     abort(403);
-        // }
-        
-        if ($rental->rental_status !== 'delivered') {
-            return back()->with('error', 'Cette location ne peut pas être confirmée.');
-        }
-        
-        $validated = $request->validate([
-            'delivery_condition_photos' => 'nullable|array|max:5',
-            'delivery_condition_photos.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
-            'delivery_notes' => 'nullable|string|max:1000',
-            'client_signature' => 'nullable|string'
-        ]);
-        
-        // Gestion des photos de condition à la livraison
-        $conditionPhotos = [];
-        if ($request->hasFile('delivery_condition_photos')) {
-            foreach ($request->file('delivery_condition_photos') as $photo) {
-                $conditionPhotos[] = $photo->store('rentals/delivery-condition', 'public');
-            }
-        }
-        
-        $rental->update([
-            'rental_status' => 'in_progress',
-            'actual_start_date' => now(),
-            'delivery_condition_photos' => array_merge($rental->delivery_condition_photos ?? [], $conditionPhotos),
-            'delivery_notes' => $validated['delivery_notes'],
-            'client_signature' => $validated['client_signature'],
-            'delivery_confirmed_at' => now()
-        ]);
-        
-        // TODO: Envoyer notification au prestataire
-        
-        return back()->with('success', 'Réception de l\'équipement confirmée!');
-    }
+
     
     /**
      * Signale un problème avec l'équipement
@@ -181,7 +141,7 @@ class EquipmentRentalController extends Controller
         //     abort(403);
         // }
         
-        if (!in_array($rental->rental_status, ['in_progress', 'delivered'])) {
+        if (!in_array($rental->rental_status, ['in_progress'])) {
             return back()->with('error', 'Vous ne pouvez signaler un problème que pendant la location.');
         }
         
@@ -232,7 +192,7 @@ class EquipmentRentalController extends Controller
             abort(403);
         }
         
-        if (!in_array($rental->rental_status, ['in_progress', 'delivered'])) {
+        if (!in_array($rental->rental_status, ['in_progress'])) {
             return back()->with('error', 'Vous ne pouvez demander une prolongation que pendant la location.');
         }
         

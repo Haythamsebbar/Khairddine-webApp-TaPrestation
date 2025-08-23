@@ -3,27 +3,27 @@
 namespace App\Http\Controllers\Prestataire;
 
 use App\Http\Controllers\Controller;
-use App\Models\EquipmentCategory;
 use App\Models\UrgentSale;
 use App\Models\UrgentSaleContact;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class UrgentSaleController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Afficher la liste des ventes urgentes du prestataire
      */
     public function index(Request $request)
     {
         $prestataire = Auth::user()->prestataire;
         
-        $query = UrgentSale::where('prestataire_id', $prestataire->id)
-            ->with(['contacts' => function($q) {
-                $q->pending()->recent();
-            }]);
+        $query = $prestataire->urgentSales()
+                            ->with(['category', 'contacts'])
+                            ->withCount(['contacts', 'reports']);
         
         // Filtres
         if ($request->filled('status')) {
@@ -31,161 +31,171 @@ class UrgentSaleController extends Controller
         }
         
         if ($request->filled('search')) {
-            $query->where('title', 'like', '%' . $request->search . '%');
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('description', 'like', '%' . $request->search . '%');
+            });
         }
         
         $urgentSales = $query->latest()->paginate(12);
         
         // Statistiques
         $stats = [
-            'total' => UrgentSale::where('prestataire_id', $prestataire->id)->count(),
-            'active' => UrgentSale::where('prestataire_id', $prestataire->id)->where('status', 'active')->count(),
-            'sold' => UrgentSale::where('prestataire_id', $prestataire->id)->where('status', 'sold')->count(),
-            'total_views' => UrgentSale::where('prestataire_id', $prestataire->id)->sum('views_count'),
-            'total_contacts' => UrgentSale::where('prestataire_id', $prestataire->id)->sum('contact_count'),
-            'pending_contacts' => UrgentSaleContact::whereHas('urgentSale', function($q) use ($prestataire) {
-                $q->where('prestataire_id', $prestataire->id);
-            })->pending()->count()
+            'total' => $prestataire->urgentSales()->count(),
+            'active' => $prestataire->urgentSales()->where('status', 'active')->count(),
+            'sold' => $prestataire->urgentSales()->where('status', 'sold')->count(),
+            'inactive' => $prestataire->urgentSales()->where('status', 'inactive')->count(),
+            'total_views' => $prestataire->urgentSales()->sum('views_count'),
+            'total_contacts' => $prestataire->urgentSales()->withCount('contacts')->get()->sum('contacts_count'),
         ];
         
         return view('prestataire.urgent-sales.index', compact('urgentSales', 'stats'));
     }
-
+    
     /**
-     * Show the form for creating a new resource.
+     * Afficher le formulaire de création
      */
     public function create()
     {
-        $categories = EquipmentCategory::with('children')->get();
+        $categories = Category::whereNull('parent_id')
+                            ->where('is_active', true)
+                            ->with(['children' => function($query) {
+                                $query->where('is_active', true)->orderBy('name');
+                            }])
+                            ->orderBy('name')
+                            ->get();
+        
         return view('prestataire.urgent-sales.create', compact('categories'));
     }
-
+    
     /**
-     * Store a newly created resource in storage.
+     * Enregistrer une nouvelle vente urgente
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:255',
-            'description' => 'required|string|max:2000',
-            'price' => 'required|numeric|min:0',
-            'condition' => 'required|in:new,good,used,fair',
-            'category_id' => 'required|exists:equipment_categories,id',
-            'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'quantity' => 'nullable|integer|min:1',
-            'location' => 'nullable|string|max:255',
-            'latitude' => 'nullable|numeric|between:-90,90',
-            'longitude' => 'nullable|numeric|between:-180,180',
-            'is_urgent' => 'boolean'
-        ]);
-        
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
-        
         $prestataire = Auth::user()->prestataire;
+        
+        $request->validate([
+            'title' => 'required|string|min:10|max:255',
+            'description' => 'required|string|min:50|max:2000',
+            'price' => 'required|numeric|min:0',
+            'condition' => 'required|in:excellent,very_good,good,fair,poor',
+            'parent_category_id' => 'required|exists:categories,id',
+            'category_id' => 'nullable|exists:categories,id',
+            'quantity' => 'required|integer|min:1',
+            'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
+            'location' => 'required|string|max:500',
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
+        ]);
         
         $urgentSale = new UrgentSale();
         $urgentSale->prestataire_id = $prestataire->id;
         $urgentSale->title = $request->title;
+        $urgentSale->slug = Str::slug($request->title . '-' . time());
         $urgentSale->description = $request->description;
         $urgentSale->price = $request->price;
         $urgentSale->condition = $request->condition;
-        $urgentSale->category_id = $request->category_id;
-        $urgentSale->quantity = $request->quantity ?? 1;
+        $urgentSale->category_id = $request->category_id ?: $request->parent_category_id;
+        $urgentSale->quantity = $request->quantity;
         $urgentSale->location = $request->location;
         $urgentSale->latitude = $request->latitude;
         $urgentSale->longitude = $request->longitude;
-        $urgentSale->is_urgent = $request->boolean('is_urgent');
+        $urgentSale->status = 'active';
         
         // Gestion des photos
-        $photos = [];
         if ($request->hasFile('photos')) {
+            $photos = [];
             foreach ($request->file('photos') as $photo) {
                 $path = $photo->store('urgent-sales', 'public');
                 $photos[] = $path;
             }
+            $urgentSale->photos = json_encode($photos);
         }
-        $urgentSale->photos = $photos;
         
         $urgentSale->save();
         
         return redirect()->route('prestataire.urgent-sales.index')
-            ->with('success', 'Produit ajouté avec succès à la vente urgente!');
+                        ->with('success', 'Vente urgente créée avec succès!');
     }
-
+    
     /**
-     * Display the specified resource.
+     * Afficher une vente urgente spécifique
      */
     public function show(UrgentSale $urgentSale)
     {
         $this->authorize('view', $urgentSale);
         
-        $contacts = $urgentSale->contacts()->with('user')->recent()->paginate(10);
+        $urgentSale->load(['category', 'contacts.user', 'reports']);
         
-        return view('prestataire.urgent-sales.show', compact('urgentSale', 'contacts'));
+        // Récupérer les messages liés à cette vente urgente
+        $relatedMessages = \App\Models\Message::where('receiver_id', Auth::id())
+            ->where('content', 'like', '%' . $urgentSale->title . '%')
+            ->with('sender')
+            ->latest()
+            ->limit(10)
+            ->get();
+        
+        return view('prestataire.urgent-sales.show', compact('urgentSale', 'relatedMessages'));
     }
-
+    
     /**
-     * Show the form for editing the specified resource.
+     * Afficher le formulaire d'édition
      */
     public function edit(UrgentSale $urgentSale)
     {
         $this->authorize('update', $urgentSale);
         
-        if (!$urgentSale->canBeEdited()) {
-            return redirect()->route('prestataire.urgent-sales.index')
-                ->with('error', 'Ce produit ne peut plus être modifié.');
-        }
+        $categories = Category::whereNull('parent_id')
+                            ->where('is_active', true)
+                            ->with(['children' => function($query) {
+                                $query->where('is_active', true)->orderBy('name');
+                            }])
+                            ->orderBy('name')
+                            ->get();
         
-        return view('prestataire.urgent-sales.edit', compact('urgentSale'));
+        return view('prestataire.urgent-sales.edit', compact('urgentSale', 'categories'));
     }
-
+    
     /**
-     * Update the specified resource in storage.
+     * Mettre à jour une vente urgente
      */
     public function update(Request $request, UrgentSale $urgentSale)
     {
         $this->authorize('update', $urgentSale);
         
-        if (!$urgentSale->canBeEdited()) {
-            return redirect()->route('prestataire.urgent-sales.index')
-                ->with('error', 'Ce produit ne peut plus être modifié.');
-        }
-        
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:255',
-            'description' => 'required|string|max:2000',
+        $request->validate([
+            'title' => 'required|string|min:10|max:255',
+            'description' => 'required|string|min:50|max:2000',
             'price' => 'required|numeric|min:0',
-            'condition' => 'required|in:new,good,used,fair',
-            'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'quantity' => 'nullable|integer|min:1',
-            'location' => 'nullable|string|max:255',
-            'latitude' => 'nullable|numeric|between:-90,90',
-            'longitude' => 'nullable|numeric|between:-180,180',
-            'is_urgent' => 'boolean'
+            'condition' => 'required|in:excellent,very_good,good,fair,poor',
+            'parent_category_id' => 'required|exists:categories,id',
+            'category_id' => 'nullable|exists:categories,id',
+            'quantity' => 'required|integer|min:1',
+            'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
+            'location' => 'required|string|max:500',
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
         ]);
         
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
-        
         $urgentSale->title = $request->title;
+        $urgentSale->slug = Str::slug($request->title . '-' . $urgentSale->id);
         $urgentSale->description = $request->description;
         $urgentSale->price = $request->price;
         $urgentSale->condition = $request->condition;
-        $urgentSale->quantity = $request->quantity ?? 1;
+        $urgentSale->category_id = $request->category_id ?: $request->parent_category_id;
+        $urgentSale->quantity = $request->quantity;
         $urgentSale->location = $request->location;
         $urgentSale->latitude = $request->latitude;
         $urgentSale->longitude = $request->longitude;
-        $urgentSale->is_urgent = $request->boolean('is_urgent');
         
-        // Gestion des photos
+        // Gestion des nouvelles photos
         if ($request->hasFile('photos')) {
             // Supprimer les anciennes photos
             if ($urgentSale->photos) {
-                foreach ($urgentSale->photos as $photo) {
-                    Storage::disk('public')->delete($photo);
+                $oldPhotos = json_decode($urgentSale->photos, true);
+                foreach ($oldPhotos as $oldPhoto) {
+                    Storage::disk('public')->delete($oldPhoto);
                 }
             }
             
@@ -194,71 +204,64 @@ class UrgentSaleController extends Controller
                 $path = $photo->store('urgent-sales', 'public');
                 $photos[] = $path;
             }
-            $urgentSale->photos = $photos;
+            $urgentSale->photos = json_encode($photos);
         }
         
         $urgentSale->save();
         
         return redirect()->route('prestataire.urgent-sales.index')
-            ->with('success', 'Produit mis à jour avec succès!');
+                        ->with('success', 'Vente urgente mise à jour avec succès!');
     }
-
+    
     /**
-     * Remove the specified resource from storage.
+     * Supprimer une vente urgente
      */
     public function destroy(UrgentSale $urgentSale)
     {
         $this->authorize('delete', $urgentSale);
         
-        // Supprimer les photos
-        if ($urgentSale->photos) {
-            foreach ($urgentSale->photos as $photo) {
-                Storage::disk('public')->delete($photo);
+        // Supprimer les images
+        if ($urgentSale->images) {
+            $images = json_decode($urgentSale->images, true);
+            foreach ($images as $image) {
+                Storage::disk('public')->delete($image);
             }
         }
         
         $urgentSale->delete();
         
         return redirect()->route('prestataire.urgent-sales.index')
-            ->with('success', 'Produit supprimé avec succès!');
+                        ->with('success', 'Vente urgente supprimée avec succès!');
     }
     
     /**
-     * Changer le statut d'une vente
+     * Mettre à jour le statut d'une vente urgente
      */
     public function updateStatus(Request $request, UrgentSale $urgentSale)
     {
         $this->authorize('update', $urgentSale);
         
-        $validator = Validator::make($request->all(), [
-            'status' => 'required|in:active,sold,withdrawn'
+        $request->validate([
+            'status' => 'required|in:active,inactive,sold,expired'
         ]);
-        
-        if ($validator->fails()) {
-            return back()->withErrors($validator);
-        }
         
         $urgentSale->status = $request->status;
         $urgentSale->save();
         
-        $message = match($request->status) {
-            'sold' => 'Produit marqué comme vendu!',
-            'withdrawn' => 'Produit retiré de la vente!',
-            'active' => 'Produit remis en vente!',
-            default => 'Statut mis à jour!'
-        };
-        
-        return back()->with('success', $message);
+        return back()->with('success', 'Statut mis à jour avec succès!');
     }
     
     /**
-     * Afficher les contacts pour une vente
+     * Afficher les contacts pour une vente urgente
      */
     public function contacts(UrgentSale $urgentSale)
     {
         $this->authorize('view', $urgentSale);
         
-        $contacts = $urgentSale->contacts()->with('user')->recent()->paginate(15);
+        $contacts = $urgentSale->contacts()
+                              ->with('user')
+                              ->latest()
+                              ->paginate(10);
         
         return view('prestataire.urgent-sales.contacts', compact('urgentSale', 'contacts'));
     }
@@ -268,50 +271,55 @@ class UrgentSaleController extends Controller
      */
     public function respondToContact(Request $request, UrgentSaleContact $contact)
     {
-        $this->authorize('update', $contact->urgentSale);
+        $this->authorize('view', $contact->urgentSale);
         
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'response' => 'required|string|max:1000'
         ]);
         
-        if ($validator->fails()) {
-            return back()->withErrors($validator);
-        }
-        
-        $contact->markAsResponded($request->response);
+        $contact->response = $request->response;
+        $contact->responded_at = now();
+        $contact->save();
         
         return back()->with('success', 'Réponse envoyée avec succès!');
     }
     
     /**
-     * Accepter un contact de vente urgente
+     * Accepter un contact
      */
     public function acceptContact(UrgentSaleContact $contact)
     {
-        // Vérifier que le prestataire est propriétaire de cette vente
-        if ($contact->urgentSale->prestataire_id !== Auth::user()->prestataire->id) {
-            abort(403, 'Non autorisé');
-        }
+        $this->authorize('view', $contact->urgentSale);
         
-        $contact->update(['status' => 'accepted']);
+        $contact->status = 'accepted';
+        $contact->save();
         
-        return redirect()->route('prestataire.bookings.index')
-            ->with('success', 'Contact accepté avec succès.');
+        return back()->with('success', 'Contact accepté!');
     }
     
     /**
-     * Refuser un contact de vente urgente
+     * Rejeter un contact
      */
     public function rejectContact(UrgentSaleContact $contact)
     {
-        // Vérifier que le prestataire est propriétaire de cette vente
-        if ($contact->urgentSale->prestataire_id !== Auth::user()->prestataire->id) {
-            abort(403, 'Non autorisé');
-        }
+        $this->authorize('view', $contact->urgentSale);
         
-        $contact->update(['status' => 'rejected']);
+        $contact->status = 'rejected';
+        $contact->save();
         
-        return redirect()->route('prestataire.bookings.index')
-            ->with('success', 'Contact refusé.');
+        return back()->with('success', 'Contact rejeté!');
+    }
+    
+    /**
+     * Récupérer les sous-catégories d'une catégorie parent
+     */
+    public function getSubcategories($categoryId)
+    {
+        $subcategories = Category::where('parent_id', $categoryId)
+                                ->where('is_active', true)
+                                ->orderBy('name')
+                                ->get(['id', 'name']);
+        
+        return response()->json($subcategories);
     }
 }

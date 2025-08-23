@@ -2,288 +2,131 @@
 
 @section('title', 'Détails du prestataire')
 
-@push('styles')
-<link href="{{ asset('css/admin-prestataires.css') }}" rel="stylesheet">
-<style>
-    .section-card {
-        border: none;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        transition: all 0.3s ease;
-        margin-bottom: 1.5rem;
-    }
-    .section-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-    }
-    .section-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border-radius: 12px 12px 0 0;
-        padding: 1rem 1.5rem;
-        margin: 0;
-    }
-    .section-header h5 {
-        margin: 0;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    .profile-avatar {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 4px solid #fff;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        transition: transform 0.3s ease;
-    }
-    .profile-avatar:hover {
-        transform: scale(1.05);
-    }
-    .status-badge {
-        font-size: 0.875rem;
-        padding: 0.5rem 1rem;
-        border-radius: 25px;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    .verification-badge {
-        position: absolute;
-        top: -5px;
-        right: -5px;
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1rem;
-        border: 3px solid white;
-    }
-    .info-row {
-        padding: 0.75rem 0;
-        border-bottom: 1px solid #f1f3f4;
-    }
-    .info-row:last-child {
-        border-bottom: none;
-    }
-    .info-label {
-        font-weight: 600;
-        color: #495057;
-        margin-bottom: 0.25rem;
-    }
-    .info-value {
-        color: #6c757d;
-    }
-    .document-item {
-        background: #f8f9fa;
-        border: 1px solid #e9ecef;
-        border-radius: 8px;
-        padding: 1rem;
-        margin-bottom: 0.75rem;
-        transition: all 0.3s ease;
-    }
-    .document-item:hover {
-        background: #e9ecef;
-        transform: translateY(-1px);
-    }
-    .action-btn {
-        transition: all 0.2s ease;
-        border-radius: 8px;
-        font-weight: 500;
-    }
-    .action-btn:hover {
-        transform: translateY(-1px);
-    }
-    .skill-badge {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 0.4rem 0.8rem;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        margin: 0.2rem;
-        display: inline-block;
-    }
-    .stat-item {
-        text-align: center;
-        padding: 1rem;
-        background: #f8f9fa;
-        border-radius: 10px;
-        margin: 0.5rem;
-    }
-    .stat-number {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #495057;
-    }
-    .stat-label {
-        font-size: 0.85rem;
-        color: #6c757d;
-        margin-top: 0.25rem;
-    }
-    @media (max-width: 768px) {
-        .section-card {
-            margin-bottom: 1rem;
-        }
-        .profile-section {
-            text-align: center;
-        }
-        .action-buttons {
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        .action-buttons .btn {
-            width: 100%;
-        }
-    }
-    
-    .d-none {
-        display: none !important;
-    }
-    
-    .animate-pulse {
-        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-    
-    @keyframes pulse {
-        0%, 100% {
-            opacity: 1;
-        }
-        50% {
-            opacity: .5;
-        }
-    }
-    
-    /* Fix pour les conflits Bootstrap */
-    .admin-card {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        border: 1px solid #e2e8f0;
-    }
-    
-    .admin-card .card-header {
-        background: #f8fafc;
-        border-bottom: 1px solid #e2e8f0;
-        padding: 1rem 1.5rem;
-        border-radius: 12px 12px 0 0;
-    }
-    
-    .admin-card .card-body {
-        padding: 1.5rem;
-    }
-</style>
-@endpush
-
 @section('content')
-<div class="container-fluid prestataire-view py-4" data-current-user-id="{{ auth()->id() }}">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6" data-current-user-id="{{ auth()->id() }}">
     <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('admin.prestataires.index') }}">Prestataires</a></li>
-            <li class="breadcrumb-item active" aria-current="page">{{ $prestataire->user->name }}</li>
+    <nav class="flex mb-6" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="{{ route('administrateur.dashboard') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
+                    Dashboard
+                </a>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                    <a href="{{ route('administrateur.prestataires.index') }}" class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2">Prestataires</a>
+                </div>
+            </li>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                    <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">{{ $prestataire->user->name }}</span>
+                </div>
+            </li>
         </ol>
     </nav>
 
     @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-6 relative" role="alert">
             {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.style.display='none'">
+                <svg class="fill-current h-6 w-6 text-green-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
+            </button>
         </div>
     @endif
 
     <!-- Section Identité -->
-    <div class="section-card">
-        <div class="section-header">
-            <h5><i class="fas fa-user-circle"></i> Identité du Prestataire</h5>
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6 hover:shadow-md transition-shadow duration-300">
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-lg px-6 py-4">
+            <h2 class="text-lg font-semibold flex items-center gap-2">
+                <i class="fas fa-user-circle"></i> Identité du Prestataire
+            </h2>
         </div>
-        <div class="card-body p-4">
-            <div class="row align-items-center">
-                <div class="col-md-3 text-center mb-3 mb-md-0">
-                    <div class="position-relative d-inline-block">
+        <div class="p-6">
+            <div class="flex flex-col lg:flex-row lg:items-center gap-6">
+                <div class="flex-shrink-0 text-center lg:text-left">
+                    <div class="relative inline-block">
                         @if($prestataire->photo)
-                            <img src="{{ asset('storage/' . $prestataire->photo) }}" alt="Photo de {{ $prestataire->user->name }}" class="profile-avatar">
+                            <img src="{{ asset('storage/' . $prestataire->photo) }}" alt="Photo de {{ $prestataire->user->name }}" class="w-30 h-30 rounded-full object-cover border-4 border-white shadow-lg hover:scale-105 transition-transform duration-300">
                         @elseif($prestataire->user->avatar)
-                            <img src="{{ asset('storage/' . $prestataire->user->avatar) }}" alt="Photo de {{ $prestataire->user->name }}" class="profile-avatar">
+                            <img src="{{ asset('storage/' . $prestataire->user->avatar) }}" alt="Photo de {{ $prestataire->user->name }}" class="w-30 h-30 rounded-full object-cover border-4 border-white shadow-lg hover:scale-105 transition-transform duration-300">
                         @elseif($prestataire->user->profile_photo_url)
-                            <img src="{{ $prestataire->user->profile_photo_url }}" alt="Photo de {{ $prestataire->user->name }}" class="profile-avatar">
+                            <img src="{{ $prestataire->user->profile_photo_url }}" alt="Photo de {{ $prestataire->user->name }}" class="w-30 h-30 rounded-full object-cover border-4 border-white shadow-lg hover:scale-105 transition-transform duration-300">
                         @else
-                            <div class="profile-avatar bg-gradient-primary text-white d-flex align-items-center justify-content-center">
-                                <span style="font-size: 2rem; font-weight: 600;">{{ substr($prestataire->user->name, 0, 1) }}</span>
+                            <div class="w-30 h-30 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white flex items-center justify-center border-4 border-white shadow-lg">
+                                <span class="text-3xl font-semibold">{{ substr($prestataire->user->name, 0, 1) }}</span>
                             </div>
                         @endif
                         @if($prestataire->isVerified())
-                            <div class="verification-badge bg-success text-white">
-                                <i class="fas fa-check"></i>
+                            <div class="absolute -top-1 -right-1 w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center border-3 border-white">
+                                <i class="fas fa-check text-sm"></i>
                             </div>
                         @endif
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="d-flex align-items-center gap-2 mb-2">
-                        <h3 class="mb-0 fw-bold">{{ $prestataire->user->name }}</h3>
+                <div class="flex-grow">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
+                        <h3 class="text-2xl font-bold text-gray-900">{{ $prestataire->user->name }}</h3>
                         @if($prestataire->isVerified())
-                            <span class="badge bg-success d-flex align-items-center gap-1">
-                                <i class="fas fa-check"></i> Vérifié
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <i class="fas fa-check mr-1"></i> Vérifié
                             </span>
                         @endif
                     </div>
-                    <p class="text-muted mb-3"><i class="fas fa-envelope me-2"></i>{{ $prestataire->user->email }}</p>
+                    <p class="text-gray-600 mb-4 flex items-center">
+                        <i class="fas fa-envelope mr-2"></i>{{ $prestataire->user->email }}
+                    </p>
                     
                     <!-- Statut -->
-                    <div class="mb-3">
+                    <div class="mb-4">
                         @if($prestataire->user->blocked_at)
-                            <span class="status-badge bg-danger text-white">
-                                <i class="fas fa-lock"></i> Bloqué
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                                <i class="fas fa-lock mr-2"></i> Bloqué
                             </span>
                         @elseif($prestataire->is_approved)
-                            <span class="status-badge bg-success text-white">
-                                <i class="fas fa-check-circle"></i> Approuvé
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                <i class="fas fa-check-circle mr-2"></i> Approuvé
                             </span>
                         @else
-                            <span class="status-badge bg-warning text-dark">
-                                <i class="fas fa-clock"></i> En attente
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                                <i class="fas fa-clock mr-2"></i> En attente
                             </span>
                         @endif
                     </div>
                     
-                    <div class="row">
-                        <div class="col-6">
-                            <div class="info-label">Date d'inscription</div>
-                            <div class="info-value">{{ $prestataire->created_at->format('d/m/Y') }}</div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <div class="text-sm font-medium text-gray-700 mb-1">Date d'inscription</div>
+                            <div class="text-sm text-gray-600">{{ $prestataire->created_at->format('d/m/Y') }}</div>
                         </div>
-                        <div class="col-6">
-                            <div class="info-label">Dernière mise à jour</div>
-                            <div class="info-value">{{ $prestataire->updated_at->format('d/m/Y H:i') }}</div>
+                        <div>
+                            <div class="text-sm font-medium text-gray-700 mb-1">Dernière mise à jour</div>
+                            <div class="text-sm text-gray-600">{{ $prestataire->updated_at->format('d/m/Y H:i') }}</div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="action-buttons d-flex flex-column gap-2">
-                        <a href="{{ route('admin.prestataires.index') }}" class="btn btn-secondary btn-sm action-btn">
-                            <i class="fas fa-arrow-left"></i> Retour
+                <div class="flex-shrink-0">
+                    <div class="flex flex-col gap-2">
+                        <a href="{{ route('administrateur.prestataires.index') }}" class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                            <i class="fas fa-arrow-left mr-2"></i> Retour
                         </a>
-                        <a href="{{ route('prestataires.show', $prestataire->id) }}" target="_blank" class="btn btn-outline-primary btn-sm action-btn">
-                            <i class="fas fa-eye"></i> Profil public
+                        <a href="{{ route('prestataires.show', $prestataire->id) }}" target="_blank" class="inline-flex items-center px-3 py-2 border border-blue-300 text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                            <i class="fas fa-eye mr-2"></i> Profil public
                         </a>
                         @if(!$prestataire->is_approved)
-                            <form method="POST" action="{{ route('admin.prestataires.approve', $prestataire) }}" class="d-inline">
+                            <form method="POST" action="{{ route('administrateur.prestataires.approve', $prestataire) }}" class="inline">
                                 @csrf
-                                <button type="submit" class="btn btn-success btn-sm action-btn w-100">
-                                    <i class="fas fa-check"></i> Approuver
+                                <button type="submit" class="w-full inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200">
+                                    <i class="fas fa-check mr-2"></i> Approuver
                                 </button>
                             </form>
                         @endif
-                        <form action="{{ route('admin.prestataires.toggle-block', $prestataire->id) }}" method="POST" class="d-inline">
+                        <form action="{{ route('administrateur.prestataires.toggle-block', $prestataire->id) }}" method="POST" class="inline">
                             @csrf
                             @method('PATCH')
-                            <button type="submit" class="btn btn-sm action-btn w-100 {{ $prestataire->user->blocked_at ? 'btn-success' : 'btn-warning' }}">
-                                <i class="fas {{ $prestataire->user->blocked_at ? 'fa-unlock' : 'fa-lock' }}"></i> 
+                            <button type="submit" class="w-full inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white {{ $prestataire->user->blocked_at ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500' : 'bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-500' }} focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200">
+                                <i class="fas {{ $prestataire->user->blocked_at ? 'fa-unlock' : 'fa-lock' }} mr-2"></i> 
                                 {{ $prestataire->user->blocked_at ? 'Débloquer' : 'Bloquer' }}
                             </button>
                         </form>
@@ -293,108 +136,64 @@
         </div>
     </div>
 
-    <div class="row">
-
-        
-        <div class="col-lg-6">
-            <!-- Section Activité professionnelle -->
-            <div class="section-card">
-                <div class="section-header">
-                    <h5><i class="fas fa-briefcase"></i> Activité Professionnelle</h5>
-                </div>
-                <div class="card-body p-4">
-                    <div class="info-row">
-                        <div class="info-label">Secteur d'activité</div>
-                        <div class="info-value">{{ $prestataire->secteur_activite ?? 'Non renseigné' }}</div>
-                    </div>
-                    
-                    <div class="info-row">
-                        <div class="info-label">Compétences</div>
-                        <div class="info-value">
-                            @if($prestataire->competences)
-                                @foreach(explode(',', $prestataire->competences) as $competence)
-                                    <span class="skill-badge">{{ trim($competence) }}</span>
-                                @endforeach
-                            @else
-                                <span class="text-muted">Non renseignées</span>
-                            @endif
-                        </div>
-                    </div>
-                    
-                    <div class="info-row">
-                        <div class="info-label">Zone de service</div>
-                        <div class="info-value">{{ $prestataire->service_area ?? 'Non renseignée' }}</div>
-                    </div>
-                    
-                    <div class="info-row">
-                        <div class="info-label">Tarifs</div>
-                        <div class="info-value">{{ $prestataire->rates ?? 'Non renseignés' }}</div>
-                    </div>
-                    
-                    <div class="info-row">
-                        <div class="info-label">Délai moyen de livraison</div>
-                        <div class="info-value">{{ $prestataire->average_delivery_time ?? 'Non renseigné' }}</div>
-                    </div>
-                    
-                    @if($prestataire->years_experience)
-                        <div class="info-row">
-                            <div class="info-label">Années d'expérience</div>
-                            <div class="info-value">{{ $prestataire->years_experience }} ans</div>
-                        </div>
-                    @endif
-                </div>
-            </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div>
+           
         </div>
     </div>
     
     <!-- Section Présentation -->
-    @if($prestataire->description)
-    <div class="section-card">
-        <div class="section-header">
-            <h5><i class="fas fa-file-text"></i> Présentation</h5>
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6 hover:shadow-md transition-shadow duration-300">
+        <div class="bg-gradient-to-r from-green-600 to-teal-600 text-white rounded-t-lg px-6 py-4">
+            <h2 class="text-lg font-semibold flex items-center gap-2">
+                <i class="fas fa-user-edit"></i> Présentation
+            </h2>
         </div>
-        <div class="card-body p-4">
-            <div class="bg-light p-3 rounded">
-                {{ $prestataire->description }}
+        <div class="p-6">
+            <div class="bg-gray-50 p-4 rounded-lg text-sm text-gray-700 leading-relaxed">
+                {{ $prestataire->description ?? 'Aucune présentation fournie.' }}
             </div>
         </div>
     </div>
-    @endif
     
-    <div class="row">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <!-- Section Services -->
-        <div class="col-lg-6">
-            <div class="section-card">
-                <div class="section-header">
-                    <h5><i class="fas fa-cogs"></i> Services ({{ $prestataire->services ? $prestataire->services->count() : 0 }})</h5>
+        <div>
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-300">
+                <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-t-lg px-6 py-4">
+                    <h2 class="text-lg font-semibold flex items-center gap-2">
+                        <i class="fas fa-cogs"></i> Services ({{ $prestataire->services ? $prestataire->services->count() : 0 }})
+                    </h2>
                 </div>
-                <div class="card-body p-4">
+                <div class="p-6">
                     @if($prestataire->services && $prestataire->services->count() > 0)
-                        @foreach($prestataire->services->take(5) as $service)
-                            <div class="border-bottom pb-3 mb-3">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div class="flex-grow-1">
-                                        <h6 class="fw-bold mb-1">{{ $service->title }}</h6>
-                                        <p class="text-muted small mb-1">{{ Str::limit($service->description, 100) }}</p>
-                                        <small class="text-muted">Créé le {{ $service->created_at->format('d/m/Y') }}</small>
-                                    </div>
-                                    <div class="text-end ms-3">
-                                        <span class="badge bg-primary">{{ number_format($service->price, 2) }} €</span>
+                        <div class="space-y-4">
+                            @foreach($prestataire->services->take(5) as $service)
+                                <div class="border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex-1">
+                                            <h3 class="font-medium text-gray-900 mb-1">{{ $service->title }}</h3>
+                                            <p class="text-sm text-gray-600 mb-2">{{ Str::limit($service->description, 100) }}</p>
+                                            <small class="text-xs text-gray-500">Créé le {{ $service->created_at->format('d/m/Y') }}</small>
+                                        </div>
+                                        <div class="ml-4">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{{ number_format($service->price, 2) }} €</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        @endforeach
+                            @endforeach
+                        </div>
                         
                         @if($prestataire->services->count() > 5)
-                            <div class="text-center">
-                                <a href="{{ route('admin.services.index', ['prestataire' => $prestataire->id]) }}" class="btn btn-outline-primary action-btn">
-                                    <i class="fas fa-list"></i> Voir tous les services
+                            <div class="text-center mt-4">
+                                <a href="{{ route('administrateur.services.index', ['prestataire' => $prestataire->id]) }}" class="inline-flex items-center px-3 py-2 border border-blue-300 text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                                    <i class="fas fa-list mr-2"></i> Voir tous les services
                                 </a>
                             </div>
                         @endif
                     @else
-                        <div class="alert alert-info mb-0">
-                            <i class="fas fa-info-circle"></i> Aucun service proposé
+                        <div class="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg text-center">
+                            <i class="fas fa-info-circle mr-2"></i> Aucun service proposé
                         </div>
                     @endif
                 </div>
@@ -402,47 +201,51 @@
         </div>
         
         <!-- Section Avis clients -->
-        <div class="col-lg-6">
-            <div class="section-card">
-                <div class="section-header">
-                    <h5><i class="fas fa-star"></i> Avis Clients ({{ $prestataire->reviews ? $prestataire->reviews->count() : 0 }})</h5>
+        <div>
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-300">
+                <div class="bg-gradient-to-r from-yellow-600 to-orange-600 text-white rounded-t-lg px-6 py-4">
+                    <h2 class="text-lg font-semibold flex items-center gap-2">
+                        <i class="fas fa-star"></i> Avis Clients ({{ $prestataire->reviews ? $prestataire->reviews->count() : 0 }})
+                    </h2>
                 </div>
-                <div class="card-body p-4">
+                <div class="p-6">
                     @if($prestataire->reviews && $prestataire->reviews->count() > 0)
-                        @foreach($prestataire->reviews->take(5) as $review)
-                            <div class="border-bottom pb-3 mb-3">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div class="flex-grow-1">
-                                        <div class="d-flex align-items-center gap-2 mb-1">
-                                            <h6 class="fw-bold mb-0">{{ $review->client_name }}</h6>
-                                            <div class="rating">
-                                                @for($i = 1; $i <= 5; $i++)
-                                                    @if($i <= $review->rating)
-                                                        <i class="fas fa-star text-warning"></i>
-                                                    @else
-                                                        <i class="far fa-star text-muted"></i>
-                                                    @endif
-                                                @endfor
-                                                <span class="ms-1 small text-muted">({{ $review->rating }}/5)</span>
+                        <div class="space-y-4">
+                            @foreach($prestataire->reviews->take(5) as $review)
+                                <div class="border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex-1">
+                                            <div class="flex items-center gap-2 mb-2">
+                                                <h3 class="font-medium text-gray-900">{{ $review->client_name }}</h3>
+                                                <div class="flex items-center">
+                                                    @for($i = 1; $i <= 5; $i++)
+                                                        @if($i <= $review->rating)
+                                                            <i class="fas fa-star text-yellow-400"></i>
+                                                        @else
+                                                            <i class="far fa-star text-gray-300"></i>
+                                                        @endif
+                                                    @endfor
+                                                    <span class="ml-1 text-xs text-gray-500">({{ $review->rating }}/5)</span>
+                                                </div>
                                             </div>
+                                            <p class="text-sm text-gray-600 mb-2">{{ Str::limit($review->comment, 120) }}</p>
+                                            <small class="text-xs text-gray-500">{{ $review->created_at->format('d/m/Y') }}</small>
                                         </div>
-                                        <p class="text-muted small mb-1">{{ Str::limit($review->comment, 120) }}</p>
-                                        <small class="text-muted">{{ $review->created_at->format('d/m/Y') }}</small>
                                     </div>
                                 </div>
-                            </div>
-                        @endforeach
+                            @endforeach
+                        </div>
                         
                         @if($prestataire->reviews->count() > 5)
-                            <div class="text-center">
-                                <a href="{{ route('admin.reviews.index', ['prestataire' => $prestataire->id]) }}" class="btn btn-outline-primary action-btn">
-                                    <i class="fas fa-comments"></i> Voir tous les avis
+                            <div class="text-center mt-4">
+                                <a href="{{ route('administrateur.reviews.index', ['prestataire' => $prestataire->id]) }}" class="inline-flex items-center px-3 py-2 border border-blue-300 text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                                    <i class="fas fa-comments mr-2"></i> Voir tous les avis
                                 </a>
                             </div>
                         @endif
                     @else
-                        <div class="alert alert-info mb-0">
-                            <i class="fas fa-info-circle"></i> Aucun avis reçu
+                        <div class="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg text-center">
+                            <i class="fas fa-info-circle mr-2"></i> Aucun avis reçu
                         </div>
                     @endif
                 </div>
@@ -451,62 +254,29 @@
     </div>
     
     <!-- Statistiques -->
-    <div class="section-card">
-        <div class="section-header">
-            <h5><i class="fas fa-chart-bar"></i> Statistiques</h5>
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-300">
+        <div class="bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-t-lg px-6 py-4">
+            <h2 class="text-lg font-semibold flex items-center gap-2">
+                <i class="fas fa-chart-bar"></i> Statistiques
+            </h2>
         </div>
-        <div class="card-body p-4">
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="stat-item">
-                        <div class="stat-number">{{ $prestataire->services ? $prestataire->services->count() : 0 }}</div>
-                        <div class="stat-label">Services</div>
-                    </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-blue-600 mb-2">{{ $prestataire->services ? $prestataire->services->count() : 0 }}</div>
+                    <div class="text-sm font-medium text-gray-700">Services</div>
                 </div>
-                <div class="col-md-3">
-                    <div class="stat-item">
-                        <div class="stat-number">{{ $prestataire->reviews ? $prestataire->reviews->count() : 0 }}</div>
-                        <div class="stat-label">Avis</div>
-                    </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-green-600 mb-2">{{ $prestataire->reviews ? $prestataire->reviews->count() : 0 }}</div>
+                    <div class="text-sm font-medium text-gray-700">Avis</div>
                 </div>
-                <div class="col-md-3">
-                    <div class="stat-item">
-                        <div class="stat-number">{{ $prestataire->offers ? $prestataire->offers->count() : 0 }}</div>
-                        <div class="stat-label">Offres</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-item">
-                        <div class="stat-number">{{ $prestataire->rating_average ? number_format($prestataire->rating_average, 1) : '0.0' }}</div>
-                        <div class="stat-label">Note moyenne</div>
-                    </div>
+
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-yellow-600 mb-2">{{ $prestataire->rating_average ? number_format($prestataire->rating_average, 1) : '0.0' }}</div>
+                    <div class="text-sm font-medium text-gray-700">Note moyenne</div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 @endsection
-
-@push('scripts')
-<script src="{{ asset('js/admin-user-details.js') }}"></script>
-<script src="{{ asset('js/messaging.js') }}"></script>
-<script>
-    // Initialiser les gestionnaires après le chargement du DOM
-    document.addEventListener('DOMContentLoaded', function() {
-        // Vérifier que les classes sont disponibles
-        if (typeof UserDetailsManager !== 'undefined') {
-            window.userDetailsManager = new UserDetailsManager();
-            console.log('UserDetailsManager initialisé');
-        } else {
-            console.warn('UserDetailsManager non disponible');
-        }
-        
-        if (typeof MessagingSystem !== 'undefined') {
-            window.messagingSystem = new MessagingSystem();
-            console.log('MessagingSystem initialisé');
-        } else {
-            console.warn('MessagingSystem non disponible');
-        }
-    });
-</script>
-@endpush

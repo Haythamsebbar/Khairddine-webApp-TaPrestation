@@ -32,8 +32,7 @@ class Equipment extends Model
         'price_per_week',
         'price_per_month',
         'security_deposit',
-        'delivery_fee',
-        'delivery_included',
+
         'condition',
         'status',
         'is_available',
@@ -47,7 +46,7 @@ class Equipment extends Model
         'country',
         'latitude',
         'longitude',
-        'delivery_radius',
+
         'rental_conditions',
         'usage_instructions',
         'safety_instructions',
@@ -71,7 +70,9 @@ class Equipment extends Model
         'weight',
         'dimensions',
         'power_requirements',
-        'serial_number'
+        'serial_number',
+        'category_id',
+        'subcategory_id'
     ];
 
     /**
@@ -85,7 +86,7 @@ class Equipment extends Model
         'optional_accessories' => 'array',
         'metadata' => 'array',
         'is_available' => 'boolean',
-        'delivery_included' => 'boolean',
+
         'requires_license' => 'boolean',
         'featured' => 'boolean',
         'price_per_hour' => 'decimal:2',
@@ -93,7 +94,7 @@ class Equipment extends Model
         'price_per_week' => 'decimal:2',
         'price_per_month' => 'decimal:2',
         'security_deposit' => 'decimal:2',
-        'delivery_fee' => 'decimal:2',
+
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8',
         'average_rating' => 'decimal:2',
@@ -103,7 +104,7 @@ class Equipment extends Model
         'verified_at' => 'datetime',
         'minimum_rental_duration' => 'integer',
         'maximum_rental_duration' => 'integer',
-        'delivery_radius' => 'integer',
+
         'minimum_age' => 'integer',
         'total_reviews' => 'integer',
         'total_rentals' => 'integer',
@@ -144,13 +145,22 @@ class Equipment extends Model
         return $this->hasMany(EquipmentReview::class);
     }
 
+
+
     /**
-     * Relation avec les catégories
+     * Relation avec la catégorie principale
      */
-    public function categories(): BelongsToMany
+    public function category(): BelongsTo
     {
-        return $this->belongsToMany(EquipmentCategory::class, 'equipment_category_equipment')
-                    ->withTimestamps();
+        return $this->belongsTo(Category::class, 'category_id');
+    }
+
+    /**
+     * Relation avec la sous-catégorie
+     */
+    public function subcategory(): BelongsTo
+    {
+        return $this->belongsTo(Category::class, 'subcategory_id');
     }
 
     /**
@@ -214,8 +224,9 @@ class Equipment extends Model
      */
     public function scopeByCategory($query, $categoryId)
     {
-        return $query->whereHas('categories', function ($q) use ($categoryId) {
-            $q->where('equipment_categories.id', $categoryId);
+        return $query->where(function ($q) use ($categoryId) {
+            $q->where('category_id', $categoryId)
+              ->orWhere('subcategory_id', $categoryId);
         });
     }
 
@@ -250,7 +261,7 @@ class Equipment extends Model
 
         // Vérifier s'il y a des locations qui se chevauchent
         $overlappingRentals = $this->rentals()
-            ->whereIn('status', ['active', 'confirmed'])
+            ->whereIn('status', ['in_use', 'confirmed', 'delivered'])
             ->where(function ($query) use ($start, $end) {
                 $query->whereBetween('start_date', [$start, $end])
                       ->orWhereBetween('end_date', [$start, $end])
@@ -383,18 +394,7 @@ class Equipment extends Model
         return $conditions[$this->condition] ?? 'Non spécifié';
     }
 
-    /**
-     * Vérifie si l'équipement nécessite une livraison
-     */
-    public function requiresDelivery($clientLocation)
-    {
-        if ($this->delivery_included || $this->delivery_radius == 0) {
-            return false;
-        }
 
-        // Logique simple de distance (à améliorer avec une vraie API de géolocalisation)
-        return $this->city !== $clientLocation;
-    }
 
     /**
      * Obtient les prochaines disponibilités
@@ -402,7 +402,7 @@ class Equipment extends Model
     public function getUnavailableDates()
     {
         $unavailableDates = [];
-        $rentals = $this->rentals()->whereIn('status', ['active', 'confirmed'])->get();
+        $rentals = $this->rentals()->whereIn('status', ['in_use', 'confirmed', 'delivered'])->get();
 
         foreach ($rentals as $rental) {
             $period = Carbon::parse($rental->start_date)->toPeriod($rental->end_date);
@@ -447,11 +447,5 @@ class Equipment extends Model
         return $this->price_per_week;
     }
 
-    /**
-     * Accesseur pour la disponibilité de livraison
-     */
-    public function getDeliveryAvailableAttribute()
-    {
-        return $this->delivery_included || $this->delivery_fee > 0;
-    }
+
 }

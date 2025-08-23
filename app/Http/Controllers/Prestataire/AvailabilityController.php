@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Prestataire;
 use App\Models\PrestataireAvailability;
-use App\Models\AvailabilityException;
+
 use App\Models\TimeSlot;
 use Carbon\Carbon;
 
@@ -49,39 +49,13 @@ class AvailabilityController extends Controller
             return $item->day_of_week == 0 ? 7 : $item->day_of_week;
         });
 
-        // Récupérer les exceptions de disponibilité à venir
-        $exceptions = AvailabilityException::where('prestataire_id', $prestataire->id)
-            ->where('date', '>=', now()->startOfDay())
-            ->orderBy('date')
-            ->get();
-
         // Récupérer les paramètres de réservation
         $bookingSettings = $prestataire->bookingSettings ?? null;
 
         return view('prestataire.availability.index', compact(
             'prestataire',
             'weeklyAvailability',
-            'exceptions',
             'bookingSettings'
-        ));
-    }
-    
-    /**
-     * Affiche le calendrier de disponibilité
-     */
-    public function calendar(Request $request)
-    {
-        $user = Auth::user();
-        $prestataire = $user->prestataire;
-        
-        // Paramètres de vue par défaut
-        $view = $request->get('view', 'month'); // month, week
-        $date = $request->get('date') ? Carbon::parse($request->get('date')) : Carbon::now();
-        
-        return view('prestataire.availability.calendar', compact(
-            'prestataire',
-            'view',
-            'date'
         ));
     }
     
@@ -101,11 +75,7 @@ class AvailabilityController extends Controller
             ->where('is_active', true)
             ->get();
         
-        // Récupérer les exceptions de disponibilité
-        $exceptions = AvailabilityException::where('prestataire_id', $prestataire->id)
-            ->where('is_active', true)
-            ->whereBetween('date', [$start->copy()->startOfDay(), $end->copy()->endOfDay()])
-            ->get();
+
         
         // Récupérer les réservations existantes
         $bookings = TimeSlot::where('prestataire_id', $prestataire->id)
@@ -121,75 +91,42 @@ class AvailabilityController extends Controller
             $dayAvailability = $weeklyAvailability->where('day_of_week', $dayOfWeek)->first();
             
             if ($dayAvailability && $dayAvailability->is_active) {
-                // Vérifier s'il y a une exception pour ce jour
-                $dayException = $exceptions->first(function ($exception) use ($day) {
-                    return $exception->date->isSameDay($day);
-                });
+                $startTime = $day->copy()->setTimeFromTimeString($dayAvailability->start_time);
+                $endTime = $day->copy()->setTimeFromTimeString($dayAvailability->end_time);
                 
-                if (!$dayException || ($dayException && $dayException->isCustomHours())) {
-                    // Utiliser les heures personnalisées de l'exception si disponibles
-                    if ($dayException && $dayException->isCustomHours()) {
-                        $startTime = $day->copy()->setTimeFromTimeString($dayException->start_time);
-                        $endTime = $day->copy()->setTimeFromTimeString($dayException->end_time);
-                    } else {
-                        $startTime = $day->copy()->setTimeFromTimeString($dayAvailability->start_time);
-                        $endTime = $day->copy()->setTimeFromTimeString($dayAvailability->end_time);
-                    }
+                $events[] = [
+                    'id' => 'avail_' . $day->format('Y-m-d') . '_' . $dayAvailability->id,
+                    'title' => 'Disponible',
+                    'start' => $startTime->toISOString(),
+                    'end' => $endTime->toISOString(),
+                    'backgroundColor' => '#10b981', // vert
+                    'borderColor' => '#10b981',
+                    'textColor' => '#ffffff',
+                    'allDay' => false,
+                    'extendedProps' => [
+                        'type' => 'availability'
+                    ]
+                ];
+                
+                // Ajouter la pause si définie
+                if ($dayAvailability->hasBreak()) {
+                    $breakStart = $day->copy()->setTimeFromTimeString($dayAvailability->break_start_time);
+                    $breakEnd = $day->copy()->setTimeFromTimeString($dayAvailability->break_end_time);
                     
                     $events[] = [
-                        'id' => 'avail_' . $day->format('Y-m-d') . '_' . $dayAvailability->id,
-                        'title' => 'Disponible',
-                        'start' => $startTime->toISOString(),
-                        'end' => $endTime->toISOString(),
-                        'backgroundColor' => '#10b981', // vert
-                        'borderColor' => '#10b981',
+                        'id' => 'break_' . $day->format('Y-m-d') . '_' . $dayAvailability->id,
+                        'title' => 'Pause',
+                        'start' => $breakStart->toISOString(),
+                        'end' => $breakEnd->toISOString(),
+                        'backgroundColor' => '#f59e0b', // orange
+                        'borderColor' => '#f59e0b',
                         'textColor' => '#ffffff',
                         'allDay' => false,
                         'extendedProps' => [
-                            'type' => 'availability'
+                            'type' => 'break'
                         ]
                     ];
-                    
-                    // Ajouter la pause si définie
-                    if ($dayAvailability->hasBreak() && !($dayException && $dayException->isCustomHours())) {
-                        $breakStart = $day->copy()->setTimeFromTimeString($dayAvailability->break_start_time);
-                        $breakEnd = $day->copy()->setTimeFromTimeString($dayAvailability->break_end_time);
-                        
-                        $events[] = [
-                            'id' => 'break_' . $day->format('Y-m-d') . '_' . $dayAvailability->id,
-                            'title' => 'Pause',
-                            'start' => $breakStart->toISOString(),
-                            'end' => $breakEnd->toISOString(),
-                            'backgroundColor' => '#f59e0b', // orange
-                            'borderColor' => '#f59e0b',
-                            'textColor' => '#ffffff',
-                            'allDay' => false,
-                            'extendedProps' => [
-                                'type' => 'break'
-                            ]
-                        ];
-                    }
                 }
-            }
-        }
-        
-        // Ajouter les exceptions (jours non disponibles, vacances, etc.)
-        foreach ($exceptions as $exception) {
-            if (!$exception->isCustomHours()) { // Les heures personnalisées sont déjà traitées ci-dessus
-                $events[] = [
-                    'id' => 'exception_' . $exception->id,
-                    'title' => $exception->reason ?: 'Non disponible',
-                    'start' => $exception->date->toDateString(),
-                    'backgroundColor' => '#ef4444', // rouge
-                    'borderColor' => '#ef4444',
-                    'textColor' => '#ffffff',
-                    'allDay' => true,
-                    'extendedProps' => [
-                        'type' => 'exception',
-                        'exceptionType' => $exception->type,
-                        'reason' => $exception->reason
-                    ]
-                ];
             }
         }
         
@@ -233,7 +170,7 @@ class AvailabilityController extends Controller
 
             if ($availability) {
                 $availability->update([
-                    'is_active' => isset($data['is_active']),
+                    'is_active' => isset($data['is_active']) && $data['is_active'] == '1',
                     'start_time' => $data['start_time'],
                     'end_time' => $data['end_time'],
                     'slot_duration' => $data['slot_duration'],
@@ -243,86 +180,6 @@ class AvailabilityController extends Controller
 
         return redirect()->route('prestataire.availability.index')
             ->with('success', 'Vos disponibilités ont été mises à jour avec succès.');
-    }
-    
-    /**
-     * Ajoute une exception de disponibilité
-     */
-    public function addException(Request $request)
-    {
-        $user = Auth::user();
-        $prestataire = $user->prestataire;
-        
-        $request->validate([
-            'date' => 'required|date|after_or_equal:today',
-            'type' => 'required|in:unavailable,holiday,vacation,sick_leave,custom_hours,blocked',
-            'start_time' => 'required_if:type,custom_hours|nullable|date_format:H:i',
-            'end_time' => 'required_if:type,custom_hours|nullable|date_format:H:i|after:start_time',
-            'reason' => 'nullable|string|max:255',
-            'is_recurring' => 'boolean',
-            'recurrence_pattern' => 'required_if:is_recurring,true|nullable|array',
-        ]);
-        
-        $exception = new AvailabilityException([
-            'prestataire_id' => $prestataire->id,
-            'date' => $request->input('date'),
-            'type' => $request->input('type'),
-            'start_time' => $request->input('start_time'),
-            'end_time' => $request->input('end_time'),
-            'reason' => $request->input('reason'),
-            'is_recurring' => $request->input('is_recurring', false),
-            'recurrence_pattern' => $request->input('recurrence_pattern'),
-            'is_active' => true,
-        ]);
-        
-        $exception->save();
-        
-        // Si c'est une journée complète non disponible, annuler les réservations existantes
-        if (in_array($request->input('type'), ['unavailable', 'holiday', 'vacation', 'sick_leave', 'blocked'])) {
-            $date = Carbon::parse($request->input('date'));
-            
-            $slots = TimeSlot::where('prestataire_id', $prestataire->id)
-                ->whereDate('start_datetime', $date)
-                ->whereIn('status', ['available', 'pending'])
-                ->get();
-            
-            foreach ($slots as $slot) {
-                if ($slot->status === 'available') {
-                    $slot->update(['status' => 'blocked']);
-                } elseif ($slot->status === 'pending') {
-                    // Notifier le client que sa réservation est annulée
-                    $booking = $slot->booking;
-                    if ($booking) {
-                        $booking->cancel('Le prestataire n\'est pas disponible à cette date.');
-                    }
-                }
-            }
-        }
-        
-        return response()->json([
-            'success' => true,
-            'message' => 'Exception de disponibilité ajoutée avec succès',
-            'exception' => $exception
-        ]);
-    }
-    
-    /**
-     * Supprime une exception de disponibilité
-     */
-    public function deleteException(AvailabilityException $exception)
-    {
-        $user = Auth::user();
-        
-        if ($exception->prestataire_id !== $user->prestataire->id) {
-            abort(403, 'Non autorisé');
-        }
-        
-        $exception->delete();
-        
-        return response()->json([
-            'success' => true,
-            'message' => 'Exception de disponibilité supprimée avec succès'
-        ]);
     }
     
     /**
@@ -379,11 +236,7 @@ class AvailabilityController extends Controller
             ->where('is_active', true)
             ->get();
         
-        // Récupérer les exceptions de disponibilité
-        $exceptions = AvailabilityException::where('prestataire_id', $prestataire->id)
-            ->where('is_active', true)
-            ->whereBetween('date', [$startDate, $endDate])
-            ->get();
+
         
         $generatedSlots = [];
         
@@ -394,26 +247,9 @@ class AvailabilityController extends Controller
             
             // Vérifier si le jour est disponible
             if ($dayAvailability) {
-                // Vérifier s'il y a une exception pour ce jour
-                $dayException = $exceptions->first(function ($exception) use ($date) {
-                    return $exception->date->isSameDay($date);
-                });
-                
-                // Si le jour est bloqué par une exception, passer au jour suivant
-                if ($dayException && !$dayException->isCustomHours()) {
-                    continue;
-                }
-                
-                // Utiliser les heures personnalisées de l'exception si disponibles
-                if ($dayException && $dayException->isCustomHours()) {
-                    $startTime = $date->copy()->setTimeFromTimeString($dayException->start_time);
-                    $endTime = $date->copy()->setTimeFromTimeString($dayException->end_time);
-                    $slotDuration = $dayAvailability->slot_duration; // Utiliser la durée de créneau standard
-                } else {
-                    $startTime = $date->copy()->setTimeFromTimeString($dayAvailability->start_time);
-                    $endTime = $date->copy()->setTimeFromTimeString($dayAvailability->end_time);
-                    $slotDuration = $dayAvailability->slot_duration;
-                }
+                $startTime = $date->copy()->setTimeFromTimeString($dayAvailability->start_time);
+                $endTime = $date->copy()->setTimeFromTimeString($dayAvailability->end_time);
+                $slotDuration = $dayAvailability->slot_duration;
                 
                 // Générer les créneaux pour ce jour
                 $currentTime = $startTime->copy();
@@ -424,7 +260,7 @@ class AvailabilityController extends Controller
                     // Vérifier si le créneau chevauche une pause
                     $skipSlot = false;
                     
-                    if ($dayAvailability->hasBreak() && !($dayException && $dayException->isCustomHours())) {
+                    if ($dayAvailability->hasBreak()) {
                         $breakStart = $date->copy()->setTimeFromTimeString($dayAvailability->break_start_time);
                         $breakEnd = $date->copy()->setTimeFromTimeString($dayAvailability->break_end_time);
                         

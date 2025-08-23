@@ -12,45 +12,45 @@ use Illuminate\Support\Facades\Storage;
 
 class ServiceController extends Controller
 {
-//     /**
-//      * Affiche la liste des services pour modération.
-//      *
-//      * @return \Illuminate\View\View
-//      */
-//     public function index(Request $request)
-//     {
-//         $query = Service::with(['prestataire', 'prestataire.user', 'categories']);
+    /**
+     * Affiche la liste des services pour modération.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function index(Request $request)
+    {
+        $query = Service::with(['prestataire', 'prestataire.user', 'categories']);
         
-//         // Filtrage par titre
-//         if ($request->has('title')) {
-//             $query->where('title', 'like', '%' . $request->title . '%');
-//         }
+        // Filtrage par titre
+        if ($request->has('title')) {
+            $query->where('title', 'like', '%' . $request->title . '%');
+        }
         
-//         // Filtrage par prestataire
-//         if ($request->has('prestataire')) {
-//             $query->whereHas('prestataire.user', function($q) use ($request) {
-//                 $q->where('name', 'like', '%' . $request->prestataire . '%');
-//             });
-//         }
+        // Filtrage par prestataire
+        if ($request->has('prestataire')) {
+            $query->whereHas('prestataire.user', function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->prestataire . '%');
+            });
+        }
         
-//         // Filtrage par catégorie
-//         if ($request->has('category')) {
-//             $query->whereHas('categories', function($q) use ($request) {
-//                 $q->where('name', 'like', '%' . $request->category . '%');
-//             });
-//         }
+        // Filtrage par catégorie
+        if ($request->has('category')) {
+            $query->whereHas('categories', function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->category . '%');
+            });
+        }
         
-//         // Tri
-//         $sortField = $request->get('sort', 'created_at');
-//         $sortDirection = $request->get('direction', 'desc');
-//         $query->orderBy($sortField, $sortDirection);
+        // Tri
+        $sortField = $request->get('sort', 'created_at');
+        $sortDirection = $request->get('direction', 'desc');
+        $query->orderBy($sortField, $sortDirection);
         
-//         $services = $query->paginate(15);
+        $services = $query->paginate(15);
         
-//         return view('admin.services.index-modern', [
-//             'services' => $services,
-//         ]);
-//     }
+        return view('admin.services.index-modern', [
+            'services' => $services,
+        ]);
+    }
 
 //     /**
 //      * Affiche le formulaire de création d'un service.
@@ -218,5 +218,85 @@ class ServiceController extends Controller
         
         return redirect()->route('administrateur.services.index')
             ->with('success', 'Le service a été supprimé avec succès.');
+    }
+
+    /**
+     * Exporte les services au format CSV.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    public function export(Request $request)
+    {
+        $query = Service::with(['prestataire.user', 'categories']);
+        
+        // Appliquer les mêmes filtres que dans la méthode index
+        if ($request->has('title')) {
+            $query->where('title', 'like', '%' . $request->title . '%');
+        }
+        
+        if ($request->has('prestataire')) {
+            $query->whereHas('prestataire.user', function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->prestataire . '%');
+            });
+        }
+        
+        if ($request->has('category')) {
+            $query->whereHas('categories', function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->category . '%');
+            });
+        }
+        
+        // Tri
+        $sortField = $request->get('sort', 'created_at');
+        $sortDirection = $request->get('direction', 'desc');
+        $query->orderBy($sortField, $sortDirection);
+        
+        $services = $query->get();
+        
+        $filename = 'services_' . now()->format('Y-m-d_H-i-s') . '.csv';
+        
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+        
+        $callback = function() use ($services) {
+            $file = fopen('php://output', 'w');
+            
+            // En-têtes CSV
+            fputcsv($file, [
+                'ID',
+                'Titre',
+                'Prestataire',
+                'Email Prestataire',
+                'Catégories',
+                'Prix',
+                'Ville',
+                'Visibilité',
+                'Date de création',
+                'Dernière modification'
+            ]);
+            
+            // Données
+            foreach ($services as $service) {
+                fputcsv($file, [
+                    $service->id,
+                    $service->title,
+                    $service->prestataire->user->name ?? 'N/A',
+                    $service->prestataire->user->email ?? 'N/A',
+                    $service->categories->pluck('name')->implode(', '),
+                    $service->price ? number_format($service->price, 2) . ' €' : 'N/A',
+                    $service->city ?? 'N/A',
+                    $service->is_visible ? 'Visible' : 'Masqué',
+                    $service->created_at->format('d/m/Y H:i'),
+                    $service->updated_at->format('d/m/Y H:i')
+                ]);
+            }
+            
+            fclose($file);
+        };
+        
+        return response()->stream($callback, 200, $headers);
     }
 }

@@ -35,7 +35,7 @@ class ProfileController extends Controller
         $user = Auth::user();
         $prestataire = $user->prestataire;
         $skills = Skill::all();
-        $categories = Category::all();
+        $categories = Category::orderBy('name')->get();
         
         // Calculer le pourcentage de complétion du profil
         $completionPercentage = $prestataire ? $this->calculateProfileCompletion($prestataire) : 0;
@@ -272,7 +272,7 @@ class ProfileController extends Controller
             ->latest()
             ->paginate(10);
         
-        return view('prestataire.profile.public', [
+        return view('prestataires.show', [
             'prestataire' => $prestataire,
             'stats' => $stats,
             'services' => $services,
@@ -375,5 +375,52 @@ class ProfileController extends Controller
             'reviews' => $reviews,
             'is_preview' => true
         ]);
+    }
+
+    /**
+     * Supprime définitivement le compte prestataire.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|current_password',
+            'confirmation' => 'required|in:DELETE'
+        ]);
+
+        $user = Auth::user();
+        $prestataire = $user->prestataire;
+
+        // Supprimer les fichiers associés
+        if ($prestataire) {
+            // Supprimer la photo de profil
+            if ($prestataire->photo && Storage::disk('public')->exists($prestataire->photo)) {
+                Storage::disk('public')->delete($prestataire->photo);
+            }
+
+            // Supprimer les images du portfolio
+            if ($prestataire->portfolio_images && is_array($prestataire->portfolio_images)) {
+                foreach ($prestataire->portfolio_images as $portfolioItem) {
+                    if (isset($portfolioItem['image']) && Storage::disk('public')->exists($portfolioItem['image'])) {
+                        Storage::disk('public')->delete($portfolioItem['image']);
+                    }
+                }
+            }
+        }
+
+        // Déconnecter l'utilisateur
+        Auth::logout();
+
+        // Supprimer l'utilisateur (cascade sur le prestataire)
+        $user->delete();
+
+        // Invalider la session
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('home')
+            ->with('success', 'Votre compte a été supprimé avec succès.');
     }
 }

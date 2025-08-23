@@ -48,10 +48,13 @@ class EquipmentService
             $data['main_photo'] = $path;
         }
 
-        $equipment = Equipment::create($data);
+        // Ajouter les champs de catégorie
+        $data['category_id'] = $validatedData['category_id'];
+        if (isset($validatedData['subcategory_id']) && !empty($validatedData['subcategory_id'])) {
+            $data['subcategory_id'] = $validatedData['subcategory_id'];
+        }
 
-        // Attacher la catégorie
-        $equipment->categories()->attach($validatedData['category_id']);
+        $equipment = Equipment::create($data);
 
         return $equipment;
     }

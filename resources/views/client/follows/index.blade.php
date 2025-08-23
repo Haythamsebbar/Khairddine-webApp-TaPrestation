@@ -66,10 +66,10 @@
                                 <div class="flex items-center mb-4">
                                     <div class="mr-4 relative">
                                         @if($prestataire->photo)
-                                            <img src="{{ asset('storage/' . $prestataire->photo) }}" alt="{{ $prestataire->user->name }}" 
+                                            <img src="{{ asset('storage/' . $prestataire->photo) }}" alt="{{ $prestataire->user->name ?? 'Prestataire' }}" 
                                                 class="w-16 h-16 rounded-full object-cover">
                                         @elseif($prestataire->user->avatar)
-                                            <img src="{{ asset('storage/' . $prestataire->user->avatar) }}" alt="{{ $prestataire->user->name }}" 
+                                            <img src="{{ asset('storage/' . $prestataire->user->avatar) }}" alt="{{ $prestataire->user->name ?? 'Prestataire' }}" 
                                                 class="w-16 h-16 rounded-full object-cover">
                                         @else
                                             <div class="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
@@ -89,7 +89,7 @@
                                     
                                     <div>
                                         <div class="flex items-center gap-2">
-                                            <h3 class="text-lg font-semibold text-gray-800">{{ $prestataire->user->name }}</h3>
+                                            <h3 class="text-lg font-semibold text-gray-800">{{ $prestataire->user->name ?? 'Prestataire' }}</h3>
                                             @if($prestataire->isVerified())
                                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">

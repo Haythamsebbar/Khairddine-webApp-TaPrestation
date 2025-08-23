@@ -1,102 +1,99 @@
 @extends('layouts.admin-modern')
 
 @section('content')
-<div class="container-fluid">
-    <div class="row mb-3">
-        <div class="col-12">
-            <a href="{{ route('administrateur.clients.index') }}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Retour à la liste
-            </a>
+<div class="bg-blue-50 min-h-screen">
+    <!-- Header -->
+    <div class="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-6 sm:mb-8">
+                <a href="{{ route('administrateur.clients.index') }}" class="inline-flex items-center bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2.5 px-4 rounded-lg transition duration-200 text-sm">
+                    <i class="bi bi-arrow-left mr-2"></i> Retour à la liste
+                </a>
+            </div>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                    <h6 class="m-0 font-weight-bold">Détails du client</h6>
-                    <div>
-                        @if(auth()->id() != $client->user_id)
-                            <form action="{{ route('administrateur.clients.toggle-block', $client->id) }}" method="POST" class="d-inline">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" class="btn btn-sm {{ $client->user->blocked_at ? 'btn-success' : 'btn-warning' }}">
-                                    <i class="bi {{ $client->user->blocked_at ? 'bi-unlock' : 'bi-lock' }}"></i> 
-                                    {{ $client->user->blocked_at ? 'Débloquer' : 'Bloquer' }}
-                                </button>
-                            </form>
-                            <form action="{{ route('administrateur.clients.destroy', $client->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce client ?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger">
-                                    <i class="bi bi-trash"></i> Supprimer
-                                </button>
-                            </form>
-                        @endif
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+            <!-- Profil du client - Colonne de gauche -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-lg border border-blue-200">
+                    <div class="px-4 sm:px-6 py-4 border-b border-blue-200">
+                        <h3 class="text-xl font-bold text-blue-800">Profil du client</h3>
                     </div>
-                </div>
-                <div class="card-body">
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="flex-shrink-0">
-                                    <div class="avatar-circle">
-                                        <span class="initials">{{ substr($client->user->name, 0, 1) }}</span>
-                                    </div>
-                                </div>
-                                <div class="ms-3">
-                                    <h5 class="mb-0">{{ $client->user->name }}</h5>
-                                    <p class="text-muted mb-0">{{ $client->user->email }}</p>
-                                </div>
+                    <div class="p-4 sm:p-6">
+                        <!-- Avatar et informations de base -->
+                        <div class="text-center mb-6">
+                            <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <span class="text-blue-600 font-bold text-3xl">{{ substr($client->user->name, 0, 1) }}</span>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-2">
-                                <strong>Statut:</strong>
+                            <h4 class="text-xl font-bold text-blue-900 mb-2">{{ $client->user->name }}</h4>
+                            <p class="text-blue-600 mb-4">{{ $client->user->email }}</p>
+                            
+                            <!-- Statut -->
+                            <div class="mb-6">
                                 @if($client->user->blocked_at)
-                                    <span class="badge bg-danger">Bloqué depuis le {{ $client->user->blocked_at->format('d/m/Y à H:i') }}</span>
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">Bloqué depuis le {{ $client->user->blocked_at->format('d/m/Y à H:i') }}</span>
                                 @else
-                                    <span class="badge bg-success">Actif</span>
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">Actif</span>
                                 @endif
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <h5 class="font-weight-bold">Date d'inscription</h5>
-                            <p>{{ $client->created_at->format('d/m/Y à H:i') }}</p>
+                        <!-- Actions -->
+                        <div class="space-y-3 mb-6">
+                            @if(auth()->id() != $client->user_id)
+                                <form action="{{ route('administrateur.clients.toggle-block', $client->id) }}" method="POST" class="w-full">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="w-full {{ $client->user->blocked_at ? 'bg-green-100 hover:bg-green-200 text-green-800' : 'bg-yellow-100 hover:bg-yellow-200 text-yellow-800' }} font-bold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center">
+                                        <i class="bi {{ $client->user->blocked_at ? 'bi-unlock' : 'bi-lock' }} mr-2"></i> 
+                                        {{ $client->user->blocked_at ? 'Débloquer' : 'Bloquer' }}
+                                    </button>
+                                </form>
+                                <form action="{{ route('administrateur.clients.destroy', $client->id) }}" method="POST" class="w-full" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce client ?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="w-full bg-red-100 hover:bg-red-200 text-red-800 font-bold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center">
+                                        <i class="bi bi-trash mr-2"></i> Supprimer
+                                    </button>
+                                </form>
+                            @endif
                         </div>
-                        <div class="col-md-6">
-                            <h5 class="font-weight-bold">Dernière mise à jour</h5>
-                            <p>{{ $client->updated_at->format('d/m/Y à H:i') }}</p>
-                        </div>
-                    </div>
 
-                    <div class="mb-4">
-                        <h5 class="font-weight-bold">Statistiques</h5>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="card bg-primary text-white mb-3">
-                                    <div class="card-body">
-                                        <h5 class="card-title">{{ $client->clientRequests->count() }}</h5>
-                                        <p class="card-text">Demandes de services</p>
+                        <!-- Informations de base -->
+                        <div class="space-y-4">
+                            <div>
+                                <h5 class="text-sm font-bold text-blue-800 mb-1">Date d'inscription</h5>
+                                <p class="text-blue-700">{{ $client->created_at->format('d/m/Y à H:i') }}</p>
+                            </div>
+                            <div>
+                                <h5 class="text-sm font-bold text-blue-800 mb-1">Dernière mise à jour</h5>
+                                <p class="text-blue-700">{{ $client->updated_at->format('d/m/Y à H:i') }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Statistiques -->
+                        <div class="mt-6">
+                            <h5 class="text-lg font-bold text-blue-800 mb-4">Statistiques</h5>
+                            <div class="space-y-3">
+                                <div class="bg-blue-600 text-white rounded-lg p-3">
+                                    <div class="text-center">
+                                        <h5 class="text-xl font-bold mb-1">{{ $client->bookings->count() }}</h5>
+                                        <p class="text-blue-100 text-sm">Réservations</p>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card bg-success text-white mb-3">
-                                    <div class="card-body">
-                                        <h5 class="card-title">{{ $client->reviews->count() }}</h5>
-                                        <p class="card-text">Avis publiés</p>
+                                <div class="bg-green-600 text-white rounded-lg p-3">
+                                    <div class="text-center">
+                                        <h5 class="text-xl font-bold mb-1">{{ $client->reviews->count() }}</h5>
+                                        <p class="text-green-100 text-sm">Avis publiés</p>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card bg-info text-white mb-3">
-                                    <div class="card-body">
-                                        <h5 class="card-title">{{ $client->follows->count() }}</h5>
-                                        <p class="card-text">Prestataires suivis</p>
+                                <div class="bg-indigo-600 text-white rounded-lg p-3">
+                                    <div class="text-center">
+                                        <h5 class="text-xl font-bold mb-1">{{ $client->follows->count() }}</h5>
+                                        <p class="text-indigo-100 text-sm">Prestataires suivis</p>
                                     </div>
                                 </div>
                             </div>
@@ -104,92 +101,93 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="col-lg-4">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold">Dernières demandes</h6>
-                </div>
-                <div class="card-body">
-                    @if($client->clientRequests->count() > 0)
-                        <ul class="list-group list-group-flush">
-                            @foreach($client->clientRequests->sortByDesc('created_at')->take(5) as $request)
-                                <li class="list-group-item px-0">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <span class="text-truncate d-inline-block" style="max-width: 200px;">{{ $request->title }}</span>
-                                            <small class="text-muted d-block">{{ $request->created_at->format('d/m/Y') }}</small>
-                                        </div>
-                                        <span class="badge {{ $request->status == 'pending' ? 'bg-warning' : ($request->status == 'completed' ? 'bg-success' : 'bg-primary') }}">
-                                            {{ $request->status == 'pending' ? 'En attente' : ($request->status == 'completed' ? 'Terminée' : 'En cours') }}
-                                        </span>
-                                    </div>
-                                </li>
-                            @endforeach
-                        </ul>
-                    @else
-                        <p class="text-muted">Aucune demande de service</p>
-                    @endif
-                </div>
-            </div>
+            <!-- Informations détaillées - Colonne de droite -->
+            <div class="lg:col-span-2">
+                <div class="space-y-6">
 
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold">Derniers avis</h6>
-                </div>
-                <div class="card-body">
-                    @if($client->reviews->count() > 0)
-                        <ul class="list-group list-group-flush">
-                            @foreach($client->reviews->sortByDesc('created_at')->take(5) as $review)
-                                <li class="list-group-item px-0">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <div class="d-flex">
-                                                @for($i = 1; $i <= 5; $i++)
-                                                    <i class="bi {{ $i <= $review->rating ? 'bi-star-fill text-warning' : 'bi-star' }} small"></i>
-                                                @endfor
+                    <!-- Dernières réservations -->
+                    <div class="bg-white rounded-xl shadow-lg border border-blue-200">
+                        <div class="px-6 py-4 border-b border-blue-200">
+                            <h3 class="text-xl font-bold text-blue-800">Dernières réservations</h3>
+                        </div>
+                        <div class="p-6">
+                            @if($client->bookings->count() > 0)
+                                <div class="space-y-4">
+                                    @foreach($client->bookings->sortByDesc('created_at')->take(5) as $booking)
+                                        <div class="flex justify-between items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors border border-blue-200">
+                                            <div class="flex-1">
+                                                <span class="text-blue-900 font-medium block">{{ $booking->service->title }}</span>
+                                                <small class="text-blue-600 text-sm">{{ $booking->created_at->format('d/m/Y') }}</small>
                                             </div>
-                                            <small class="text-muted d-block">{{ $review->created_at->format('d/m/Y') }}</small>
-                                            <span class="text-truncate d-inline-block" style="max-width: 200px;">{{ $review->comment }}</span>
+                                            <span class="px-3 py-1 rounded-full text-xs font-medium {{ $booking->status == 'pending' ? 'bg-yellow-100 text-yellow-800' : ($booking->status == 'completed' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800') }}">
+                                                {{ $booking->status == 'pending' ? 'En attente' : ($booking->status == 'completed' ? 'Terminée' : 'En cours') }}
+                                            </span>
                                         </div>
-                                        <a href="{{ route('administrateur.reviews.show', $review->id) }}" class="btn btn-sm btn-outline-info">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                    </div>
-                                </li>
-                            @endforeach
-                        </ul>
-                    @else
-                        <p class="text-muted">Aucun avis publié</p>
-                    @endif
-                </div>
-            </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <p class="text-blue-600 text-center py-8">Aucune réservation</p>
+                            @endif
+                        </div>
+                    </div>
 
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold">Prestataires suivis</h6>
-                </div>
-                <div class="card-body">
-                    @if($client->follows->count() > 0)
-                        <ul class="list-group list-group-flush">
-                            @foreach($client->follows as $prestataire)
-                                <li class="list-group-item px-0">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <span>{{ $prestataire->user->name }}</span>
-                                            <small class="text-muted d-block">{{ $prestataire->sector }}</small>
+                    <!-- Derniers avis -->
+                    <div class="bg-white rounded-xl shadow-lg border border-blue-200">
+                        <div class="px-6 py-4 border-b border-blue-200">
+                            <h3 class="text-xl font-bold text-blue-800">Derniers avis</h3>
+                        </div>
+                        <div class="p-6">
+                            @if($client->reviews->count() > 0)
+                                <div class="space-y-4">
+                                    @foreach($client->reviews->sortByDesc('created_at')->take(5) as $review)
+                                        <div class="flex justify-between items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors border border-blue-200">
+                                            <div class="flex-1">
+                                                <div class="flex mb-2">
+                                                    @for($i = 1; $i <= 5; $i++)
+                                                        <i class="bi {{ $i <= $review->rating ? 'bi-star-fill text-yellow-400' : 'bi-star text-gray-300' }} text-sm"></i>
+                                                    @endfor
+                                                </div>
+                                                <small class="text-blue-600 text-sm block mb-1">{{ $review->created_at->format('d/m/Y') }}</small>
+                                                <span class="text-blue-900 text-sm block">{{ Str::limit($review->comment, 100) }}</span>
+                                            </div>
+                                            <a href="{{ route('administrateur.reviews.show', $review->id) }}" class="ml-3 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
                                         </div>
-                                        <a href="{{ route('administrateur.prestataires.show', $prestataire->id) }}" class="btn btn-sm btn-outline-info">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                    </div>
-                                </li>
-                            @endforeach
-                        </ul>
-                    @else
-                        <p class="text-muted">Aucun prestataire suivi</p>
-                    @endif
+                                    @endforeach
+                                </div>
+                            @else
+                                <p class="text-blue-600 text-center py-8">Aucun avis publié</p>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Prestataires suivis -->
+                    <div class="bg-white rounded-xl shadow-lg border border-blue-200">
+                        <div class="px-6 py-4 border-b border-blue-200">
+                            <h3 class="text-xl font-bold text-blue-800">Prestataires suivis</h3>
+                        </div>
+                        <div class="p-6">
+                            @if($client->follows->count() > 0)
+                                <div class="space-y-4">
+                                    @foreach($client->follows as $prestataire)
+                                        <div class="flex justify-between items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors border border-blue-200">
+                                            <div class="flex-1">
+                                                <span class="text-blue-900 font-medium block">{{ $prestataire->user->name }}</span>
+                                                <small class="text-blue-600 text-sm">{{ $prestataire->sector }}</small>
+                                            </div>
+                                            <a href="{{ route('administrateur.prestataires.show', $prestataire->id) }}" class="ml-3 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <p class="text-blue-600 text-center py-8">Aucun prestataire suivi</p>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -2,9 +2,9 @@
 
 @section('content')
 <link rel="stylesheet" href="{{ asset('css/prestataires-list.css') }}">
-<div class="container mx-auto px-4 py-8">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
     <!-- En-tête du profil prestataire -->
-    <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl shadow-xl p-10 mb-8 text-white relative overflow-hidden">
+    <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl shadow-xl p-6 sm:p-8 lg:p-10 mb-6 sm:mb-8 text-white relative overflow-hidden">
         <!-- Motif de fond décoratif -->
         <div class="absolute inset-0 opacity-10">
             <svg class="w-full h-full" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -19,28 +19,28 @@
         
         <div class="relative z-10">
             <!-- Layout principal en trois colonnes -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center">
                 
                 <!-- Colonne gauche : Photo + Évaluations (mobile: en haut) -->
-                <div class="lg:col-span-3 flex flex-col items-center lg:items-start space-y-6">
+                <div class="lg:col-span-3 flex flex-col items-center lg:items-start space-y-4 sm:space-y-6">
                     <!-- Photo de profil agrandie -->
                     <div class="prestataire-avatar relative flex-shrink-0">
                         @if($prestataire->photo)
-                            <img src="{{ asset('storage/' . $prestataire->photo) }}" alt="{{ $prestataire->user->name }}" class="h-48 w-48 lg:h-56 lg:w-56 object-cover rounded-full border-6 border-white shadow-2xl ring-4 ring-white/20">
+                            <img src="{{ asset('storage/' . $prestataire->photo) }}" alt="{{ $prestataire->user->name }}" class="h-32 w-32 sm:h-40 sm:w-40 lg:h-56 lg:w-56 object-cover rounded-full border-4 sm:border-6 border-white shadow-2xl ring-2 sm:ring-4 ring-white/20">
                         @elseif($prestataire->user->avatar)
-                            <img src="{{ asset('storage/' . $prestataire->user->avatar) }}" alt="{{ $prestataire->user->name }}" class="h-48 w-48 lg:h-56 lg:w-56 object-cover rounded-full border-6 border-white shadow-2xl ring-4 ring-white/20">
+                            <img src="{{ asset('storage/' . $prestataire->user->avatar) }}" alt="{{ $prestataire->user->name }}" class="h-32 w-32 sm:h-40 sm:w-40 lg:h-56 lg:w-56 object-cover rounded-full border-4 sm:border-6 border-white shadow-2xl ring-2 sm:ring-4 ring-white/20">
                         @elseif($prestataire->user->profile_photo_url)
-                            <img src="{{ $prestataire->user->profile_photo_url }}" alt="{{ $prestataire->user->name }}" class="h-48 w-48 lg:h-56 lg:w-56 object-cover rounded-full border-6 border-white shadow-2xl ring-4 ring-white/20">
+                            <img src="{{ $prestataire->user->profile_photo_url }}" alt="{{ $prestataire->user->name }}" class="h-32 w-32 sm:h-40 sm:w-40 lg:h-56 lg:w-56 object-cover rounded-full border-4 sm:border-6 border-white shadow-2xl ring-2 sm:ring-4 ring-white/20">
                         @else
-                            <div class="h-48 w-48 lg:h-56 lg:w-56 flex items-center justify-center bg-white text-blue-600 rounded-full border-6 border-white shadow-2xl ring-4 ring-white/20">
-                                <svg class="h-24 w-24 lg:h-28 lg:w-28" fill="currentColor" viewBox="0 0 24 24">
+                            <div class="h-32 w-32 sm:h-40 sm:w-40 lg:h-56 lg:w-56 flex items-center justify-center bg-white text-blue-600 rounded-full border-4 sm:border-6 border-white shadow-2xl ring-2 sm:ring-4 ring-white/20">
+                                <svg class="h-16 w-16 sm:h-20 sm:w-20 lg:h-28 lg:w-28" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
                                 </svg>
                             </div>
                         @endif
                         @if($prestataire->isVerified())
-                            <div class="absolute -bottom-2 -right-2 w-12 h-12 bg-green-500 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
-                                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <div class="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 w-8 h-8 sm:w-12 sm:h-12 bg-green-500 rounded-full flex items-center justify-center border-2 sm:border-4 border-white shadow-lg">
+                                <svg class="w-4 h-4 sm:w-6 sm:h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                                 </svg>
                             </div>
@@ -54,18 +54,18 @@
                         $roundedRating = round($averageRating, 1);
                     @endphp
                     
-                    <div class="bg-yellow-500/30 backdrop-blur-sm rounded-xl p-4 border border-yellow-400/50 w-full max-w-xs">
+                    <div class="bg-yellow-500/30 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-yellow-400/50 w-full max-w-xs">
                         @if($totalReviews > 0)
                             <div class="text-center">
-                                <div class="text-2xl font-bold text-yellow-100 mb-1">{{ $roundedRating }}</div>
+                                <div class="text-xl sm:text-2xl font-bold text-yellow-100 mb-1">{{ $roundedRating }}</div>
                                 <div class="flex justify-center items-center mb-1">
                                     @for($i = 1; $i <= 5; $i++)
                                         @if($i <= floor($averageRating))
-                                            <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <svg class="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
                                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
                                             </svg>
                                         @elseif($i == ceil($averageRating) && $averageRating - floor($averageRating) >= 0.5)
-                                            <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <svg class="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
                                                 <defs>
                                                     <linearGradient id="half-star-compact">
                                                         <stop offset="50%" stop-color="currentColor"/>
@@ -75,7 +75,7 @@
                                                 <path fill="url(#half-star-compact)" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
                                             </svg>
                                         @else
-                                            <svg class="w-4 h-4 text-yellow-200/40" fill="currentColor" viewBox="0 0 20 20">
+                                            <svg class="w-3 h-3 sm:w-4 sm:h-4 text-yellow-200/40" fill="currentColor" viewBox="0 0 20 20">
                                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
                                             </svg>
                                         @endif
@@ -87,7 +87,7 @@
                             <div class="text-center">
                                 <div class="flex justify-center items-center mb-1">
                                     @for($i = 1; $i <= 5; $i++)
-                                        <svg class="w-4 h-4 text-yellow-200/40" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg class="w-3 h-3 sm:w-4 sm:h-4 text-yellow-200/40" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
                                         </svg>
                                     @endfor
@@ -100,31 +100,31 @@
                 
                 <!-- Colonne centrale : Nom + Description -->
                 <div class="lg:col-span-6 text-center lg:text-left">
-                    <h1 class="text-5xl lg:text-6xl font-black mb-4 leading-tight">{{ $prestataire->user->name }}</h1>
+                    <h1 class="text-3xl sm:text-4xl lg:text-6xl font-black mb-3 sm:mb-4 leading-tight">{{ $prestataire->user->name }}</h1>
                     
                     @if($prestataire->isVerified())
-                        <div class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-green-500/20 text-green-100 border border-green-400/30 backdrop-blur-sm mb-4">
-                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <div class="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold bg-green-500/20 text-green-100 border border-green-400/30 backdrop-blur-sm mb-3 sm:mb-4">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                             </svg>
                             Profil Vérifié
                         </div>
                     @endif
                     
-                    <p class="text-2xl lg:text-3xl font-bold text-blue-100 mb-6 tracking-wide">{{ $prestataire->secteur_activite }}</p>
-                    <p class="text-lg lg:text-xl text-blue-50/90 leading-relaxed">{{ $prestataire->description }}</p>
+                    <p class="text-lg sm:text-xl lg:text-3xl font-bold text-blue-100 mb-4 sm:mb-6 tracking-wide">{{ $prestataire->secteur_activite }}</p>
+                    <p class="text-base sm:text-lg lg:text-xl text-blue-50/90 leading-relaxed">{{ $prestataire->description }}</p>
                 </div>
                 
                 <!-- Colonne droite : Boutons d'action -->
-                <div class="lg:col-span-3 flex flex-row gap-3">
+                <div class="lg:col-span-3 flex flex-col sm:flex-row gap-2 sm:gap-3">
                     @auth
                         @if(auth()->user()->isClient())
                             @if(auth()->user()->client && auth()->user()->client->isFollowing($prestataire->id))
                                 <form action="{{ route('client.prestataire-follows.unfollow', $prestataire) }}" method="POST" class="flex-1">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-2 border-2 border-white rounded-lg text-sm font-semibold text-white bg-white/10 hover:bg-white hover:text-blue-600 transition-all duration-300 backdrop-blur-sm shadow-md hover:shadow-lg">
-                                        <svg class="-ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                    <button type="submit" class="w-full inline-flex items-center justify-center px-3 sm:px-4 py-2.5 sm:py-2 border-2 border-white rounded-lg text-xs sm:text-sm font-semibold text-white bg-white/10 hover:bg-white hover:text-blue-600 transition-all duration-300 backdrop-blur-sm shadow-md hover:shadow-lg">
+                                        <svg class="-ml-1 mr-1.5 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
                                             <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                         </svg>
                                         Abonné(e)
@@ -133,8 +133,8 @@
                             @else
                                 <form action="{{ route('client.prestataire-follows.follow', $prestataire) }}" method="POST" class="flex-1">
                                     @csrf
-                                    <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-2 border-2 border-white rounded-lg text-sm font-semibold text-white bg-white/10 hover:bg-white hover:text-blue-600 transition-all duration-300 backdrop-blur-sm shadow-md hover:shadow-lg">
-                                        <svg class="-ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <button type="submit" class="w-full inline-flex items-center justify-center px-3 sm:px-4 py-2.5 sm:py-2 border-2 border-white rounded-lg text-xs sm:text-sm font-semibold text-white bg-white/10 hover:bg-white hover:text-blue-600 transition-all duration-300 backdrop-blur-sm shadow-md hover:shadow-lg">
+                                        <svg class="-ml-1 mr-1.5 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                         </svg>
                                         S'abonner
@@ -142,8 +142,8 @@
                                 </form>
                             @endif
                             
-                            <a href="{{ route('messaging.start', $prestataire) }}" class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-white text-blue-600 rounded-lg text-sm font-semibold hover:bg-blue-50 transition-all duration-300 shadow-md hover:shadow-lg">
-                                <svg class="-ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <a href="{{ route('messaging.start', $prestataire) }}" class="flex-1 inline-flex items-center justify-center px-3 sm:px-4 py-2.5 sm:py-2 bg-white text-blue-600 rounded-lg text-xs sm:text-sm font-semibold hover:bg-blue-50 transition-all duration-300 shadow-md hover:shadow-lg">
+                                <svg class="-ml-1 mr-1.5 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                 </svg>
                                 Contacter
@@ -156,12 +156,11 @@
         
         
         @if($prestataire->skills->count() > 0)
-            <!-- Section Compétences -->
-            <div class="mt-8 pt-8 border-t border-white/20">
-                <h3 class="text-2xl font-bold mb-6 text-white">Compétences</h3>
-                <div class="flex flex-wrap gap-3">
+            <div class="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-white/20">
+                <h3 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-white">Compétences</h3>
+                <div class="flex flex-wrap gap-2 sm:gap-3">
                     @foreach($prestataire->skills as $skill)
-                        <span class="bg-white/20 text-white text-base font-semibold px-6 py-3 rounded-full border border-white/30 backdrop-blur-sm hover:bg-white/30 transition-all duration-300">
+                        <span class="bg-white/20 text-white text-sm sm:text-base font-semibold px-4 sm:px-6 py-2 sm:py-3 rounded-full border border-white/30 backdrop-blur-sm hover:bg-white/30 transition-all duration-300">
                             {{ $skill->name }}
                         </span>
                     @endforeach
@@ -175,32 +174,31 @@
     
     <!-- Structure à deux colonnes -->
     <div class="container mx-auto px-4">
-        <div class="flex flex-col lg:flex-row gap-8">
+        <div class="flex flex-col lg:flex-row gap-6 lg:gap-8">
             <!-- Colonne gauche (70%) - Contenus métier -->
-            <div class="lg:w-[70%] w-full space-y-6">
+            <div class="lg:w-[70%] w-full space-y-4 sm:space-y-6">
                 <!-- Bloc 1: Services proposés -->
-                <div class="bg-white rounded-xl shadow-lg p-6">
-                    <div class="flex items-center mb-6">
-                        
-                        <h2 class="text-2xl font-bold text-gray-800">Services proposés</h2>
+                <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center mb-4 sm:mb-6">
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-2 sm:mb-0">Services proposés</h2>
                         @if($prestataire->services->count() > 0)
-                            <span class="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            <span class="sm:ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 self-start">
                                 {{ $prestataire->services->count() }}
                             </span>
                         @endif
                     </div>
                     
-                    <div class="space-y-4">
+                    <div class="space-y-3 sm:space-y-4">
                         @forelse($prestataire->services->take(3) as $service)
-                            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow duration-200">
-                                <div class="flex items-start space-x-4">
+                            <div class="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200 hover:shadow-md transition-shadow duration-200">
+                                <div class="flex flex-col sm:flex-row sm:items-start space-y-3 sm:space-y-0 sm:space-x-4">
                                     <!-- Image -->
-                                    <div class="flex-shrink-0 w-20 h-20 bg-gray-200 rounded-lg overflow-hidden">
+                                    <div class="flex-shrink-0 w-full sm:w-20 h-32 sm:h-20 bg-gray-200 rounded-lg overflow-hidden">
                                         @if($service->image)
                                             <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->title }}" class="w-full h-full object-cover">
                                         @else
                                             <div class="w-full h-full bg-gray-300 flex items-center justify-center">
-                                                <svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg class="w-6 h-6 sm:w-8 sm:h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                                                 </svg>
                                             </div>
@@ -209,23 +207,23 @@
                                     
                                     <!-- Contenu -->
                                     <div class="flex-1 min-w-0">
-                                        <div class="flex items-center justify-between mb-2">
-                                            <div class="flex items-center space-x-2">
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
+                                            <div class="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 mb-2 sm:mb-0">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 self-start">
                                                     Service
                                                 </span>
-                                                <h3 class="text-lg font-semibold text-gray-900 truncate">{{ $service->title }}</h3>
+                                                <h3 class="text-base sm:text-lg font-semibold text-gray-900">{{ $service->title }}</h3>
                                             </div>
-                                            <span class="text-sm text-gray-500">{{ $service->created_at->diffForHumans() }}</span>
+                                            <span class="text-xs sm:text-sm text-gray-500">{{ $service->created_at->diffForHumans() }}</span>
                                         </div>
                                         
-                                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">
+                                        <p class="text-gray-600 text-xs sm:text-sm mb-3 line-clamp-2">
                                             {{ Str::limit($service->description, 120) }}
                                         </p>
                                         
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-xl font-bold text-blue-600">{{ number_format($service->price, 0, ',', ' ') }} €</span>
-                                            <a href="{{ route('services.show', $service) }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+                                            <span class="text-lg sm:text-xl font-bold text-blue-600">{{ number_format($service->price, 0, ',', ' ') }} €</span>
+                                            <a href="{{ route('services.show', $service) }}" class="inline-flex items-center justify-center px-3 sm:px-4 py-2 bg-blue-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
                                                 Voir détails
                                             </a>
                                         </div>
@@ -245,28 +243,27 @@
                 </div>
 
                 <!-- Bloc 2: Équipements disponibles à la location -->
-                <div class="bg-white rounded-xl shadow-lg p-6">
-                    <div class="flex items-center mb-6">
-                        
-                        <h2 class="text-2xl font-bold text-gray-800">Équipements disponibles à la location</h2>
+                <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center mb-4 sm:mb-6">
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-2 sm:mb-0">Équipements disponibles à la location</h2>
                         @if(isset($prestataire->equipments) && $prestataire->equipments->count() > 0)
-                            <span class="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <span class="sm:ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 self-start">
                                 {{ $prestataire->equipments->count() }}
                             </span>
                         @endif
                     </div>
                     
-                    <div class="space-y-4">
+                    <div class="space-y-3 sm:space-y-4">
                         @forelse(($prestataire->equipments ?? collect())->take(3) as $equipment)
-                            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow duration-200">
-                                <div class="flex items-start space-x-4">
+                            <div class="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200 hover:shadow-md transition-shadow duration-200">
+                                <div class="flex flex-col sm:flex-row sm:items-start space-y-3 sm:space-y-0 sm:space-x-4">
                                     <!-- Image -->
-                                    <div class="flex-shrink-0 w-20 h-20 bg-gray-200 rounded-lg overflow-hidden">
+                                    <div class="flex-shrink-0 w-full sm:w-20 h-32 sm:h-20 bg-gray-200 rounded-lg overflow-hidden">
                                         @if($equipment->main_photo)
                                             <img src="{{ asset('storage/' . $equipment->main_photo) }}" alt="{{ $equipment->name }}" class="w-full h-full object-cover">
                                         @else
                                             <div class="w-full h-full bg-gray-300 flex items-center justify-center">
-                                                <svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg class="w-6 h-6 sm:w-8 sm:h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                                                 </svg>
                                             </div>
@@ -275,23 +272,23 @@
                                     
                                     <!-- Contenu -->
                                     <div class="flex-1 min-w-0">
-                                        <div class="flex items-center justify-between mb-2">
-                                            <div class="flex items-center space-x-2">
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
+                                            <div class="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 mb-2 sm:mb-0">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 self-start">
                                                     Équipement
                                                 </span>
-                                                <h3 class="text-lg font-semibold text-gray-900 truncate">{{ $equipment->name }}</h3>
+                                                <h3 class="text-base sm:text-lg font-semibold text-gray-900">{{ $equipment->name }}</h3>
                                             </div>
-                                            <span class="text-sm text-gray-500">{{ $equipment->created_at->diffForHumans() }}</span>
+                                            <span class="text-xs sm:text-sm text-gray-500">{{ $equipment->created_at->diffForHumans() }}</span>
                                         </div>
                                         
-                                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">
+                                        <p class="text-gray-600 text-xs sm:text-sm mb-3 line-clamp-2">
                                             {{ Str::limit($equipment->description, 120) }}
                                         </p>
                                         
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-xl font-bold text-green-600">{{ number_format($equipment->price_per_day, 0, ',', ' ') }} €/jour</span>
-                                            <button class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors duration-200">
+                                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+                                            <span class="text-lg sm:text-xl font-bold text-green-600">{{ number_format($equipment->price_per_day, 0, ',', ' ') }} €/jour</span>
+                                            <button class="inline-flex items-center justify-center px-3 sm:px-4 py-2 bg-green-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-green-700 transition-colors duration-200">
                                                 Louer
                                             </button>
                                         </div>
@@ -311,28 +308,27 @@
                 </div>
 
                 <!-- Bloc 3: Offres en vente urgente -->
-                <div class="bg-white rounded-xl shadow-lg p-6">
-                    <div class="flex items-center mb-6">
-                        
-                        <h2 class="text-2xl font-bold text-gray-800">Offres en vente urgente</h2>
+                <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center mb-4 sm:mb-6">
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-2 sm:mb-0">Offres en vente urgente</h2>
                         @if(isset($prestataire->urgentSales) && $prestataire->urgentSales->count() > 0)
-                            <span class="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            <span class="sm:ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 self-start">
                                 {{ $prestataire->urgentSales->count() }}
                             </span>
                         @endif
                     </div>
                     
-                    <div class="space-y-4">
+                    <div class="space-y-3 sm:space-y-4">
                         @forelse(($prestataire->urgentSales ?? collect())->take(3) as $sale)
-                            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow duration-200">
-                                <div class="flex items-start space-x-4">
+                            <div class="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200 hover:shadow-md transition-shadow duration-200">
+                                <div class="flex flex-col sm:flex-row sm:items-start space-y-3 sm:space-y-0 sm:space-x-4">
                                     <!-- Image -->
-                                    <div class="flex-shrink-0 w-20 h-20 bg-gray-200 rounded-lg overflow-hidden">
+                                    <div class="flex-shrink-0 w-full sm:w-20 h-32 sm:h-20 bg-gray-200 rounded-lg overflow-hidden">
                                         @if(is_array($sale->photos) && count($sale->photos) > 0)
                                             <img src="{{ asset('storage/' . $sale->photos[0]) }}" alt="{{ $sale->title }}" class="w-full h-full object-cover">
                                         @else
                                             <div class="w-full h-full bg-gray-300 flex items-center justify-center">
-                                                <svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg class="w-6 h-6 sm:w-8 sm:h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
                                                 </svg>
                                             </div>
@@ -341,23 +337,23 @@
                                     
                                     <!-- Contenu -->
                                     <div class="flex-1 min-w-0">
-                                        <div class="flex items-center justify-between mb-2">
-                                            <div class="flex items-center space-x-2">
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
+                                            <div class="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 mb-2 sm:mb-0">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 self-start">
                                                     Vente urgente
                                                 </span>
-                                                <h3 class="text-lg font-semibold text-gray-900 truncate">{{ $sale->title }}</h3>
+                                                <h3 class="text-base sm:text-lg font-semibold text-gray-900">{{ $sale->title }}</h3>
                                             </div>
-                                            <span class="text-sm text-gray-500">{{ $sale->created_at->diffForHumans() }}</span>
+                                            <span class="text-xs sm:text-sm text-gray-500">{{ $sale->created_at->diffForHumans() }}</span>
                                         </div>
                                         
-                                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">
+                                        <p class="text-gray-600 text-xs sm:text-sm mb-3 line-clamp-2">
                                             {{ Str::limit($sale->description, 120) }}
                                         </p>
                                         
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-xl font-bold text-red-600">{{ number_format($sale->price, 0, ',', ' ') }} €</span>
-                                            <button class="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors duration-200">
+                                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+                                            <span class="text-lg sm:text-xl font-bold text-red-600">{{ number_format($sale->price, 0, ',', ' ') }} €</span>
+                                            <button class="inline-flex items-center justify-center px-3 sm:px-4 py-2 bg-red-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-red-700 transition-colors duration-200">
                                                 Contacter
                                             </button>
                                         </div>
@@ -370,7 +366,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
                                 </svg>
                                 <h3 class="mt-2 text-sm font-medium text-gray-900">Aucune vente urgente</h3>
-                                <p class="mt-1 text-sm text-gray-500">Ce prestataire n'a pas de ventes urgentes en cours.</p>
+                                <p class="mt-1 text-sm text-gray-500">Ce prestataire n'a pas d'annonces en cours.</p>
                             </div>
                         @endforelse
                     </div>
@@ -402,21 +398,21 @@
                             
                             @if(!$existingReview && $hasInteracted)
                                 <!-- Bouton pour afficher le formulaire -->
-                                <div class="mb-8">
-                                    <button id="show-review-form" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center space-x-2">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="mb-6 sm:mb-8">
+                                    <button id="show-review-form" class="bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center space-x-2 w-full sm:w-auto">
+                                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
                                         </svg>
-                                        <span>Laisser un avis</span>
+                                        <span class="text-sm sm:text-base">Laisser un avis</span>
                                     </button>
                                 </div>
                                 
                                 <!-- Formulaire caché par défaut -->
-                                <div id="review-form" class="mb-8 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200" style="display: none;">
-                                    <div class="flex items-center justify-between mb-4">
-                                        <h3 class="text-xl font-bold text-gray-800">Laisser un avis</h3>
+                                <div id="review-form" class="mb-6 sm:mb-8 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200" style="display: none;">
+                                    <div class="flex items-center justify-between mb-3 sm:mb-4">
+                                        <h3 class="text-lg sm:text-xl font-bold text-gray-800">Laisser un avis</h3>
                                         <button id="hide-review-form" class="text-gray-500 hover:text-gray-700">
-                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                             </svg>
                                         </button>
@@ -452,50 +448,50 @@
                                         </div>
                                         
                                         <!-- Bouton d'envoi -->
-                                        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                                        <button type="submit" class="bg-blue-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium w-full sm:w-auto text-sm sm:text-base">
                                             Envoyer mon avis
                                         </button>
                                     </form>
                                 </div>
                             @elseif(!$existingReview && !$hasInteracted)
-                                <div class="mb-8 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                                    <div class="flex items-center space-x-2">
-                                        <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="mb-6 sm:mb-8 p-3 sm:p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                    <div class="flex items-start space-x-2">
+                                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
                                         </svg>
-                                        <p class="text-yellow-800">Vous devez d'abord interagir avec ce prestataire (envoyer un message ou réserver un service) pour pouvoir laisser un avis.</p>
+                                        <p class="text-yellow-800 text-sm sm:text-base">Vous devez d'abord interagir avec ce prestataire (envoyer un message ou réserver un service) pour pouvoir laisser un avis.</p>
                                     </div>
                                 </div>
                             @elseif($existingReview)
-                                <div class="mb-8 p-4 bg-green-50 border border-green-200 rounded-lg">
-                                    <p class="text-green-800">Vous avez déjà évalué ce prestataire.</p>
+                                <div class="mb-6 sm:mb-8 p-3 sm:p-4 bg-green-50 border border-green-200 rounded-lg">
+                                    <p class="text-green-800 text-sm sm:text-base">Vous avez déjà évalué ce prestataire.</p>
                                 </div>
                             @endif
                         @endif
                     @else
-                        <div class="mb-8 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                            <p class="text-gray-600">Vous devez être <a href="{{ route('login') }}" class="text-blue-600 hover:underline">connecté</a> pour laisser un avis.</p>
+                        <div class="mb-6 sm:mb-8 p-3 sm:p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                            <p class="text-gray-600 text-sm sm:text-base">Vous devez être <a href="{{ route('login') }}" class="text-blue-600 hover:underline">connecté</a> pour laisser un avis.</p>
                         </div>
                     @endauth
                     
                     <!-- Liste des avis reçus -->
                     <div>
-                        <h3 class="text-xl font-bold text-gray-800 mb-6">Avis clients ({{ $prestataire->reviews->count() }})</h3>
+                        <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6">Avis clients ({{ $prestataire->reviews->count() }})</h3>
                         
                         @if($prestataire->reviews->count() > 0)
-                            <div class="space-y-4">
+                            <div class="space-y-3 sm:space-y-4">
                                 @foreach($prestataire->reviews->sortByDesc('created_at') as $review)
-                                    <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                                        <div class="flex items-start space-x-4">
+                                    <div class="border border-gray-200 rounded-lg p-3 sm:p-4 bg-gray-50">
+                                        <div class="flex items-start space-x-3 sm:space-x-4">
                                             <!-- Avatar de l'auteur -->
                                             <div class="flex-shrink-0">
                                                 @if($review->client && $review->client->user && $review->client->user->avatar)
                                                     <img src="{{ asset('storage/' . $review->client->user->avatar) }}" 
                                                         alt="{{ $review->client->user->name }}" 
-                                                        class="w-10 h-10 rounded-full object-cover">
+                                                        class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover">
                                                 @else
-                                                    <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
-                                                        <span class="text-gray-600 font-medium text-sm">
+                                                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                                                        <span class="text-gray-600 font-medium text-xs sm:text-sm">
                                                             {{ $review->client && $review->client->user ? substr($review->client->user->name, 0, 1) : '?' }}
                                                         </span>
                                                     </div>
@@ -503,30 +499,30 @@
                                             </div>
                                             
                                             <!-- Contenu de l'avis -->
-                                            <div class="flex-1">
-                                                <div class="flex items-center justify-between mb-2">
-                                                    <div>
-                                                        <h4 class="font-medium text-gray-800">
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
+                                                    <div class="mb-2 sm:mb-0">
+                                                        <h4 class="font-medium text-gray-800 text-sm sm:text-base">
                                                             {{ $review->client && $review->client->user ? $review->client->user->name : 'Utilisateur supprimé' }}
                                                         </h4>
-                                                        <div class="flex items-center space-x-2">
+                                                        <div class="flex items-center space-x-2 mt-1">
                                                             <div class="flex items-center space-x-1">
                                                                 @for($i = 1; $i <= 5; $i++)
-                                                                    <span class="{{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-300' }}">
+                                                                    <span class="{{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-300' }} text-sm">
                                                                         ⭐
                                                                     </span>
                                                                 @endfor
                                                             </div>
-                                                            <span class="text-sm font-medium text-gray-600">{{ number_format($review->rating, 1) }}</span>
+                                                            <span class="text-xs sm:text-sm font-medium text-gray-600">{{ number_format($review->rating, 1) }}</span>
                                                         </div>
                                                     </div>
-                                                    <span class="text-sm text-gray-500">
+                                                    <span class="text-xs sm:text-sm text-gray-500">
                                                         {{ $review->created_at->format('d/m/Y') }}
                                                     </span>
                                                 </div>
                                                 
                                                 @if($review->comment)
-                                                    <p class="text-gray-700 text-sm leading-relaxed">
+                                                    <p class="text-gray-700 text-xs sm:text-sm leading-relaxed">
                                                         {{ $review->comment }}
                                                     </p>
                                                 @endif
@@ -536,10 +532,10 @@
                                 @endforeach
                             </div>
                         @else
-                            <div class="text-center py-8">
-                                <div class="text-gray-400 text-4xl mb-4">💬</div>
-                                <p class="text-gray-500">Aucun avis pour le moment</p>
-                                <p class="text-sm text-gray-400 mt-1">Soyez le premier à laisser un avis!</p>
+                            <div class="text-center py-6 sm:py-8">
+                                <div class="text-gray-400 text-2xl sm:text-4xl mb-3 sm:mb-4">💬</div>
+                                <p class="text-gray-500 text-sm sm:text-base">Aucun avis pour le moment</p>
+                                <p class="text-xs sm:text-sm text-gray-400 mt-1">Soyez le premier à laisser un avis!</p>
                             </div>
                         @endif
                      </div>
@@ -548,38 +544,38 @@
             
             <!-- Colonne droite (30%) - Informations et Vidéos -->
             <div class="lg:w-[30%] w-full">
-                <div class="sticky top-8 space-y-6">
+                <div class="lg:sticky lg:top-8 space-y-4 sm:space-y-6">
                     <!-- Section Informations de contact -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                        <h2 class="text-xl font-bold text-gray-800 mb-4">Informations de contact</h2>
-                        <div class="space-y-3">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
+                        <h2 class="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4">Informations de contact</h2>
+                        <div class="space-y-2 sm:space-y-3">
                             @if($prestataire->phone)
                                 <div class="flex items-center text-gray-600">
-                                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 mr-2 sm:mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
                                     </svg>
-                                    {{ $prestataire->phone }}
+                                    <span class="text-sm sm:text-base">{{ $prestataire->phone }}</span>
                                 </div>
                             @endif
                             @if($prestataire->address)
-                                <div class="flex items-center text-gray-600">
-                                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="flex items-start text-gray-600">
+                                    <svg class="w-4 h-4 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                     </svg>
-                                    {{ $prestataire->address }}, {{ $prestataire->city }}
+                                    <span class="text-sm sm:text-base">{{ $prestataire->address }}, {{ $prestataire->city }}</span>
                                 </div>
                             @endif
                         </div>
                     </div>
                     
                     <!-- Section Vidéos -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                        <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
-                             <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
+                        <h2 class="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center">
+                             <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                              </svg>
-                             Vidéos
+                             <span class="text-lg sm:text-xl">Vidéos</span>
                              <span class="ml-2 bg-purple-100 text-purple-600 text-xs font-medium px-2 py-1 rounded-full">{{ $prestataire->videos->count() }}</span>
                          </h2>
                          

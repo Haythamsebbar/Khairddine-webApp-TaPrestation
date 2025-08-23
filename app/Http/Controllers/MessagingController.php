@@ -19,7 +19,52 @@ class MessagingController extends Controller
      */
     public function index()
     {
-        return view('messaging.index');
+        $user = Auth::user();
+
+        // Récupérer les ID des utilisateurs avec qui l'utilisateur a conversé
+        $participantIds = Message::where('sender_id', $user->id)
+            ->orWhere('receiver_id', $user->id)
+            ->pluck('sender_id')
+            ->merge(Message::where('sender_id', $user->id)->orWhere('receiver_id', $user->id)->pluck('receiver_id'))
+            ->unique()
+            ->reject(function ($id) use ($user) {
+                return $id == $user->id;
+            });
+
+        // Déterminer le rôle opposé selon le rôle de l'utilisateur connecté
+        $oppositeRole = $user->role === 'client' ? 'prestataire' : 'client';
+
+        $conversations = User::whereIn('id', $participantIds)
+            ->where('role', $oppositeRole)
+            ->get()
+            ->map(function ($otherUser) use ($user) {
+                $lastMessage = Message::where(function ($query) use ($user, $otherUser) {
+                    $query->where('sender_id', $user->id)->where('receiver_id', $otherUser->id);
+                })->orWhere(function ($query) use ($user, $otherUser) {
+                    $query->where('sender_id', $otherUser->id)->where('receiver_id', $user->id);
+                })->latest()->first();
+
+                $unreadCount = Message::where('sender_id', $otherUser->id)
+                    ->where('receiver_id', $user->id)
+                    ->whereNull('read_at')
+                    ->count();
+
+                return [
+                    'user' => $otherUser,
+                    'last_message' => $lastMessage,
+                    'unread_count' => $unreadCount,
+                ];
+            })
+            ->sortByDesc(function ($conversation) {
+                return $conversation['last_message'] ? $conversation['last_message']->created_at : 0;
+            });
+
+        $totalUnreadCount = $conversations->sum('unread_count');
+
+        return view('messaging.index', [
+            'conversations' => $conversations,
+            'totalUnreadCount' => $totalUnreadCount,
+        ]);
     }
 
     /**
@@ -59,7 +104,8 @@ class MessagingController extends Controller
 
         return view('messaging.conversation', [
             'messages' => $messages,
-            'otherUser' => $user
+            'otherUser' => $user,
+            'currentUser' => $currentUser
         ]);
     }
 
@@ -95,6 +141,8 @@ class MessagingController extends Controller
 
         return back()->with('success', 'Message envoyé avec succès.');
     }
+
+
     
     /**
      * Traite les fichiers joints aux messages
@@ -116,21 +164,37 @@ class MessagingController extends Controller
     }
         
     /**
-     * Démarre une nouvelle conversation avec un prestataire.
+     * Démarre une nouvelle conversation avec un utilisateur.
      *
-     * @param  \App\Models\User  $prestataire
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function startConversation(User $prestataire)
+    public function startConversation(User $user)
     {
         $currentUser = Auth::user();
         
-        // Vérifier que l'utilisateur est un client et que le destinataire est un prestataire
-        if (!$currentUser->isClient() || $prestataire->role !== 'prestataire') {
-            abort(403, 'Action non autorisée.');
+        // Vérifier que l'utilisateur peut converser avec l'autre utilisateur
+        if ($currentUser->role === 'client' && $user->role !== 'prestataire') {
+            abort(403, 'Vous ne pouvez converser qu\'avec des prestataires.');
+        } elseif ($currentUser->role === 'prestataire' && $user->role !== 'client') {
+            abort(403, 'Vous ne pouvez converser qu\'avec des clients.');
         }
 
-        return redirect()->route('messaging.show', $prestataire);
+        return redirect()->route('messaging.show', $user);
+    }
+
+    /**
+     * Démarre une nouvelle conversation avec un client depuis une demande.
+     *
+     * @param  int  $clientRequestId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function startConversationFromRequest($clientRequestId)
+    {
+        $clientRequest = \App\Models\ClientRequest::findOrFail($clientRequestId);
+        $client = $clientRequest->client;
+
+        return redirect()->route('messaging.show', $client->user->id);
     }
     
     /**

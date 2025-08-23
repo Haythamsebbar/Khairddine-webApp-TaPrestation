@@ -11,7 +11,7 @@
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
             <div>
-                <h1 class="text-3xl font-bold text-red-800">Modifier la vente</h1>
+                <h1 class="text-2xl font-bold text-gray-900">Modifier l'annonce</h1>
                 <p class="text-gray-600 mt-1">{{ $urgentSale->title }}</p>
             </div>
         </div>
@@ -30,9 +30,16 @@
                                 Titre de la vente <span class="text-red-500">*</span>
                             </label>
                             <input type="text" id="title" name="title" value="{{ old('title', $urgentSale->title) }}" required maxlength="255" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent @error('title') border-red-500 @enderror">
-                            @error('title')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
+                            <div class="flex justify-between items-center mt-1">
+                                <div>
+                                    @error('title')
+                                        <p class="text-red-500 text-sm">{{ $message }}</p>
+                                    @enderror
+                                    <p id="title-warning" class="text-yellow-600 text-sm hidden">Titre trop court, précisez la marque ou le modèle</p>
+                                    <p id="title-tip" class="text-red-600 text-sm">Idéal : 5–9 mots, incluez marque et état</p>
+                                </div>
+                                <p class="text-gray-500 text-sm"><span id="title-count">0</span>/70</p>
+                            </div>
                         </div>
                         
                         <!-- Prix -->
@@ -93,24 +100,32 @@
                                 Description <span class="text-red-500">*</span>
                             </label>
                             <textarea id="description" name="description" required rows="6" maxlength="2000" placeholder="Décrivez votre article en détail..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent @error('description') border-red-500 @enderror">{{ old('description', $urgentSale->description) }}</textarea>
-                            <div class="flex justify-between items-center mt-1">
+                            <div class="mt-1">
                                 @error('description')
                                     <p class="text-red-500 text-sm">{{ $message }}</p>
-                                @else
-                                    <span></span>
                                 @enderror
-                                <span id="description-count" class="text-sm text-gray-500">0/2000</span>
+                                <div id="description-error" class="text-red-500 text-sm hidden">
+                                    <p class="font-medium">Description trop courte (minimum 50 caractères)</p>
+                                    <p class="text-xs mt-1">Structure suggérée : État / Marque-modèle / Raison de vente / Défauts éventuels</p>
+                                </div>
+                                <div id="description-warning" class="text-yellow-600 text-sm hidden">
+                                    <p>Ajoutez détails sur l'état, accessoires, historique d'achat</p>
+                                </div>
+                                <div class="flex justify-between items-center mt-1">
+                                    <p class="text-red-600 text-sm">Recommandé : 150–500 caractères</p>
+                                    <p class="text-gray-500 text-sm"><span id="description-count">0</span> caractères</p>
+                                </div>
                             </div>
                         </div>
                         
                         <!-- Photos actuelles -->
-                        @if($urgentSale->photos && count($urgentSale->photos) > 0)
+                        @if($urgentSale->photos && count(json_decode($urgentSale->photos, true) ?? []) > 0)
                             <div class="md:col-span-2">
                                 <label class="block text-sm font-medium text-gray-700 mb-2">
                                     Photos actuelles
                                 </label>
                                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="current-photos">
-                                    @foreach($urgentSale->photos as $index => $photo)
+                                    @foreach(json_decode($urgentSale->photos, true) ?? [] as $index => $photo)
                                         <div class="relative group" data-photo-index="{{ $index }}">
                                             <img src="{{ Storage::url($photo) }}" alt="Photo {{ $index + 1 }}" class="w-full h-32 object-cover rounded-lg">
                                             <button type="button" onclick="removeCurrentPhoto({{ $index }})" class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -126,8 +141,8 @@
                         <!-- Nouvelles photos -->
                         <div class="md:col-span-2">
                             <label for="photos" class="block text-sm font-medium text-gray-700 mb-2">
-                                {{ $urgentSale->photos && count($urgentSale->photos) > 0 ? 'Ajouter de nouvelles photos' : 'Photos' }}
-                                @if(!$urgentSale->photos || count($urgentSale->photos) === 0)
+                                {{ $urgentSale->photos && count(json_decode($urgentSale->photos, true) ?? []) > 0 ? 'Ajouter de nouvelles photos' : 'Photos' }}
+                                @if(!$urgentSale->photos || count(json_decode($urgentSale->photos, true) ?? []) === 0)
                                     <span class="text-red-500">*</span>
                                 @endif
                             </label>
@@ -150,17 +165,7 @@
                             <div id="image-preview" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 hidden"></div>
                         </div>
                         
-                        <!-- Option urgente -->
-                        <div class="md:col-span-2">
-                            <div class="flex items-center">
-                                <input type="checkbox" id="is_urgent" name="is_urgent" value="1" {{ old('is_urgent', $urgentSale->is_urgent) ? 'checked' : '' }} class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded">
-                                <label for="is_urgent" class="ml-2 block text-sm text-gray-900">
-                                    <span class="font-medium">Vente urgente</span>
-                                    <span class="text-red-500 ml-1"><i class="fas fa-bolt"></i></span>
-                                </label>
-                            </div>
-                            <p class="text-gray-500 text-sm mt-1">Les ventes urgentes sont mises en avant et apparaissent en premier dans les résultats.</p>
-                        </div>
+
                     </div>
                 </div>
                 
@@ -170,15 +175,9 @@
                         Annuler
                     </a>
                     
-                    <div class="flex gap-3">
-                        <button type="submit" name="action" value="draft" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-medium transition duration-200">
-                            <i class="fas fa-save mr-2"></i>Enregistrer en brouillon
-                        </button>
-                        
-                        <button type="submit" name="action" value="publish" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-medium transition duration-200">
-                            <i class="fas fa-check mr-2"></i>Mettre à jour et publier
-                        </button>
-                    </div>
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-medium transition duration-200">
+                        <i class="fas fa-check mr-2"></i>Mettre à jour et publier
+                    </button>
                 </div>
             </form>
         </div>
@@ -291,6 +290,89 @@ document.getElementById('urgent-sale-form').addEventListener('submit', function(
             alert('Chaque image ne doit pas dépasser 5MB.');
             return false;
         }
+    }
+    
+    // Validation en temps réel pour le titre
+    const titleInput = document.getElementById('title');
+    const titleCount = document.getElementById('title-count');
+    const titleWarning = document.getElementById('title-warning');
+    const titleTip = document.getElementById('title-tip');
+
+    function updateTitleValidation() {
+        const length = titleInput.value.length;
+        titleCount.textContent = length;
+        
+        // Réinitialiser les styles
+        titleInput.classList.remove('border-yellow-400', 'border-green-500', 'border-red-500');
+        titleInput.classList.add('border-gray-300');
+        
+        if (length < 10) {
+            titleInput.classList.remove('border-gray-300');
+            titleInput.classList.add('border-yellow-400');
+            titleWarning.classList.remove('hidden');
+            titleTip.classList.add('hidden');
+        } else if (length >= 10 && length <= 70) {
+            titleInput.classList.remove('border-gray-300');
+            titleInput.classList.add('border-green-500');
+            titleWarning.classList.add('hidden');
+            titleTip.classList.remove('hidden');
+        } else {
+            titleInput.classList.remove('border-gray-300');
+            titleInput.classList.add('border-red-500');
+            titleWarning.classList.add('hidden');
+            titleTip.classList.add('hidden');
+        }
+    }
+
+    // Validation en temps réel pour la description
+    const descriptionInput = document.getElementById('description');
+    const descriptionCount = document.getElementById('description-count');
+    const descriptionError = document.getElementById('description-error');
+    const descriptionWarning = document.getElementById('description-warning');
+
+    function updateDescriptionValidation() {
+        const length = descriptionInput.value.length;
+        descriptionCount.textContent = length;
+        
+        // Réinitialiser les styles
+        descriptionInput.classList.remove('border-red-500', 'border-yellow-400', 'border-green-500');
+        descriptionInput.classList.add('border-gray-300');
+        
+        if (length < 50) {
+            descriptionInput.classList.remove('border-gray-300');
+            descriptionInput.classList.add('border-red-500');
+            descriptionError.classList.remove('hidden');
+            descriptionWarning.classList.add('hidden');
+        } else if (length >= 50 && length <= 150) {
+            descriptionInput.classList.remove('border-gray-300');
+            descriptionInput.classList.add('border-yellow-400');
+            descriptionError.classList.add('hidden');
+            descriptionWarning.classList.remove('hidden');
+        } else {
+            descriptionInput.classList.remove('border-gray-300');
+            descriptionInput.classList.add('border-green-500');
+            descriptionError.classList.add('hidden');
+            descriptionWarning.classList.add('hidden');
+        }
+    }
+
+    // Événements
+    titleInput.addEventListener('input', updateTitleValidation);
+    descriptionInput.addEventListener('input', updateDescriptionValidation);
+
+    // Initialisation
+    updateTitleValidation();
+    updateDescriptionValidation();
+});
+
+// Validation supplémentaire lors de la soumission pour la description
+document.getElementById('urgent-sale-form').addEventListener('submit', function(e) {
+    const descriptionInput = document.getElementById('description');
+    if (descriptionInput.value.length < 50) {
+        e.preventDefault();
+        alert('La description doit contenir au moins 50 caractères.');
+        descriptionInput.focus();
+        return false;
     }
 });
 </script>

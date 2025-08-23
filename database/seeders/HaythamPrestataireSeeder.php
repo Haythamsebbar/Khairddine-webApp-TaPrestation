@@ -11,7 +11,6 @@ use App\Models\UrgentSale;
 use App\Models\Booking;
 use App\Models\Message;
 use App\Models\Category;
-use App\Models\EquipmentCategory;
 use App\Models\Client;
 use App\Models\PrestataireAvailability;
 use Illuminate\Support\Facades\Hash;
@@ -126,8 +125,8 @@ class HaythamPrestataireSeeder extends Seeder
         }
 
         // Récupérer les catégories d'équipement
-        $informaticCategory = EquipmentCategory::where('name', 'LIKE', '%Informatique%')->first()
-                            ?? EquipmentCategory::where('name', 'LIKE', '%Ordinateur%')->first();
+        $informaticCategory = Category::where('name', 'LIKE', '%Informatique%')->first()
+                            ?? Category::where('name', 'LIKE', '%Ordinateur%')->first();
 
         // Créer des équipements
         $equipments = [
@@ -137,7 +136,7 @@ class HaythamPrestataireSeeder extends Seeder
                 'description' => 'MacBook Pro 16 pouces avec puce M2 Pro, 32GB RAM, 1TB SSD. Parfait pour le développement et le design. Excellent état.',
                 'price_per_day' => 80.00,
                 'price_per_week' => 500.00,
-                'condition' => 'new',
+                'condition' => 'excellent',
                 'status' => 'active',
                 'city' => 'Casablanca',
                 'country' => 'Maroc',
@@ -192,13 +191,24 @@ class HaythamPrestataireSeeder extends Seeder
                 ])
             );
             
-            // Attacher la catégorie si elle existe (relation many-to-many)
+            // Assigner la catégorie si elle existe
             if ($informaticCategory && $equipment->wasRecentlyCreated) {
-                $equipment->categories()->attach($informaticCategory->id);
+                if ($informaticCategory->parent_id) {
+                    // C'est une sous-catégorie
+                    $equipment->update([
+                        'category_id' => $informaticCategory->parent_id,
+                        'subcategory_id' => $informaticCategory->id
+                    ]);
+                } else {
+                    // C'est une catégorie principale
+                    $equipment->update([
+                        'category_id' => $informaticCategory->id
+                    ]);
+                }
             }
         }
 
-        // Créer des ventes urgentes
+        // Créer des annonces
         $urgentSales = [
             [
                 'title' => 'Serveurs HP ProLiant - Liquidation datacenter',
@@ -207,7 +217,6 @@ class HaythamPrestataireSeeder extends Seeder
                 'condition' => 'used',
                 'quantity' => 5,
                 'location' => 'Casablanca',
-                'is_urgent' => true,
                 'status' => 'active',
                 'photos' => ['server1.jpg', 'server2.jpg'],
             ],
@@ -218,7 +227,6 @@ class HaythamPrestataireSeeder extends Seeder
                 'condition' => 'good',
                 'quantity' => 1,
                 'location' => 'Casablanca',
-                'is_urgent' => true,
                 'status' => 'active',
                 'photos' => ['cisco1.jpg', 'cisco2.jpg'],
             ],
@@ -229,7 +237,6 @@ class HaythamPrestataireSeeder extends Seeder
                 'condition' => 'good',
                 'quantity' => 10,
                 'location' => 'Casablanca',
-                'is_urgent' => false,
                 'status' => 'active',
                 'photos' => ['mobilier1.jpg', 'mobilier2.jpg'],
             ],
@@ -450,7 +457,7 @@ class HaythamPrestataireSeeder extends Seeder
         $this->command->info('Mot de passe: Password@123');
         $this->command->info('Services créés: ' . $haythamPrestataire->services()->count());
         $this->command->info('Équipements créés: ' . $haythamPrestataire->equipments()->count());
-        $this->command->info('Ventes urgentes créées: ' . $haythamPrestataire->urgentSales()->count());
+        $this->command->info('Annonces créées: ' . $haythamPrestataire->urgentSales()->count());
         $this->command->info('Réservations créées: ' . $haythamPrestataire->bookings()->count());
     }
 }

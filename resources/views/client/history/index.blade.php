@@ -329,7 +329,7 @@
                                 <h3 class="text-xl font-bold text-gray-900 mb-3">Aucune activité trouvée</h3>
                                 <p class="text-gray-500 mb-6">Aucune activité ne correspond aux filtres sélectionnés.</p>
                                 <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                                    <a href="{{ route('client.requests.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">
+                                    <a href="{{ route('client.equipment-rental-requests.index') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                         </svg>
@@ -407,7 +407,7 @@
                         <p class="text-gray-600 text-sm mt-1">Accès direct aux fonctionnalités</p>
                     </div>
                     <div class="space-y-3">
-                        <a href="{{ route('client.requests.create') }}" class="flex items-center justify-center w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-md hover:shadow-lg font-medium">
+                        <a href="{{ route('client.equipment-rental-requests.index') }}" class="flex items-center justify-center w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-md hover:shadow-lg font-medium">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                             </svg>
@@ -419,7 +419,7 @@
                             </svg>
                             Parcourir les prestataires
                         </a>
-                        <a href="{{ route('client.messaging.index') }}" class="flex items-center justify-center w-full px-4 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 font-medium">
+                        <a href="{{ route('messaging.index') }}" class="flex items-center justify-center w-full px-4 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 font-medium">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                             </svg>

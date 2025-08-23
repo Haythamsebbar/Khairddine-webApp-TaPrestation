@@ -12,7 +12,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ReviewController;
-use App\Http\Controllers\ArticleController;
+
 use App\Http\Controllers\SavedSearchController;
 use App\Http\Controllers\MatchingAlertController;
 use App\Http\Controllers\QrCodeController;
@@ -49,7 +49,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // API Routes
 Route::get('/api/categories/{category}/subcategories', function($categoryId) {
-    $subcategories = \App\Models\Category::where('parent_id', $categoryId)->get();
+    $subcategories = \App\Models\Category::where('parent_id', $categoryId)->orderBy('name')->get();
     return response()->json($subcategories);
 });
 
@@ -232,6 +232,7 @@ Route::post('/password/reset', [\App\Http\Controllers\Auth\ResetPasswordControll
 // Routes pour les services
 Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
 Route::get('/services/{service}', [ServiceController::class, 'show'])->name('services.show');
+Route::post('/services/{service}/report', [ServiceController::class, 'submitReport'])->name('services.report');
 
 // Routes pour les prestataires
 Route::get('/prestataires', [PrestataireController::class, 'index'])->name('prestataires.index');
@@ -250,9 +251,7 @@ Route::post('/search', [SearchController::class, 'searchPrestataires'])->name('s
 Route::get('/search/prestataires', [SearchController::class, 'searchPrestataires'])->name('search.prestataires');
 Route::get('/search/autocomplete', [SearchController::class, 'autocomplete'])->name('search.autocomplete');
 
-// Routes pour les articles
-Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
-Route::get('/articles/{slug}', [ArticleController::class, 'show'])->name('articles.show');
+
 
 // Routes pour les vidéos
 Route::get('/videos', [VideoController::class, 'index'])->name('videos.index');
@@ -328,6 +327,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/profile', [\App\Http\Controllers\Client\ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile', [\App\Http\Controllers\Client\ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile/delete-avatar', [\App\Http\Controllers\Client\ProfileController::class, 'deleteAvatar'])->name('profile.delete-avatar');
+        Route::delete('/profile/destroy', [\App\Http\Controllers\Client\ProfileController::class, 'destroy'])->name('profile.destroy');
         Route::get('/bookings', [BookingController::class, 'clientBookings'])->name('bookings.index');
         Route::get('/bookings/{booking}', [BookingController::class, 'show'])->name('bookings.show');
         Route::get('/favorites', [ClientController::class, 'favorites'])->name('favorites');
@@ -339,11 +339,16 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/prestataire-follows/{prestataire}/unfollow', [\App\Http\Controllers\Client\PrestataireFollowController::class, 'unfollow'])->name('prestataire-follows.unfollow');
         Route::get('/prestataire-follows', [\App\Http\Controllers\Client\PrestataireFollowController::class, 'index'])->name('prestataire-follows.index');
         
-        // Routes pour la messagerie client
-        Route::get('messaging', [\App\Http\Controllers\Client\MessagingController::class, 'index'])->name('messaging.index');
-        Route::get('messaging/{user}', [\App\Http\Controllers\Client\MessagingController::class, 'show'])->name('messaging.show');
-        Route::post('messaging/{user}', [\App\Http\Controllers\Client\MessagingController::class, 'store'])->name('messaging.store');
-        Route::get('messaging/start/{prestataire}', [\App\Http\Controllers\Client\MessagingController::class, 'startConversation'])->name('messaging.start');
+        // Routes pour la messagerie unifiée
+        Route::get('messaging', [\App\Http\Controllers\MessagingController::class, 'index'])->name('messaging.index');
+        Route::get('messaging/{user}', [\App\Http\Controllers\MessagingController::class, 'show'])->name('messaging.show');
+        Route::post('messaging/{user}', [\App\Http\Controllers\MessagingController::class, 'store'])->name('messaging.store');
+        Route::get('messaging/start/{prestataire}', [\App\Http\Controllers\MessagingController::class, 'startConversation'])->name('messaging.start');
+        
+        // Route de test pour le système de messagerie
+        Route::get('messaging-test', function () {
+            return view('messaging.test');
+        })->name('messaging.test');
         
         // Routes pour la navigation des prestataires
         Route::get('browse/prestataires', [\App\Http\Controllers\Client\PrestataireController::class, 'index'])->name('browse.prestataires');
@@ -355,10 +360,7 @@ Route::middleware(['auth'])->group(function () {
         // Routes pour les évaluations des missions
         
         
-        // Routes pour les offres
-        Route::get('/offers', [\App\Http\Controllers\Client\OfferController::class, 'index'])->name('offers.index');
-        Route::post('/offers/{offer}/accept', [\App\Http\Controllers\Client\OfferController::class, 'accept'])->name('offers.accept');
-        Route::post('/offers/{offer}/reject', [\App\Http\Controllers\Client\OfferController::class, 'reject'])->name('offers.reject');
+
         
         // Route alternative pour la messagerie (maintenant gérée ci-dessus)
         
@@ -366,10 +368,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/news', [\App\Http\Controllers\Client\NewsController::class, 'index'])->name('news.index');
         
         // Route pour afficher toutes les demandes unifiées (doit être avant la route resource)
-        Route::get('/requests/all', [\App\Http\Controllers\Client\DashboardController::class, 'allRequests'])->name('requests.all');
+    
         
         // Routes pour les demandes de service
-        Route::resource('requests', \App\Http\Controllers\Client\ClientRequestController::class);
+    
 
         // Routes pour l'aide client
         Route::get('/help', [\App\Http\Controllers\Client\HelpController::class, 'index'])->name('help.index');
@@ -389,7 +391,7 @@ Route::post('/{equipment}/rent', [\App\Http\Controllers\EquipmentController::cla
         Route::post('/{equipment}/report', [\App\Http\Controllers\EquipmentController::class, 'submitReport'])->name('report');
     });
     
-    // Routes publiques pour les ventes urgentes
+    // Routes publiques pour les annonces
     Route::prefix('urgent-sales')->name('urgent-sales.')->group(function () {
         Route::get('/', [\App\Http\Controllers\UrgentSaleController::class, 'index'])->name('index');
         Route::get('/{urgentSale}', [\App\Http\Controllers\UrgentSaleController::class, 'show'])->name('show');
@@ -456,6 +458,7 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
         Route::put('/profile', [\App\Http\Controllers\Prestataire\ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile/photo', [\App\Http\Controllers\Prestataire\ProfileController::class, 'deletePhoto'])->name('profile.delete-photo');
         Route::delete('/profile/portfolio/{index}', [\App\Http\Controllers\Prestataire\ProfileController::class, 'deletePortfolioItem'])->name('profile.delete-portfolio-item');
+        Route::delete('/profile/destroy', [\App\Http\Controllers\Prestataire\ProfileController::class, 'destroy'])->name('profile.destroy');
         Route::get('/profile/preview', [\App\Http\Controllers\Prestataire\ProfileController::class, 'preview'])->name('profile.preview');
         Route::get('/profile/public/{id}', [\App\Http\Controllers\Prestataire\ProfileController::class, 'publicShow'])->name('profile.public');
         Route::get('/profile/{prestataire}', [\App\Http\Controllers\Prestataire\ProfileController::class, 'show'])->name('profile');
@@ -473,17 +476,23 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
         
 
         
-        // Routes pour les réponses/offres envoyées
-        Route::get('/responses', [\App\Http\Controllers\Prestataire\ResponseController::class, 'index'])->name('responses.index');
-        Route::get('/responses/{offer}', [\App\Http\Controllers\Prestataire\ResponseController::class, 'show'])->name('responses.show');
-        Route::put('/responses/{offer}', [\App\Http\Controllers\Prestataire\ResponseController::class, 'update'])->name('responses.update');
-        Route::delete('/responses/{offer}', [\App\Http\Controllers\Prestataire\ResponseController::class, 'cancel'])->name('responses.cancel');
+
         
         // Routes pour les missions
         // Route pour la confirmation de la fin de mission par le prestataire
         Route::post('/missions/{request}/confirm', [MissionController::class, 'confirmCompletion'])->name('missions.confirm');
         
         Route::resource('services', \App\Http\Controllers\Prestataire\ServiceController::class);
+        
+        // Routes pour la création de service multi-étapes
+        Route::get('services/create/step1', [\App\Http\Controllers\Prestataire\ServiceController::class, 'createStep1'])->name('services.create.step1');
+        Route::post('services/create/step1', [\App\Http\Controllers\Prestataire\ServiceController::class, 'storeStep1'])->name('services.create.step1.store');
+        Route::get('services/create/step2', [\App\Http\Controllers\Prestataire\ServiceController::class, 'createStep2'])->name('services.create.step2');
+        Route::post('services/create/step2', [\App\Http\Controllers\Prestataire\ServiceController::class, 'storeStep2'])->name('services.create.step2.store');
+        Route::get('services/create/step3', [\App\Http\Controllers\Prestataire\ServiceController::class, 'createStep3'])->name('services.create.step3');
+        Route::post('services/create/step3', [\App\Http\Controllers\Prestataire\ServiceController::class, 'storeStep3'])->name('services.create.step3.store');
+        Route::get('services/create/step4', [\App\Http\Controllers\Prestataire\ServiceController::class, 'createStep4'])->name('services.create.step4');
+        
         Route::get('services/{service}/availabilities', [\App\Http\Controllers\Prestataire\AvailabilityController::class, 'index'])->name('availabilities.index');
         Route::post('services/{service}/availabilities', [\App\Http\Controllers\Prestataire\AvailabilityController::class, 'store'])->name('availabilities.store');
         Route::delete('availabilities/{availability}', [\App\Http\Controllers\Prestataire\AvailabilityController::class, 'destroy'])->name('availabilities.destroy');
@@ -492,18 +501,15 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
         // Routes pour la gestion des disponibilités
         Route::prefix('availability')->name('availability.')->group(function () {
             Route::get('/', [\App\Http\Controllers\Prestataire\AvailabilityController::class, 'index'])->name('index');
-            Route::get('/calendar', [\App\Http\Controllers\Prestataire\AvailabilityController::class, 'calendar'])->name('calendar');
             Route::get('/events', [\App\Http\Controllers\Prestataire\AvailabilityController::class, 'events'])->name('events');
-                Route::post('/add-exception', [\App\Http\Controllers\Prestataire\AvailabilityController::class, 'addException'])->name('add-exception');
-            Route::delete('/exception/{id}', [\App\Http\Controllers\Prestataire\AvailabilityController::class, 'deleteException'])->name('delete-exception');
             Route::post('/update-settings', [\App\Http\Controllers\Prestataire\AvailabilityController::class, 'updateBookingSettings'])->name('update-settings');
         });
         
         Route::get('/calendar', [PrestataireController::class, 'calendar'])->name('calendar');
         Route::get('/visibility', [PrestataireController::class, 'visibility'])->name('visibility');
         
-        // Routes pour la messagerie prestataire
-        Route::get('/messaging', [\App\Http\Controllers\Prestataire\MessagingController::class, 'index'])->name('messaging.index');
+        // Route pour démarrer une conversation depuis une demande client
+    
         
         // Routes pour l'agenda prestataire
         Route::get('/agenda', [\App\Http\Controllers\Prestataire\AgendaController::class, 'index'])->name('agenda.index');
@@ -511,17 +517,27 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
         Route::get('/agenda/booking/{booking}', [\App\Http\Controllers\Prestataire\AgendaController::class, 'show'])->name('agenda.booking.show');
         Route::put('/agenda/booking/{booking}/status', [\App\Http\Controllers\Prestataire\AgendaController::class, 'updateStatus'])->name('agenda.booking.update-status');
         
-        // Routes pour la messagerie prestataire
-        Route::get('/messages', [\App\Http\Controllers\Prestataire\MessagingController::class, 'index'])->name('messages.index');
-        Route::get('/messages/{conversation}', [\App\Http\Controllers\Prestataire\MessagingController::class, 'show'])->name('messages.show');
-        Route::post('/messages', [\App\Http\Controllers\Prestataire\MessagingController::class, 'store'])->name('messages.store');
-        Route::post('/messages/start-conversation', [\App\Http\Controllers\Prestataire\MessagingController::class, 'startConversation'])->name('messages.start-conversation');
+        // Routes pour la messagerie prestataire (redirigées vers le contrôleur unifié)
+        Route::get('/messages', [\App\Http\Controllers\MessagingController::class, 'index'])->name('prestataire.messages.index');
+        Route::get('/messages/{user}', [\App\Http\Controllers\MessagingController::class, 'show'])->name('prestataire.messages.show');
+        Route::post('/messages/{user}', [\App\Http\Controllers\MessagingController::class, 'store'])->name('prestataire.messages.store');
+        Route::post('/messages/start-conversation/{user}', [\App\Http\Controllers\MessagingController::class, 'startConversation'])->name('prestataire.messages.start-conversation');
         
         // Routes pour la gestion des équipements
         Route::prefix('equipment')->name('equipment.')->group(function () {
             Route::get('/', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'index'])->name('index');
             Route::get('/create', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'create'])->name('create');
             Route::post('/', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'store'])->name('store');
+            
+            // Routes pour la création multi-étapes d'équipement
+            Route::get('/create/step1', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'createStep1'])->name('create.step1');
+            Route::post('/create/step1', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'storeStep1'])->name('store.step1');
+            Route::get('/create/step2', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'createStep2'])->name('create.step2');
+            Route::post('/create/step2', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'storeStep2'])->name('store.step2');
+            Route::get('/create/step3', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'createStep3'])->name('create.step3');
+            Route::post('/create/step3', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'storeStep3'])->name('store.step3');
+            Route::get('/create/step4', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'createStep4'])->name('create.step4');
+            
             Route::get('/{equipment}', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'show'])->name('show');
             Route::get('/{equipment}/edit', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'edit'])->name('edit');
             Route::put('/{equipment}', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'update'])->name('update');
@@ -546,10 +562,11 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
             Route::post('/{rental}/report-issue', [\App\Http\Controllers\Prestataire\EquipmentRentalController::class, 'reportIssue'])->name('report-issue');
         });
         
-        // Routes pour les ventes urgentes (prestataire)
+        // Routes pour les annonces (prestataire)
         Route::prefix('urgent-sales')->name('urgent-sales.')->group(function () {
             Route::get('/', [\App\Http\Controllers\Prestataire\UrgentSaleController::class, 'index'])->name('index');
             Route::get('/create', [\App\Http\Controllers\Prestataire\UrgentSaleController::class, 'create'])->name('create');
+            Route::get('/subcategories/{categoryId}', [\App\Http\Controllers\Prestataire\UrgentSaleController::class, 'getSubcategories'])->name('subcategories');
             Route::post('/', [\App\Http\Controllers\Prestataire\UrgentSaleController::class, 'store'])->name('store');
             Route::get('/{urgentSale}', [\App\Http\Controllers\Prestataire\UrgentSaleController::class, 'show'])->name('show');
             Route::get('/{urgentSale}/edit', [\App\Http\Controllers\Prestataire\UrgentSaleController::class, 'edit'])->name('edit');
@@ -594,6 +611,9 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
     Route::prefix('messaging')->name('messaging.')->group(function () {
         Route::get('/', [MessageController::class, 'index'])->name('index');
         Route::get('/start/{user}', [MessageController::class, 'start'])->name('start');
+        Route::get('/conversation', function() {
+            return redirect()->route('messaging.index');
+        });
         Route::get('/conversation/{user}', [MessageController::class, 'conversation'])->name('conversation');
         Route::post('/send/{receiver}', [MessageController::class, 'send'])->name('send');
         Route::post('/send-ajax', [MessageController::class, 'sendAjax'])->name('send.ajax');
@@ -671,6 +691,7 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
         // Modération des services
         Route::resource('services', \App\Http\Controllers\Admin\ServiceController::class);
         Route::post('/services/{service}/toggle-visibility', [\App\Http\Controllers\Admin\ServiceController::class, 'toggleVisibility'])->name('services.toggleVisibility');
+        Route::get('/services/export', [\App\Http\Controllers\Admin\ServiceController::class, 'export'])->name('services.export');
         
         // Modération des avis
         Route::resource('reviews', \App\Http\Controllers\Admin\ReviewController::class);
@@ -682,12 +703,7 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
         Route::get('/bookings/export', [\App\Http\Controllers\Admin\BookingController::class, 'export'])->name('bookings.export');
         
 
-        // Gestion des offres
-        Route::resource('offers', \App\Http\Controllers\Admin\OfferController::class);
-        Route::post('/offers/{offer}/update-status', [\App\Http\Controllers\Admin\OfferController::class, 'updateStatus'])->name('offers.update-status');
-        Route::post('/offers/{offer}/moderate', [\App\Http\Controllers\Admin\OfferController::class, 'moderate'])->name('offers.moderate');
-        Route::get('/offers/export', [\App\Http\Controllers\Admin\OfferController::class, 'export'])->name('offers.export');
-        Route::get('/offers/analytics', [\App\Http\Controllers\Admin\OfferController::class, 'analytics'])->name('offers.analytics');
+
         
         // Gestion des notifications
         Route::resource('notifications', \App\Http\Controllers\Admin\NotificationController::class);
@@ -708,12 +724,20 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
         
         // Gestion des signalements
         Route::prefix('reports')->name('reports.')->group(function () {
-            // Signalements des ventes urgentes
+            // Signalements des annonces
             Route::prefix('urgent-sales')->name('urgent-sales.')->group(function () {
                 Route::get('/', [\App\Http\Controllers\Admin\UrgentSaleReportController::class, 'index'])->name('index');
                 Route::get('/{report}', [\App\Http\Controllers\Admin\UrgentSaleReportController::class, 'show'])->name('show');
                 Route::post('/{report}/update-status', [\App\Http\Controllers\Admin\UrgentSaleReportController::class, 'updateStatus'])->name('update-status');
                 Route::delete('/{report}', [\App\Http\Controllers\Admin\UrgentSaleReportController::class, 'destroy'])->name('destroy');
+            });
+            
+            // Signalements des services
+            Route::prefix('services')->name('services.')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Admin\ServiceReportController::class, 'index'])->name('index');
+                Route::get('/{report}', [\App\Http\Controllers\Admin\ServiceReportController::class, 'show'])->name('show');
+                Route::post('/{report}/update-status', [\App\Http\Controllers\Admin\ServiceReportController::class, 'updateStatus'])->name('update-status');
+                Route::delete('/{report}', [\App\Http\Controllers\Admin\ServiceReportController::class, 'destroy'])->name('destroy');
             });
             
             // Signalements des équipements
@@ -741,10 +765,7 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
             Route::get('/export/{type}', [\App\Http\Controllers\Admin\ReportController::class, 'export'])->name('export');
         });
         
-        // Gestion des articles
-        Route::resource('articles', \App\Http\Controllers\Admin\ArticleController::class);
-        Route::post('/articles/{article}/publish', [\App\Http\Controllers\Admin\ArticleController::class, 'publish'])->name('articles.publish');
-        Route::post('/articles/{article}/archive', [\App\Http\Controllers\Admin\ArticleController::class, 'archive'])->name('articles.archive');
+
         
         // Gestion des équipements
         Route::resource('equipment', \App\Http\Controllers\Admin\EquipmentController::class);
@@ -753,11 +774,16 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
         // Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class); // Temporairement commenté
         
         // Gestion des demandes clients
-        Route::resource('client-requests', \App\Http\Controllers\Admin\ClientRequestController::class);
-        Route::post('/client-requests/{clientRequest}/update-status', [\App\Http\Controllers\Admin\ClientRequestController::class, 'updateStatus'])->name('client-requests.update-status');
-        Route::get('/client-requests/export', [\App\Http\Controllers\Admin\ClientRequestController::class, 'export'])->name('client-requests.export');
+    
+    
+    
     });
 });
+
+// Route de test pour les fonctionnalités JavaScript
+Route::get('/test/availability', function () {
+    return view('test.availability_test');
+})->name('test.availability');
 
 // Add these routes in the admin section
 // ... existing code ...

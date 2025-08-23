@@ -110,40 +110,40 @@
             </div>
         @endif
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-6 sm:mb-8">
             <!-- Statut actuel -->
-            <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-8 hover:shadow-xl transition-all duration-300">
-                <div class="flex items-center mb-6">
+            <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-8 hover:shadow-xl transition-all duration-300">
+                <div class="flex items-center mb-4 sm:mb-6">
                     <div class="flex-shrink-0">
-                        <div class="flex items-center justify-center w-12 h-12 
+                        <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 
                             @if($prestataire->isVerified()) bg-orange-50 @else bg-orange-50 @endif rounded-xl">
                             @if($prestataire->isVerified())
-                                <svg class="h-6 w-6 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                                <svg class="h-5 w-5 sm:h-6 sm:w-6 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                                 </svg>
                             @else
-                                <svg class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg class="h-5 w-5 sm:h-6 sm:w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                                 </svg>
                             @endif
                         </div>
                     </div>
-                    <div class="ml-4">
-                        <h3 class="text-xl font-bold text-gray-900">Statut actuel</h3>
-                        <p class="text-gray-600">État de votre vérification</p>
+                    <div class="ml-3 sm:ml-4">
+                        <h3 class="text-lg sm:text-xl font-bold text-gray-900">Statut actuel</h3>
+                        <p class="text-sm sm:text-base text-gray-600">État de votre vérification</p>
                     </div>
                 </div>
                 
                 @if($prestataire->isVerified())
-                    <div class="text-center py-6">
-                        <div class="flex items-center justify-center w-20 h-20 mx-auto mb-4 bg-orange-50 rounded-full">
-                            <svg class="w-10 h-10 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                    <div class="text-center py-4 sm:py-6">
+                        <div class="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 sm:mb-4 bg-orange-50 rounded-full">
+                            <svg class="w-8 h-8 sm:w-10 sm:h-10 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                             </svg>
                         </div>
-                        <h4 class="text-lg font-semibold text-orange-800 mb-2">Compte vérifié</h4>
-                        <p class="text-orange-700 mb-2">{{ $prestataire->getVerificationType() }}</p>
-                        <p class="text-sm text-gray-600">
+                        <h4 class="text-base sm:text-lg font-semibold text-orange-800 mb-2">Compte vérifié</h4>
+                        <p class="text-sm sm:text-base text-orange-700 mb-2">{{ $prestataire->getVerificationType() }}</p>
+                        <p class="text-xs sm:text-sm text-gray-600">
                             Vous bénéficiez du badge "Vérifié" sur votre profil public.
                         </p>
                     </div>
@@ -159,71 +159,74 @@
                             La vérification améliore votre crédibilité auprès des clients.
                         </p>
                         <a href="{{ route('prestataire.verification.create') }}" 
-                           class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-bold rounded-xl text-white bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
-                            <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                           class="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 border border-transparent text-xs sm:text-sm font-bold rounded-xl text-white bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 w-full sm:w-auto justify-center">
+                            <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                             </svg>
-                            Soumettre une demande
+                            <span class="hidden sm:inline">Soumettre une demande</span>
+                            <span class="sm:hidden">Soumettre</span>
                         </a>
                     </div>
                 @endif
             </div>
 
             <!-- Vérification automatique -->
-            <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-8 hover:shadow-xl transition-all duration-300">
-                <div class="flex items-center mb-6">
+            <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-8 hover:shadow-xl transition-all duration-300">
+                <div class="flex items-center mb-4 sm:mb-6">
                     <div class="flex-shrink-0">
-                        <div class="flex items-center justify-center w-12 h-12 bg-orange-50 rounded-xl">
-                            <svg class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-orange-50 rounded-xl">
+                            <svg class="h-5 w-5 sm:h-6 sm:w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
                     </div>
-                    <div class="ml-4">
-                        <h3 class="text-xl font-bold text-gray-900">Vérification automatique</h3>
-                        <p class="text-gray-600">Basée sur vos performances</p>
+                    <div class="ml-3 sm:ml-4">
+                        <h3 class="text-lg sm:text-xl font-bold text-gray-900">Vérification automatique</h3>
+                        <p class="text-sm sm:text-base text-gray-600">Basée sur vos performances</p>
                     </div>
                 </div>
                 
                 @if($automaticVerificationStatus['meets_criteria'])
-                    <div class="text-center py-6">
-                        <div class="flex items-center justify-center w-20 h-20 mx-auto mb-4 bg-orange-50 rounded-full">
-                            <svg class="w-10 h-10 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                    <div class="text-center py-4 sm:py-6">
+                        <div class="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 sm:mb-4 bg-orange-50 rounded-full">
+                            <svg class="w-8 h-8 sm:w-10 sm:h-10 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                             </svg>
                         </div>
-                        <h4 class="text-lg font-semibold text-orange-800 mb-2">Critères remplis</h4>
-                        <p class="text-sm text-gray-600 mb-4">
+                        <h4 class="text-base sm:text-lg font-semibold text-orange-800 mb-2">Critères remplis</h4>
+                        <p class="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4">
                             Vous remplissez tous les critères de vérification automatique.
                         </p>
                         @if(!$prestataire->isVerified())
                             <form action="{{ route('prestataire.verification.check-automatic') }}" method="POST" class="inline">
                                 @csrf
-                                <button type="submit" class="inline-flex items-center px-6 py-3 border border-transparent rounded-lg text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 transition-all duration-300">
-                                    <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <button type="submit" class="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 border border-transparent rounded-lg text-xs sm:text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 transition-all duration-300 w-full sm:w-auto justify-center">
+                                    <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                     </svg>
-                                    Appliquer la vérification
+                                    <span class="hidden sm:inline">Appliquer la vérification</span>
+                                    <span class="sm:hidden">Appliquer</span>
                                 </button>
                             </form>
                         @endif
                     </div>
                 @else
-                    <div class="text-center py-6">
-                        <div class="flex items-center justify-center w-20 h-20 mx-auto mb-4 bg-gray-50 rounded-full">
-                            <svg class="w-10 h-10 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="text-center py-4 sm:py-6">
+                        <div class="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 sm:mb-4 bg-gray-50 rounded-full">
+                            <svg class="w-8 h-8 sm:w-10 sm:h-10 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </div>
-                        <h4 class="text-lg font-semibold text-gray-800 mb-2">Critères non remplis</h4>
-                        <p class="text-sm text-gray-600 mb-4">
+                        <h4 class="text-base sm:text-lg font-semibold text-gray-800 mb-2">Critères non remplis</h4>
+                        <p class="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4">
                             Vous ne remplissez pas encore tous les critères.
                         </p>
-                        <button type="button" class="inline-flex items-center px-6 py-3 border border-orange-300 rounded-lg text-sm font-medium text-orange-700 bg-white hover:bg-orange-50 transition-all duration-300" onclick="document.getElementById('automaticCriteriaModal').classList.remove('hidden')">
-                            <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <button type="button" class="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 border border-orange-300 rounded-lg text-xs sm:text-sm font-medium text-orange-700 bg-white hover:bg-orange-50 transition-all duration-300 w-full sm:w-auto justify-center" onclick="document.getElementById('automaticCriteriaModal').classList.remove('hidden')">
+                            <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            Voir les critères
+                            <span class="hidden sm:inline">Voir les critères</span>
+                            <span class="sm:hidden">Critères</span>
                         </button>
                     </div>
                 @endif
@@ -232,31 +235,31 @@
 
         <!-- Demande de vérification manuelle -->
         @if($canSubmitRequest)
-            <div class="mb-8">
-                <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-8 hover:shadow-xl transition-all duration-300">
-                    <div class="flex items-center mb-6">
+            <div class="mb-6 sm:mb-8">
+                <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-8 hover:shadow-xl transition-all duration-300">
+                    <div class="flex items-center mb-4 sm:mb-6">
                         <div class="flex-shrink-0">
-                            <div class="flex items-center justify-center w-12 h-12 bg-orange-50 rounded-xl">
-                                <svg class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-orange-50 rounded-xl">
+                                <svg class="h-5 w-5 sm:h-6 sm:w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                                 </svg>
                             </div>
                         </div>
-                        <div class="ml-4">
-                            <h3 class="text-xl font-bold text-gray-900">Demande de vérification manuelle</h3>
-                            <p class="text-gray-600">Soumettez des documents justificatifs</p>
+                        <div class="ml-3 sm:ml-4">
+                            <h3 class="text-lg sm:text-xl font-bold text-gray-900">Demande de vérification manuelle</h3>
+                            <p class="text-sm sm:text-base text-gray-600">Soumettez des documents justificatifs</p>
                         </div>
                     </div>
                     
-                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-6 mb-6">
+                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6">
                         <div class="flex items-start">
                             <div class="flex-shrink-0">
-                                <svg class="w-6 h-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
                             <div class="ml-3">
-                                <p class="text-sm text-orange-700">
+                                <p class="text-xs sm:text-sm text-orange-700">
                                     Si vous ne remplissez pas les critères de vérification automatique, 
                                     vous pouvez soumettre des documents justificatifs pour une vérification manuelle.
                                 </p>
@@ -266,11 +269,12 @@
                     
                     <div class="text-center">
                         <a href="{{ route('prestataire.verification.create') }}" 
-                           class="inline-flex items-center px-8 py-4 border border-transparent rounded-lg text-base font-medium text-white bg-orange-600 hover:bg-orange-700 transition-all duration-300">
-                            <svg class="w-5 h-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                           class="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 border border-transparent rounded-lg text-sm sm:text-base font-medium text-white bg-orange-600 hover:bg-orange-700 transition-all duration-300 w-full sm:w-auto justify-center">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                             </svg>
-                            Soumettre une demande
+                            <span class="hidden sm:inline">Soumettre une demande</span>
+                            <span class="sm:hidden">Soumettre</span>
                         </a>
                     </div>
                 </div>
@@ -340,7 +344,7 @@
                                                     @break
                                             @endswitch
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
                                             @if($request->isPending())
                                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                                                     <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -424,74 +428,74 @@
 
 <!-- Modal pour les critères automatiques -->
 <div id="automaticCriteriaModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-xl bg-white">
-        <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold text-gray-900">Critères de vérification automatique</h3>
+    <div class="relative top-10 sm:top-20 mx-auto p-4 sm:p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-xl bg-white">
+        <div class="flex items-center justify-between mb-4 sm:mb-6">
+            <h3 class="text-lg sm:text-xl font-bold text-gray-900">Critères de vérification automatique</h3>
             <button type="button" class="text-gray-400 hover:text-gray-600" onclick="document.getElementById('automaticCriteriaModal').classList.add('hidden')">
-                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
         </div>
         
-        <div class="space-y-4">
-            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <span class="text-sm font-medium text-gray-700">100 avis positifs minimum (≥4/5)</span>
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium 
-                    {{ $automaticVerificationStatus['positive_reviews'] >= 100 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+        <div class="space-y-3 sm:space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-gray-50 rounded-lg gap-2 sm:gap-0">
+                <span class="text-xs sm:text-sm font-medium text-gray-700">100 avis positifs minimum (≥4/5)</span>
+                <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium 
+                    {{ $automaticVerificationStatus['positive_reviews'] >= 100 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }} self-start sm:self-auto">
                     {{ $automaticVerificationStatus['positive_reviews'] }}/100
                 </span>
             </div>
             
-            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <span class="text-sm font-medium text-gray-700">Moins de 10 avis négatifs (<3/5)</span>
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium 
-                    {{ $automaticVerificationStatus['negative_reviews'] < 10 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-gray-50 rounded-lg gap-2 sm:gap-0">
+                <span class="text-xs sm:text-sm font-medium text-gray-700">Moins de 10 avis négatifs (<3/5)</span>
+                <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium 
+                    {{ $automaticVerificationStatus['negative_reviews'] < 10 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }} self-start sm:self-auto">
                     {{ $automaticVerificationStatus['negative_reviews'] }}/10
                 </span>
             </div>
             
-            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <span class="text-sm font-medium text-gray-700">Note moyenne ≥ 4/5</span>
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium 
-                    {{ $automaticVerificationStatus['average_rating'] >= 4 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-gray-50 rounded-lg gap-2 sm:gap-0">
+                <span class="text-xs sm:text-sm font-medium text-gray-700">Note moyenne ≥ 4/5</span>
+                <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium 
+                    {{ $automaticVerificationStatus['average_rating'] >= 4 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }} self-start sm:self-auto">
                     {{ number_format($automaticVerificationStatus['average_rating'], 1) }}/5
                 </span>
             </div>
             
-            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <span class="text-sm font-medium text-gray-700">Email vérifié</span>
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium 
-                    {{ $automaticVerificationStatus['email_verified'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-gray-50 rounded-lg gap-2 sm:gap-0">
+                <span class="text-xs sm:text-sm font-medium text-gray-700">Email vérifié</span>
+                <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium 
+                    {{ $automaticVerificationStatus['email_verified'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }} self-start sm:self-auto">
                     {{ $automaticVerificationStatus['email_verified'] ? 'Oui' : 'Non' }}
                 </span>
             </div>
             
-            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <span class="text-sm font-medium text-gray-700">Téléphone vérifié</span>
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium 
-                    {{ $automaticVerificationStatus['phone_verified'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-gray-50 rounded-lg gap-2 sm:gap-0">
+                <span class="text-xs sm:text-sm font-medium text-gray-700">Téléphone vérifié</span>
+                <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium 
+                    {{ $automaticVerificationStatus['phone_verified'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }} self-start sm:self-auto">
                     {{ $automaticVerificationStatus['phone_verified'] ? 'Oui' : 'Non' }}
                 </span>
             </div>
             
-            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <span class="text-sm font-medium text-gray-700">Connexion ≥ 5 fois/mois</span>
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-gray-50 rounded-lg gap-2 sm:gap-0">
+                <span class="text-xs sm:text-sm font-medium text-gray-700">Connexion ≥ 5 fois/mois</span>
+                <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 self-start sm:self-auto">
                     Vérifié automatiquement
                 </span>
             </div>
             
-            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <span class="text-sm font-medium text-gray-700">Moins de 3 signalements</span>
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-gray-50 rounded-lg gap-2 sm:gap-0">
+                <span class="text-xs sm:text-sm font-medium text-gray-700">Moins de 3 signalements</span>
+                <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 self-start sm:self-auto">
                     Vérifié automatiquement
                 </span>
             </div>
         </div>
         
-        <div class="mt-6 flex justify-end">
-            <button type="button" class="px-6 py-3 border border-orange-300 rounded-lg text-sm font-medium text-orange-700 bg-white hover:bg-orange-50 transition-all duration-300" onclick="document.getElementById('automaticCriteriaModal').classList.add('hidden')">
+        <div class="mt-4 sm:mt-6 flex justify-end">
+            <button type="button" class="px-4 sm:px-6 py-2 sm:py-3 border border-orange-300 rounded-lg text-xs sm:text-sm font-medium text-orange-700 bg-white hover:bg-orange-50 transition-all duration-300" onclick="document.getElementById('automaticCriteriaModal').classList.add('hidden')">
                 Fermer
             </button>
         </div>

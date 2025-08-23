@@ -72,73 +72,11 @@ class EquipmentRentalController extends Controller
             'client.user',
             'rentalRequest',
             'review',
-            'deliveredBy',
             'pickedUpBy',
             'cancelledBy'
         ]);
         
         return view('prestataire.equipment.rentals.show', compact('rental'));
-    }
-    
-    /**
-     * Marque une location comme prête pour livraison
-     */
-    public function markReadyForDelivery(EquipmentRental $rental)
-    {
-        $this->authorize('update', $rental);
-        
-        if ($rental->status !== 'in_preparation') {
-            return back()->with('error', 'Cette location ne peut pas être marquée comme prête.');
-        }
-        
-        $rental->update(['status' => 'ready_for_delivery']);
-        
-        // TODO: Envoyer notification au client
-        
-        return back()->with('success', 'Location marquée comme prête pour livraison.');
-    }
-    
-    /**
-     * Marque une location comme livrée
-     */
-    public function markDelivered(Request $request, EquipmentRental $rental)
-    {
-        $this->authorize('update', $rental);
-        
-        $validated = $request->validate([
-            'delivery_notes' => 'nullable|string|max:1000',
-            'equipment_condition_delivered' => 'required|in:excellent,very_good,good,fair',
-            'delivery_photos' => 'nullable|array|max:5',
-            'delivery_photos.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
-            'client_signature' => 'nullable|string'
-        ]);
-        
-        if (!in_array($rental->status, ['ready_for_delivery', 'confirmed'])) {
-            return back()->with('error', 'Cette location ne peut pas être marquée comme livrée.');
-        }
-        
-        // Gestion des photos de livraison
-        $deliveryPhotos = [];
-        if ($request->hasFile('delivery_photos')) {
-            foreach ($request->file('delivery_photos') as $photo) {
-                $deliveryPhotos[] = $photo->store('rentals/delivery', 'public');
-            }
-        }
-        
-        $rental->update([
-            'status' => 'delivered',
-            'delivered_at' => now(),
-            'delivered_by' => Auth::id(),
-            'delivery_notes' => $validated['delivery_notes'],
-            'equipment_condition_delivered' => $validated['equipment_condition_delivered'],
-            'delivery_photos' => $deliveryPhotos,
-            'client_signature_delivery' => $validated['client_signature'] ?? null,
-            'actual_start_datetime' => now()
-        ]);
-        
-        // TODO: Envoyer notification au client
-        
-        return back()->with('success', 'Location marquée comme livrée.');
     }
     
     /**
@@ -162,7 +100,7 @@ class EquipmentRentalController extends Controller
             'client_signature' => 'nullable|string'
         ]);
         
-        if (!in_array($rental->status, ['delivered', 'in_use', 'ready_for_pickup'])) {
+        if (!in_array($rental->status, ['in_use', 'ready_for_pickup'])) {
             return back()->with('error', 'Cette location ne peut pas être marquée comme retournée.');
         }
         
@@ -409,7 +347,7 @@ class EquipmentRentalController extends Controller
         // Récupérer les locations pour le calendrier
         $rentals = $prestataire->equipmentRentals()
                               ->with(['equipment', 'client.user'])
-                              ->whereIn('status', ['confirmed', 'in_preparation', 'ready_for_delivery', 'delivered', 'in_use'])
+                              ->whereIn('status', ['confirmed', 'in_preparation', 'in_use'])
                               ->get();
         
         // Formater pour FullCalendar
@@ -435,8 +373,6 @@ class EquipmentRentalController extends Controller
         $colors = [
             'confirmed' => '#3B82F6',
             'in_preparation' => '#F59E0B',
-            'ready_for_delivery' => '#10B981',
-            'delivered' => '#8B5CF6',
             'in_use' => '#06B6D4',
             'ready_for_pickup' => '#F97316',
             'returned' => '#84CC16',

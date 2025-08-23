@@ -33,7 +33,7 @@ class ServiceFactory extends Factory
             'price' => fake()->randomFloat(2, 50, 5000),
             'price_type' => fake()->randomElement(['fixed', 'hourly', 'daily']),
             'delivery_time' => fake()->numberBetween(1, 30), // en jours
-            'status' => fake()->randomElement(['active', 'inactive', 'draft']),
+            'status' => fake()->randomElement(['active', 'inactive']),
             'reservable' => fake()->boolean(80),
             'city' => fake()->city(),
             'postal_code' => fake()->postcode(),
