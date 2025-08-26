@@ -58,12 +58,37 @@ class ServiceController extends Controller
             $query->where('price', '<=', $request->price_max);
         }
 
-        // Filtrage par localisation
+        // Filtrage par localisation avec recherche fuzzy
         if ($request->filled('location')) {
-            $query->where(function($q) use ($request) {
-                $q->where('city', 'like', '%' . $request->location . '%')
-                  ->orWhere('postal_code', 'like', '%' . $request->location . '%')
-                  ->orWhere('address', 'like', '%' . $request->location . '%');
+            $locationParam = $request->location;
+            // Extraire le nom de la ville si la chaîne contient des virgules (format GPS: "Oujda, 60000")
+            $locationParts = explode(',', $locationParam);
+            $location = trim($locationParts[0]); // Prendre seulement la première partie (nom de la ville)
+            
+            $query->where(function($mainQ) use ($location, $locationParam) {
+                // Recherche dans les propres champs de localisation du service
+                $mainQ->where(function($serviceQ) use ($location, $locationParam) {
+                    $serviceQ->where('city', 'like', '%' . $location . '%')
+                             ->orWhere('address', 'like', '%' . $location . '%')
+                             ->orWhere('postal_code', 'like', '%' . $location . '%')
+                             // Recherche aussi avec la chaîne complète au cas où
+                             ->orWhere('city', 'like', '%' . $locationParam . '%')
+                             ->orWhere('address', 'like', '%' . $locationParam . '%')
+                             ->orWhereRaw("CONCAT(COALESCE(address, ''), ', ', COALESCE(city, ''), ', ', COALESCE(postal_code, '')) LIKE ?", ['%' . $location . '%']);
+                })
+                // OU recherche dans la localisation du prestataire
+                ->orWhereHas('prestataire', function ($q) use ($location, $locationParam) {
+                    $q->where(function ($subQ) use ($location, $locationParam) {
+                        $subQ->where('city', 'like', '%' . $location . '%')
+                             ->orWhere('address', 'like', '%' . $location . '%')
+                             ->orWhere('postal_code', 'like', '%' . $location . '%')
+                             // Recherche aussi avec la chaîne complète au cas où
+                             ->orWhere('city', 'like', '%' . $locationParam . '%')
+                             ->orWhere('address', 'like', '%' . $locationParam . '%')
+                             // Recherche fuzzy dans les coordonnées GPS converties en adresse
+                             ->orWhereRaw("CONCAT(COALESCE(address, ''), ', ', COALESCE(city, ''), ', ', COALESCE(postal_code, '')) LIKE ?", ['%' . $location . '%']);
+                    });
+                });
             });
         }
 

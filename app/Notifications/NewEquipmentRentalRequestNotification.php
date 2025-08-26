@@ -66,8 +66,10 @@ class NewEquipmentRentalRequestNotification extends Notification implements Shou
             'rental_request_id' => $this->rentalRequest->id,
             'equipment_name' => $this->rentalRequest->equipment->name,
             'client_name' => $this->rentalRequest->client->user->name,
+            'title' => 'Nouvelle demande de location',
             'message' => 'Vous avez une nouvelle demande de location pour ' . $this->rentalRequest->equipment->name,
             'url' => route('prestataire.equipment-rental-requests.show', $this->rentalRequest->id),
+            'type' => 'equipment_rental_request'
         ];
     }
 }

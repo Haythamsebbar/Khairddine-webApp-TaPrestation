@@ -24,13 +24,10 @@
                         Nouveau Service
                     </a>
                     <button class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm sm:text-base" onclick="toggleFilters()">
-                        <i class="fas fa-filter mr-2"></i>
-                        Filtres
-                    </button>
-                    <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center text-sm sm:text-base" onclick="exportServices()">
-                        <i class="fas fa-download mr-2"></i>
-                        Exporter
-                    </button>
+                    <i class="fas fa-filter mr-2"></i>
+                    Afficher les filtres
+                </button>
+
                 </div>
             </div>
         </div>
@@ -218,10 +215,7 @@
                 <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 par page</option>
             </select>
             
-            <button class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2 px-4 rounded-lg transition duration-200 flex items-center" onclick="exportServices()">
-                <i class="fas fa-download mr-2"></i>
-                Exporter
-            </button>
+
         </div>
     </div>
     
@@ -552,20 +546,7 @@ function bulkDelete() {
     }
 }
 
-// Export services
-function exportServices() {
-    const selectedServices = document.querySelectorAll('.service-checkbox:checked');
-    if (selectedServices.length === 0) {
-        alert('Veuillez sélectionner au moins un service à exporter.');
-        return;
-    }
-    
-    const serviceIds = Array.from(selectedServices).map(cb => cb.value);
-    const url = new URL('{{ route("administrateur.services.export") }}');
-    serviceIds.forEach(id => url.searchParams.append('services[]', id));
-    
-    window.open(url.toString(), '_blank');
-}
+
 
 function duplicateService(serviceId) {
     if (confirm('Êtes-vous sûr de vouloir dupliquer ce service ?')) {
@@ -675,9 +656,6 @@ function fallbackCopyTextToClipboard(text) {
     document.body.removeChild(textArea);
 }
 
-// Export services
-function exportServices() {
-    window.location.href = '{{ route("administrateur.services.export") }}' + window.location.search;
-}
+
 </script>
 @endpush

@@ -86,12 +86,61 @@
                     @endif
                 </div>
                 
-                <!-- Description détaillée -->
+                <!-- Description et informations détaillées -->
                 <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6 mt-4 sm:mt-6">
-                    <h2 class="text-lg sm:text-xl lg:text-2xl font-bold text-blue-800 mb-3 sm:mb-4">Description</h2>
-                    <div class="prose max-w-none text-gray-700 text-sm sm:text-base leading-relaxed">
+                    <h2 class="text-lg sm:text-xl lg:text-2xl font-bold text-blue-800 mb-4 sm:mb-6">Description du service</h2>
+                    
+                    <!-- Description principale -->
+                    <div class="prose max-w-none text-gray-700 text-sm sm:text-base leading-relaxed mb-6">
                         {!! nl2br(e($service->description)) !!}
                     </div>
+                    
+                    <!-- Informations complémentaires -->
+                    @if($service->delivery_time || $service->price_type)
+                        <div class="border-t border-gray-200 pt-4">
+                            <h3 class="text-base sm:text-lg font-semibold text-blue-700 mb-3">Informations pratiques</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                @if($service->delivery_time)
+                                    <div class="bg-blue-50 p-3 rounded-lg">
+                                        <div class="flex items-center mb-2">
+                                            <svg class="w-4 h-4 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            <span class="font-medium text-blue-800">Délai de livraison</span>
+                                        </div>
+                                        <p class="text-gray-700 text-sm">{{ $service->delivery_time }}</p>
+                                    </div>
+                                @endif
+                                
+                                @if($service->price_type)
+                                    <div class="bg-green-50 p-3 rounded-lg">
+                                        <div class="flex items-center mb-2">
+                                            <svg class="w-4 h-4 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                            </svg>
+                                            <span class="font-medium text-green-800">Tarification</span>
+                                        </div>
+                                        <p class="text-gray-700 text-sm">{{ number_format($service->price, 2) }}€ / {{ $service->price_type }}</p>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+                    
+                    <!-- Disponibilité et réservation -->
+                    @if($service->reservable)
+                        <div class="border-t border-gray-200 pt-4 mt-4">
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span class="font-medium text-green-800">Service disponible à la réservation</span>
+                                </div>
+                                <p class="text-green-700 text-sm mt-2">Ce service peut être réservé directement en ligne.</p>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
             
@@ -183,23 +232,71 @@
                             </div>
                         </a>
                         
-                        <div class="space-y-2 text-xs sm:text-sm text-gray-600">
-                            @if($service->city)
-                                <div class="flex items-center">
-                                    <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    </svg>
-                                    <span class="truncate">{{ $service->city }}</span>
+                        <!-- Informations de localisation et contact -->
+                        <div class="space-y-3 text-xs sm:text-sm">
+                            <!-- Localisation complète -->
+                            @if($service->city || $service->address || $service->prestataire->city)
+                                <div class="bg-blue-50 p-3 rounded-lg">
+                                    <div class="flex items-start">
+                                        <svg class="w-4 h-4 mr-2 flex-shrink-0 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        </svg>
+                                        <div class="flex-1">
+                                            <div class="font-medium text-blue-800 mb-1">Localisation du service</div>
+                                            @if($service->address)
+                                                <div class="text-gray-700">{{ $service->address }}</div>
+                                            @endif
+                                            @if($service->city)
+                                                <div class="text-gray-700">
+                                                    {{ $service->city }}
+                                                    @if($service->postal_code)
+                                                        {{ $service->postal_code }}
+                                                    @endif
+                                                </div>
+                                            @elseif($service->prestataire->city)
+                                                <div class="text-gray-600 text-xs">
+                                                    Zone de service: {{ $service->prestataire->city }}
+                                                    @if($service->prestataire->postal_code)
+                                                        {{ $service->prestataire->postal_code }}
+                                                    @endif
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
                                 </div>
                             @endif
                             
-                            <div class="flex items-center">
+                            <!-- Informations temporelles -->
+                            <div class="flex items-center text-gray-600">
                                 <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
                                 <span class="truncate">Publié {{ $service->created_at->diffForHumans() }}</span>
                             </div>
+                            
+                            <!-- Contact prestataire -->
+                            @if($service->prestataire->phone || $service->prestataire->user->email)
+                                <div class="bg-gray-50 p-3 rounded-lg">
+                                    <div class="font-medium text-gray-800 mb-2">Contact</div>
+                                    @if($service->prestataire->phone)
+                                        <div class="flex items-center mb-1">
+                                            <svg class="w-3 h-3 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                                            </svg>
+                                            <span class="text-gray-700">{{ $service->prestataire->phone }}</span>
+                                        </div>
+                                    @endif
+                                    @if($service->prestataire->user->email)
+                                        <div class="flex items-center">
+                                            <svg class="w-3 h-3 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                            </svg>
+                                            <span class="text-gray-700 truncate">{{ $service->prestataire->user->email }}</span>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endif
                         </div>
 
                         @if ($service->latitude && $service->longitude)
@@ -210,42 +307,81 @@
                         @endif
                     </div>
                     
-                    <!-- Détails du produit -->
+                    <!-- Détails du service -->
                     <div class="border-t border-gray-200 pt-4 sm:pt-6 mb-4 sm:mb-6">
-                        <h3 class="text-base sm:text-lg font-semibold text-blue-800 mb-3">Détails</h3>
-                        <div class="space-y-3 text-xs sm:text-sm">
-                            <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
-                                <span class="text-gray-600 font-medium sm:font-normal">Catégories:</span>
-                                <div class="font-medium text-left sm:text-right">
+                        <h3 class="text-base sm:text-lg font-semibold text-blue-800 mb-4">Détails du service</h3>
+                        
+                        <!-- Catégories -->
+                        @if($service->categories->count() > 0)
+                            <div class="mb-4">
+                                <div class="text-xs sm:text-sm text-gray-600 mb-2">Catégories</div>
+                                <div class="flex flex-wrap gap-1">
                                     @foreach($service->categories as $category)
-                                        <a href="{{ route('services.index', ['category' => $category->id]) }}" class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold mr-1 sm:mr-2 mb-1 px-2 sm:px-2.5 py-0.5 rounded-full hover:bg-blue-200 transition-colors duration-200">{{ $category->name }}</a>
+                                        <a href="{{ route('services.index', ['category' => $category->id]) }}" class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2 sm:px-2.5 py-1 rounded-full hover:bg-blue-200 transition-colors duration-200">
+                                            {{ $category->name }}
+                                        </a>
                                     @endforeach
                                 </div>
                             </div>
-                            <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
-                                <span class="text-gray-600 font-medium sm:font-normal">Référence:</span>
-                                <span class="font-medium text-gray-800">#{{ $service->id }}</span>
+                        @endif
+                        
+                        <!-- Informations principales -->
+                        <div class="bg-gray-50 rounded-lg p-3 mb-4">
+                            <div class="grid grid-cols-2 gap-3 text-xs sm:text-sm">
+                                <div>
+                                    <div class="text-gray-600 mb-1">Référence</div>
+                                    <div class="font-medium text-gray-800">#{{ $service->id }}</div>
+                                </div>
+                                <div>
+                                    <div class="text-gray-600 mb-1">Vues</div>
+                                    <div class="font-medium text-gray-800">{{ number_format($service->views) }}</div>
+                                </div>
+                                @if($service->delivery_time)
+                                    <div class="col-span-2">
+                                        <div class="text-gray-600 mb-1">Temps de livraison</div>
+                                        <div class="font-medium text-gray-800">{{ $service->delivery_time }}</div>
+                                    </div>
+                                @endif
                             </div>
-                            <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
-                                <span class="text-gray-600 font-medium sm:font-normal">Temps de livraison:</span>
-                                <span class="font-medium text-gray-800 break-words">{{ $service->delivery_time }}</span>
-                            </div>
-                            <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
-                                <span class="text-gray-600 font-medium sm:font-normal">Status:</span>
-                                <span class="inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-medium {{ $service->status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }} self-start sm:self-auto">
+                        </div>
+                        
+                        <!-- Statuts -->
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs sm:text-sm text-gray-600">Statut du service</span>
+                                <span class="inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-medium {{ $service->status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                    <div class="w-1.5 h-1.5 rounded-full {{ $service->status === 'active' ? 'bg-green-500' : 'bg-red-500' }} mr-1.5"></div>
                                     {{ $service->status === 'active' ? 'Actif' : 'Inactif' }}
                                 </span>
                             </div>
-                            <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
-                                <span class="text-gray-600 font-medium sm:font-normal">Réservable:</span>
-                                <span class="inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-medium {{ $service->reservable ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800' }} self-start sm:self-auto">
-                                    {{ $service->reservable ? 'Oui' : 'Non' }}
+                            
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs sm:text-sm text-gray-600">Réservation</span>
+                                <span class="inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-medium {{ $service->reservable ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800' }}">
+                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        @if($service->reservable)
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        @else
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        @endif
+                                    </svg>
+                                    {{ $service->reservable ? 'Disponible' : 'Non disponible' }}
                                 </span>
                             </div>
-                            <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
-                                <span class="text-gray-600 font-medium sm:font-normal">Vues:</span>
-                                <span class="font-medium text-gray-800">{{ $service->views }}</span>
-                            </div>
+                            
+                            @if($service->created_at)
+                                <div class="flex items-center justify-between pt-2 border-t border-gray-200">
+                                    <span class="text-xs sm:text-sm text-gray-600">Date de création</span>
+                                    <span class="text-xs sm:text-sm font-medium text-gray-800">{{ $service->created_at->format('d/m/Y à H:i') }}</span>
+                                </div>
+                            @endif
+                            
+                            @if($service->updated_at && $service->updated_at != $service->created_at)
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs sm:text-sm text-gray-600">Dernière modification</span>
+                                    <span class="text-xs sm:text-sm font-medium text-gray-800">{{ $service->updated_at->format('d/m/Y à H:i') }}</span>
+                                </div>
+                            @endif
                         </div>
                     </div>
                     

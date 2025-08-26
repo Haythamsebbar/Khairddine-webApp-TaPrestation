@@ -171,17 +171,20 @@ class EquipmentController extends Controller
     public function storeStep3(Request $request)
     {
         $validated = $request->validate([
-            'main_photo' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'photos' => 'required|array|min:1|max:5',
+            'photos.*' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
-        // Stocker temporairement l'image
-        $tempImagePath = null;
-        if ($request->hasFile('main_photo')) {
-            $tempImagePath = $request->file('main_photo')->store('temp_equipment_photos', 'public');
+        // Stocker temporairement les images
+        $tempImagePaths = [];
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $photo) {
+                $tempImagePaths[] = $photo->store('temp_equipment_photos', 'public');
+            }
         }
 
-        // Ne pas stocker l'objet UploadedFile dans la session, seulement le chemin
-        session(['equipment_step3' => ['temp_image_path' => $tempImagePath]]);
+        // Ne pas stocker l'objet UploadedFile dans la session, seulement les chemins
+        session(['equipment_step3' => ['temp_image_paths' => $tempImagePaths]]);
         return redirect()->route('prestataire.equipment.create.step4');
     }
 
@@ -245,15 +248,22 @@ class EquipmentController extends Controller
         // Combiner toutes les données
         $allData = array_merge($step1, $step2, $step4Validated);
 
-        // Gérer l'image principale
-        if (isset($step3['temp_image_path'])) {
-            // Déplacer l'image temporaire vers le dossier final
-            $tempPath = $step3['temp_image_path'];
-            $finalPath = str_replace('temp_equipment_photos/', 'equipment_photos/', $tempPath);
+        // Gérer les images
+        if (isset($step3['temp_image_paths']) && !empty($step3['temp_image_paths'])) {
+            $finalPaths = [];
+            foreach ($step3['temp_image_paths'] as $tempPath) {
+                $finalPath = str_replace('temp_equipment_photos/', 'equipment_photos/', $tempPath);
+                
+                if (Storage::disk('public')->exists($tempPath)) {
+                    Storage::disk('public')->move($tempPath, $finalPath);
+                    $finalPaths[] = $finalPath;
+                }
+            }
             
-            if (Storage::disk('public')->exists($tempPath)) {
-                Storage::disk('public')->move($tempPath, $finalPath);
-                $allData['main_photo'] = $finalPath;
+            // La première photo devient la photo principale
+            if (!empty($finalPaths)) {
+                $allData['main_photo'] = $finalPaths[0];
+                $allData['photos'] = $finalPaths;
             }
         }
 

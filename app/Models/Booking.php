@@ -262,6 +262,15 @@ class Booking extends Model
         return $this->start_datetime->diffInMinutes($this->end_datetime);
     }
 
+    /**
+     * Accessor for booking_datetime (backward compatibility)
+     * Returns the start_datetime as the booking datetime
+     */
+    public function getBookingDatetimeAttribute()
+    {
+        return $this->start_datetime;
+    }
+
     public function getDurationFormatted(): string
     {
         $minutes = $this->getDurationInMinutes();

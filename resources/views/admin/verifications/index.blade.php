@@ -103,7 +103,7 @@
                     <h2 class="text-lg sm:text-xl font-bold text-orange-800">Filtres de recherche</h2>
                     <button type="button" id="toggleFilters" class="lg:hidden bg-orange-600 hover:bg-orange-700 text-white px-3 py-2 rounded-lg transition duration-200">
                         <i class="fas fa-filter mr-1"></i>
-                        <span>Filtres</span>
+                        <span>Afficher les filtres</span>
                     </button>
                 </div>
                 
@@ -347,7 +347,7 @@ document.getElementById('toggleFilters')?.addEventListener('click', function() {
         this.innerHTML = '<i class="fas fa-times mr-1"></i><span>Fermer</span>';
     } else {
         filtersContent.classList.add('hidden');
-        this.innerHTML = '<i class="fas fa-filter mr-1"></i><span>Filtres</span>';
+        this.innerHTML = '<i class="fas fa-filter mr-1"></i><span>Afficher les filtres</span>';
     }
 });
 

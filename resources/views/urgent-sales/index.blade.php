@@ -175,42 +175,6 @@
         <!-- Résultats -->
         <div>
 
-                <!-- Annonces en vedette -->
-                @if($featuredSales->count() > 0 && !request()->hasAny(['search', 'city', 'price_min', 'price_max', 'condition']))
-                    <div class="bg-gradient-to-r from-red-500 to-pink-600 rounded-lg shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 text-white">
-                        <h2 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 flex items-center">
-                            <svg class="w-5 h-5 sm:w-6 sm:h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                            </svg>
-                            Annonces du moment
-                        </h2>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                            @foreach($featuredSales as $sale)
-                                <a href="{{ route('urgent-sales.show', $sale) }}" class="bg-white/10 backdrop-blur-sm rounded-lg overflow-hidden hover:bg-white/20 transition duration-200">
-                                    <!-- Image -->
-                                    @if($sale->photos && count(json_decode($sale->photos, true) ?? []) > 0)
-                                    <div class="relative h-32 sm:h-40">
-                                        <img src="{{ Storage::url(json_decode($sale->photos, true)[0]) }}" alt="{{ $sale->title }}" class="w-full h-full object-cover">
-                                            <div class="absolute top-2 right-2">
-                                                <span class="bg-white/20 px-2 py-1 rounded text-xs font-bold whitespace-nowrap">URGENT</span>
-                                            </div>
-                                        </div>
-                                    @endif
-                                    
-                                    <!-- Contenu -->
-                                    <div class="p-3 sm:p-4">
-                                        <div class="mb-2">
-                                            <span class="text-xs sm:text-sm font-medium line-clamp-2">{{ $sale->title }}</span>
-                                        </div>
-                                        <div class="text-xl sm:text-2xl font-bold mb-1">{{ number_format($sale->price, 2) }}€</div>
-                                        <div class="text-xs sm:text-sm opacity-90 truncate">{{ $sale->prestataire->user->name }}</div>
-                                    </div>
-                                </a>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
-
                 <!-- Liste des ventes -->
                 @if($urgentSales->count() > 0)
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -219,11 +183,17 @@
                                 <a href="{{ route('urgent-sales.show', $sale) }}" class="block">
                                     <!-- Image -->
                                     <div class="relative">
-                                        @if($sale->photos && count(json_decode($sale->photos, true) ?? []) > 0)
-                            <img src="{{ Storage::url(json_decode($sale->photos, true)[0]) }}" alt="{{ $sale->title }}" class="w-full h-48 object-cover">
+                                        @if($sale->photos && count($sale->photos ?? []) > 0)
+                                            <img src="{{ filter_var($sale->photos[0], FILTER_VALIDATE_URL) ? $sale->photos[0] : Storage::url($sale->photos[0]) }}" 
+                                                 alt="{{ $sale->title }}" 
+                                                 class="w-full h-48 object-cover"
+                                                 onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xNzUgMTI1SDE4NVYxMzVIMTc1VjEyNVoiIGZpbGw9IiM5Q0EzQUYiLz4KPHA+dGggZD0iTTE2NSAxNDVIMjM1VjE1NUgxNjVWMTQ1WiIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNMTg1IDEwNUMxOTEuNjI3IDEwNSAxOTcgMTEwLjM3MyAxOTcgMTE3QzE5NyAxMjMuNjI3IDE5MS42MjcgMTI5IDE4NSAxMjlDMTc4LjM3MyAxMjkgMTczIDEyMy42MjcgMTczIDExN0MxNzMgMTEwLjM3MyAxNzguMzczIDEwNSAxODUgMTA1WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K'; this.classList.add('opacity-50');">
                                         @else
                                             <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
-                                                <i class="fas fa-image text-gray-400 text-3xl"></i>
+                                                <div class="text-center">
+                                                    <i class="fas fa-image text-gray-400 text-3xl mb-2"></i>
+                                                    <p class="text-gray-500 text-sm">Aucune image</p>
+                                                </div>
                                             </div>
                                         @endif
                                         
@@ -235,9 +205,16 @@
                                         </div>
                                         
                                         <!-- Nombre de photos -->
-                                        @if($sale->photos && count(json_decode($sale->photos, true) ?? []) > 1)
-                                            <div class="absolute top-2 right-2 bg-black/50 text-white px-2 py-1 rounded-full text-xs">
-                                                <i class="fas fa-images mr-1"></i>{{ count(json_decode($sale->photos, true) ?? []) }}
+                                        @if($sale->photos && count($sale->photos ?? []) > 1)
+                                            <div class="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded-full text-xs font-medium backdrop-blur-sm">
+                                                <i class="fas fa-images mr-1"></i>{{ count($sale->photos ?? []) }}
+                                            </div>
+                                        @endif
+                                        
+                                        <!-- Indicateur de qualité d'image -->
+                                        @if($sale->photos && count($sale->photos ?? []) > 0)
+                                            <div class="absolute bottom-2 left-2 bg-green-500/80 text-white px-2 py-1 rounded text-xs font-medium backdrop-blur-sm">
+                                                <i class="fas fa-check mr-1"></i>Avec photos
                                             </div>
                                         @endif
                                     </div>
@@ -265,11 +242,17 @@
                                         <div class="pt-3 border-t border-gray-100">
                                             <div class="flex items-center justify-between">
                                                 <div class="flex items-center text-xs sm:text-sm text-gray-600">
-                                                    <div class="w-6 h-6 sm:w-8 sm:h-8 bg-gray-300 rounded-full mr-2 flex items-center justify-center">
-                                                        @if($sale->prestataire->user->avatar)
+                                                    <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full mr-2 flex items-center justify-center overflow-hidden">
+                                                        @if($sale->prestataire->photo)
+                                                            <img src="{{ Storage::url($sale->prestataire->photo) }}" alt="{{ $sale->prestataire->user->name }}" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover">
+                                                        @elseif($sale->prestataire->user->avatar)
                                                             <img src="{{ Storage::url($sale->prestataire->user->avatar) }}" alt="{{ $sale->prestataire->user->name }}" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover">
+                                                        @elseif($sale->prestataire->user->profile_photo_path)
+                                                            <img src="{{ asset('storage/' . $sale->prestataire->user->profile_photo_path) }}" alt="{{ $sale->prestataire->user->name }}" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover">
                                                         @else
-                                                            <span class="text-xs font-medium">{{ substr($sale->prestataire->user->name, 0, 1) }}</span>
+                                                            <div class="w-6 h-6 sm:w-8 sm:h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                                                                <span class="text-xs font-medium">{{ substr($sale->prestataire->user->name, 0, 1) }}</span>
+                                                            </div>
                                                         @endif
                                                     </div>
                                                     <span class="truncate">{{ $sale->prestataire->user->name }}</span>

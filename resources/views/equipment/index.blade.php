@@ -262,8 +262,18 @@
                 <!-- Prestataire avec design amélioré -->
                 @if($equipment->prestataire)
                 <div class="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4 p-2 bg-green-50 rounded-lg">
-                    <div class="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                        {{ strtoupper(substr($equipment->prestataire->company_name ?? ($equipment->prestataire->first_name ?? ''), 0, 1)) }}
+                    <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0">
+                        @if($equipment->prestataire->photo)
+                            <img src="{{ Storage::url($equipment->prestataire->photo) }}" alt="{{ $equipment->prestataire->user->name ?? '' }}" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover">
+                        @elseif($equipment->prestataire->user->avatar)
+                            <img src="{{ Storage::url($equipment->prestataire->user->avatar) }}" alt="{{ $equipment->prestataire->user->name ?? '' }}" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover">
+                        @elseif($equipment->prestataire->user->profile_photo_path)
+                            <img src="{{ asset('storage/' . $equipment->prestataire->user->profile_photo_path) }}" alt="{{ $equipment->prestataire->user->name ?? '' }}" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover">
+                        @else
+                            <div class="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                                {{ strtoupper(substr($equipment->prestataire->company_name ?? ($equipment->prestataire->first_name ?? ''), 0, 1)) }}
+                            </div>
+                        @endif
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center justify-between">

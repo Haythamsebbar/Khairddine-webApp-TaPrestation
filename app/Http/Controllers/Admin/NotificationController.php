@@ -54,11 +54,16 @@ class NotificationController extends Controller
         $notifications = $query->orderBy('created_at', 'desc')->paginate(20);
         
         // Statistiques
+        $totalNotifications = Notification::count();
+        $readNotifications = Notification::whereNotNull('read_at')->count();
+        $readRate = $totalNotifications > 0 ? round(($readNotifications / $totalNotifications) * 100, 1) : 0;
+        
         $stats = [
-            'total' => Notification::count(),
+            'total' => $totalNotifications,
             'unread' => Notification::whereNull('read_at')->count(),
-            'read' => Notification::whereNotNull('read_at')->count(),
+            'read' => $readNotifications,
             'today' => Notification::whereDate('created_at', today())->count(),
+            'read_rate' => $readRate,
         ];
         
         // Types de notifications pour le filtre
@@ -120,6 +125,26 @@ class NotificationController extends Controller
         
         return redirect()->back()->with('success', 'Toutes les notifications ont été marquées comme lues.');
     }
+
+    /**
+     * Marque les notifications sélectionnées comme lues.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function markSelectedAsRead(Request $request)
+    {
+        $request->validate([
+            'notification_ids' => 'required|array',
+            'notification_ids.*' => 'exists:notifications,id'
+        ]);
+        
+        $count = Notification::whereIn('id', $request->notification_ids)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+        
+        return redirect()->back()->with('success', "{$count} notification(s) marquée(s) comme lue(s).");
+    }
     
     /**
      * Supprime une notification.
@@ -153,6 +178,17 @@ class NotificationController extends Controller
         
         return redirect()->back()
             ->with('success', "$deletedCount notifications anciennes ont été supprimées.");
+    }
+    
+    /**
+     * Envoie une notification.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function send(Request $request)
+    {
+        return $this->sendCustom($request);
     }
     
     /**
@@ -251,6 +287,91 @@ class NotificationController extends Controller
     }
     
     /**
+     * Export des notifications.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function export(Request $request)
+    {
+        $query = Notification::with(['notifiable']);
+        
+        // Appliquer les mêmes filtres que l'index
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+        
+        if ($request->filled('read_status')) {
+            if ($request->read_status === 'read') {
+                $query->whereNotNull('read_at');
+            } elseif ($request->read_status === 'unread') {
+                $query->whereNull('read_at');
+            }
+        }
+        
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+        
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+        
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('data', 'like', '%' . $search . '%');
+            });
+        }
+        
+        $notifications = $query->orderBy('created_at', 'desc')->get();
+        
+        $filename = 'notifications_' . now()->format('Y-m-d_H-i-s') . '.csv';
+        
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+        
+        $callback = function() use ($notifications) {
+            $file = fopen('php://output', 'w');
+            
+            // En-têtes CSV
+            fputcsv($file, [
+                'ID',
+                'Utilisateur',
+                'Email',
+                'Type',
+                'Titre',
+                'Message',
+                'Statut',
+                'Date Lecture',
+                'Date Création'
+            ]);
+            
+            // Données
+            foreach ($notifications as $notification) {
+                $data = $notification->data;
+                fputcsv($file, [
+                    $notification->id,
+                    $notification->notifiable->name ?? 'Utilisateur supprimé',
+                    $notification->notifiable->email ?? 'N/A',
+                    $this->getNotificationTypeLabel($notification->type),
+                    $data['title'] ?? 'N/A',
+                    $data['message'] ?? 'N/A',
+                    $notification->read_at ? 'Lue' : 'Non lue',
+                    $notification->read_at ? $notification->read_at->format('d/m/Y H:i') : 'N/A',
+                    $notification->created_at->format('d/m/Y H:i')
+                ]);
+            }
+            
+            fclose($file);
+        };
+        
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
      * Obtient le libellé d'un type de notification.
      *
      * @param  string  $type
@@ -275,5 +396,34 @@ class NotificationController extends Controller
         ];
         
         return $labels[$type] ?? $type;
+    }
+
+    /**
+     * Suppression en masse des notifications sélectionnées.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function bulkDelete(Request $request)
+    {
+        $request->validate([
+            'notification_ids' => 'required|array',
+            'notification_ids.*' => 'exists:notifications,id'
+        ]);
+
+        try {
+            $deletedCount = Notification::whereIn('id', $request->notification_ids)->delete();
+            
+            return response()->json([
+                'success' => true,
+                'message' => "$deletedCount notification(s) supprimée(s) avec succès.",
+                'deleted_count' => $deletedCount
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la suppression des notifications.'
+            ], 500);
+        }
     }
 }

@@ -33,11 +33,9 @@
                         <i class="fas fa-clock mr-2"></i>En attente ({{ $stats['pending'] }})
                     </a>
                     <button onclick="toggleFilters()" class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm sm:text-base">
-                        <i class="fas fa-filter mr-2"></i>Filtres
-                    </button>
-                    <button onclick="exportPrestataires()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center text-sm sm:text-base">
-                        <i class="fas fa-download mr-2"></i>Exporter
-                    </button>
+                    <i class="fas fa-filter mr-2"></i>Afficher les filtres
+                </button>
+
                 </div>
             </div>
         </div>
@@ -182,7 +180,7 @@
     </form>
 </div>
 
-<!-- Items Per Page & Export -->
+<!-- Items Per Page -->
 <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
     <div class="flex items-center gap-2">
         <label class="text-sm text-gray-600">Afficher</label>
@@ -194,11 +192,6 @@
         </select>
         <span class="text-sm text-gray-600">éléments</span>
     </div>
-    
-    <button class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" onclick="exportPrestataires()">
-        <i class="fas fa-download mr-2"></i>
-        <span class="hidden sm:inline">Exporter</span>
-    </button>
 </div>
 
 <!-- Main Content -->
@@ -984,10 +977,7 @@
         return Array.from(checkboxes).map(checkbox => checkbox.value);
     }
     
-    // Export prestataires
-function exportPrestataires() {
-    window.location.href = '{{ route("administrateur.prestataires.export") }}' + window.location.search;
-}
+
     
     // Close dropdowns when clicking outside
     document.addEventListener('click', function(event) {

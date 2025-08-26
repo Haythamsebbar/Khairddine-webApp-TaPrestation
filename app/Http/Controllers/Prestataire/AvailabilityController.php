@@ -174,6 +174,8 @@ class AvailabilityController extends Controller
                     'start_time' => $data['start_time'],
                     'end_time' => $data['end_time'],
                     'slot_duration' => $data['slot_duration'],
+                    'break_start_time' => $data['break_start_time'] ?? null,
+                    'break_end_time' => $data['break_end_time'] ?? null,
                 ]);
             }
         }

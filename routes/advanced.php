@@ -25,6 +25,7 @@ Route::middleware(['auth'])->group(function () {
         
         Route::put('/messages/{message}', [MessagingController::class, 'updateMessage'])->name('api.messaging.update');
         Route::delete('/messages/{message}', [MessagingController::class, 'deleteMessage'])->name('api.messaging.delete');
+        Route::delete('/conversations/{user}', [MessagingController::class, 'deleteConversation'])->name('api.messaging.delete-conversation');
         Route::post('/mark-read', [MessagingController::class, 'markAsRead'])->name('api.messaging.mark-read');
         Route::post('/video-call/initiate', [MessagingController::class, 'initiateVideoCall'])->name('api.messaging.video-call.initiate');
         Route::get('/search-users', [MessagingController::class, 'searchUsers'])->name('api.messaging.search-users');

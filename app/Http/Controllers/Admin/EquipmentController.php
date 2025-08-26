@@ -17,7 +17,6 @@ class EquipmentController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('admin');
     }
     
     /**
@@ -65,7 +64,7 @@ class EquipmentController extends Controller
                                 ->orderBy('month')
                                 ->get();
         
-        return view('admin.equipment.dashboard', compact(
+        return view('admin.dashboard-modern', compact(
             'stats',
             'recentEquipment',
             'recentReports',
@@ -157,7 +156,7 @@ class EquipmentController extends Controller
         // Données pour les filtres
         $categories = \App\Models\Category::whereNull('parent_id')->get(['id', 'name']);
         
-        return view('admin.equipment.index', compact('equipment', 'categories'));
+        return view('admin.equipments.index-modern', compact('equipment', 'categories'));
     }
     
     /**
@@ -167,7 +166,8 @@ class EquipmentController extends Controller
     {
         $equipment->load([
             'prestataire.user',
-            'categories',
+            'category',
+            'subcategory',
             'reviews' => function ($query) {
                 $query->latest()->limit(10);
             },
@@ -188,7 +188,7 @@ class EquipmentController extends Controller
             'pending_reports' => $equipment->reports()->pending()->count()
         ];
         
-        return view('admin.equipment.show', compact('equipment', 'stats'));
+        return view('admin.equipments.show', compact('equipment', 'stats'));
     }
     
     /**
@@ -346,7 +346,7 @@ class EquipmentController extends Controller
             'resolved' => EquipmentReport::resolved()->count()
         ];
         
-        return view('admin.equipment.reports.index', compact('reports', 'stats'));
+        return view('admin.reports.equipments.index', compact('reports', 'stats'));
     }
     
     /**
@@ -360,7 +360,7 @@ class EquipmentController extends Controller
             'equipment.subcategory'
         ]);
         
-        return view('admin.equipment.reports.show', compact('report'));
+        return view('admin.reports.equipments.show', compact('report'));
     }
     
     /**
@@ -516,7 +516,7 @@ class EquipmentController extends Controller
                              ->limit(15)
                              ->get();
         
-        return view('admin.equipment.statistics', compact(
+        return view('admin.dashboard-modern', compact(
             'generalStats',
             'timeStats',
             'topCategories',
@@ -685,5 +685,87 @@ class EquipmentController extends Controller
         };
         
         return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Affiche le formulaire d'édition d'un équipement
+     */
+    public function edit(Equipment $equipment)
+    {
+        $categories = Category::whereNull('parent_id')->with('children')->orderBy('name')->get();
+        return view('admin.equipments.edit', compact('equipment', 'categories'));
+    }
+
+    /**
+     * Met à jour un équipement
+     */
+    public function update(Request $request, Equipment $equipment)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string|min:50',
+            'technical_specifications' => 'nullable|string',
+            'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'nullable|exists:categories,id',
+            'main_photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            
+            // Détails techniques
+            'brand' => 'nullable|string|max:100',
+            'model' => 'nullable|string|max:100',
+            'weight' => 'nullable|numeric|min:0',
+            'dimensions' => 'nullable|string|max:100',
+            'power_requirements' => 'nullable|string|max:100',
+            'serial_number' => 'nullable|string|max:100',
+            
+            // Tarification
+            'price_per_hour' => 'nullable|numeric|min:0',
+            'daily_rate' => 'required|numeric|min:1',
+            'price_per_week' => 'nullable|numeric|min:0',
+            'price_per_month' => 'nullable|numeric|min:0',
+            'deposit_amount' => 'required|numeric|min:0',
+            
+            // État et disponibilité
+            'condition' => 'required|in:new,excellent,very_good,good,fair,poor',
+            'status' => 'required|in:active,inactive,maintenance,rented',
+            'is_available' => 'boolean',
+            'available_from' => 'nullable|date',
+            'available_until' => 'nullable|date|after_or_equal:available_from',
+            
+            // Localisation
+            'address' => 'nullable|string|max:255',
+            'city' => 'required|string|max:100',
+            'postal_code' => 'nullable|string|max:10',
+            'country' => 'required|string|max:100',
+            
+            // Conditions de location
+            'minimum_rental_days' => 'nullable|integer|min:1',
+            'maximum_rental_days' => 'nullable|integer|min:1',
+            'age_restriction' => 'nullable|integer|min:16|max:99',
+            'experience_required' => 'boolean',
+            'insurance_required' => 'boolean',
+            'license_required' => 'boolean',
+            'rental_conditions' => 'nullable|string',
+            
+            // Instructions et accessoires
+            'usage_instructions' => 'nullable|string',
+            'safety_instructions' => 'nullable|string',
+            'accessories' => 'nullable|string',
+        ]);
+        
+        // Gestion de la photo principale
+        if ($request->hasFile('main_photo')) {
+            // Supprimer l'ancienne photo
+            if ($equipment->main_photo) {
+                Storage::disk('public')->delete($equipment->main_photo);
+            }
+            $validated['main_photo'] = $request->file('main_photo')
+                ->store('equipment_photos', 'public');
+        }
+        
+        // Mise à jour de l'équipement
+        $equipment->update($validated);
+        
+        return redirect()->route('admin.equipments.show', $equipment)
+                        ->with('success', 'Équipement mis à jour avec succès!');
     }
 }

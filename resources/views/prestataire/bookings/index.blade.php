@@ -60,6 +60,9 @@
         // Ajouter les services
         if(isset($serviceBookings) && $serviceBookings->count() > 0) {
             foreach($serviceBookings as $booking) {
+                // Determine if this is a multi-slot session
+                $isMultiSlot = isset($booking->is_multi_slot) && $booking->is_multi_slot;
+                
                 $allRequests->push((object)[
                     'id' => $booking->id,
                     'type' => 'service',
@@ -71,11 +74,14 @@
                         ? $booking->service->images->first()->image_path : null,
                     'category' => $booking->service && $booking->service->category->first() 
                         ? $booking->service->category->first()->name : null,
-                    'price' => $booking->service->price ?? null,
+                    'price' => $isMultiSlot ? $booking->total_session_price : ($booking->service->price ?? null),
                     'price_type' => $booking->service->price_type ?? null,
                     'route_show' => route('prestataire.bookings.show', $booking->id),
                      'route_accept' => route('prestataire.bookings.accept', $booking),
                      'route_reject' => route('prestataire.bookings.reject', $booking),
+                    'is_multi_slot' => $isMultiSlot,
+                    'total_slots' => $isMultiSlot ? $booking->total_slots : 1,
+                    'session_duration' => $isMultiSlot ? $booking->session_duration : null,
                     'original' => $booking
                 ]);
             }
@@ -252,8 +258,34 @@
                                                 truncate"><span class="hidden sm:inline">Catégorie: </span><span class="sm:hidden">Cat: </span>{{ $item->category }}</p>
                                         @endif
                                         
-                                        @if($item->type === 'service' && $item->price)
-                                            <p class="text-blue-700 truncate">Prix: {{ number_format($item->price, 0, ',', ' ') }}€{{ $item->price_type === 'per_hour' ? '/h' : ($item->price_type === 'per_day' ? '/jour' : '') }}</p>
+                                        @if($item->type === 'service')
+                                            @if(isset($item->is_multi_slot) && $item->is_multi_slot)
+                                                <!-- Multi-slot session information -->
+                                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-2 mb-2">
+                                                    <div class="flex items-center justify-between text-xs">
+                                                        <span class="text-blue-700 font-medium flex items-center">
+                                                            <i class="fas fa-calendar-alt mr-1"></i>
+                                                            {{ $item->total_slots }} créneaux
+                                                        </span>
+                                                        @if($item->session_duration)
+                                                            @php
+                                                                $hours = floor($item->session_duration / 60);
+                                                                $minutes = $item->session_duration % 60;
+                                                            @endphp
+                                                            <span class="text-blue-600">
+                                                                @if($hours > 0)
+                                                                    {{ $hours }}h{{ $minutes > 0 ? sprintf('%02d', $minutes) : '' }}
+                                                                @else
+                                                                    {{ $minutes }} min
+                                                                @endif
+                                                            </span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                <p class="text-blue-700 truncate">Prix total: {{ number_format($item->price, 2, ',', ' ') }}€</p>
+                                            @elseif($item->price)
+                                                <p class="text-blue-700 truncate">Prix: {{ number_format($item->price, 0, ',', ' ') }}€{{ $item->price_type === 'per_hour' ? '/h' : ($item->price_type === 'per_day' ? '/jour' : '') }}</p>
+                                            @endif
                                         @elseif($item->type === 'equipment' && $item->start_date && $item->end_date)
                                             <p class="text-green-700 truncate">Période: {{ \Carbon\Carbon::parse($item->start_date)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($item->end_date)->format('d/m/Y') }}</p>
                                         @elseif($item->type === 'urgent_sale')

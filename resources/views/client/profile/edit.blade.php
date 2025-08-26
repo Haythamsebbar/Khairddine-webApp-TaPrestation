@@ -5,7 +5,7 @@
     <header>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h1 class="text-3xl font-bold leading-tight text-gray-900">Mon Profil</h1>
-            <p class="mt-2 text-sm text-gray-600">Gérez vos informations personnelles et vos préférences</p>
+            <p class="mt-2 text-sm text-gray-600">érez vos informations personnelles et vos préférences</p>
         </div>
     </header>
     <main>
@@ -190,10 +190,9 @@
                                             </ul>
                                         </div>
                                         <div class="mt-4">
-                                            <button type="button" onclick="openDeleteModal()" class="bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                                                Supprimer mon compte
-                                            </button>
-                                        </div>
+                                        <button type="button" onclick="openDeleteModal()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-bold transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                                            Supprimer mon compte
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -202,21 +201,21 @@
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 </div>
 
 <!-- Modal de confirmation de suppression -->
 <div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-xl rounded-xl bg-white border-blue-200">
         <div class="mt-3 text-center">
             <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
                 <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z" />
                 </svg>
             </div>
-            <h3 class="text-lg font-medium text-gray-900 mt-2">Confirmer la suppression</h3>
-            <div class="mt-2 px-7 py-3">
-                <p class="text-sm text-gray-500 mb-4">
+            <h3 class="text-xl font-bold text-blue-900 mt-3">Confirmer la suppression</h3>
+            <div class="mt-4 px-7 py-3">
+                <p class="text-blue-700 mb-4">
                     Pour confirmer la suppression de votre compte, veuillez :
                 </p>
                 <form id="deleteForm" method="POST" action="{{ route('client.profile.destroy') }}">
@@ -224,20 +223,20 @@
                     @method('DELETE')
                     
                     <div class="mb-4">
-                        <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Saisissez votre mot de passe :</label>
-                        <input type="password" id="password" name="password" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                        <label for="password" class="block text-md font-semibold text-blue-800 mb-2">Saisissez votre mot de passe :</label>
+                        <input type="password" id="password" name="password" required class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200">
                     </div>
                     
                     <div class="mb-4">
-                        <label for="confirmation" class="block text-sm font-medium text-gray-700 mb-2">Tapez "DELETE" pour confirmer :</label>
-                        <input type="text" id="confirmation" name="confirmation" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500" placeholder="DELETE">
+                        <label for="confirmation" class="block text-md font-semibold text-blue-800 mb-2">Tapez "DELETE" pour confirmer :</label>
+                        <input type="text" id="confirmation" name="confirmation" required class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200" placeholder="DELETE">
                     </div>
                     
                     <div class="flex justify-center space-x-4 mt-6">
-                        <button type="button" onclick="closeDeleteModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors">
+                        <button type="button" onclick="closeDeleteModal()" class="px-6 py-3 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200 transition-colors font-bold">
                             Annuler
                         </button>
-                        <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
+                        <button type="submit" class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                             Supprimer définitivement
                         </button>
                     </div>

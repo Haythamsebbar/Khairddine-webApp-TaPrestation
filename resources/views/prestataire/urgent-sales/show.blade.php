@@ -123,20 +123,20 @@
                 </div>
 
                 <!-- Photos -->
-                @if($urgentSale->photos && count(json_decode($urgentSale->photos, true) ?? []) > 0)
+                @if($urgentSale->photos && count($urgentSale->photos ?? []) > 0)
                     <div class="bg-white rounded-xl shadow-lg border border-red-200">
                         <div class="p-6">
                             <h2 class="text-2xl font-bold text-red-800 mb-5 border-b-2 border-red-200 pb-3">Photos</h2>
                             
                             <!-- Photo principale -->
                             <div class="mb-4">
-                                <img id="main-image" src="{{ Storage::url(json_decode($urgentSale->photos, true)[0]) }}" alt="{{ $urgentSale->title }}" class="w-full h-64 object-cover rounded-lg">
+                                <img id="main-image" src="{{ Storage::url($urgentSale->photos[0]) }}" alt="{{ $urgentSale->title }}" class="w-full h-64 object-cover rounded-lg">
                             </div>
                             
                             <!-- Miniatures -->
-                            @if(count(json_decode($urgentSale->photos, true) ?? []) > 1)
+                            @if(count($urgentSale->photos ?? []) > 1)
                                 <div class="grid grid-cols-4 gap-2">
-                                    @foreach(json_decode($urgentSale->photos, true) ?? [] as $index => $photo)
+                                    @foreach($urgentSale->photos ?? [] as $index => $photo)
                                         <img src="{{ Storage::url($photo) }}" alt="Photo {{ $index + 1 }}" class="w-full h-16 object-cover rounded cursor-pointer hover:opacity-75 transition-opacity {{ $index === 0 ? 'ring-2 ring-blue-500' : '' }}" onclick="changeMainImage('{{ Storage::url($photo) }}', this)">
                                     @endforeach
                                 </div>

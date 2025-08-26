@@ -56,9 +56,7 @@ class UrgentSaleController extends Controller
             case 'price_desc':
                 $query->orderBy('price', 'desc');
                 break;
-            case 'urgent':
-                $query->orderBy('is_urgent', 'desc')->orderBy('created_at', 'desc');
-                break;
+
             default:
                 $query->orderBy('created_at', 'desc');
         }

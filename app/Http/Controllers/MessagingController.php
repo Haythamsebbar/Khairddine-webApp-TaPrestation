@@ -36,6 +36,7 @@ class MessagingController extends Controller
 
         $conversations = User::whereIn('id', $participantIds)
             ->where('role', $oppositeRole)
+            ->with(['prestataire', 'client'])
             ->get()
             ->map(function ($otherUser) use ($user) {
                 $lastMessage = Message::where(function ($query) use ($user, $otherUser) {
@@ -336,6 +337,55 @@ class MessagingController extends Controller
             'room_id' => $roomId,
             'message_id' => $message->id
         ]);
+    }
+    
+    /**
+     * Supprime une conversation entière avec un utilisateur
+     */
+    public function deleteConversation(Request $request, User $user)
+    {
+        $currentUser = Auth::user();
+        
+        // Vérifier que l'utilisateur est autorisé à supprimer cette conversation
+        if ($currentUser->role === 'client' && $user->role !== 'prestataire') {
+            return response()->json(['success' => false, 'message' => 'Non autorisé'], 403);
+        } elseif ($currentUser->role === 'prestataire' && $user->role !== 'client') {
+            return response()->json(['success' => false, 'message' => 'Non autorisé'], 403);
+        }
+        
+        try {
+            // Supprimer tous les messages entre ces deux utilisateurs
+            $deletedCount = Message::where(function ($query) use ($currentUser, $user) {
+                    $query->where('sender_id', $currentUser->id)
+                          ->where('receiver_id', $user->id);
+                })
+                ->orWhere(function ($query) use ($currentUser, $user) {
+                    $query->where('sender_id', $user->id)
+                          ->where('receiver_id', $currentUser->id);
+                })
+                ->delete();
+            
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => "Conversation supprimée avec succès ({$deletedCount} messages supprimés)"
+                ]);
+            }
+            
+            return redirect()->route('messaging.index')
+                ->with('success', "Conversation avec {$user->name} supprimée avec succès ({$deletedCount} messages supprimés)");
+                
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erreur lors de la suppression de la conversation'
+                ], 500);
+            }
+            
+            return redirect()->route('messaging.index')
+                ->with('error', 'Erreur lors de la suppression de la conversation');
+        }
     }
     
     /**

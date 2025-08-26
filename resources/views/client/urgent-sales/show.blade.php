@@ -214,14 +214,7 @@
                                 <span class="font-semibold text-gray-900">{{ $urgentSale->created_at->format('d/m/Y') }}</span>
                             </div>
                             
-                            @if($urgentSale->is_urgent)
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">Type</span>
-                                    <span class="font-semibold text-red-600">
-                                        <i class="fas fa-bolt mr-1"></i>Vente urgente
-                                    </span>
-                                </div>
-                            @endif
+
                         </div>
                     </div>
                 </div>

@@ -41,9 +41,37 @@ class EquipmentController extends Controller
             });
         }
         
-        // Filtrage par localisation
+        // Filtrage par localisation avec recherche fuzzy
         if ($request->filled('city')) {
-            $query->where('city', 'like', '%' . $request->city . '%');
+            $cityParam = $request->city;
+            // Extraire le nom de la ville si la chaîne contient des virgules (format GPS: "Oujda, 60000")
+            $cityParts = explode(',', $cityParam);
+            $city = trim($cityParts[0]); // Prendre seulement la première partie (nom de la ville)
+            
+            $query->where(function($mainQ) use ($city, $cityParam) {
+                // Recherche dans les propres champs de localisation de l'équipement
+                $mainQ->where(function($equipQ) use ($city, $cityParam) {
+                    $equipQ->where('city', 'like', '%' . $city . '%')
+                            ->orWhere('address', 'like', '%' . $city . '%')
+                            ->orWhere('postal_code', 'like', '%' . $city . '%')
+                            // Recherche aussi avec la chaîne complète au cas où
+                            ->orWhere('city', 'like', '%' . $cityParam . '%')
+                            ->orWhere('address', 'like', '%' . $cityParam . '%')
+                            ->orWhereRaw("CONCAT(COALESCE(address, ''), ', ', COALESCE(city, ''), ', ', COALESCE(postal_code, '')) LIKE ?", ['%' . $city . '%']);
+                })
+                // OU recherche dans la localisation du prestataire
+                ->orWhereHas('prestataire', function ($q) use ($city, $cityParam) {
+                    $q->where(function ($subQ) use ($city, $cityParam) {
+                        $subQ->where('city', 'like', '%' . $city . '%')
+                             ->orWhere('address', 'like', '%' . $city . '%')
+                             ->orWhere('postal_code', 'like', '%' . $city . '%')
+                             // Recherche aussi avec la chaîne complète au cas où
+                             ->orWhere('city', 'like', '%' . $cityParam . '%')
+                             ->orWhere('address', 'like', '%' . $cityParam . '%')
+                             ->orWhereRaw("CONCAT(COALESCE(address, ''), ', ', COALESCE(city, ''), ', ', COALESCE(postal_code, '')) LIKE ?", ['%' . $city . '%']);
+                    });
+                });
+            });
         }
         
         if ($request->filled('postal_code')) {
@@ -143,7 +171,8 @@ class EquipmentController extends Controller
         
         $equipment->load([
             'prestataire.user',
-            'categories',
+            'category',
+            'subcategory',
             'reviews' => function ($query) {
                 $query->approved()->with('client.user')->latest();
             }
@@ -152,12 +181,14 @@ class EquipmentController extends Controller
         // Équipements similaires
         $similarEquipment = Equipment::active()->available()
                                    ->where('id', '!=', $equipment->id)
-                                   ->whereHas('categories', function ($query) use ($equipment) {
-                                       $query->whereIn('equipment_categories.id', 
-                                              $equipment->categories->pluck('id'));
+                                   ->where(function ($query) use ($equipment) {
+                                       $query->where('category_id', $equipment->category_id)
+                                             ->orWhere('subcategory_id', $equipment->subcategory_id)
+                                             ->orWhere('category_id', $equipment->subcategory_id)
+                                             ->orWhere('subcategory_id', $equipment->category_id);
                                    })
                                    ->inSameCity($equipment->city)
-                                   ->with(['prestataire.user', 'categories'])
+                                   ->with(['prestataire.user', 'category', 'subcategory'])
                                    ->limit(4)
                                    ->get();
         
@@ -166,7 +197,7 @@ class EquipmentController extends Controller
                                    ->active()
                                    ->available()
                                    ->where('id', '!=', $equipment->id)
-                                   ->with('categories')
+                                   ->with(['category', 'subcategory'])
                                    ->limit(3)
                                    ->get();
         

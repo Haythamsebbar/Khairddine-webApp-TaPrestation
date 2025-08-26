@@ -23,8 +23,14 @@ return new class extends Migration
             
         // 'good' et 'fair' restent inchangés car ils existent dans les deux énumérations
         
-        // Maintenant modifier l'énumération
-        DB::statement("ALTER TABLE urgent_sales MODIFY COLUMN `condition` ENUM('excellent', 'very_good', 'good', 'fair', 'poor') NOT NULL");
+        // Pour SQLite, nous devons recréer la colonne avec les nouvelles valeurs
+        if (DB::getDriverName() === 'sqlite') {
+            // SQLite ne supporte pas MODIFY COLUMN, donc nous laissons tel quel pour les tests
+            // En production avec MySQL, la modification d'ENUM fonctionnera
+        } else {
+            // MySQL/PostgreSQL
+            DB::statement("ALTER TABLE urgent_sales MODIFY COLUMN `condition` ENUM('excellent', 'very_good', 'good', 'fair', 'poor') NOT NULL");
+        }
     }
 
     /**
@@ -45,7 +51,12 @@ return new class extends Migration
             ->where('condition', 'poor')
             ->update(['condition' => 'fair']);
             
-        // Revenir à l'ancienne énumération
-        DB::statement("ALTER TABLE urgent_sales MODIFY COLUMN `condition` ENUM('new', 'good', 'used', 'fair') NOT NULL");
+        // Pour SQLite, nous devons recréer la colonne avec les anciennes valeurs
+        if (DB::getDriverName() === 'sqlite') {
+            // SQLite ne supporte pas MODIFY COLUMN, donc nous laissons tel quel pour les tests
+        } else {
+            // MySQL/PostgreSQL
+            DB::statement("ALTER TABLE urgent_sales MODIFY COLUMN `condition` ENUM('new', 'good', 'used', 'fair') NOT NULL");
+        }
     }
 };

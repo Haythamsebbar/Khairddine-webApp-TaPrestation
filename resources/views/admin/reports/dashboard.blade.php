@@ -10,27 +10,7 @@
             <h1 class="h3 mb-0 text-gray-800">Rapports et Analyses</h1>
             <p class="mb-0 text-muted">Tableau de bord analytique de la plateforme</p>
         </div>
-        <div>
-            <div class="btn-group" role="group">
-                <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown">
-                    <i class="fas fa-download"></i> Exporter
-                </button>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="{{ route('administrateur.reports.export', ['type' => 'users']) }}">
-                        <i class="fas fa-users"></i> Rapport Utilisateurs
-                    </a>
-                    <a class="dropdown-item" href="{{ route('administrateur.reports.export', ['type' => 'services']) }}">
-                        <i class="fas fa-briefcase"></i> Rapport Services
-                    </a>
-                    <a class="dropdown-item" href="{{ route('administrateur.reports.export', ['type' => 'bookings']) }}">
-                        <i class="fas fa-calendar"></i> Rapport Réservations
-                    </a>
-                    <a class="dropdown-item" href="{{ route('administrateur.reports.export', ['type' => 'finances']) }}">
-                        <i class="fas fa-euro-sign"></i> Rapport Financier
-                    </a>
-                </div>
-            </div>
-        </div>
+
     </div>
 
     <!-- Statistiques globales -->

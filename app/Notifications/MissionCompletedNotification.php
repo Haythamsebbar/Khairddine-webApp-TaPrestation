@@ -66,8 +66,8 @@ class MissionCompletedNotification extends Notification implements ShouldQueue
     public function toArray($notifiable)
     {
         return [
-
             'booking_id' => $this->booking->id,
+            'title' => 'Mission terminée',
             'message' => 'Le client a marqué la mission comme terminée',
             'type' => 'mission_completed',
             'url' => route('prestataire.bookings.index')

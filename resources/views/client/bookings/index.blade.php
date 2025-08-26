@@ -157,21 +157,64 @@
                                 <div class="flex-1 space-y-3">
                                     <!-- Titre et prestataire -->
                                     <div>
-                                        <h3 class="text-xl font-bold text-gray-900 mb-2 leading-tight">{{ $booking->service ? $booking->service->name : 'Service supprimé' }}</h3>
+                                        @if(isset($booking->is_multi_slot) && $booking->is_multi_slot)
+                                            <!-- Multi-slot session header -->
+                                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-2">
+                                                <h3 class="text-xl font-bold text-blue-900 mb-1 flex items-center">
+                                                    <i class="fas fa-calendar-alt mr-2"></i>
+                                                    {{ $booking->service ? $booking->service->name : 'Service supprimé' }}
+                                                    <span class="ml-2 text-sm font-medium bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                                                        {{ $booking->total_slots }} créneaux
+                                                    </span>
+                                                </h3>
+                                                <div class="flex items-center space-x-4 text-sm text-blue-700">
+                                                    <span class="flex items-center">
+                                                        <i class="fas fa-clock mr-1"></i>
+                                                        @php
+                                                            $hours = floor($booking->session_duration / 60);
+                                                            $minutes = $booking->session_duration % 60;
+                                                        @endphp
+                                                        @if($hours > 0)
+                                                            {{ $hours }}h{{ $minutes > 0 ? sprintf('%02d', $minutes) : '' }}
+                                                        @else
+                                                            {{ $minutes }} min
+                                                        @endif
+                                                        durée totale
+                                                    </span>
+                                                    <span class="flex items-center font-semibold">
+                                                        <i class="fas fa-euro-sign mr-1"></i>
+                                                        {{ number_format($booking->total_session_price, 2) }} € total
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <h3 class="text-xl font-bold text-gray-900 mb-2 leading-tight">{{ $booking->service ? $booking->service->name : 'Service supprimé' }}</h3>
+                                        @endif
                                         <p class="text-gray-700 font-medium text-lg">avec {{ $booking->prestataire && $booking->prestataire->user ? $booking->prestataire->user->name : 'Prestataire supprimé' }}</p>
                                         <p class="text-gray-500 text-sm mt-1">Réservation #{{ $booking->id }}</p>
                                     </div>
                                     
                                     <!-- Méta temporelles -->
                                     <div class="flex items-center space-x-8 text-gray-600">
-                                        <div class="flex items-center">
-                                            <i class="fas fa-calendar-alt mr-3 text-blue-500 text-lg"></i>
-                                            <span class="font-medium">{{ $booking->start_datetime->format('d/m/Y à H:i') }}</span>
-                                        </div>
-                                        <div class="flex items-center">
-                                            <i class="fas fa-clock mr-3 text-blue-500 text-lg"></i>
-                                            <span class="font-medium">{{ $booking->start_datetime->diffInMinutes($booking->end_datetime) }} minutes</span>
-                                        </div>
+                                        @if(isset($booking->is_multi_slot) && $booking->is_multi_slot)
+                                            <!-- Multi-slot session time range -->
+                                            <div class="flex items-center">
+                                                <i class="fas fa-calendar-week mr-3 text-blue-500 text-lg"></i>
+                                                <span class="font-medium">
+                                                    Du {{ $booking->session_bookings->first()->start_datetime->format('d/m/Y à H:i') }}
+                                                    au {{ $booking->session_bookings->last()->end_datetime->format('d/m/Y à H:i') }}
+                                                </span>
+                                            </div>
+                                        @else
+                                            <div class="flex items-center">
+                                                <i class="fas fa-calendar-alt mr-3 text-blue-500 text-lg"></i>
+                                                <span class="font-medium">{{ $booking->start_datetime->format('d/m/Y à H:i') }}</span>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <i class="fas fa-clock mr-3 text-blue-500 text-lg"></i>
+                                                <span class="font-medium">{{ $booking->start_datetime->diffInMinutes($booking->end_datetime) }} minutes</span>
+                                            </div>
+                                        @endif
                                     </div>
 
                                     @if($booking->client_notes)
@@ -231,7 +274,38 @@
                                     
                                     <!-- Titre et prestataire -->
                                     <div class="flex-1">
-                                        <h3 class="text-lg font-bold text-gray-900 mb-1 leading-tight">{{ $booking->service ? $booking->service->name : 'Service supprimé' }}</h3>
+                                        @if(isset($booking->is_multi_slot) && $booking->is_multi_slot)
+                                            <!-- Multi-slot session header -->
+                                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-2 mb-2">
+                                                <h3 class="text-lg font-bold text-blue-900 mb-1 flex items-center">
+                                                    <i class="fas fa-calendar-alt mr-2"></i>
+                                                    {{ $booking->service ? $booking->service->name : 'Service supprimé' }}
+                                                    <span class="ml-2 text-xs font-medium bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                                                        {{ $booking->total_slots }} créneaux
+                                                    </span>
+                                                </h3>
+                                                <div class="text-xs text-blue-700">
+                                                    @php
+                                                        $hours = floor($booking->session_duration / 60);
+                                                        $minutes = $booking->session_duration % 60;
+                                                    @endphp
+                                                    <span class="mr-3">
+                                                        <i class="fas fa-clock mr-1"></i>
+                                                        @if($hours > 0)
+                                                            {{ $hours }}h{{ $minutes > 0 ? sprintf('%02d', $minutes) : '' }}
+                                                        @else
+                                                            {{ $minutes }} min
+                                                        @endif
+                                                    </span>
+                                                    <span class="font-semibold">
+                                                        <i class="fas fa-euro-sign mr-1"></i>
+                                                        {{ number_format($booking->total_session_price, 2) }} €
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <h3 class="text-lg font-bold text-gray-900 mb-1 leading-tight">{{ $booking->service ? $booking->service->name : 'Service supprimé' }}</h3>
+                                        @endif
                                         <p class="text-gray-700 font-medium">avec {{ $booking->prestataire && $booking->prestataire->user ? $booking->prestataire->user->name : 'Prestataire supprimé' }}</p>
                                         <p class="text-gray-500 text-sm mt-1">Réservation #{{ $booking->id }}</p>
                                     </div>
@@ -264,14 +338,25 @@
                             
                             <!-- Méta temporelles sous le titre -->
                             <div class="flex items-center space-x-6 text-gray-600 mb-4">
-                                <div class="flex items-center">
-                                    <i class="fas fa-calendar-alt mr-2 text-blue-500"></i>
-                                    <span class="font-medium">{{ $booking->start_datetime->format('d/m/Y à H:i') }}</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <i class="fas fa-clock mr-2 text-blue-500"></i>
-                                    <span class="font-medium">{{ $booking->start_datetime->diffInMinutes($booking->end_datetime) }} minutes</span>
-                                </div>
+                                @if(isset($booking->is_multi_slot) && $booking->is_multi_slot)
+                                    <!-- Multi-slot session time range -->
+                                    <div class="flex items-center">
+                                        <i class="fas fa-calendar-week mr-2 text-blue-500"></i>
+                                        <span class="font-medium">
+                                            Du {{ $booking->session_bookings->first()->start_datetime->format('d/m/Y à H:i') }}
+                                            au {{ $booking->session_bookings->last()->end_datetime->format('d/m/Y à H:i') }}
+                                        </span>
+                                    </div>
+                                @else
+                                    <div class="flex items-center">
+                                        <i class="fas fa-calendar-alt mr-2 text-blue-500"></i>
+                                        <span class="font-medium">{{ $booking->start_datetime->format('d/m/Y à H:i') }}</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-clock mr-2 text-blue-500"></i>
+                                        <span class="font-medium">{{ $booking->start_datetime->diffInMinutes($booking->end_datetime) }} minutes</span>
+                                    </div>
+                                @endif
                             </div>
                             
                             @if($booking->client_notes)
@@ -287,7 +372,40 @@
                             <div class="space-y-4">
                                 <!-- Titre -->
                                 <div>
-                                    <h3 class="text-lg font-bold text-gray-900 mb-1 leading-tight">{{ $booking->service ? $booking->service->name : 'Service supprimé' }}</h3>
+                                    @if(isset($booking->is_multi_slot) && $booking->is_multi_slot)
+                                        <!-- Multi-slot session header -->
+                                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-2 mb-2">
+                                            <h3 class="text-lg font-bold text-blue-900 mb-1 flex items-center">
+                                                <i class="fas fa-calendar-alt mr-2"></i>
+                                                {{ $booking->service ? $booking->service->name : 'Service supprimé' }}
+                                            </h3>
+                                            <div class="flex flex-col space-y-1 text-xs text-blue-700">
+                                                <span class="flex items-center">
+                                                    <i class="fas fa-list mr-1"></i>
+                                                    {{ $booking->total_slots }} créneaux réservés
+                                                </span>
+                                                @php
+                                                    $hours = floor($booking->session_duration / 60);
+                                                    $minutes = $booking->session_duration % 60;
+                                                @endphp
+                                                <span class="flex items-center">
+                                                    <i class="fas fa-clock mr-1"></i>
+                                                    @if($hours > 0)
+                                                        {{ $hours }}h{{ $minutes > 0 ? sprintf('%02d', $minutes) : '' }}
+                                                    @else
+                                                        {{ $minutes }} min
+                                                    @endif
+                                                    durée totale
+                                                </span>
+                                                <span class="flex items-center font-semibold">
+                                                    <i class="fas fa-euro-sign mr-1"></i>
+                                                    {{ number_format($booking->total_session_price, 2) }} € total
+                                                </span>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <h3 class="text-lg font-bold text-gray-900 mb-1 leading-tight">{{ $booking->service ? $booking->service->name : 'Service supprimé' }}</h3>
+                                    @endif
                                     <p class="text-gray-700 font-medium">avec {{ $booking->prestataire && $booking->prestataire->user ? $booking->prestataire->user->name : 'Prestataire supprimé' }}</p>
                                     <p class="text-gray-500 text-sm mt-1">Réservation #{{ $booking->id }}</p>
                                 </div>
@@ -320,14 +438,25 @@
                                 
                                 <!-- Méta temporelles -->
                                 <div class="space-y-2 text-gray-600">
-                                    <div class="flex items-center justify-center">
-                                        <i class="fas fa-calendar-alt mr-2 text-blue-500"></i>
-                                        <span class="font-medium">{{ $booking->start_datetime->format('d/m/Y à H:i') }}</span>
-                                    </div>
-                                    <div class="flex items-center justify-center">
-                                        <i class="fas fa-clock mr-2 text-blue-500"></i>
-                                        <span class="font-medium">{{ $booking->start_datetime->diffInMinutes($booking->end_datetime) }} minutes</span>
-                                    </div>
+                                    @if(isset($booking->is_multi_slot) && $booking->is_multi_slot)
+                                        <!-- Multi-slot session time range -->
+                                        <div class="flex items-center justify-center">
+                                            <i class="fas fa-calendar-week mr-2 text-blue-500"></i>
+                                            <span class="font-medium text-center">
+                                                Du {{ $booking->session_bookings->first()->start_datetime->format('d/m/Y à H:i') }}<br>
+                                                au {{ $booking->session_bookings->last()->end_datetime->format('d/m/Y à H:i') }}
+                                            </span>
+                                        </div>
+                                    @else
+                                        <div class="flex items-center justify-center">
+                                            <i class="fas fa-calendar-alt mr-2 text-blue-500"></i>
+                                            <span class="font-medium">{{ $booking->start_datetime->format('d/m/Y à H:i') }}</span>
+                                        </div>
+                                        <div class="flex items-center justify-center">
+                                            <i class="fas fa-clock mr-2 text-blue-500"></i>
+                                            <span class="font-medium">{{ $booking->start_datetime->diffInMinutes($booking->end_datetime) }} minutes</span>
+                                        </div>
+                                    @endif
                                 </div>
                                 
                                 @if($booking->client_notes)

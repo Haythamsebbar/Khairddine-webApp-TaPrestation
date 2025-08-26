@@ -78,11 +78,11 @@
                 
                 <div class="bg-white rounded-lg shadow-sm overflow-hidden">
                     
-                    @if($urgentSale->photos && count(json_decode($urgentSale->photos, true) ?? []) > 0)
+                    @if($urgentSale->photos && count($urgentSale->photos ?? []) > 0)
                         <div class="relative">
                             <!-- Image principale -->
                             <div class="aspect-w-16 aspect-h-12">
-                                <img id="mainImage" src="{{ Storage::url(json_decode($urgentSale->photos, true)[0]) }}" alt="{{ $urgentSale->title }}" class="w-full h-64 sm:h-80 lg:h-96 object-cover">
+                                <img id="mainImage" src="{{ Storage::url($urgentSale->photos[0]) }}" alt="{{ $urgentSale->title }}" class="w-full h-64 sm:h-80 lg:h-96 object-cover">
                             </div>
                             
                             <div class="absolute top-3 right-3 md:top-4 md:right-4 bg-black/50 text-white px-2 md:px-3 py-1 rounded-full text-xs md:text-sm">
@@ -91,10 +91,10 @@
                         </div>
                         
                         <!-- Miniatures -->
-                        @if(count(json_decode($urgentSale->photos, true) ?? []) > 1)
+                        @if(count($urgentSale->photos ?? []) > 1)
                             <div class="p-3 md:p-4 border-t">
                                 <div class="flex space-x-2 overflow-x-auto pb-2">
-                                    @foreach(json_decode($urgentSale->photos, true) as $index => $photo)
+                                    @foreach($urgentSale->photos as $index => $photo)
                                         <button onclick="changeMainImage('{{ Storage::url($photo) }}')"
                                                 class="flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden border-2 {{ $index === 0 ? 'border-red-500' : 'border-gray-200' }} hover:border-red-500 transition duration-200">
                                             <img src="{{ Storage::url($photo) }}" alt="Photo {{ $index + 1 }}" class="w-full h-full object-cover">
@@ -290,7 +290,7 @@
                         <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition duration-200 overflow-hidden">
                             <a href="{{ route('urgent-sales.show', $sale) }}" class="block">
                                 <div class="relative h-32 md:h-40 bg-gray-200">
-                                    @if($sale->photos && count(json_decode($sale->photos, true) ?? []) > 0)
+                                    @if($sale->photos && count($sale->photos ?? []) > 0)
                                         <img src="{{ Storage::url($sale->first_photo) }}" alt="{{ $sale->title }}" class="w-full h-full object-cover">
                                     @else
                                         <div class="w-full h-full flex items-center justify-center">

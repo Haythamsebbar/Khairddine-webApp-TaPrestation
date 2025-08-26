@@ -20,7 +20,7 @@
             <div class="flex justify-center">
                 <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center text-sm sm:text-base" onclick="toggleFilters()">
                     <i class="fas fa-filter mr-2"></i>
-                    <span>Filtres</span>
+                    <span>Afficher les filtres</span>
                 </button>
             </div>
         </div>
@@ -145,7 +145,7 @@
         </div>
     </div>
 
-    <!-- Items Per Page & Export -->
+    <!-- Items Per Page -->
     <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 mb-6">
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <div class="flex items-center gap-2">
@@ -158,113 +158,131 @@
                 </select>
                 <span class="text-sm text-blue-700">éléments</span>
             </div>
-            
-            <button class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2.5 px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm" onclick="exportClients()">
-                <i class="fas fa-download mr-2"></i>
-                Exporter
-            </button>
         </div>
     </div>
 
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
-        <div class="bg-white rounded-xl shadow-lg border border-blue-200 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-blue-50">
-                        <tr>
-                            <th class="w-10 px-4 py-3 text-left">
-                                <input type="checkbox" id="selectAll" onchange="toggleAllCheckboxes()" class="rounded border-blue-300 text-blue-600 focus:ring-blue-500">
-                            </th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-blue-900">Client</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-blue-900">Demandes</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-blue-900">Avis</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-blue-900">Statut</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-blue-900">Date d'inscription</th>
-                            <th class="w-32 px-4 py-3 text-left text-sm font-semibold text-blue-900">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-blue-100">
-                        @forelse($clients as $client)
-                        <tr class="hover:bg-blue-25 transition-colors duration-150">
-                            <td class="px-4 py-3">
-                                <input type="checkbox" class="client-checkbox rounded border-blue-300 text-blue-600 focus:ring-blue-500" value="{{ $client->id }}" onchange="updateBulkActionsVisibility()">
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-full overflow-hidden bg-blue-100 flex items-center justify-center">
+        <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6">
+            <div class="flex justify-between items-center mb-6">
+                <div class="text-xl font-bold text-blue-800">Liste des clients ({{ $clients->total() ?? 0 }})</div>
+                <div class="flex gap-4 items-center">
+                    <select onchange="changePerPage(this.value)" class="px-3 py-2 border border-blue-200 rounded-lg text-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
+                        <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 par page</option>
+                        <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 par page</option>
+                        <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 par page</option>
+                    </select>
+                    
+
+                </div>
+            </div>
+            
+            <div class="space-y-4">
+                @forelse($clients as $client)
+                    <div class="bg-white border border-blue-200 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 p-6">
+                        <div class="flex items-center justify-between">
+                            <!-- Zone gauche: Checkbox + Infos client -->
+                            <div class="flex items-center space-x-4 flex-1">
+                                <input type="checkbox" class="client-checkbox w-4 h-4 text-blue-600 border-blue-300 rounded focus:ring-blue-500" value="{{ $client->id }}" onchange="updateBulkActionsVisibility()">
+                                
+                                <!-- Avatar du client -->
+                                <div class="flex-shrink-0">
+                                    <div class="w-16 h-16 rounded-full overflow-hidden bg-blue-100 flex items-center justify-center border border-blue-200">
                                         @if($client->user->profile_photo_url)
                                             <img src="{{ $client->user->profile_photo_url }}" alt="{{ $client->user->name }}" class="w-full h-full object-cover">
                                         @else
-                                            <span class="text-blue-600 font-semibold text-sm">
+                                            <span class="text-blue-600 font-bold text-xl">
                                                 {{ substr($client->user->name, 0, 1) }}
                                             </span>
                                         @endif
                                     </div>
-                                    <div>
-                                        <div class="font-semibold text-blue-900">{{ $client->user->name }}</div>
-                                        <div class="text-sm text-blue-600">{{ $client->user->email }}</div>
+                                </div>
+                                
+                                <!-- Infos principales -->
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-start justify-between mb-2">
+                                        <div class="flex-1">
+                                            <h3 class="text-lg font-bold text-blue-900 truncate">{{ $client->user->name }}</h3>
+                                            <div class="text-sm text-blue-600 mb-2">{{ $client->user->email }}</div>
+                                            <div class="flex items-center gap-2 mt-1">
+                                                @if($client->user->is_blocked)
+                                                    <span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium flex items-center">
+                                                        <i class="fas fa-ban mr-1"></i>
+                                                        Bloqué
+                                                    </span>
+                                                @else
+                                                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium flex items-center">
+                                                        <i class="fas fa-check-circle mr-1"></i>
+                                                        Actif
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Métriques -->
+                                    <div class="flex items-center gap-4 text-xs text-gray-500">
+                                        <div class="flex items-center gap-1">
+                                            <i class="fas fa-calendar-check text-blue-500"></i>
+                                            <span>{{ $client->bookings->count() }} demandes</span>
+                                        </div>
+                                        <div class="flex items-center gap-1">
+                                            <i class="fas fa-star text-blue-500"></i>
+                                            <span>{{ $client->reviews_count ?? $client->reviews->count() }} avis</span>
+                                        </div>
+                                        <div class="flex items-center gap-1">
+                                            <i class="fas fa-calendar text-blue-500"></i>
+                                            <span>Inscrit le {{ $client->created_at->format('d/m/Y') }}</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </td>
-                            <td class="px-4 py-3">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{{ $client->bookings->count() }}</span>
-                            </td>
-                            <td class="px-4 py-3">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">{{ $client->reviews_count ?? $client->reviews->count() }}</span>
-                            </td>
-                            <td class="px-4 py-3">
-                                @if($client->user->is_blocked)
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Bloqué</span>
-                @else
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Actif</span>
-                @endif
-                            </td>
-                            <td class="px-4 py-3 text-sm text-blue-700">{{ $client->created_at->format('d/m/Y') }}</td>
-                            <td class="px-4 py-3">
-                                <div class="relative">
-                                    <button class="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors duration-150" onclick="toggleDropdown('clientMenu{{ $client->id }}')">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                    <div id="clientMenu{{ $client->id }}" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-blue-200 z-10" style="display: none;">
-                                        <a href="{{ route('administrateur.clients.show', $client->id) }}" class="flex items-center px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 rounded-t-lg">
-                                            <i class="fas fa-eye mr-2"></i> Voir détails
-                                        </a>
-                                        @if(auth()->id() != $client->user_id)
-                                            <button onclick="toggleBlockClient('{{ $client->id }}', '{{ $client->user->is_blocked ? 'unblock' : 'block' }}')" class="w-full flex items-center px-4 py-2 text-sm text-blue-700 hover:bg-blue-50">
-                                                <i class="fas {{ $client->user->is_blocked ? 'fa-unlock' : 'fa-lock' }} mr-2"></i> 
-                                                {{ $client->user->is_blocked ? 'Débloquer' : 'Bloquer' }}
+                            </div>
+                            
+                            <!-- Zone droite: Actions rapides -->
+                            <div class="flex flex-col gap-2 pl-6">
+                                <div class="flex gap-2">
+                                    <a href="{{ route('administrateur.clients.show', $client->id) }}" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs font-medium transition duration-200 flex items-center" title="Voir détails">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    
+                                    @if(auth()->id() != $client->user_id)
+                                        @if($client->user->is_blocked)
+                                            <button onclick="toggleBlockClient('{{ $client->id }}', 'unblock')" class="bg-green-100 hover:bg-green-200 text-green-800 px-3 py-2 rounded-lg text-xs font-medium transition duration-200 flex items-center" title="Débloquer">
+                                                <i class="fas fa-unlock"></i>
                                             </button>
-                                            <button onclick="deleteClient('{{ $client->id }}')" class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-b-lg">
-                                                <i class="fas fa-trash mr-2"></i> Supprimer
+                                        @else
+                                            <button onclick="toggleBlockClient('{{ $client->id }}', 'block')" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 px-3 py-2 rounded-lg text-xs font-medium transition duration-200 flex items-center" title="Bloquer">
+                                                <i class="fas fa-lock"></i>
                                             </button>
                                         @endif
-                                    </div>
+                                        
+                                        <button onclick="deleteClient('{{ $client->id }}')" class="bg-red-100 hover:bg-red-200 text-red-800 px-3 py-2 rounded-lg text-xs font-medium transition duration-200 flex items-center" title="Supprimer">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    @endif
                                 </div>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="7" class="px-4 py-8 text-center">
-                                <div class="text-blue-600">
-                                    <i class="fas fa-info-circle mr-2"></i> Aucun client trouvé
-                                </div>
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="text-center py-12">
+                        <i class="fas fa-users text-6xl text-blue-200 mb-4"></i>
+                        <div class="text-xl font-semibold text-blue-800 mb-2">Aucun client trouvé</div>
+                        <div class="text-blue-600">Essayez de modifier vos critères de recherche</div>
+                    </div>
+                @endforelse
             </div>
             
-            <!-- Pagination -->
-            <div class="px-4 py-4 bg-blue-25 border-t border-blue-200 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div class="text-sm text-blue-700">
-                    Affichage de {{ $clients->firstItem() ?? 0 }} à {{ $clients->lastItem() ?? 0 }} sur {{ $clients->total() }} entrées
+            @if($clients && $clients->hasPages())
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 mt-6 border-t-2 border-blue-200">
+                    <div class="text-sm text-blue-700 font-medium">
+                        Affichage de {{ $clients->firstItem() }} à {{ $clients->lastItem() }} sur {{ $clients->total() }} résultats
+                    </div>
+                    <div class="flex justify-center">
+                        {{ $clients->appends(request()->query())->links() }}
+                    </div>
                 </div>
-                <div class="pagination-wrapper">
-                    {{ $clients->appends(request()->query())->links() }}
-                </div>
-            </div>
+            @endif
         </div>
     </div>
 
@@ -513,10 +531,7 @@
         return Array.from(checkboxes).map(checkbox => checkbox.value);
     }
     
-    // Export clients
-    function exportClients() {
-        window.location.href = '{{ route("administrateur.clients.export") }}' + window.location.search;
-    }
+
 
     // Show notification function
     function showNotification(message, type = 'info') {

@@ -111,6 +111,7 @@
                                 <li>• Montrez votre travail sous différents angles</li>
                                 <li>• Incluez des photos avant/après si applicable</li>
                                 <li>• Évitez les photos floues ou sombres</li>
+                                <li>• Vous pouvez réorganiser l'ordre en glissant-déposant les photos</li>
                             </ul>
                         </div>
                     </div>
@@ -122,7 +123,9 @@
                             <p class="text-blue-600 mb-1 sm:mb-2 text-xs sm:text-sm lg:text-base font-semibold">Cliquez pour ajouter des photos ou glissez-déposez</p>
                             <p class="text-blue-500 text-xs sm:text-sm">Maximum 5 photos • Formats acceptés : JPG, PNG, GIF • 5MB max par photo</p>
                         </div>
-                        <div id="image-preview" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3 lg:gap-4 mt-2 sm:mt-3 lg:mt-4 hidden"></div>
+                        
+                        <!-- Aperçu des images sélectionnées -->
+                        <div id="image-preview" class="hidden mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4"></div>
                     </div>
                     
                     @error('images')
@@ -168,46 +171,144 @@ document.addEventListener('DOMContentLoaded', function () {
     const previewContainer = document.getElementById('image-preview');
     const uploadArea = document.getElementById('upload-area');
 
+    // Variable pour stocker les fichiers existants
+    let existingFiles = [];
+    let isAddingMore = false;
+    
     window.previewImages = function(input) {
+        // Si on ajoute des images supplémentaires, combiner avec les existantes
+        if (isAddingMore && existingFiles.length > 0) {
+            const newFiles = Array.from(input.files);
+            const combinedFiles = new DataTransfer();
+            
+            // Ajouter les fichiers existants
+            existingFiles.forEach(file => {
+                if (combinedFiles.files.length < 5) {
+                    combinedFiles.items.add(file);
+                }
+            });
+            
+            // Ajouter les nouveaux fichiers
+            newFiles.forEach(file => {
+                if (combinedFiles.files.length < 5) {
+                    combinedFiles.items.add(file);
+                }
+            });
+            
+            input.files = combinedFiles.files;
+            isAddingMore = false;
+        }
+        
+        // Stocker les fichiers actuels
+        existingFiles = Array.from(input.files);
+        
         previewContainer.innerHTML = '';
         if (input.files && input.files.length > 0) {
             previewContainer.classList.remove('hidden');
             uploadArea.classList.add('hidden');
             
             const files = Array.from(input.files).slice(0, 5);
+            const validImageFiles = files.filter(file => file.type.startsWith('image/'));
+            let loadedImages = 0;
             
-            files.forEach((file, index) => {
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const div = document.createElement('div');
-                        div.className = 'relative group';
-                        div.innerHTML = `
-                            <img src="${e.target.result}" class="w-full h-24 object-cover rounded-lg shadow-md">
-                            <button type="button" onclick="removeImage(${index})" class="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
-                                <i class="fas fa-times"></i>
-                            </button>
-                            <div class="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
-                                ${index + 1}
-                            </div>
-                        `;
-                        previewContainer.appendChild(div);
-                    };
-                    reader.readAsDataURL(file);
-                }
+            validImageFiles.forEach((file, index) => {
+                // Try using URL.createObjectURL instead of FileReader
+                const div = document.createElement('div');
+                div.className = 'relative group bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-200 cursor-move';
+                div.draggable = true;
+                div.dataset.index = index;
+                
+                // Create image with URL.createObjectURL
+                const img = document.createElement('img');
+                const imageUrl = URL.createObjectURL(file);
+                
+                img.onload = function() {
+                    console.log('Image loaded successfully with createObjectURL');
+                    URL.revokeObjectURL(imageUrl); // Clean up memory
+                };
+                img.onerror = function() {
+                    console.error('Failed to load image with createObjectURL');
+                    URL.revokeObjectURL(imageUrl);
+                };
+                
+                img.src = imageUrl;
+                img.className = 'w-full h-24 sm:h-28 lg:h-32 object-cover';
+                img.style.display = 'block';
+                
+                // Create overlay elements
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.onclick = () => removeImage(index);
+                removeBtn.className = 'absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-lg hover:scale-110 z-10';
+                removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                
+                const photoLabel = document.createElement('div');
+                photoLabel.className = 'absolute bottom-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded-full font-medium';
+                photoLabel.textContent = `Photo ${index + 1}`;
+                
+                const dragIcon = document.createElement('div');
+                dragIcon.className = 'absolute top-2 left-2 bg-gray-800 bg-opacity-75 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-all duration-200';
+                dragIcon.innerHTML = '<i class="fas fa-arrows-alt"></i>';
+                
+                // Append all elements
+                 div.appendChild(img);
+                 div.appendChild(removeBtn);
+                 div.appendChild(photoLabel);
+                 div.appendChild(dragIcon);
+                 
+                 // Ajouter les événements de drag and drop pour la réorganisation
+                 div.addEventListener('dragstart', handleDragStart);
+                 div.addEventListener('dragover', handleDragOver);
+                 div.addEventListener('drop', handleImageDrop);
+                 div.addEventListener('dragend', handleDragEnd);
+                 
+                 previewContainer.appendChild(div);
+                 
+                 loadedImages++;
+                 
+                 // Ajouter le bouton "Ajouter plus" après que toutes les images valides soient chargées
+                 if (loadedImages === validImageFiles.length) {
+                     if (validImageFiles.length < 5) {
+                         addMoreButton(validImageFiles.length);
+                     }
+                 }
             });
-
-            if (files.length < 5) {
-                const addMore = document.createElement('div');
-                addMore.className = 'flex items-center justify-center h-24 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 transition-colors bg-gray-50';
-                addMore.innerHTML = '<div class="text-center"><i class="fas fa-plus text-gray-400 text-xl mb-1"></i><p class="text-xs text-gray-500">Ajouter</p></div>';
-                addMore.onclick = () => imageInput.click();
-                previewContainer.appendChild(addMore);
+            
+            // Si aucun fichier n'est une image valide
+            if (validImageFiles.length === 0) {
+                resetDisplay();
+                showNotification('Aucune image valide', ['Veuillez sélectionner des fichiers image (JPG, PNG, GIF, WebP)'], 'error');
             }
+
         } else {
-            previewContainer.classList.add('hidden');
-            uploadArea.classList.remove('hidden');
+            resetDisplay();
         }
+    }
+    
+    // Fonction pour ajouter le bouton "Ajouter plus"
+    function addMoreButton(currentCount) {
+        if (currentCount < 5) {
+            const addMore = document.createElement('div');
+            addMore.className = 'flex items-center justify-center h-24 sm:h-28 lg:h-32 border-2 border-dashed border-blue-300 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 bg-gray-50';
+            addMore.innerHTML = `
+                <div class="text-center">
+                    <i class="fas fa-plus text-blue-400 text-xl sm:text-2xl mb-1 sm:mb-2"></i>
+                    <p class="text-xs sm:text-sm text-blue-600 font-medium">Ajouter une photo</p>
+                    <p class="text-xs text-gray-500 mt-1">${5 - currentCount} restante(s)</p>
+                </div>
+            `;
+            addMore.onclick = () => {
+                isAddingMore = true;
+                imageInput.click();
+            };
+            previewContainer.appendChild(addMore);
+        }
+    }
+    
+    // Fonction pour réinitialiser l'affichage
+    function resetDisplay() {
+        previewContainer.classList.add('hidden');
+        uploadArea.classList.remove('hidden');
     }
 
     window.removeImage = function(index) {
@@ -219,7 +320,64 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
         imageInput.files = dt.files;
+        existingFiles = Array.from(imageInput.files);
         previewImages(imageInput);
+        
+        // Afficher une notification de suppression
+        showNotification('Photo supprimée', ['La photo a été retirée de votre sélection'], 'success');
+    }
+    
+    // Variables pour la réorganisation des images
+    let draggedElement = null;
+    let draggedIndex = null;
+    
+    // Fonctions pour la réorganisation des photos
+    function handleDragStart(e) {
+        draggedElement = this;
+        draggedIndex = parseInt(this.dataset.index);
+        this.style.opacity = '0.5';
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/html', this.outerHTML);
+    }
+    
+    function handleDragOver(e) {
+        if (e.preventDefault) {
+            e.preventDefault();
+        }
+        e.dataTransfer.dropEffect = 'move';
+        return false;
+    }
+    
+    function handleImageDrop(e) {
+        if (e.stopPropagation) {
+            e.stopPropagation();
+        }
+        
+        if (draggedElement !== this) {
+            const targetIndex = parseInt(this.dataset.index);
+            reorderImages(draggedIndex, targetIndex);
+        }
+        
+        return false;
+    }
+    
+    function handleDragEnd(e) {
+        this.style.opacity = '1';
+        draggedElement = null;
+        draggedIndex = null;
+    }
+    
+    function reorderImages(fromIndex, toIndex) {
+        const files = Array.from(imageInput.files);
+        const movedFile = files.splice(fromIndex, 1)[0];
+        files.splice(toIndex, 0, movedFile);
+        
+        const dt = new DataTransfer();
+        files.forEach(file => dt.items.add(file));
+        imageInput.files = dt.files;
+        
+        previewImages(imageInput);
+        showNotification('Photos réorganisées', ['L\'ordre des photos a été modifié'], 'success');
     }
     
     // Fonction pour passer l'étape photos
@@ -245,43 +403,95 @@ document.addEventListener('DOMContentLoaded', function () {
         form.submit();
     }
     
-    // Validation des fichiers
+    // Validation des fichiers avec feedback amélioré
     imageInput.addEventListener('change', function() {
         const files = this.files;
         const maxSize = 5 * 1024 * 1024; // 5MB
-        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        let hasErrors = false;
+        let errorMessages = [];
         
-        for (let i = 0; i < files.length; i++) {
+        // Vérifier le nombre de fichiers
+        if (files.length > 5) {
+            errorMessages.push('Vous ne pouvez sélectionner que 5 photos maximum.');
+            hasErrors = true;
+        }
+        
+        for (let i = 0; i < files.length && i < 5; i++) {
             const file = files[i];
             
             // Vérifier le type de fichier
             if (!allowedTypes.includes(file.type)) {
-                alert(`Le fichier "${file.name}" n'est pas un format d'image valide. Formats acceptés : JPG, PNG, GIF.`);
-                this.value = '';
-                return;
+                errorMessages.push(`"${file.name}" : Format non supporté. Utilisez JPG, PNG, GIF ou WebP.`);
+                hasErrors = true;
             }
             
             // Vérifier la taille du fichier
             if (file.size > maxSize) {
-                alert(`Le fichier "${file.name}" est trop volumineux. Taille maximum : 5MB.`);
-                this.value = '';
-                return;
+                const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+                errorMessages.push(`"${file.name}" : Fichier trop volumineux (${sizeMB}MB). Maximum 5MB.`);
+                hasErrors = true;
             }
         }
         
-        // Vérifier le nombre de fichiers
-        if (files.length > 5) {
-            alert('Vous ne pouvez sélectionner que 5 photos maximum.');
+        if (hasErrors) {
+            // Afficher les erreurs dans une notification plus élégante
+            showNotification('Erreur de validation', errorMessages, 'error');
             this.value = '';
             return;
         }
+        
+        // Afficher un message de succès si tout va bien
+        if (files.length > 0) {
+            const message = files.length === 1 ? '1 photo sélectionnée' : `${files.length} photos sélectionnées`;
+            showNotification('Photos ajoutées', [message], 'success');
+        }
     });
     
-    // Drag and drop functionality
-    const dropZone = document.querySelector('.border-dashed');
+    // Fonction pour afficher des notifications
+    function showNotification(title, messages, type) {
+        const notification = document.createElement('div');
+        const bgColor = type === 'error' ? 'bg-red-50 border-red-200' : 'bg-green-50 border-green-200';
+        const textColor = type === 'error' ? 'text-red-800' : 'text-green-800';
+        const iconClass = type === 'error' ? 'fas fa-exclamation-triangle text-red-500' : 'fas fa-check-circle text-green-500';
+        
+        notification.className = `fixed top-4 right-4 max-w-md ${bgColor} border rounded-lg p-4 shadow-lg z-50 transform translate-x-full transition-transform duration-300`;
+        notification.innerHTML = `
+            <div class="flex items-start">
+                <i class="${iconClass} mt-0.5 mr-3"></i>
+                <div class="flex-1">
+                    <h4 class="font-semibold ${textColor} mb-1">${title}</h4>
+                    <ul class="text-sm ${textColor} space-y-1">
+                        ${messages.map(msg => `<li>• ${msg}</li>`).join('')}
+                    </ul>
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()" class="ml-2 ${textColor} hover:opacity-70">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Animation d'entrée
+        setTimeout(() => {
+            notification.classList.remove('translate-x-full');
+        }, 100);
+        
+        // Suppression automatique après 5 secondes
+        setTimeout(() => {
+            notification.classList.add('translate-x-full');
+            setTimeout(() => notification.remove(), 300);
+        }, 5000);
+    }
+    
+    // Drag and drop functionality amélioré
+    const dropZone = document.querySelector('.border-dashed').parentElement;
+    let dragCounter = 0;
     
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropZone.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false);
     });
     
     function preventDefaults(e) {
@@ -289,30 +499,96 @@ document.addEventListener('DOMContentLoaded', function () {
         e.stopPropagation();
     }
     
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dropZone.addEventListener(eventName, highlight, false);
+    dropZone.addEventListener('dragenter', function(e) {
+        dragCounter++;
+        highlight();
     });
     
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, unhighlight, false);
+    dropZone.addEventListener('dragleave', function(e) {
+        dragCounter--;
+        if (dragCounter === 0) {
+            unhighlight();
+        }
     });
     
-    function highlight(e) {
-        dropZone.classList.add('border-blue-500', 'bg-blue-100');
+    dropZone.addEventListener('dragover', function(e) {
+        e.dataTransfer.dropEffect = 'copy';
+    });
+    
+    dropZone.addEventListener('drop', function(e) {
+        dragCounter = 0;
+        unhighlight();
+        handleDrop(e);
+    });
+    
+    function highlight() {
+        const uploadArea = document.getElementById('upload-area');
+        const previewArea = document.getElementById('image-preview');
+        
+        dropZone.classList.add('ring-2', 'ring-blue-500', 'ring-opacity-50', 'bg-blue-50');
+        
+        if (!uploadArea.classList.contains('hidden')) {
+            uploadArea.classList.add('border-blue-500', 'bg-blue-100');
+            uploadArea.querySelector('i').classList.add('text-blue-600');
+        }
+        
+        // Créer un overlay de drop si des images sont déjà présentes
+        if (!previewArea.classList.contains('hidden')) {
+            let overlay = document.getElementById('drop-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'drop-overlay';
+                overlay.className = 'absolute inset-0 bg-blue-500 bg-opacity-20 border-2 border-dashed border-blue-500 rounded-lg flex items-center justify-center z-10';
+                overlay.innerHTML = `
+                    <div class="text-center text-blue-700">
+                        <i class="fas fa-cloud-upload-alt text-4xl mb-2"></i>
+                        <p class="font-semibold">Déposez vos nouvelles photos ici</p>
+                    </div>
+                `;
+                dropZone.style.position = 'relative';
+                dropZone.appendChild(overlay);
+            }
+        }
     }
     
-    function unhighlight(e) {
-        dropZone.classList.remove('border-blue-500', 'bg-blue-100');
+    function unhighlight() {
+        const uploadArea = document.getElementById('upload-area');
+        const overlay = document.getElementById('drop-overlay');
+        
+        dropZone.classList.remove('ring-2', 'ring-blue-500', 'ring-opacity-50', 'bg-blue-50');
+        
+        if (!uploadArea.classList.contains('hidden')) {
+            uploadArea.classList.remove('border-blue-500', 'bg-blue-100');
+            uploadArea.querySelector('i').classList.remove('text-blue-600');
+        }
+        
+        if (overlay) {
+            overlay.remove();
+        }
     }
-    
-    dropZone.addEventListener('drop', handleDrop, false);
     
     function handleDrop(e) {
         const dt = e.dataTransfer;
         const files = dt.files;
         
-        imageInput.files = files;
-        previewImages(imageInput);
+        if (files.length > 0) {
+            // Combiner les nouveaux fichiers avec les existants si il y en a
+            const existingFiles = imageInput.files;
+            const combinedFiles = new DataTransfer();
+            
+            // Ajouter les fichiers existants
+            for (let i = 0; i < existingFiles.length && combinedFiles.files.length < 5; i++) {
+                combinedFiles.items.add(existingFiles[i]);
+            }
+            
+            // Ajouter les nouveaux fichiers
+            for (let i = 0; i < files.length && combinedFiles.files.length < 5; i++) {
+                combinedFiles.items.add(files[i]);
+            }
+            
+            imageInput.files = combinedFiles.files;
+            previewImages(imageInput);
+        }
     }
 });
 </script>

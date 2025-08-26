@@ -79,20 +79,23 @@
                     @csrf
                     
                     <div class="space-y-4 sm:space-y-6">
-                        <!-- Photo principale -->
+                        <!-- Photos -->
                         <div>
-                            <h3 class="text-base sm:text-lg font-semibold text-green-900 mb-3 sm:mb-4">Photo principale *</h3>
+                            <h3 class="text-base sm:text-lg font-semibold text-green-900 mb-3 sm:mb-4">Photos de l'équipement *</h3>
                             <div class="border-2 border-dashed border-green-300 rounded-lg p-4 sm:p-6 text-center hover:border-green-400 transition-colors">
-                                <input type="file" name="main_photo" id="main_photo" required accept="image/*" class="hidden" onchange="previewMainImage(this)">
-                                <div id="upload-area" class="cursor-pointer" onclick="document.getElementById('main_photo').click()">
+                                <input type="file" name="photos[]" id="photos" multiple required accept="image/*" class="hidden" onchange="previewImages(this)">
+                                <div id="upload-area" class="cursor-pointer" onclick="document.getElementById('photos').click()">
                                     <i class="fas fa-cloud-upload-alt text-green-400 text-2xl sm:text-4xl mb-2 sm:mb-4"></i>
-                                    <p class="text-green-600 mb-1 sm:mb-2 text-sm sm:text-base">Cliquez pour ajouter une photo ou glissez-déposez</p>
-                                    <p class="text-green-500 text-xs sm:text-sm">Ajoutez une photo claire de votre équipement</p>
-                                    <p class="text-gray-500 text-xs mt-1 sm:mt-2">Formats acceptés : JPG, PNG, GIF (max 5MB)</p>
+                                    <p class="text-green-600 mb-1 sm:mb-2 text-sm sm:text-base">Cliquez pour ajouter des photos ou glissez-déposez</p>
+                                    <p class="text-green-500 text-xs sm:text-sm">Maximum 5 photos, 5MB par photo</p>
+                                    <p class="text-gray-500 text-xs mt-1 sm:mt-2">Formats acceptés : JPG, PNG, GIF</p>
                                 </div>
-                                <div id="image-preview" class="mt-3 sm:mt-4 hidden"></div>
+                                <div id="image-preview" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4 mt-3 sm:mt-4 hidden"></div>
                             </div>
-                            @error('main_photo')
+                            @error('photos')
+                                <p class="text-red-500 text-xs sm:text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                            @error('photos.*')
                                 <p class="text-red-500 text-xs sm:text-sm mt-1">{{ $message }}</p>
                             @enderror
                         </div>
@@ -170,36 +173,94 @@
 </div>
 
 <script>
-function previewMainImage(input) {
+let existingFiles = [];
+let isAddingMore = false;
+
+function previewImages(input) {
     const preview = document.getElementById('image-preview');
     const uploadArea = document.getElementById('upload-area');
     
+    if (isAddingMore && existingFiles.length > 0) {
+        // Combiner les fichiers existants avec les nouveaux
+        const dt = new DataTransfer();
+        
+        // Ajouter les fichiers existants
+        existingFiles.forEach(file => {
+            dt.items.add(file);
+        });
+        
+        // Ajouter les nouveaux fichiers (limiter le total à 5)
+        const remainingSlots = 5 - existingFiles.length;
+        const newFiles = Array.from(input.files).slice(0, remainingSlots);
+        newFiles.forEach(file => {
+            dt.items.add(file);
+        });
+        
+        input.files = dt.files;
+        existingFiles = Array.from(dt.files);
+        isAddingMore = false;
+    } else {
+        existingFiles = Array.from(input.files);
+    }
+    
     preview.innerHTML = '';
     
-    if (input.files && input.files[0]) {
+    if (input.files && input.files.length > 0) {
         preview.classList.remove('hidden');
         uploadArea.classList.add('hidden');
         
-        const file = input.files[0];
-        if (file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
+        // Limiter à 5 images
+        const files = Array.from(input.files).slice(0, 5);
+        
+        files.forEach((file, index) => {
+            if (file.type.startsWith('image/')) {
                 const div = document.createElement('div');
-                div.className = 'relative group w-48 h-48 mx-auto';
-                div.innerHTML = `
-                    <img src="${e.target.result}" class="w-full h-full object-cover rounded-lg border-2 border-green-300">
-                    <button type="button" onclick="removeMainImage()" class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600">
-                        <i class="fas fa-times"></i>
-                    </button>
-                    <div class="absolute bottom-2 left-2 right-2 bg-black bg-opacity-50 text-white text-xs p-2 rounded">
-                        ${file.name}
-                    </div>
-                `;
+                div.className = 'relative group';
+                
+                const img = document.createElement('img');
+                img.className = 'w-full h-24 object-cover rounded-lg';
+                img.style.display = 'block';
+                img.style.backgroundColor = 'transparent';
+                
+                img.onload = function() {
+                    URL.revokeObjectURL(this.src);
+                };
+                
+                img.onerror = function() {
+                    console.error('Erreur lors du chargement de l\'image');
+                    URL.revokeObjectURL(this.src);
+                };
+                
+                img.src = URL.createObjectURL(file);
+                div.appendChild(img);
+                
+                // Bouton de suppression
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity';
+                removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                removeBtn.onclick = () => removeImage(index);
+                div.appendChild(removeBtn);
+                
+                // Label photo
+                const label = document.createElement('div');
+                label.className = 'absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded';
+                label.textContent = `Photo ${index + 1}`;
+                div.appendChild(label);
+                
+                // Icône de drag
+                const dragIcon = document.createElement('div');
+                dragIcon.className = 'absolute top-1 left-1 text-white opacity-0 group-hover:opacity-100 transition-opacity';
+                dragIcon.innerHTML = '<i class="fas fa-grip-vertical text-xs"></i>';
+                div.appendChild(dragIcon);
+                
                 preview.appendChild(div);
-            };
-            
-            reader.readAsDataURL(file);
+            }
+        });
+        
+        // Ajouter un bouton pour ajouter plus d'images si moins de 5
+        if (files.length < 5) {
+            addMoreButton(files.length);
         }
     } else {
         preview.classList.add('hidden');
@@ -207,10 +268,36 @@ function previewMainImage(input) {
     }
 }
 
-function removeMainImage() {
-    const input = document.getElementById('main_photo');
-    input.value = '';
-    previewMainImage(input);
+function addMoreButton(currentCount) {
+    const preview = document.getElementById('image-preview');
+    const remaining = 5 - currentCount;
+    
+    const addMore = document.createElement('div');
+    addMore.className = 'flex flex-col items-center justify-center h-24 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 transition-colors';
+    addMore.innerHTML = `
+        <i class="fas fa-plus text-gray-400 text-xl mb-1"></i>
+        <span class="text-xs text-gray-500">Ajouter ${remaining} photo${remaining > 1 ? 's' : ''}</span>
+    `;
+    addMore.onclick = () => {
+        isAddingMore = true;
+        document.getElementById('photos').click();
+    };
+    preview.appendChild(addMore);
+}
+
+function removeImage(index) {
+    const input = document.getElementById('photos');
+    const dt = new DataTransfer();
+    
+    for (let i = 0; i < input.files.length; i++) {
+        if (i !== index) {
+            dt.items.add(input.files[i]);
+        }
+    }
+    
+    input.files = dt.files;
+    existingFiles = Array.from(dt.files);
+    previewImages(input);
 }
 
 // Drag and drop functionality

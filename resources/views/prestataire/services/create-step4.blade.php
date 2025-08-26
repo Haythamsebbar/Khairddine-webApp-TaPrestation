@@ -256,11 +256,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function reverseGeocode(lat, lng) {
         try {
-            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1&accept-language=fr`);
+            // Ajouter un délai pour éviter les limitations de taux
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1&accept-language=fr`, {
+                method: 'GET',
+                headers: {
+                    'User-Agent': 'TaPrestation-App/1.0',
+                    'Accept': 'application/json'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
             const data = await response.json();
             document.getElementById('selectedAddress').value = data.display_name || `Coordonnées: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
         } catch (error) {
             console.error('Error during reverse geocoding:', error);
+            // Fallback vers les coordonnées si l'API échoue
             document.getElementById('selectedAddress').value = `Coordonnées: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
         }
     }

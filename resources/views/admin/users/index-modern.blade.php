@@ -30,8 +30,8 @@
                 </div>
                 <div class="flex gap-3">
                     <button onclick="toggleFilters()" class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm sm:text-base">
-                        <i class="fas fa-filter mr-2"></i>Filtres
-                    </button>
+                    <i class="fas fa-filter mr-2"></i>Afficher les filtres
+                </button>
                     <a href="{{ route('administrateur.users.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center text-sm sm:text-base">
                         <i class="fas fa-plus mr-2"></i>Nouvel utilisateur
                     </a>
@@ -191,15 +191,101 @@
                             <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 par page</option>
                             <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 par page</option>
                         </select>
-                        <button onclick="exportUsers()" class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2 px-4 rounded-lg transition duration-200 flex items-center justify-center text-sm">
-                            <i class="fas fa-download mr-2"></i>Exporter
-                        </button>
+
                     </div>
                 </div>
             </div>
     
             <!-- Tableau des utilisateurs -->
-            <div class="overflow-x-auto">
+            <!-- Mobile View -->
+            <div class="block sm:hidden space-y-4">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center">
+                        <input type="checkbox" onchange="toggleAllCheckboxes(this)" class="mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm font-medium text-gray-700">Tout sélectionner</span>
+                    </div>
+                </div>
+                
+                @forelse($users ?? [] as $user)
+                    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+                        <div class="flex items-start space-x-3">
+                            <input type="checkbox" name="selected_users[]" value="{{ $user->id }}" class="user-checkbox h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-1">
+                            
+                            <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-sm
+                                @if($user->role === 'administrateur') bg-gradient-to-br from-blue-500 to-blue-700
+                                @elseif($user->role === 'prestataire') bg-gradient-to-br from-green-500 to-green-700
+                                @else bg-gradient-to-br from-cyan-500 to-cyan-700 @endif">
+                                {{ substr($user->name, 0, 1) }}
+                            </div>
+                            
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h3 class="text-sm font-medium text-gray-900 truncate">{{ $user->name }}</h3>
+                                        <p class="text-xs text-gray-500 truncate">{{ $user->email }}</p>
+                                        
+                                        <div class="flex flex-wrap gap-1 mt-2">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                                                @if($user->role === 'administrateur') bg-blue-100 text-blue-800
+                                                @elseif($user->role === 'prestataire') bg-green-100 text-green-800
+                                                @else bg-cyan-100 text-cyan-800 @endif">
+                                                <i class="fas 
+                                                    @if($user->role === 'administrateur') fa-user-shield
+                                                    @elseif($user->role === 'prestataire') fa-user-tie
+                                                    @else fa-user @endif mr-1"></i>
+                                                {{ ucfirst($user->role) }}
+                                            </span>
+                                            
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                                                @if(!$user->is_blocked) bg-green-100 text-green-800
+                                                @else bg-red-100 text-red-800 @endif">
+                                                <i class="fas fa-circle text-xs mr-1"></i>
+                                                {{ !$user->is_blocked ? 'Actif' : 'Bloqué' }}
+                                            </span>
+                                        </div>
+                                        
+                                        <div class="text-xs text-gray-500 mt-2">
+                                            <div>Inscrit: {{ $user->created_at->format('d/m/Y') }}</div>
+                                            <div>Dernière connexion: {{ $user->last_login_at ? $user->last_login_at->diffForHumans() : 'Jamais' }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex justify-end gap-1 mt-3">
+                                    <a href="{{ route('administrateur.users.show', $user->id) }}" class="text-blue-600 hover:text-blue-900 p-1.5 rounded-lg hover:bg-blue-50 transition-colors" title="Voir">
+                                        <i class="fas fa-eye text-xs"></i>
+                                    </a>
+                                    
+                                    @if(!$user->is_blocked)
+                                        <button onclick="toggleBlockUser({{ $user->id }})" class="text-red-600 hover:text-red-900 p-1.5 rounded-lg hover:bg-red-50 transition-colors" title="Bloquer">
+                                            <i class="fas fa-ban text-xs"></i>
+                                        </button>
+                                    @else
+                                        <button onclick="toggleBlockUser({{ $user->id }})" class="text-green-600 hover:text-green-900 p-1.5 rounded-lg hover:bg-green-50 transition-colors" title="Débloquer">
+                                            <i class="fas fa-check text-xs"></i>
+                                        </button>
+                                    @endif
+                                    
+                                    <button onclick="deleteUser({{ $user->id }})" class="text-red-600 hover:text-red-900 p-1.5 rounded-lg hover:bg-red-50 transition-colors" title="Supprimer">
+                                        <i class="fas fa-trash text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="text-center py-12">
+                        <div class="text-gray-400">
+                            <i class="fas fa-users text-5xl mb-4"></i>
+                            <div class="text-lg font-medium text-gray-900 mb-2">Aucun utilisateur trouvé</div>
+                            <div class="text-gray-500">Essayez de modifier vos critères de recherche</div>
+                        </div>
+                    </div>
+                @endforelse
+            </div>
+            
+            <!-- Desktop Table View -->
+            <div class="hidden sm:block overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
@@ -294,8 +380,8 @@
                             </tr>
                         @endforelse
                     </tbody>
-        </table>
-    </div>
+                </table>
+            </div>
     
                 @if($users && $users->hasPages())
                     <!-- Pagination -->
@@ -625,9 +711,6 @@ function bulkUnblock() {
     }
 }
 
-// Export users
-function exportUsers() {
-    window.location.href = '{{ route("administrateur.users.export") }}';
-}
+
 </script>
 @endpush

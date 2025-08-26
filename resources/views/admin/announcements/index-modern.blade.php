@@ -24,13 +24,10 @@
                         Nouvelle Annonce
                     </a>
                     <button class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm sm:text-base" onclick="toggleFilters()">
-                        <i class="fas fa-filter mr-2"></i>
-                        Filtres
-                    </button>
-                    <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center text-sm sm:text-base" onclick="exportAnnouncements()">
-                        <i class="fas fa-download mr-2"></i>
-                        Exporter
-                    </button>
+                    <i class="fas fa-filter mr-2"></i>
+                    Afficher les filtres
+                </button>
+
                 </div>
             </div>
         </div>
@@ -235,17 +232,97 @@
                 <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 par page</option>
             </select>
             
-            <button class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2 px-4 rounded-lg transition duration-200 flex items-center" onclick="exportAnnouncements()">
-                <i class="fas fa-download mr-2"></i>
-                Exporter
-            </button>
+
         </div>
     </div>
     
     <div class="space-y-4">
         @forelse($announcements ?? [] as $announcement)
-            <div class="bg-white border border-blue-200 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 p-6">
-                <div class="flex items-center justify-between">
+            <div class="bg-white border border-blue-200 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 p-3 sm:p-4 lg:p-6">
+                <!-- Mobile Layout -->
+                <div class="block sm:hidden">
+                    <div class="flex items-start space-x-3 mb-3">
+                        <input type="checkbox" name="selected_announcements[]" value="{{ $announcement->id }}" class="announcement-checkbox w-4 h-4 text-blue-600 border-blue-300 rounded focus:ring-blue-500 mt-1">
+                        
+                        <!-- Vignette mobile -->
+                        <div class="flex-shrink-0">
+                            @if($announcement->image)
+                                <img src="{{ asset('storage/' . $announcement->image) }}" alt="{{ $announcement->title }}" class="w-12 h-12 rounded-lg object-cover border border-blue-200">
+                            @else
+                                <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-sm">
+                                    {{ substr($announcement->title, 0, 1) }}
+                                </div>
+                            @endif
+                        </div>
+                        
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-sm font-bold text-blue-900 mb-1 line-clamp-2">{{ $announcement->title }}</h3>
+                            <div class="flex flex-wrap gap-1 mb-2">
+                                <span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                                    {{ ucfirst($announcement->category ?? 'Non défini') }}
+                                </span>
+                                @if($announcement->status == 'active')
+                                    <span class="px-2 py-0.5 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                                        <i class="fas fa-check-circle mr-1"></i>Active
+                                    </span>
+                                @elseif($announcement->status == 'pending')
+                                    <span class="px-2 py-0.5 bg-orange-100 text-orange-800 rounded-full text-xs font-medium">
+                                        <i class="fas fa-clock mr-1"></i>En attente
+                                    </span>
+                                @elseif($announcement->status == 'expired')
+                                    <span class="px-2 py-0.5 bg-red-100 text-red-800 rounded-full text-xs font-medium">
+                                        <i class="fas fa-times-circle mr-1"></i>Expirée
+                                    </span>
+                                @else
+                                    <span class="px-2 py-0.5 bg-gray-100 text-gray-800 rounded-full text-xs font-medium">
+                                        <i class="fas fa-pause mr-1"></i>Suspendue
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="text-xs text-gray-600 mb-2 line-clamp-2">{{ Str::limit($announcement->description, 80) }}</p>
+                    
+                    <!-- Métriques mobiles -->
+                    <div class="flex flex-wrap gap-2 text-xs text-gray-500 mb-3">
+                        @if($announcement->price)
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-euro-sign text-blue-500"></i>
+                                <span>{{ $announcement->price }}€</span>
+                            </div>
+                        @endif
+                        <div class="flex items-center gap-1">
+                            <i class="fas fa-eye text-blue-500"></i>
+                            <span>{{ $announcement->views_count ?? 0 }}</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <i class="fas fa-heart text-blue-500"></i>
+                            <span>{{ $announcement->likes_count ?? 0 }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Actions mobiles -->
+                    <div class="flex justify-end gap-1">
+                        <a href="{{ route('administrateur.announcements.show', $announcement->id) }}" class="bg-blue-100 hover:bg-blue-200 text-blue-800 p-1.5 rounded-lg transition duration-200" title="Voir">
+                            <i class="fas fa-eye text-xs"></i>
+                        </a>
+                        <a href="{{ route('administrateur.announcements.edit', $announcement->id) }}" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 p-1.5 rounded-lg transition duration-200" title="Modifier">
+                            <i class="fas fa-edit text-xs"></i>
+                        </a>
+                        @if($announcement->status == 'pending')
+                            <button onclick="approveAnnouncement({{ $announcement->id }})" class="bg-green-100 hover:bg-green-200 text-green-800 p-1.5 rounded-lg transition duration-200" title="Approuver">
+                                <i class="fas fa-check text-xs"></i>
+                            </button>
+                        @endif
+                        <button onclick="deleteAnnouncement({{ $announcement->id }})" class="bg-red-100 hover:bg-red-200 text-red-800 p-1.5 rounded-lg transition duration-200" title="Supprimer">
+                            <i class="fas fa-trash text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Desktop Layout -->
+                <div class="hidden sm:flex items-center justify-between">
                     <!-- Zone gauche: Media + Infos clés -->
                     <div class="flex items-center space-x-4 flex-1">
                         <input type="checkbox" name="selected_announcements[]" value="{{ $announcement->id }}" class="announcement-checkbox w-4 h-4 text-blue-600 border-blue-300 rounded focus:ring-blue-500">
@@ -266,7 +343,7 @@
                             <div class="flex items-start justify-between mb-2">
                                 <div class="flex-1">
                                     <h3 class="text-lg font-bold text-blue-900 truncate">{{ $announcement->title }}</h3>
-                                    <div class="flex items-center gap-2 mt-1">
+                                    <div class="flex items-center gap-2 mt-1 flex-wrap">
                                         <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
                                             {{ ucfirst($announcement->category ?? 'Non défini') }}
                                         </span>
@@ -299,7 +376,7 @@
                             <p class="text-sm text-gray-600 line-clamp-2 mb-3">{{ Str::limit($announcement->description, 120) }}</p>
                             
                             <!-- Métriques -->
-                            <div class="flex items-center gap-4 text-xs text-gray-500">
+                            <div class="flex items-center gap-4 text-xs text-gray-500 flex-wrap">
                                 @if($announcement->price)
                                     <div class="flex items-center gap-1">
                                         <i class="fas fa-euro-sign text-blue-500"></i>
@@ -392,10 +469,7 @@ function changePerPage(value) {
     window.location = url;
 }
 
-function exportAnnouncements() {
-    // Logique d'export à implémenter
-    alert('Fonctionnalité d\'export en cours de développement');
-}
+
 
 function approveAnnouncement(id) {
     if (confirm('Êtes-vous sûr de vouloir approuver cette annonce ?')) {

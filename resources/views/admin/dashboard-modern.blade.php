@@ -3,93 +3,95 @@
 @section('page-title', 'Tableau de bord')
 
 @section('content')
-<div class="page-header">
-    <h1 class="page-title">Tableau de Bord Administrateur</h1>
-    <p class="page-subtitle">Vue d'ensemble des activités et statistiques de la plateforme</p>
-</div>
-
-<!-- Action Buttons -->
-<div class="flex justify-end mb-8">
-    <div class="flex space-x-4">
-        <button class="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 font-medium">
-            <i class="fas fa-download mr-2"></i>Exporter les données
-        </button>
-        <button class="bg-white text-blue-600 border-2 border-blue-200 px-6 py-3 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 font-medium">
-            <i class="fas fa-cog mr-2"></i>Paramètres
-        </button>
+<!-- Header Section -->
+<div class="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-2xl shadow-2xl mb-6 sm:mb-8 overflow-hidden">
+    <div class="absolute inset-0 bg-black opacity-10"></div>
+    <div class="relative px-6 sm:px-8 py-8 sm:py-12">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6">
+            <div class="text-white">
+                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3">Tableau de Bord Administrateur</h1>
+                <p class="text-blue-100 text-sm sm:text-base lg:text-lg opacity-90">Vue d'ensemble des activités et statistiques de votre plateforme</p>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- Statistiques Principales -->
-<div class="mb-8">
-    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-        <i class="fas fa-chart-bar mr-3 text-blue-600"></i>
+<!-- Statistics Section -->
+<div class="mb-6 sm:mb-8">
+    <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center">
+        <i class="fas fa-chart-bar mr-2 sm:mr-3 text-blue-600"></i>
         Statistiques Principales
     </h2>
-    <div class="stats-grid">
-    <div class="stat-card card-base">
-        <div class="stat-header">
-            <div>
-                <div class="text-title">Total Utilisateurs</div>
-                <div class="text-value">{{ $totalUsersCount ?? 0 }}</div>
-                <div class="stat-change {{ $userChange >= 0 ? 'positive' : 'negative' }}">
-                    <i class="fas {{ $userChange >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' }}"></i>
-                    <span>{{ number_format($userChange, 1) }}% ce mois</span>
-                </div>
-            </div>
-            <div class="icon-base variant-primary">
-                <i class="fas fa-users"></i>
-            </div>
-        </div>
-    </div>
     
-    <div class="stat-card card-base">
-        <div class="stat-header">
-            <div>
-                <div class="text-title">Prestataires Approuvés</div>
-                <div class="text-value">{{ $approvedPrestatairesCount ?? 0 }}</div>
-                <div class="stat-change {{ $prestataireChange >= 0 ? 'positive' : 'negative' }}">
-                    <i class="fas {{ $prestataireChange >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' }}"></i>
-                    <span>{{ number_format($prestataireChange, 1) }}% ce mois</span>
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <!-- Total Users Card -->
+        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-4 sm:p-6 border border-blue-200 hover:shadow-lg transition-all duration-300 group">
+            <div class="flex items-center justify-between mb-3">
+                <div>
+                    <p class="text-blue-600 text-xs sm:text-sm font-medium uppercase tracking-wide mb-1 sm:mb-2">Total Utilisateurs</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-blue-900">{{ $totalUsersCount ?? 0 }}</p>
+                </div>
+                <div class="bg-blue-500 p-2 sm:p-3 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-users text-white text-lg sm:text-xl"></i>
                 </div>
             </div>
-            <div class="icon-base variant-success">
-                <i class="fas fa-user-check"></i>
+            <div class="flex items-center text-xs sm:text-sm {{ ($userChange ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
+                <i class="fas {{ ($userChange ?? 0) >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' }} mr-1"></i>
+                <span>{{ number_format($userChange ?? 0, 1) }}% ce mois</span>
             </div>
         </div>
-    </div>
-    
-    <div class="stat-card card-base">
-        <div class="stat-header">
-            <div>
-                <div class="text-title">En Attente</div>
-                <div class="text-value">{{ $pendingPrestatairesCount ?? 0 }}</div>
-                <div class="stat-change {{ $pendingChange >= 0 ? 'positive' : 'negative' }}">
-                    <i class="fas {{ $pendingChange >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' }}"></i>
-                    <span>{{ number_format($pendingChange, 1) }}% ce mois</span>
+
+        <!-- Approved Providers Card -->
+        <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl p-4 sm:p-6 border border-emerald-200 hover:shadow-lg transition-all duration-300 group">
+            <div class="flex items-center justify-between mb-3">
+                <div>
+                    <p class="text-emerald-600 text-xs sm:text-sm font-medium uppercase tracking-wide mb-1 sm:mb-2">Prestataires Approuvés</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-emerald-900">{{ $approvedPrestatairesCount ?? 0 }}</p>
+                </div>
+                <div class="bg-emerald-500 p-2 sm:p-3 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-user-check text-white text-lg sm:text-xl"></i>
                 </div>
             </div>
-            <div class="icon-base variant-warning">
-                <i class="fas fa-clock"></i>
+            <div class="flex items-center text-xs sm:text-sm {{ ($prestataireChange ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
+                <i class="fas {{ ($prestataireChange ?? 0) >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' }} mr-1"></i>
+                <span>{{ number_format($prestataireChange ?? 0, 1) }}% ce mois</span>
             </div>
         </div>
-    </div>
-    
-    <div class="stat-card card-base">
-        <div class="stat-header">
-            <div>
-                <div class="text-title">Services Actifs</div>
-                <div class="text-value">{{ $activeServicesCount ?? 0 }}</div>
-                <div class="stat-change {{ $serviceChange >= 0 ? 'positive' : 'negative' }}">
-                    <i class="fas {{ $serviceChange >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' }}"></i>
-                    <span>{{ number_format($serviceChange, 1) }}% ce mois</span>
+
+        <!-- Pending Providers Card -->
+        <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl p-4 sm:p-6 border border-amber-200 hover:shadow-lg transition-all duration-300 group">
+            <div class="flex items-center justify-between mb-3">
+                <div>
+                    <p class="text-amber-600 text-xs sm:text-sm font-medium uppercase tracking-wide mb-1 sm:mb-2">En Attente</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-amber-900">{{ $pendingPrestatairesCount ?? 0 }}</p>
+                </div>
+                <div class="bg-amber-500 p-2 sm:p-3 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-clock text-white text-lg sm:text-xl"></i>
                 </div>
             </div>
-            <div class="icon-base variant-info">
-                <i class="fas fa-briefcase"></i>
+            <div class="flex items-center text-xs sm:text-sm {{ ($pendingChange ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
+                <i class="fas {{ ($pendingChange ?? 0) >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' }} mr-1"></i>
+                <span>{{ number_format($pendingChange ?? 0, 1) }}% ce mois</span>
             </div>
         </div>
-    </div>
+
+        <!-- Active Services Card -->
+        <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-4 sm:p-6 border border-purple-200 hover:shadow-lg transition-all duration-300 group">
+            <div class="flex items-center justify-between mb-3">
+                <div>
+                    <p class="text-purple-600 text-xs sm:text-sm font-medium uppercase tracking-wide mb-1 sm:mb-2">Services Actifs</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-purple-900">{{ $activeServicesCount ?? 0 }}</p>
+                </div>
+                <div class="bg-purple-500 p-2 sm:p-3 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-briefcase text-white text-lg sm:text-xl"></i>
+                </div>
+            </div>
+            <div class="flex items-center text-xs sm:text-sm {{ ($serviceChange ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
+                <i class="fas {{ ($serviceChange ?? 0) >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' }} mr-1"></i>
+                <span>{{ number_format($serviceChange ?? 0, 1) }}% ce mois</span>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -172,27 +174,29 @@
     </h2>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <!-- Pending Prestataires -->
-    <div class="table-card card-base">
-        <div class="table-header card-header">
-            <div class="card-title">Prestataires en Attente</div>
-            <a href="{{ route('administrateur.prestataires.pending') }}" class="btn btn-outline">
-                <i class="fas fa-eye"></i>
-                Voir tout
-            </a>
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <div class="bg-gradient-to-r from-blue-50 to-blue-100 px-6 py-4 border-b border-blue-200">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-blue-900">Prestataires en Attente</h3>
+                <a href="{{ route('administrateur.prestataires.pending') }}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2">
+                    <i class="fas fa-eye text-sm"></i>
+                    Voir tout
+                </a>
+            </div>
         </div>
-        <div class="table-responsive">
-            <table class="modern-table">
-                <thead>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
                     <tr>
-                        <th>Nom</th>
-                        <th>Email</th>
-                        <th>Action</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($pendingPrestataires ?? [] as $prestataire)
-                        <tr>
-                            <td>
+                        <tr class="hover:bg-gray-50 transition-colors duration-200">
+                            <td class="px-6 py-4 whitespace-nowrap">
                                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                                     <div style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
                                         @if($prestataire->photo)
@@ -225,9 +229,9 @@
                                     </div>
                                 </div>
                             </td>
-                            <td>{{ $prestataire->user->email }}</td>
-                            <td>
-                                <a href="{{ route('administrateur.prestataires.show', $prestataire->id) }}" class="btn btn-primary" style="padding: 0.25rem 0.75rem; font-size: 0.8rem;">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $prestataire->user->email }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <a href="{{ route('administrateur.prestataires.show', $prestataire->id) }}" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-medium transition-colors duration-200 inline-flex items-center gap-1">
                                     <i class="fas fa-eye"></i>
                                     Voir
                                 </a>
@@ -235,8 +239,8 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="3" style="text-align: center; padding: 2rem; color: var(--secondary);">
-                                <i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--success);"></i>
+                            <td colspan="3" class="px-6 py-8 text-center text-gray-500">
+                                <i class="fas fa-check-circle text-3xl mb-2 text-green-500"></i>
                                 <div>Aucun prestataire en attente</div>
                             </td>
                         </tr>
@@ -247,53 +251,55 @@
     </div>
     
     <!-- Recent Users -->
-    <div class="table-card">
-        <div class="table-header">
-            <div class="table-title">Derniers Utilisateurs</div>
-            <a href="{{ route('administrateur.users.index') }}" class="btn btn-outline">
-                <i class="fas fa-eye"></i>
-                Voir tout
-            </a>
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <div class="bg-gradient-to-r from-blue-50 to-blue-100 px-6 py-4 border-b border-blue-200">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-blue-900">Derniers Utilisateurs</h3>
+                <a href="{{ route('administrateur.users.index') }}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2">
+                    <i class="fas fa-eye text-sm"></i>
+                    Voir tout
+                </a>
+            </div>
         </div>
-        <div class="table-responsive">
-            <table class="modern-table">
-                <thead>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
                     <tr>
-                        <th>Utilisateur</th>
-                        <th>Rôle</th>
-                        <th>Inscrit</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Utilisateur</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rôle</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Inscrit</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($recentUsers ?? [] as $user)
-                        <tr>
-                            <td>
-                                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                    <div style="width: 32px; height: 32px; background: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">
+                        <tr class="hover:bg-gray-50 transition-colors duration-200">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                                         {{ substr($user->name, 0, 1) }}
                                     </div>
                                     <div>
-                                        <div style="font-weight: 500;">{{ $user->name }}</div>
-                                        <div style="font-size: 0.875rem; color: var(--secondary);">{{ $user->email }}</div>
+                                        <div class="font-medium text-gray-900">{{ $user->name }}</div>
+                                        <div class="text-sm text-gray-500">{{ $user->email }}</div>
                                     </div>
                                 </div>
                             </td>
-                            <td>
-                                <span style="padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 500; 
-                                    @if($user->role === 'administrateur') background: rgba(79, 70, 229, 0.1); color: var(--primary);
-                                    @elseif($user->role === 'prestataire') background: rgba(16, 185, 129, 0.1); color: var(--success);
-                                    @else background: rgba(107, 114, 128, 0.1); color: var(--secondary); @endif">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-3 py-1 rounded-full text-xs font-medium
+                                    @if($user->role === 'administrateur') bg-blue-100 text-blue-800
+                                    @elseif($user->role === 'prestataire') bg-green-100 text-green-800
+                                    @else bg-gray-100 text-gray-800 @endif">
                                     {{ ucfirst($user->role) }}
                                 </span>
                             </td>
-                            <td style="color: var(--secondary); font-size: 0.875rem;">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ $user->created_at->diffForHumans() }}
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="3" style="text-align: center; padding: 2rem; color: var(--secondary);">
-                                <i class="fas fa-users" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                            <td colspan="3" class="px-6 py-8 text-center text-gray-500">
+                                <i class="fas fa-users text-3xl mb-2"></i>
                                 <div>Aucun utilisateur récent</div>
                             </td>
                         </tr>

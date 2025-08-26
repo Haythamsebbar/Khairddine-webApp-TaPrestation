@@ -101,14 +101,89 @@
                                             @endif
                                             <h3 class="text-sm sm:text-base font-semibold text-gray-900 break-words">
                                                 @php
-                                                    $data = is_string($notification->data) ? json_decode($notification->data, true) : $notification->data;
+                                                    // Try different approaches to get the title
+                                                    $title = null;
+                                                    
+                                                    // Method 1: Direct accessor if it exists
+                                                    if (method_exists($notification, 'getTitleAttribute')) {
+                                                        $title = $notification->title;
+                                                    }
+                                                    
+                                                    // Method 2: From data if it's an array
+                                                    if (empty($title) && is_array($notification->data)) {
+                                                        $title = $notification->data['title'] ?? null;
+                                                    }
+                                                    
+                                                    // Method 3: From decoded JSON if it's a string
+                                                    if (empty($title) && is_string($notification->data)) {
+                                                        $decodedData = json_decode($notification->data, true);
+                                                        $title = $decodedData['title'] ?? null;
+                                                    }
+                                                    
+                                                    // Fallback title
+                                                    if (empty($title)) {
+                                                        $notificationType = class_basename($notification->type);
+                                                        $title = str_replace('Notification', '', $notificationType);
+                                                        $title = preg_replace('/(?<!^)[A-Z]/', ' $0', $title); // Add spaces before capital letters
+                                                    }
                                                 @endphp
-                                                {{ $data['title'] ?? 'Notification' }}
+                                                {{ $title }}
                                             </h3>
                                         </div>
                                         <p class="text-sm text-gray-600 mb-2 leading-relaxed break-words">
-                                            {{ $data['message'] ?? '' }}
+                                            @php
+                                                // Try different approaches to get the message
+                                                $message = null;
+                                                
+                                                // Method 1: Direct accessor if it exists
+                                                if (method_exists($notification, 'getMessageAttribute')) {
+                                                    $message = $notification->message;
+                                                }
+                                                
+                                                // Method 2: From data if it's an array
+                                                if (empty($message) && is_array($notification->data)) {
+                                                    $message = $notification->data['message'] ?? null;
+                                                }
+                                                
+                                                // Method 3: From decoded JSON if it's a string
+                                                if (empty($message) && is_string($notification->data)) {
+                                                    $decodedData = json_decode($notification->data, true);
+                                                    $message = $decodedData['message'] ?? null;
+                                                }
+                                                
+                                                // Fallback message
+                                                if (empty($message)) {
+                                                    $message = 'Vous avez reçu une notification.'; 
+                                                }
+                                            @endphp
+                                            {{ $message }}
                                         </p>
+                                        @php
+                                            // Try to get action URL from various sources
+                                            $actionUrl = null;
+                                            
+                                            // Method 1: Direct accessor if it exists
+                                            if (method_exists($notification, 'getActionUrlAttribute')) {
+                                                $actionUrl = $notification->action_url;
+                                            }
+                                            
+                                            // Method 2: From data if it's an array
+                                            if (empty($actionUrl) && is_array($notification->data)) {
+                                                $actionUrl = $notification->data['url'] ?? $notification->data['action_url'] ?? null;
+                                            }
+                                            
+                                            // Method 3: From decoded JSON if it's a string
+                                            if (empty($actionUrl) && is_string($notification->data)) {
+                                                $decodedData = json_decode($notification->data, true);
+                                                $actionUrl = $decodedData['url'] ?? $decodedData['action_url'] ?? null;
+                                            }
+                                        @endphp
+                                        
+                                        @if(!empty($actionUrl))
+                                            <a href="{{ $actionUrl }}" class="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200">
+                                                {{ $notification->action_text ?? 'Voir les détails' }} →
+                                            </a>
+                                        @endif
                                         <div class="flex items-center text-xs text-gray-500">
                                             <i class="fas fa-clock mr-1"></i>
                                             {{ $notification->created_at->diffForHumans() }}

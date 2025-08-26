@@ -73,7 +73,10 @@ class BookingController extends Controller
                 }
             }
             
-            $serviceBookings = $query->orderBy('start_datetime', 'desc')->get();
+            $allServiceBookings = $query->orderBy('start_datetime', 'desc')->get();
+            
+            // Group bookings by session for display purposes
+            $serviceBookings = $this->groupBookingsBySessions($allServiceBookings);
         }
 
         // Récupérer les demandes de location d'équipements
@@ -190,11 +193,48 @@ class BookingController extends Controller
         
         $booking->load(['service', 'client.user', 'timeSlot']);
         
-        return view('prestataire.bookings.show', compact('booking'));
+        // Extract session ID from notes if it exists
+        $sessionId = null;
+        if ($booking->client_notes && preg_match('/\[SESSION:([^\]]+)\]/', $booking->client_notes, $matches)) {
+            $sessionId = $matches[1];
+        }
+        
+        $relatedBookings = collect();
+        
+        if ($sessionId) {
+            // Find all bookings with the same session ID
+            $relatedBookings = Booking::where('client_id', $booking->client_id)
+                ->where('prestataire_id', $booking->prestataire_id)
+                ->where('service_id', $booking->service_id)
+                ->where('id', '!=', $booking->id)
+                ->where('client_notes', 'LIKE', '%[SESSION:' . $sessionId . ']%')
+                ->with(['client.user', 'prestataire.user', 'service'])
+                ->orderBy('start_datetime')
+                ->get();
+        }
+        
+        // Only consider it a multi-slot session if there are actually related bookings
+        $isMultiSlotSession = $relatedBookings->count() > 0;
+        
+        if ($isMultiSlotSession) {
+            // Combine all bookings (current + related) and sort by datetime
+            $allBookings = collect([$booking])->concat($relatedBookings)
+                ->sortBy('start_datetime')
+                ->values();
+                
+            // Calculate total price for the booking session
+            $totalSessionPrice = $allBookings->sum('total_price');
+        } else {
+            // Single booking - no session
+            $allBookings = collect([$booking]);
+            $totalSessionPrice = $booking->total_price;
+        }
+        
+        return view('prestataire.bookings.show', compact('booking', 'relatedBookings', 'allBookings', 'totalSessionPrice', 'isMultiSlotSession'));
     }
 
     /**
-     * Accept a booking
+     * Accept a booking or entire session
      */
     public function accept(Booking $booking)
     {
@@ -208,17 +248,46 @@ class BookingController extends Controller
             return redirect()->back()->with('error', 'Cette réservation ne peut pas être acceptée.');
         }
         
-        $booking->update(['status' => 'confirmed']);
+        // Check if this is part of a multi-slot session
+        $sessionId = null;
+        if ($booking->client_notes && preg_match('/\[SESSION:([^\]]+)\]/', $booking->client_notes, $matches)) {
+            $sessionId = $matches[1];
+        }
         
-        // Envoyer notification au client
+        $bookingsToUpdate = collect([$booking]);
+        
+        if ($sessionId) {
+            // Find all bookings in the same session
+            $sessionBookings = Booking::where('client_id', $booking->client_id)
+                ->where('prestataire_id', $booking->prestataire_id)
+                ->where('service_id', $booking->service_id)
+                ->where('client_notes', 'LIKE', '%[SESSION:' . $sessionId . ']%')
+                ->where('status', 'pending')
+                ->get();
+            
+            $bookingsToUpdate = $sessionBookings;
+        }
+        
+        // Update all bookings in the session
+        $updatedCount = 0;
+        foreach ($bookingsToUpdate as $bookingToUpdate) {
+            $bookingToUpdate->update(['status' => 'confirmed']);
+            $updatedCount++;
+        }
+        
+        // Send notification to client (only once for the session)
         $booking->load('client.user');
         Notification::send($booking->client->user, new BookingConfirmedNotification($booking));
         
-        return redirect()->back()->with('success', 'Réservation acceptée avec succès.');
+        $message = $sessionId 
+            ? "Session de {$updatedCount} créneaux acceptée avec succès."
+            : 'Réservation acceptée avec succès.';
+            
+        return redirect()->back()->with('success', $message);
     }
 
     /**
-     * Reject a booking
+     * Reject a booking or entire session
      */
     public function reject(Request $request, Booking $booking)
     {
@@ -234,15 +303,95 @@ class BookingController extends Controller
         
         $rejectionReason = $request->get('rejection_reason');
         
-        $booking->update([
-            'status' => 'rejected',
-            'rejection_reason' => $rejectionReason
-        ]);
+        // Check if this is part of a multi-slot session
+        $sessionId = null;
+        if ($booking->client_notes && preg_match('/\[SESSION:([^\]]+)\]/', $booking->client_notes, $matches)) {
+            $sessionId = $matches[1];
+        }
         
-        // Envoyer notification au client
+        $bookingsToUpdate = collect([$booking]);
+        
+        if ($sessionId) {
+            // Find all bookings in the same session
+            $sessionBookings = Booking::where('client_id', $booking->client_id)
+                ->where('prestataire_id', $booking->prestataire_id)
+                ->where('service_id', $booking->service_id)
+                ->where('client_notes', 'LIKE', '%[SESSION:' . $sessionId . ']%')
+                ->where('status', 'pending')
+                ->get();
+            
+            $bookingsToUpdate = $sessionBookings;
+        }
+        
+        // Update all bookings in the session
+        $updatedCount = 0;
+        foreach ($bookingsToUpdate as $bookingToUpdate) {
+            $bookingToUpdate->update([
+                'status' => 'rejected',
+                'rejection_reason' => $rejectionReason
+            ]);
+            $updatedCount++;
+        }
+        
+        // Send notification to client (only once for the session)
         $booking->load('client.user');
         Notification::send($booking->client->user, new BookingRejectedNotification($booking, $rejectionReason));
         
-        return redirect()->back()->with('success', 'Réservation refusée.');
+        $message = $sessionId 
+            ? "Session de {$updatedCount} créneaux refusée."
+            : 'Réservation refusée.';
+            
+        return redirect()->back()->with('success', $message);
+    }
+
+    /**
+     * Group bookings by session for display purposes
+     */
+    private function groupBookingsBySessions($bookings)
+    {
+        $grouped = collect();
+        $processedSessions = [];
+        
+        foreach ($bookings as $booking) {
+            // Extract session ID from notes if it exists
+            $sessionId = null;
+            if ($booking->client_notes && preg_match('/\[SESSION:([^\]]+)\]/', $booking->client_notes, $matches)) {
+                $sessionId = $matches[1];
+            }
+            
+            if ($sessionId && !in_array($sessionId, $processedSessions)) {
+                // Find all bookings in this session
+                $sessionBookings = $bookings->filter(function($b) use ($sessionId) {
+                    return $b->client_notes && str_contains($b->client_notes, '[SESSION:' . $sessionId . ']');
+                })->sortBy('start_datetime');
+                
+                if ($sessionBookings->count() > 1) {
+                    // Create a grouped booking object
+                    $firstBooking = $sessionBookings->first();
+                    $firstBooking->is_multi_slot = true;
+                    $firstBooking->session_bookings = $sessionBookings;
+                    $firstBooking->session_id = $sessionId;
+                    $firstBooking->total_slots = $sessionBookings->count();
+                    $firstBooking->total_session_price = $sessionBookings->sum('total_price');
+                    $firstBooking->session_duration = $sessionBookings->sum(function($b) {
+                        return $b->start_datetime->diffInMinutes($b->end_datetime);
+                    });
+                    
+                    $grouped->push($firstBooking);
+                    $processedSessions[] = $sessionId;
+                } else {
+                    // Single booking in session (shouldn't happen, but handle gracefully)
+                    $booking->is_multi_slot = false;
+                    $grouped->push($booking);
+                }
+            } else if (!$sessionId) {
+                // Single booking without session
+                $booking->is_multi_slot = false;
+                $grouped->push($booking);
+            }
+            // Skip bookings that are part of already processed sessions
+        }
+        
+        return $grouped->sortByDesc('start_datetime');
     }
 }

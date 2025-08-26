@@ -101,7 +101,31 @@
             <!-- Image et description -->
             <div class="xl:col-span-2">
                 <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-green-100 card-hover fade-in">
-                    @if($equipment->main_photo)
+                    @if($equipment->photos && count($equipment->photos) > 0)
+                        <div class="relative">
+                            <!-- Image principale -->
+                            <div class="aspect-w-16 aspect-h-12">
+                                <img id="mainImage" src="{{ Storage::url($equipment->photos[0]) }}" alt="{{ $equipment->name }}" class="w-full h-64 sm:h-80 lg:h-96 object-cover">
+                            </div>
+                            <div class="absolute top-2 sm:top-4 left-2 sm:left-4 status-badge status-available pulse-green text-xs sm:text-sm">
+                                Disponible
+                            </div>
+                        </div>
+                        
+                        <!-- Miniatures -->
+                        @if(count($equipment->photos) > 1)
+                            <div class="p-3 sm:p-4 border-t">
+                                <div class="flex space-x-2 overflow-x-auto pb-2">
+                                    @foreach($equipment->photos as $index => $photo)
+                                        <button onclick="changeMainImage('{{ Storage::url($photo) }}')"
+                                                class="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 {{ $index === 0 ? 'border-green-500' : 'border-gray-200' }} hover:border-green-500 transition duration-200">
+                                            <img src="{{ Storage::url($photo) }}" alt="Photo {{ $index + 1 }}" class="w-full h-full object-cover">
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                    @elseif($equipment->main_photo)
                         <div class="relative">
                             <div class="aspect-w-16 aspect-h-12">
                                 <img id="mainImage" src="{{ Storage::url($equipment->main_photo) }}" alt="{{ $equipment->name }}" class="w-full h-64 sm:h-80 lg:h-96 object-cover">
@@ -597,6 +621,22 @@
 @endif
 
 <script>
+    function changeMainImage(url) {
+        document.getElementById('mainImage').src = url;
+        // Update border on thumbnails
+        const buttons = document.querySelectorAll('.flex-shrink-0');
+        buttons.forEach(button => {
+            const img = button.querySelector('img');
+            if (img.src === url) {
+                button.classList.add('border-green-500');
+                button.classList.remove('border-gray-200');
+            } else {
+                button.classList.remove('border-green-500');
+                button.classList.add('border-gray-200');
+            }
+        });
+    }
+
     function openReportModal() {
         document.getElementById('reportModal').classList.remove('hidden');
     }

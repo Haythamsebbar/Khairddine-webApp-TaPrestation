@@ -12,6 +12,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\NotificationController;
 
 use App\Http\Controllers\SavedSearchController;
 use App\Http\Controllers\MatchingAlertController;
@@ -20,12 +21,12 @@ use App\Http\Controllers\UrgentSaleController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\EquipmentController;
 use App\Models\Video;
-use App\Http\Controllers\Prestataire\MissionController;
+// use App\Http\Controllers\Prestataire\MissionController;
 use App\Http\Controllers\Prestataire\VerificationController;
 use App\Http\Controllers\Admin\VerificationController as AdminVerificationController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 
-Route::get('/prestataire/missions', [MissionController::class, 'index'])->name('prestataire.missions.index');
+// Route::get('/prestataire/missions', [MissionController::class, 'index'])->name('prestataire.missions.index');
 use App\Http\Controllers\Prestataire\ServiceImageController;
 use App\Http\Controllers\Prestataire\AvailabilityController;
 
@@ -39,6 +40,11 @@ use App\Http\Controllers\Prestataire\AvailabilityController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+// Include debug routes
+if (app()->environment('local')) {
+    require __DIR__ . '/debug-routes.php';
+}
 
 
 
@@ -123,6 +129,34 @@ Route::middleware(['auth', 'role:administrateur'])->prefix('admin')->name('admin
         Route::post('/run-automatic', [AdminVerificationController::class, 'runAutomaticVerification'])->name('run-automatic');
         Route::patch('/{prestataire}/revoke', [AdminVerificationController::class, 'revokeVerification'])->name('revoke');
     });
+
+    // Routes pour la gestion des équipements
+    Route::resource('equipments', App\Http\Controllers\Admin\EquipmentController::class)->except(['create', 'store', 'destroy'])->names('equipments');
+    
+    // Routes pour la gestion des ventes urgentes (annonces)
+    Route::prefix('announcements')->name('announcements.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\UrgentSaleController::class, 'index'])->name('index');
+        Route::get('/{urgentSale}', [App\Http\Controllers\Admin\UrgentSaleController::class, 'show'])->name('show');
+        Route::patch('/{urgentSale}/suspend', [App\Http\Controllers\Admin\UrgentSaleController::class, 'suspend'])->name('suspend');
+        Route::patch('/{urgentSale}/reactivate', [App\Http\Controllers\Admin\UrgentSaleController::class, 'reactivate'])->name('reactivate');
+        Route::delete('/{urgentSale}', [App\Http\Controllers\Admin\UrgentSaleController::class, 'destroy'])->name('destroy');
+        Route::get('/dashboard', [App\Http\Controllers\Admin\UrgentSaleController::class, 'dashboard'])->name('dashboard');
+    });
+    
+    // Routes pour la gestion des services
+    Route::resource('services', App\Http\Controllers\Admin\ServiceController::class)->except(['create', 'store', 'edit', 'update', 'destroy'])->names('services');
+    
+    // Routes pour la gestion des avis
+    Route::resource('reviews', App\Http\Controllers\Admin\ReviewController::class)->except(['create', 'store', 'edit', 'update', 'destroy'])->names('reviews');
+    
+    // Routes pour la gestion des réservations
+    Route::resource('bookings', App\Http\Controllers\Admin\BookingController::class)->except(['create', 'store', 'edit', 'update', 'destroy'])->names('bookings');
+    
+    // Routes pour la gestion des notifications
+    Route::resource('notifications', App\Http\Controllers\Admin\NotificationController::class)->except(['create', 'store', 'edit', 'update', 'destroy'])->names('notifications');
+    
+    // Routes pour la gestion des messages
+    Route::resource('messages', App\Http\Controllers\Admin\MessageController::class)->except(['create', 'store', 'edit', 'update', 'destroy'])->names('messages');
 });
 
 // Pages statiques
@@ -343,6 +377,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('messaging', [\App\Http\Controllers\MessagingController::class, 'index'])->name('messaging.index');
         Route::get('messaging/{user}', [\App\Http\Controllers\MessagingController::class, 'show'])->name('messaging.show');
         Route::post('messaging/{user}', [\App\Http\Controllers\MessagingController::class, 'store'])->name('messaging.store');
+        Route::delete('messaging/{user}', [\App\Http\Controllers\MessagingController::class, 'deleteConversation'])->name('messaging.delete');
         Route::get('messaging/start/{prestataire}', [\App\Http\Controllers\MessagingController::class, 'startConversation'])->name('messaging.start');
         
         // Route de test pour le système de messagerie
@@ -419,17 +454,6 @@ Route::post('/{equipment}/rent', [\App\Http\Controllers\EquipmentController::cla
         });
     });
 
-    // Route générale pour la messagerie (accessible à tous les utilisateurs authentifiés)
-    Route::middleware(['auth'])->get('/messaging', function () {
-        $user = auth()->user();
-        if ($user->hasRole('client')) {
-            return redirect()->route('client.messages.index');
-        } elseif ($user->hasRole('prestataire')) {
-            return redirect()->route('prestataire.messaging.index');
-        }
-        return redirect()->route('dashboard');
-    })->name('messaging.index');
-
     // Routes pour les notifications (accessible à tous les utilisateurs authentifiés)
 Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->group(function () {
     Route::get('/', [\App\Http\Controllers\NotificationController::class, 'index'])->name('index');
@@ -480,7 +504,7 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
         
         // Routes pour les missions
         // Route pour la confirmation de la fin de mission par le prestataire
-        Route::post('/missions/{request}/confirm', [MissionController::class, 'confirmCompletion'])->name('missions.confirm');
+        // Route::post('/missions/{request}/confirm', [MissionController::class, 'confirmCompletion'])->name('missions.confirm');
         
         Route::resource('services', \App\Http\Controllers\Prestataire\ServiceController::class);
         
@@ -709,15 +733,21 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
         Route::resource('notifications', \App\Http\Controllers\Admin\NotificationController::class);
         Route::post('/notifications/{notification}/mark-read', [\App\Http\Controllers\Admin\NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
         Route::post('/notifications/mark-all-read', [\App\Http\Controllers\Admin\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+        Route::post('/notifications/send', [\App\Http\Controllers\Admin\NotificationController::class, 'send'])->name('notifications.send');
         Route::post('/notifications/send-custom', [\App\Http\Controllers\Admin\NotificationController::class, 'sendCustom'])->name('notifications.send-custom');
         Route::delete('/notifications/cleanup', [\App\Http\Controllers\Admin\NotificationController::class, 'cleanup'])->name('notifications.cleanup');
         Route::get('/notifications/analytics', [\App\Http\Controllers\Admin\NotificationController::class, 'analytics'])->name('notifications.analytics');
+        Route::get('/notifications/export', [\App\Http\Controllers\Admin\NotificationController::class, 'export'])->name('notifications.export');
+        Route::post('/notifications/mark-selected-read', [\App\Http\Controllers\Admin\NotificationController::class, 'markSelectedAsRead'])->name('notifications.mark-selected-read');
+        Route::post('/notifications/bulk-delete', [\App\Http\Controllers\Admin\NotificationController::class, 'bulkDelete'])->name('notifications.bulk-delete');
         
         // Gestion des messages
         Route::resource('messages', \App\Http\Controllers\Admin\MessageController::class);
         Route::post('/messages/{message}/moderate', [\App\Http\Controllers\Admin\MessageController::class, 'moderate'])->name('messages.moderate');
         Route::post('/messages/{message}/toggle-read', [\App\Http\Controllers\Admin\MessageController::class, 'toggleRead'])->name('messages.toggle-read');
         Route::post('/messages/bulk-delete', [\App\Http\Controllers\Admin\MessageController::class, 'bulkDelete'])->name('messages.bulk-delete');
+        Route::post('/messages/bulk-moderate', [\App\Http\Controllers\Admin\MessageController::class, 'bulkModerate'])->name('messages.bulk-moderate');
+        Route::post('/messages/bulk-mark-read', [\App\Http\Controllers\Admin\MessageController::class, 'bulkMarkAsRead'])->name('messages.bulk-mark-read');
         Route::get('/messages/export', [\App\Http\Controllers\Admin\MessageController::class, 'export'])->name('messages.export');
         Route::get('/messages/analytics', [\App\Http\Controllers\Admin\MessageController::class, 'analytics'])->name('messages.analytics');
         Route::post('/messages/cleanup', [\App\Http\Controllers\Admin\MessageController::class, 'cleanup'])->name('messages.cleanup');
@@ -758,6 +788,7 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
         Route::prefix('analytics')->name('analytics.')->group(function () {
             Route::get('/', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('index');
             Route::get('/dashboard', [\App\Http\Controllers\Admin\ReportController::class, 'dashboard'])->name('dashboard');
+            Route::get('/dashboard-modern', [\App\Http\Controllers\Admin\ReportController::class, 'dashboardModern'])->name('dashboard-modern');
             Route::get('/users', [\App\Http\Controllers\Admin\ReportController::class, 'users'])->name('users');
             Route::get('/services', [\App\Http\Controllers\Admin\ReportController::class, 'services'])->name('services');
             Route::get('/bookings', [\App\Http\Controllers\Admin\ReportController::class, 'bookings'])->name('bookings');
@@ -771,7 +802,7 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
         Route::resource('equipment', \App\Http\Controllers\Admin\EquipmentController::class);
         
         // Gestion des commandes
-        // Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class); // Temporairement commenté
+        Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class);
         
         // Gestion des demandes clients
     

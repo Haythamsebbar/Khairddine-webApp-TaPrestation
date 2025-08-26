@@ -62,6 +62,10 @@ class NewBookingNotification extends Notification
             'client_name' => $this->booking->client->user->name ?? 'Client',
             'service_title' => $this->booking->service->title ?? 'Service',
             'booking_date' => $this->booking->start_datetime ? $this->booking->start_datetime->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'),
+            'title' => 'Nouvelle réservation',
+            'message' => 'Vous avez reçu une nouvelle réservation pour ' . ($this->booking->service->title ?? 'un service'),
+            'url' => route('bookings.show', $this->booking->id),
+            'type' => 'new_booking'
         ];
     }
 }

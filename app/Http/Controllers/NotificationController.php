@@ -26,9 +26,20 @@ class NotificationController extends Controller
     public function index(): View
     {
         $user = Auth::user();
+        
+        // Attempt to get Laravel standard notifications
         $notifications = $user->notifications()
             ->orderBy('created_at', 'desc')
             ->paginate(10);
+            
+        // If no standard notifications, try custom notification model
+        if ($notifications->total() == 0) {
+            // Use custom Notification model as fallback
+            $notifications = \App\Models\Notification::where('notifiable_type', get_class($user))
+                ->where('notifiable_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
+        }
 
         return view('notifications.index', compact('notifications'));
     }
@@ -113,14 +124,13 @@ class NotificationController extends Controller
             ->limit(5)
             ->get()
             ->map(function ($notification) {
-                $data = is_array($notification->data) ? $notification->data : json_decode($notification->data, true);
                 return [
                     'id' => $notification->id,
-                    'title' => $data['title'] ?? 'Notification',
-                    'message' => $data['message'] ?? '',
-                    'url' => $data['url'] ?? null,
+                    'title' => $notification->title,
+                    'message' => $notification->message,
+                    'url' => $notification->action_url,
                     'created_at' => $notification->created_at->diffForHumans(),
-                    'type' => $data['type'] ?? 'info'
+                    'type' => $notification->getDecodedData()['type'] ?? 'info'
                 ];
             });
         return response()->json(['notifications' => $notifications]);

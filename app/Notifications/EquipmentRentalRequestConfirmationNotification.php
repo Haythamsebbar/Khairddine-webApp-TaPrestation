@@ -64,8 +64,10 @@ class EquipmentRentalRequestConfirmationNotification extends Notification implem
         return [
             'rental_request_id' => $this->rentalRequest->id,
             'equipment_name' => $this->rentalRequest->equipment->name,
+            'title' => 'Confirmation de demande de location',
             'message' => 'Votre demande de location pour ' . $this->rentalRequest->equipment->name . ' a été envoyée.',
             'url' => route('client.equipment-rental-requests.show', $this->rentalRequest->id),
+            'type' => 'equipment_rental_request'
         ];
     }
 }

@@ -113,10 +113,37 @@ function validateDescription() {
 descriptionInput.addEventListener('input', validateDescription);
 descriptionInput.addEventListener('keyup', validateDescription);
 
+// Variables globales pour la gestion des images
+let existingFiles = [];
+let isAddingMore = false;
+
 // Prévisualisation des images
 function previewImages(input) {
     const preview = document.getElementById('image-preview');
     const uploadArea = document.getElementById('upload-area');
+    
+    if (isAddingMore && existingFiles.length > 0) {
+        // Combiner les fichiers existants avec les nouveaux
+        const dt = new DataTransfer();
+        
+        // Ajouter les fichiers existants
+        existingFiles.forEach(file => {
+            dt.items.add(file);
+        });
+        
+        // Ajouter les nouveaux fichiers (limiter le total à 5)
+        const remainingSlots = 5 - existingFiles.length;
+        const newFiles = Array.from(input.files).slice(0, remainingSlots);
+        newFiles.forEach(file => {
+            dt.items.add(file);
+        });
+        
+        input.files = dt.files;
+        existingFiles = Array.from(dt.files);
+        isAddingMore = false;
+    } else {
+        existingFiles = Array.from(input.files);
+    }
     
     preview.innerHTML = '';
     
@@ -129,36 +156,75 @@ function previewImages(input) {
         
         files.forEach((file, index) => {
             if (file.type.startsWith('image/')) {
-                const reader = new FileReader();
+                const div = document.createElement('div');
+                div.className = 'relative group';
                 
-                reader.onload = function(e) {
-                    const div = document.createElement('div');
-                    div.className = 'relative group';
-                    div.innerHTML = `
-                        <img src="${e.target.result}" class="w-full h-24 object-cover rounded-lg">
-                        <button type="button" onclick="removeImage(${index})" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    `;
-                    preview.appendChild(div);
+                const img = document.createElement('img');
+                img.className = 'w-full h-24 object-cover rounded-lg';
+                img.style.display = 'block';
+                img.style.backgroundColor = 'transparent';
+                
+                img.onload = function() {
+                    URL.revokeObjectURL(this.src);
                 };
                 
-                reader.readAsDataURL(file);
+                img.onerror = function() {
+                    console.error('Erreur lors du chargement de l\'image');
+                    URL.revokeObjectURL(this.src);
+                };
+                
+                img.src = URL.createObjectURL(file);
+                div.appendChild(img);
+                
+                // Bouton de suppression
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity';
+                removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                removeBtn.onclick = () => removeImage(index);
+                div.appendChild(removeBtn);
+                
+                // Label photo
+                const label = document.createElement('div');
+                label.className = 'absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded';
+                label.textContent = `Photo ${index + 1}`;
+                div.appendChild(label);
+                
+                // Icône de drag
+                const dragIcon = document.createElement('div');
+                dragIcon.className = 'absolute top-1 left-1 text-white opacity-0 group-hover:opacity-100 transition-opacity';
+                dragIcon.innerHTML = '<i class="fas fa-grip-vertical text-xs"></i>';
+                div.appendChild(dragIcon);
+                
+                preview.appendChild(div);
             }
         });
         
         // Ajouter un bouton pour ajouter plus d'images si moins de 5
         if (files.length < 5) {
-            const addMore = document.createElement('div');
-            addMore.className = 'flex items-center justify-center h-24 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 transition-colors';
-            addMore.innerHTML = '<i class="fas fa-plus text-gray-400 text-xl"></i>';
-            addMore.onclick = () => document.getElementById('photos').click();
-            preview.appendChild(addMore);
+            addMoreButton(files.length);
         }
     } else {
         preview.classList.add('hidden');
         uploadArea.classList.remove('hidden');
     }
+}
+
+function addMoreButton(currentCount) {
+    const preview = document.getElementById('image-preview');
+    const remaining = 5 - currentCount;
+    
+    const addMore = document.createElement('div');
+    addMore.className = 'flex flex-col items-center justify-center h-24 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 transition-colors';
+    addMore.innerHTML = `
+        <i class="fas fa-plus text-gray-400 text-xl mb-1"></i>
+        <span class="text-xs text-gray-500">Ajouter ${remaining} photo${remaining > 1 ? 's' : ''}</span>
+    `;
+    addMore.onclick = () => {
+        isAddingMore = true;
+        document.getElementById('photos').click();
+    };
+    preview.appendChild(addMore);
 }
 
 function removeImage(index) {
@@ -172,6 +238,7 @@ function removeImage(index) {
     }
     
     input.files = dt.files;
+    existingFiles = Array.from(dt.files);
     previewImages(input);
 }
 

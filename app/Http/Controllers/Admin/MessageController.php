@@ -87,6 +87,8 @@ class MessageController extends Controller
             'today' => Message::whereDate('created_at', today())->count(),
             'this_week' => Message::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count(),
             'avg_daily' => $this->calculateAverageDailyMessages(),
+            'read_rate' => $this->calculateReadRate(),
+            'avg_response_time' => $this->calculateAverageResponseTime(),
         ];
         
         return view('admin.messages.index-modern', [
@@ -217,6 +219,82 @@ class MessageController extends Controller
         
         return redirect()->route('administrateur.messages.index')
             ->with('success', "{$count} message(s) supprimé(s) avec succès.");
+    }
+    
+    /**
+     * Modère plusieurs messages en lot.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function bulkModerate(Request $request)
+    {
+        $request->validate([
+            'message_ids' => 'required|array',
+            'message_ids.*' => 'exists:messages,id',
+            'action' => 'required|in:approved,hidden,pending',
+        ]);
+        
+        $messages = Message::whereIn('id', $request->message_ids)->get();
+        $count = 0;
+        
+        foreach ($messages as $message) {
+            switch ($request->action) {
+                case 'approved':
+                    $message->is_moderated = true;
+                    $message->moderation_status = 'approved';
+                    $message->is_reported = false;
+                    break;
+                    
+                case 'hidden':
+                    $message->is_moderated = true;
+                    $message->moderation_status = 'hidden';
+                    $message->is_hidden = true;
+                    break;
+                    
+                case 'pending':
+                    $message->is_moderated = false;
+                    $message->moderation_status = 'pending';
+                    break;
+            }
+            
+            $message->moderated_by = Auth::id();
+            $message->moderated_at = now();
+            $message->save();
+            $count++;
+        }
+        
+        $actionText = [
+            'approved' => 'approuvés',
+            'hidden' => 'masqués',
+            'pending' => 'marqués en attente',
+        ];
+        
+        return redirect()->route('administrateur.messages.index')
+            ->with('success', "{$count} message(s) {$actionText[$request->action]} avec succès.");
+    }
+    
+    /**
+     * Marque plusieurs messages comme lus.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function bulkMarkAsRead(Request $request)
+    {
+        $request->validate([
+            'message_ids' => 'required|array',
+            'message_ids.*' => 'exists:messages,id',
+        ]);
+        
+        $count = Message::whereIn('id', $request->message_ids)
+            ->update([
+                'is_read' => true,
+                'read_at' => now()
+            ]);
+        
+        return redirect()->route('administrateur.messages.index')
+            ->with('success', "{$count} message(s) marqué(s) comme lu(s) avec succès.");
     }
     
     /**
@@ -396,5 +474,19 @@ class MessageController extends Controller
         $readMessages = Message::whereNotNull('read_at')->count();
         
         return $totalMessages > 0 ? round(($readMessages / $totalMessages) * 100, 1) : 0;
+    }
+    
+    /**
+     * Calcule le temps de réponse moyen en heures.
+     *
+     * @return float
+     */
+    private function calculateAverageResponseTime()
+    {
+        $avgMinutes = Message::whereNotNull('read_at')
+            ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, created_at, read_at)) as avg_response')
+            ->value('avg_response');
+        
+        return $avgMinutes ? round($avgMinutes / 60, 1) : 0;
     }
 }

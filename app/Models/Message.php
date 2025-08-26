@@ -21,12 +21,13 @@ class Message extends Model
         'moderation_reason',
         'moderated_at',
         'moderated_by',
-        'client_request_id',
+        'admin_read_at',
     ];
 
     protected $casts = [
         'read_at' => 'datetime',
         'moderated_at' => 'datetime',
+        'admin_read_at' => 'datetime',
         'is_reported' => 'boolean',
     ];
 

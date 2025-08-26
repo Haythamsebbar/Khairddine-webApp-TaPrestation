@@ -6,223 +6,233 @@
 
 @push('scripts')
 <script src="{{ asset('js/messaging.js') }}" defer></script>
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 @endpush
 
 @section('content')
-<div class="py-6" data-current-user-id="{{ Auth::id() }}">
-    <header>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-3xl font-bold leading-tight text-gray-900">
-                        <i class="fas fa-comments text-indigo-600 mr-3"></i>
-                        Messagerie
-                    </h1>
-                    <p class="mt-1 text-sm text-gray-600">Communiquez avec vos prestataires ou clients en temps réel</p>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <div class="text-sm text-gray-500">
-                        <i class="fas fa-circle text-green-500 mr-1"></i>
-                        En ligne
-                    </div>
-                </div>
+<div class="bg-blue-50 min-h-screen">
+    <div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+        <div class="max-w-6xl mx-auto">
+            <div class="mb-6 sm:mb-8 text-center">
+                <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-blue-900 mb-2">
+                    <i class="fas fa-comments text-blue-600 mr-2 sm:mr-3"></i>
+                    Messagerie
+                </h1>
+                <p class="text-base sm:text-lg text-blue-700 px-4">Communiquez avec vos prestataires ou clients en temps réel</p>
             </div>
-        </div>
-    </header>
-    
-    <main>
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="px-4 py-6 sm:px-0">
-                <div class="messaging-container">
-                    <div class="px-6 py-4 border-b border-gray-200 bg-white">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h3 class="text-lg leading-6 font-medium text-gray-900">Mes conversations</h3>
-                                <p class="mt-1 text-sm text-gray-500">
-                                    {{ $conversations->count() }} conversation{{ $conversations->count() > 1 ? 's' : '' }}
-                                </p>
+
+            @if(session('success'))
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-md mb-6 shadow-md">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md mb-6 shadow-md">
+                    {{ session('error') }}
+                </div>
+            @endif
+            <div class="bg-white rounded-xl shadow-lg border border-blue-200 overflow-hidden">
+                <div class="px-3 sm:px-6 py-3 sm:py-4 border-b border-blue-200 bg-blue-50">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0">
+                        <div class="text-center sm:text-left">
+                            <h3 class="text-xl sm:text-2xl font-bold text-blue-800 mb-1">Mes conversations</h3>
+                            <p class="text-sm sm:text-base text-blue-600">
+                                {{ $conversations->count() }} conversation{{ $conversations->count() > 1 ? 's' : '' }}
+                            </p>
+                        </div>
+                        <div class="flex items-center justify-center sm:justify-end space-x-2 sm:space-x-3">
+                            <div class="text-xs sm:text-sm text-blue-600 flex items-center">
+                                <i class="fas fa-circle text-green-500 mr-1 sm:mr-2 text-xs"></i>
+                                <span class="hidden sm:inline">En ligne</span>
+                                <span class="sm:hidden">●</span>
                             </div>
-                            <div class="flex items-center space-x-2">
-                                <button onclick="location.reload()" class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
-                                    <i class="fas fa-sync-alt"></i>
-                                </button>
-                            </div>
+                            <button onclick="location.reload()" class="px-2 sm:px-4 py-1.5 sm:py-2 bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg transition-colors font-medium text-sm sm:text-base">
+                                <i class="fas fa-sync-alt mr-1 sm:mr-2"></i>
+                                <span class="hidden sm:inline">Actualiser</span>
+                                <span class="sm:hidden">↻</span>
+                            </button>
                         </div>
                     </div>
-                    
-                    <div class="conversations-list">
-                        @if($conversations->count() > 0)
-                            @foreach($conversations as $conversation)
-                                <a href="{{ route('messaging.conversation', $conversation['user']->id) }}" 
-                                   class="conversation-item {{ $conversation['unread_count'] > 0 ? 'unread' : '' }}"
-                                   data-user-id="{{ $conversation['user']->id }}">
-                                    <div class="conversation-avatar">
+                </div>
+                <div class="conversations-list">
+                    @if($conversations->count() > 0)
+                        @foreach($conversations as $conversation)
+                            <div class="conversation-item border-b border-blue-100 last:border-b-0 hover:bg-blue-50 transition-colors cursor-pointer" 
+                                 data-user-id="{{ $conversation['user']->id }}"
+                                 onclick="window.location.href='{{ route('messaging.conversation', $conversation['user']->id) }}'">
+                                <div class="flex items-center p-3 sm:p-6 space-x-3 sm:space-x-4 relative">
+                                    <div class="conversation-avatar flex-shrink-0 relative">
                                         @if($conversation['user']->profile_photo_url)
                                             <img src="{{ $conversation['user']->profile_photo_url }}" 
                                                  alt="{{ $conversation['user']->name }}" 
-                                                 class="avatar-image">
+                                                 class="w-10 h-10 sm:w-14 sm:h-14 rounded-full object-cover border-2 sm:border-3 border-blue-200 shadow-sm">
                                         @else
-                                            <div class="avatar-placeholder">
+                                            <div class="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm sm:text-lg border-2 sm:border-3 border-blue-200 shadow-sm">
                                                 {{ strtoupper(substr($conversation['user']->name, 0, 1)) }}
                                             </div>
                                         @endif
                                         @if($conversation['user']->is_online ?? false)
-                                            <div class="online-indicator"></div>
+                                            <div class="absolute -bottom-0.5 -right-0.5 sm:-bottom-1 sm:-right-1 w-3 h-3 sm:w-4 sm:h-4 bg-green-500 border-2 border-white rounded-full"></div>
                                         @endif
                                     </div>
-                                    
-                                    <div class="conversation-content">
-                                        <div class="conversation-header">
-                                            <h4 class="conversation-name">{{ $conversation['user']->name }}</h4>
-                                            <div class="conversation-meta">
+                                
+                                    <div class="conversation-content flex-1 min-w-0">
+                                        <div class="flex justify-between items-start mb-1 sm:mb-2">
+                                            <h4 class="font-bold text-blue-900 text-base sm:text-lg truncate pr-2 sm:pr-4">{{ $conversation['user']->name }}</h4>
+                                            <div class="flex items-center space-x-1 sm:space-x-3 flex-shrink-0">
                                                 @if($conversation['last_message'])
-                                                    <span class="conversation-time">
+                                                    <span class="text-xs sm:text-sm text-blue-600 whitespace-nowrap hidden sm:inline">
                                                         {{ $conversation['last_message']->created_at->diffForHumans() }}
+                                                    </span>
+                                                    <span class="text-xs text-blue-600 whitespace-nowrap sm:hidden">
+                                                        {{ $conversation['last_message']->created_at->format('H:i') }}
                                                     </span>
                                                 @endif
                                                 @if($conversation['unread_count'] > 0)
-                                                    <span class="unread-badge">{{ $conversation['unread_count'] }}</span>
+                                                    <span class="bg-blue-600 text-white text-xs sm:text-sm font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full min-w-[1.25rem] sm:min-w-[1.5rem] text-center shadow-md">
+                                                        {{ $conversation['unread_count'] }}
+                                                    </span>
                                                 @endif
                                             </div>
                                         </div>
                                         
-                                        <div class="conversation-preview">
-                                            <div class="user-role">
-                                                @if($conversation['user']->role === 'prestataire')
-                                                    <i class="fas fa-tools text-blue-500 mr-1"></i>
-                                                    <span class="role-text">Prestataire</span>
-                                                @else
-                                                    <i class="fas fa-user text-green-500 mr-1"></i>
-                                                    <span class="role-text">Client</span>
-                                                @endif
-                                            </div>
-                                            
-                                            @if($conversation['last_message'])
-                                                <p class="last-message">
-                                                    @if($conversation['last_message']->sender_id === Auth::id())
-                                                        <i class="fas fa-reply text-gray-400 mr-1"></i>
-                                                    @endif
-                                                    {{ Str::limit($conversation['last_message']->content, 60) }}
-                                                </p>
+                                        <div class="flex items-center space-x-1 sm:space-x-2 mb-1 sm:mb-2">
+                                            @if($conversation['user']->role === 'prestataire')
+                                                <i class="fas fa-tools text-blue-500 text-xs sm:text-sm"></i>
+                                                <span class="text-xs sm:text-sm text-blue-700 font-medium">Prestataire</span>
                                             @else
-                                                <p class="last-message no-messages">
-                                                    <i class="fas fa-comment-dots text-gray-400 mr-1"></i>
-                                                    Commencer la conversation
-                                                </p>
+                                                <i class="fas fa-user text-green-500 text-xs sm:text-sm"></i>
+                                                <span class="text-xs sm:text-sm text-blue-700 font-medium">Client</span>
                                             @endif
                                         </div>
-                                    </div>
-                                </a>
-                            @endforeach
-                        @else
-                            <div class="empty-state">
-                                <div class="empty-icon">
-                                    <i class="fas fa-comments"></i>
-                                </div>
-                                <h3 class="empty-title">Aucune conversation</h3>
-                                <p class="empty-description">
-                                    Vous n'avez pas encore de conversations. Commencez à échanger avec des 
-                                    {{ Auth::user()->role === 'client' ? 'prestataires' : 'clients' }} pour voir vos messages ici.
-                                </p>
-                                @if(Auth::user()->role === 'client')
-                                    <div class="empty-action">
-                                        <a href="{{ route('prestataires.index') }}" class="btn-primary">
-                                            <i class="fas fa-search mr-2"></i>
-                                            Trouver des prestataires
-                                        </a>
-                                    </div>
-                                @endif
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Interface de messagerie (à implémenter) -->
-            <div class="px-4 py-6 sm:px-0 hidden">
-                <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-                    <div class="grid grid-cols-1 md:grid-cols-4">
-                        <!-- Liste des conversations -->
-                        <div class="md:col-span-1 border-r border-gray-200">
-                            <div class="px-4 py-5 sm:px-6">
-                                <h3 class="text-lg leading-6 font-medium text-gray-900">Conversations</h3>
-                            </div>
-                            <div class="border-t border-gray-200 divide-y divide-gray-200">
-                                <!-- Exemple de conversation -->
-                                <div class="p-4 hover:bg-gray-50 cursor-pointer">
-                                    <div class="flex items-center space-x-4">
-                                        <div class="flex-shrink-0">
-                                            <div class="h-10 w-10 rounded-full bg-gray-300"></div>
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-sm font-medium text-gray-900 truncate">Nom du contact</p>
-                                            <p class="text-sm text-gray-500 truncate">Dernier message...</p>
-                                        </div>
-                                        <div>
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">2 nouveaux</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Conversation active -->
-                        <div class="md:col-span-3 flex flex-col h-[600px]">
-                            <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
-                                <div class="flex items-center space-x-4">
-                                    <div class="flex-shrink-0">
-                                        <div class="h-10 w-10 rounded-full bg-gray-300"></div>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-medium text-gray-900">Nom du contact</p>
-                                        <p class="text-xs text-gray-500">En ligne</p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Messages -->
-                            <div class="flex-1 p-4 overflow-y-auto bg-gray-50">
-                                <div class="space-y-4">
-                                    <!-- Message reçu -->
-                                    <div class="flex">
-                                        <div class="flex-shrink-0 mr-3">
-                                            <div class="h-8 w-8 rounded-full bg-gray-300"></div>
-                                        </div>
-                                        <div>
-                                            <div class="bg-white p-3 rounded-lg shadow-sm">
-                                                <p class="text-sm">Bonjour, je suis intéressé par vos services.</p>
+                                        
+                                        @if($conversation['last_message'])
+                                            <p class="text-blue-600 line-clamp-2 leading-relaxed mb-2 sm:mb-3 text-sm sm:text-base">
+                                                @if($conversation['last_message']->sender_id === Auth::id())
+                                                    <i class="fas fa-reply text-blue-400 mr-1 sm:mr-2 text-xs sm:text-sm"></i>
+                                                @endif
+                                                {{ Str::limit($conversation['last_message']->content, 80) }}
+                                            </p>
+                                        @else
+                                            <p class="text-blue-500 italic mb-2 sm:mb-3 text-sm sm:text-base">
+                                                <i class="fas fa-comment-dots mr-1 sm:mr-2 text-xs sm:text-sm"></i>
+                                                Commencer la conversation
+                                            </p>
+                                        @endif
+                                        
+                                        <!-- Three dots menu positioned on the right -->
+                                        <div class="absolute top-2 sm:top-4 right-2 sm:right-4 z-10" onclick="event.stopPropagation()">
+                                            <div class="relative" x-data="{ open: false }">
+                                                <button @click="open = !open" 
+                                                        class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
+                                                    <i class="fas fa-ellipsis-v text-xs sm:text-sm"></i>
+                                                </button>
+                                                
+                                                <!-- Dropdown Menu -->
+                                                <div x-show="open" 
+                                                     @click.away="open = false"
+                                                     x-transition:enter="transition ease-out duration-200"
+                                                     x-transition:enter-start="opacity-0 scale-95"
+                                                     x-transition:enter-end="opacity-100 scale-100"
+                                                     x-transition:leave="transition ease-in duration-75"
+                                                     x-transition:leave-start="opacity-100 scale-100"
+                                                     x-transition:leave-end="opacity-0 scale-95"
+                                                     class="absolute right-0 bottom-full mb-2 w-48 sm:w-56 bg-white rounded-xl shadow-lg border border-blue-200 z-30">
+                                                    <div class="py-1 sm:py-2">
+                                                        @if($conversation['user']->role === 'prestataire' && isset($conversation['user']->prestataire) && $conversation['user']->prestataire)
+                                                            <a href="{{ route('prestataires.show', $conversation['user']->prestataire) }}" 
+                                                               class="flex items-center w-full text-left px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-blue-700 hover:bg-blue-50 hover:text-blue-800 transition-colors">
+                                                                <i class="fas fa-user mr-2 sm:mr-3 text-blue-500"></i>
+                                                                <span class="hidden sm:inline">Voir le profil du prestataire</span>
+                                                                <span class="sm:hidden">Profil</span>
+                                                            </a>
+                                                        @else
+                                                            <div class="flex items-center w-full px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-500">
+                                                                <i class="fas fa-user mr-2 sm:mr-3 text-gray-400"></i>
+                                                                <span class="hidden sm:inline">Profil client non public</span>
+                                                                <span class="sm:hidden">Non public</span>
+                                                            </div>
+                                                        @endif
+                                                        
+                                                        <hr class="my-1 border-blue-100">
+                                                        
+                                                        <button onclick="openDeleteModal({{ $conversation['user']->id }}, {{ json_encode($conversation['user']->name) }})" 
+                                                                class="flex items-center w-full text-left px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors">
+                                                            <i class="fas fa-trash mr-2 sm:mr-3 text-red-500"></i>
+                                                            <span class="hidden sm:inline">Supprimer la conversation</span>
+                                                            <span class="sm:hidden">Supprimer</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <span class="text-xs text-gray-500 mt-1">10:23</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Message envoyé -->
-                                    <div class="flex justify-end">
-                                        <div>
-                                            <div class="bg-indigo-100 p-3 rounded-lg shadow-sm">
-                                                <p class="text-sm">Bonjour ! Je serais ravi de discuter de vos besoins.</p>
-                                            </div>
-                                            <span class="text-xs text-gray-500 mt-1 block text-right">10:25</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <!-- Formulaire d'envoi -->
-                            <div class="p-4 border-t border-gray-200">
-                                <form class="flex space-x-2">
-                                    <input type="text" placeholder="Écrivez votre message..." class="flex-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                        Envoyer
-                                    </button>
-                                </form>
+                        @endforeach
+                    @else
+                        <div class="empty-state flex flex-col items-center justify-center p-6 sm:p-12 text-center">
+                            <div class="w-16 h-16 sm:w-20 sm:h-20 bg-blue-100 rounded-full flex items-center justify-center mb-4 sm:mb-6">
+                                <i class="fas fa-comments text-2xl sm:text-3xl text-blue-400"></i>
                             </div>
+                            <h3 class="text-xl sm:text-2xl font-bold text-blue-900 mb-2 sm:mb-3">Aucune conversation</h3>
+                            <p class="text-sm sm:text-base text-blue-700 max-w-sm sm:max-w-md leading-relaxed mb-6 sm:mb-8 px-4">
+                                Vous n'avez pas encore de conversations. Commencez à échanger avec des 
+                                {{ Auth::user()->role === 'client' ? 'prestataires' : 'clients' }} pour voir vos messages ici.
+                            </p>
+                            @if(Auth::user()->role === 'client')
+                                <div class="empty-action">
+                                    <a href="{{ route('prestataires.index') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-sm sm:text-base">
+                                        <i class="fas fa-search mr-1 sm:mr-2"></i>
+                                        <span class="hidden sm:inline">Trouver des prestataires</span>
+                                        <span class="sm:hidden">Chercher</span>
+                                    </a>
+                                </div>
+                            @endif
                         </div>
-                    </div>
+                    @endif
                 </div>
             </div>
         </div>
-    </main>
+    </div>
+</div>
+
+<!-- Modal de confirmation de suppression -->
+<div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-xl rounded-xl bg-white border-blue-200">
+        <div class="mt-3 text-center">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-blue-900 mt-3">Supprimer la conversation</h3>
+            <div class="mt-4 px-7 py-3">
+                <p class="text-blue-700 mb-4">
+                    Êtes-vous sûr de vouloir supprimer définitivement votre conversation avec <strong id="deleteUserName"></strong> ?
+                </p>
+                <p class="text-red-600 text-sm mb-6">
+                    <i class="fas fa-warning mr-1"></i>
+                    Cette action est irréversible. Tous les messages seront définitivement supprimés.
+                </p>
+                
+                <form id="deleteForm" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    
+                    <div class="flex justify-center space-x-4 mt-6">
+                        <button type="button" onclick="closeDeleteModal()" class="px-6 py-3 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200 transition-colors font-bold">
+                            <i class="fas fa-times mr-2"></i>
+                            Annuler
+                        </button>
+                        <button type="submit" class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                            <i class="fas fa-trash mr-2"></i>
+                            Supprimer définitivement
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -230,6 +240,30 @@
         // Initialiser le système de messagerie
         if (typeof MessagingSystem !== 'undefined') {
             window.messagingSystem = new MessagingSystem();
+        }
+    });
+    
+    function openDeleteModal(userId, userName) {
+        document.getElementById('deleteUserName').textContent = userName;
+        document.getElementById('deleteForm').action = `/messaging/${userId}`;
+        document.getElementById('deleteModal').classList.remove('hidden');
+    }
+    
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+    }
+    
+    // Fermer le modal en cliquant à l'extérieur
+    document.getElementById('deleteModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeDeleteModal();
+        }
+    });
+    
+    // Fermer le modal avec la touche Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeDeleteModal();
         }
     });
 </script>

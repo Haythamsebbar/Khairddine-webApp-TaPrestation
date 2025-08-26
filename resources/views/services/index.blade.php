@@ -373,7 +373,21 @@ function getMyLocation() {
                                     <span class="flex items-center font-medium truncate">
                                         <i class="fas fa-map-marker-alt mr-1 text-gray-400 flex-shrink-0"></i>
                                         <span class="truncate">
-                                            {{ $service->city ? $service->city : ($service->prestataire->ville ?? 'Non spécifié') }}
+                                            @if($service->city)
+                                                {{ $service->city }}
+                                                @if($service->postal_code)
+                                                    ({{ $service->postal_code }})
+                                                @endif
+                                            @elseif($service->address)
+                                                {{ $service->address }}
+                                            @elseif($service->prestataire->city)
+                                                {{ $service->prestataire->city }}
+                                                @if($service->prestataire->postal_code)
+                                                    ({{ $service->prestataire->postal_code }})
+                                                @endif
+                                            @else
+                                                Non spécifié
+                                            @endif
                                         </span>
                                     </span>
                                     <span class="flex items-center font-medium text-gray-500">

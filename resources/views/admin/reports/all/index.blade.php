@@ -3,108 +3,127 @@
 @section('title', 'Tous les signalements')
 
 @section('content')
-<div class="container-fluid">
-    <!-- En-tête -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3 mb-0 text-gray-800">Signalements d'annonces</h1>
-            <p class="text-muted">Vue d'ensemble de tous les signalements d'annonces</p>
+<div class="bg-blue-50">
+    <!-- Bannière d'en-tête -->
+    <div class="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-6 sm:mb-8 text-center">
+                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-blue-900 mb-2 leading-tight">
+                    Gestion des Signalements
+                </h1>
+                <p class="text-base sm:text-lg text-blue-700 max-w-2xl mx-auto">
+                    Vue d'ensemble de tous les signalements d'annonces et équipements.
+                </p>
+            </div>
+            
+            <!-- Actions Header -->
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+                <div class="flex flex-wrap gap-2 sm:gap-3">
+                    <button class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm sm:text-base" onclick="toggleFilters()">
+                    <i class="fas fa-filter mr-2"></i>
+                    Afficher les filtres
+                </button>
+
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Statistiques -->
-    <div class="row mb-4">
-        <div class="col-xl-2 col-md-4 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['total'] }}</div>
+    <!-- Stats Cards -->
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 mb-6 sm:mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 sm:gap-6">
+            <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-xs sm:text-sm font-medium text-blue-600 uppercase tracking-wide">Total</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-blue-900 mt-1">{{ $stats['total'] }}</div>
+                        <div class="flex items-center mt-2 text-xs sm:text-sm text-green-600">
+                            <i class="fas fa-arrow-up mr-1"></i>
+                            <span>+5% ce mois</span>
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-flag fa-2x text-gray-300"></i>
-                        </div>
+                    </div>
+                    <div class="bg-blue-100 p-3 rounded-full">
+                        <i class="fas fa-flag text-blue-600 text-xl"></i>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="col-xl-2 col-md-4 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">En attente</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['pending'] }}</div>
+            
+            <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-xs sm:text-sm font-medium text-orange-600 uppercase tracking-wide">En Attente</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-blue-900 mt-1">{{ $stats['pending'] }}</div>
+                        <div class="flex items-center mt-2 text-xs sm:text-sm text-red-600">
+                            <i class="fas fa-arrow-down mr-1"></i>
+                            <span>-2% ce mois</span>
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-clock fa-2x text-gray-300"></i>
-                        </div>
+                    </div>
+                    <div class="bg-orange-100 p-3 rounded-full">
+                        <i class="fas fa-clock text-orange-600 text-xl"></i>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="col-xl-2 col-md-4 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">En cours</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['under_review'] }}</div>
+            
+            <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-xs sm:text-sm font-medium text-blue-600 uppercase tracking-wide">En Cours</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-blue-900 mt-1">{{ $stats['under_review'] }}</div>
+                        <div class="flex items-center mt-2 text-xs sm:text-sm text-green-600">
+                            <i class="fas fa-arrow-up mr-1"></i>
+                            <span>+8% ce mois</span>
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-search fa-2x text-gray-300"></i>
-                        </div>
+                    </div>
+                    <div class="bg-blue-100 p-3 rounded-full">
+                        <i class="fas fa-search text-blue-600 text-xl"></i>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="col-xl-2 col-md-4 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Résolus</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['resolved'] }}</div>
+            
+            <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-xs sm:text-sm font-medium text-green-600 uppercase tracking-wide">Résolus</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-blue-900 mt-1">{{ $stats['resolved'] }}</div>
+                        <div class="flex items-center mt-2 text-xs sm:text-sm text-green-600">
+                            <i class="fas fa-arrow-up mr-1"></i>
+                            <span>+12% ce mois</span>
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-check fa-2x text-gray-300"></i>
-                        </div>
+                    </div>
+                    <div class="bg-green-100 p-3 rounded-full">
+                        <i class="fas fa-check-circle text-green-600 text-xl"></i>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="col-xl-2 col-md-4 mb-4">
-            <div class="card border-left-danger shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Ventes</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['urgent_sales'] }}</div>
+            
+            <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-xs sm:text-sm font-medium text-red-600 uppercase tracking-wide">Ventes</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-blue-900 mt-1">{{ $stats['urgent_sales'] }}</div>
+                        <div class="flex items-center mt-2 text-xs sm:text-sm text-red-600">
+                            <i class="fas fa-arrow-down mr-1"></i>
+                            <span>-3% ce mois</span>
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
-                        </div>
+                    </div>
+                    <div class="bg-red-100 p-3 rounded-full">
+                        <i class="fas fa-shopping-cart text-red-600 text-xl"></i>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="col-xl-2 col-md-4 mb-4">
-            <div class="card border-left-secondary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">Équipements</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['equipments'] }}</div>
+            
+            <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-xs sm:text-sm font-medium text-gray-600 uppercase tracking-wide">Équipements</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-blue-900 mt-1">{{ $stats['equipments'] }}</div>
+                        <div class="flex items-center mt-2 text-xs sm:text-sm text-green-600">
+                            <i class="fas fa-arrow-up mr-1"></i>
+                            <span>+7% ce mois</span>
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-tools fa-2x text-gray-300"></i>
-                        </div>
+                    </div>
+                    <div class="bg-gray-100 p-3 rounded-full">
+                        <i class="fas fa-tools text-gray-600 text-xl"></i>
                     </div>
                 </div>
             </div>
@@ -112,7 +131,7 @@
     </div>
 
     <!-- Filtres -->
-    <div class="card shadow mb-4">
+    <div class="card shadow mb-4" id="filtersPanel" style="display: none;">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Filtres</h6>
         </div>
@@ -293,4 +312,13 @@
         </div>
     </div>
 </div>
+
+<script>
+// Toggle filters panel
+function toggleFilters() {
+    const panel = document.getElementById('filtersPanel');
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+</script>
+
 @endsection

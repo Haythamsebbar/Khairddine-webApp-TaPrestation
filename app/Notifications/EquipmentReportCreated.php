@@ -66,8 +66,24 @@ class EquipmentReportCreated extends Notification
      */
     public function toArray(object $notifiable): array
     {
+        $equipmentName = $this->report->equipment->name ?? 'Équipement inconnu';
+        $priority = $this->report->priority;
+        $priorityText = [
+            'urgent' => '🔴 URGENT',
+            'high' => '🟠 ÉLEVÉE',
+            'medium' => '🟡 MOYENNE',
+            'low' => '🟢 FAIBLE'
+        ][$priority] ?? $priority;
+        
         return [
-            //
+            'report_id' => $this->report->id,
+            'equipment_id' => $this->report->equipment_id,
+            'equipment_name' => $equipmentName,
+            'priority' => $priority,
+            'title' => "Nouveau signalement d'équipement - {$priorityText}",
+            'message' => "Un nouveau signalement a été créé pour l'équipement {$equipmentName}",
+            'type' => 'equipment_report',
+            'url' => route('administrateur.reports.equipments.show', $this->report)
         ];
     }
 }

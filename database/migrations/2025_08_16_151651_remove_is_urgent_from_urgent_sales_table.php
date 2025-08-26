@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('urgent_sales', function (Blueprint $table) {
+            $table->dropIndex('urgent_sales_is_urgent_index');
             $table->dropColumn('is_urgent');
         });
     }
@@ -23,6 +24,7 @@ return new class extends Migration
     {
         Schema::table('urgent_sales', function (Blueprint $table) {
             $table->boolean('is_urgent')->default(false)->after('longitude');
+            $table->index('is_urgent');
         });
     }
 };

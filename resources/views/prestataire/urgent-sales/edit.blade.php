@@ -119,13 +119,13 @@
                         </div>
                         
                         <!-- Photos actuelles -->
-                        @if($urgentSale->photos && count(json_decode($urgentSale->photos, true) ?? []) > 0)
+                        @if($urgentSale->photos && count($urgentSale->photos ?? []) > 0)
                             <div class="md:col-span-2">
                                 <label class="block text-sm font-medium text-gray-700 mb-2">
                                     Photos actuelles
                                 </label>
                                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="current-photos">
-                                    @foreach(json_decode($urgentSale->photos, true) ?? [] as $index => $photo)
+                                    @foreach($urgentSale->photos ?? [] as $index => $photo)
                                         <div class="relative group" data-photo-index="{{ $index }}">
                                             <img src="{{ Storage::url($photo) }}" alt="Photo {{ $index + 1 }}" class="w-full h-32 object-cover rounded-lg">
                                             <button type="button" onclick="removeCurrentPhoto({{ $index }})" class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -141,8 +141,8 @@
                         <!-- Nouvelles photos -->
                         <div class="md:col-span-2">
                             <label for="photos" class="block text-sm font-medium text-gray-700 mb-2">
-                                {{ $urgentSale->photos && count(json_decode($urgentSale->photos, true) ?? []) > 0 ? 'Ajouter de nouvelles photos' : 'Photos' }}
-                                @if(!$urgentSale->photos || count(json_decode($urgentSale->photos, true) ?? []) === 0)
+                                {{ $urgentSale->photos && count($urgentSale->photos ?? []) > 0 ? 'Ajouter de nouvelles photos' : 'Photos' }}
+                                @if(!$urgentSale->photos || count($urgentSale->photos ?? []) === 0)
                                     <span class="text-red-500">*</span>
                                 @endif
                             </label>

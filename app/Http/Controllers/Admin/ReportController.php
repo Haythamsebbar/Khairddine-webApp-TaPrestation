@@ -87,6 +87,60 @@ class ReportController extends Controller
     }
     
     /**
+     * Affiche le tableau de bord moderne des rapports.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function dashboardModern()
+    {
+        // Statistiques globales pour la vue moderne
+        $globalStats = [
+            'total_users' => User::count(),
+            'total_services' => Service::where('status', 'active')->count(),
+            'total_bookings' => Booking::count(),
+            'total_revenue' => Booking::where('status', 'completed')->sum('total_price'),
+            'users_growth' => $this->calculateGrowthPercentage('users'),
+            'services_growth' => $this->calculateGrowthPercentage('services'),
+            'bookings_growth' => $this->calculateGrowthPercentage('bookings'),
+            'revenue_growth' => $this->calculateGrowthPercentage('revenue'),
+        ];
+        
+        // Statistiques utilisateurs détaillées
+        $userStats = [
+            'new_users_this_month' => User::whereMonth('created_at', now()->month)
+                                         ->whereYear('created_at', now()->year)
+                                         ->count(),
+            'active_users' => User::where('last_login_at', '>=', now()->subDays(30))->count(),
+            'clients_percentage' => $this->calculateUserTypePercentage('client'),
+            'prestataires_percentage' => $this->calculateUserTypePercentage('prestataire'),
+            'admins_percentage' => $this->calculateUserTypePercentage('admin'),
+        ];
+        
+        // Statistiques services
+        $serviceStats = [
+            'total_services' => Service::count(),
+            'avg_price' => Service::avg('price') ?? 0,
+            'most_popular_service' => $this->getMostPopularService(),
+            'most_popular_count' => $this->getMostPopularServiceCount(),
+        ];
+        
+        // Statistiques réservations
+        $bookingStats = [
+            'pending_percentage' => $this->calculateBookingStatusPercentage('pending'),
+            'completed_percentage' => $this->calculateBookingStatusPercentage('completed'),
+            'top_prestataire' => $this->getTopPrestataire(),
+            'top_prestataire_bookings' => $this->getTopPrestataireBookings(),
+        ];
+        
+        return view('admin.reports.dashboard-modern', [
+            'globalStats' => $globalStats,
+            'userStats' => $userStats,
+            'serviceStats' => $serviceStats,
+            'bookingStats' => $bookingStats,
+        ]);
+    }
+    
+    /**
      * Rapport des utilisateurs.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -391,6 +445,172 @@ class ReportController extends Controller
         return [
             'booking_completion' => Booking::count() > 0 ? round(($completedBookings / Booking::count()) * 100, 1) : 0,
         ];
+    }
+    
+    /**
+     * Calcule le pourcentage de croissance pour une métrique donnée.
+     *
+     * @param string $metric
+     * @return float
+     */
+    private function calculateGrowthPercentage($metric)
+    {
+        $currentMonth = now()->month;
+        $currentYear = now()->year;
+        $previousMonth = now()->subMonth()->month;
+        $previousYear = now()->subMonth()->year;
+        
+        switch ($metric) {
+            case 'users':
+                $current = User::whereMonth('created_at', $currentMonth)
+                              ->whereYear('created_at', $currentYear)
+                              ->count();
+                $previous = User::whereMonth('created_at', $previousMonth)
+                               ->whereYear('created_at', $previousYear)
+                               ->count();
+                break;
+            case 'services':
+                $current = Service::whereMonth('created_at', $currentMonth)
+                                 ->whereYear('created_at', $currentYear)
+                                 ->count();
+                $previous = Service::whereMonth('created_at', $previousMonth)
+                                  ->whereYear('created_at', $previousYear)
+                                  ->count();
+                break;
+            case 'bookings':
+                $current = Booking::whereMonth('created_at', $currentMonth)
+                                 ->whereYear('created_at', $currentYear)
+                                 ->count();
+                $previous = Booking::whereMonth('created_at', $previousMonth)
+                                  ->whereYear('created_at', $previousYear)
+                                  ->count();
+                break;
+            case 'revenue':
+                $current = Booking::where('status', 'completed')
+                                 ->whereMonth('created_at', $currentMonth)
+                                 ->whereYear('created_at', $currentYear)
+                                 ->sum('total_price');
+                $previous = Booking::where('status', 'completed')
+                                  ->whereMonth('created_at', $previousMonth)
+                                  ->whereYear('created_at', $previousYear)
+                                  ->sum('total_price');
+                break;
+            default:
+                return 0;
+        }
+        
+        if ($previous == 0) {
+            return $current > 0 ? 100 : 0;
+        }
+        
+        return round((($current - $previous) / $previous) * 100, 1);
+    }
+    
+    /**
+     * Calcule le pourcentage d'un type d'utilisateur.
+     *
+     * @param string $type
+     * @return float
+     */
+    private function calculateUserTypePercentage($type)
+    {
+        $totalUsers = User::count();
+        
+        if ($totalUsers == 0) {
+            return 0;
+        }
+        
+        switch ($type) {
+            case 'client':
+                $count = Client::count();
+                break;
+            case 'prestataire':
+                $count = Prestataire::count();
+                break;
+            case 'admin':
+                $count = User::where('role', 'admin')->count();
+                break;
+            default:
+                return 0;
+        }
+        
+        return round(($count / $totalUsers) * 100, 1);
+    }
+    
+    /**
+     * Obtient le service le plus populaire.
+     *
+     * @return string|null
+     */
+    private function getMostPopularService()
+    {
+        $service = Service::withCount('bookings')
+                         ->orderBy('bookings_count', 'desc')
+                         ->first();
+        
+        return $service ? $service->title : null;
+    }
+    
+    /**
+     * Obtient le nombre de réservations du service le plus populaire.
+     *
+     * @return int
+     */
+    private function getMostPopularServiceCount()
+    {
+        $service = Service::withCount('bookings')
+                         ->orderBy('bookings_count', 'desc')
+                         ->first();
+        
+        return $service ? $service->bookings_count : 0;
+    }
+    
+    /**
+     * Calcule le pourcentage d'un statut de réservation.
+     *
+     * @param string $status
+     * @return float
+     */
+    private function calculateBookingStatusPercentage($status)
+    {
+        $totalBookings = Booking::count();
+        
+        if ($totalBookings == 0) {
+            return 0;
+        }
+        
+        $statusCount = Booking::where('status', $status)->count();
+        
+        return round(($statusCount / $totalBookings) * 100, 1);
+    }
+    
+    /**
+     * Obtient le prestataire avec le plus de réservations.
+     *
+     * @return string|null
+     */
+    private function getTopPrestataire()
+    {
+        $prestataire = Prestataire::withCount('bookings')
+                                 ->orderBy('bookings_count', 'desc')
+                                 ->with('user')
+                                 ->first();
+        
+        return $prestataire ? $prestataire->user->name : null;
+    }
+    
+    /**
+     * Obtient le nombre de réservations du top prestataire.
+     *
+     * @return int
+     */
+    private function getTopPrestataireBookings()
+    {
+        $prestataire = Prestataire::withCount('bookings')
+                                 ->orderBy('bookings_count', 'desc')
+                                 ->first();
+        
+        return $prestataire ? $prestataire->bookings_count : 0;
     }
     
     /**

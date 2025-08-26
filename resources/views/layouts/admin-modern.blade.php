@@ -525,22 +525,168 @@
             background: #f8fafc;
         }
         
+        /* Mobile Toggle Button */
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-toggle:hover {
+            background: var(--primary-dark);
+            transform: scale(1.05);
+        }
+        
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        
         /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 260px;
+            }
+            
+            .main-content {
+                margin-left: 260px;
+            }
+            
+            .content {
+                padding: 1.5rem;
+            }
+        }
+        
         @media (max-width: 768px) {
+            .mobile-toggle {
+                display: block;
+            }
+            
             .sidebar {
                 transform: translateX(-100%);
+                width: 280px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .sidebar-overlay.active {
+                display: block;
             }
             
             .main-content {
                 margin-left: 0;
             }
             
+            .header {
+                padding: 1rem 1rem 1rem 4rem;
+            }
+            
+            .header-left h1 {
+                font-size: 1.25rem;
+            }
+            
             .stats-grid {
                 grid-template-columns: 1fr;
+                gap: 1rem;
             }
             
             .content {
                 padding: 1rem;
+            }
+            
+            .page-header {
+                padding: 1.5rem 1rem;
+                margin: -1rem -1rem 1.5rem -1rem;
+            }
+            
+            .page-title {
+                font-size: 1.75rem;
+            }
+            
+            .page-subtitle {
+                font-size: 1rem;
+            }
+            
+            .card-base {
+                padding: 1rem;
+            }
+            
+            .modern-table th,
+            .modern-table td {
+                padding: 0.75rem 1rem;
+                font-size: 0.875rem;
+            }
+            
+            .user-menu span {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header {
+                padding: 0.75rem 0.75rem 0.75rem 3.5rem;
+            }
+            
+            .header-left h1 {
+                font-size: 1.125rem;
+            }
+            
+            .content {
+                padding: 0.75rem;
+            }
+            
+            .page-header {
+                padding: 1rem 0.75rem;
+                margin: -0.75rem -0.75rem 1rem -0.75rem;
+            }
+            
+            .page-title {
+                font-size: 1.5rem;
+            }
+            
+            .card-base {
+                padding: 0.75rem;
+                border-radius: 12px;
+            }
+            
+            .stat-card {
+                padding: 1rem;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+            
+            .btn {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.8125rem;
+            }
+            
+            .modern-table {
+                font-size: 0.8125rem;
+            }
+            
+            .modern-table th,
+            .modern-table td {
+                padding: 0.5rem 0.75rem;
             }
         }
         
@@ -579,8 +725,16 @@
 
 <body>
     <div class="admin-wrapper">
+        <!-- Mobile Toggle Button -->
+        <button class="mobile-toggle" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        
         <!-- Sidebar -->
-        <nav class="sidebar">
+        <nav class="sidebar" id="sidebar">
             <div class="sidebar-brand">
                 <div class="sidebar-brand-icon">
                     <i class="fas fa-user-shield"></i>
@@ -640,28 +794,28 @@
                     <div class="nav-section-title">Gestion du contenu</div>
                     
                     <div class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('administrateur.equipments.*') ? 'active' : '' }}" href="{{ route('administrateur.equipments.index') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.equipments.*') ? 'active' : '' }}" href="{{ route('admin.equipments.index') }}">
                             <i class="fas fa-wrench"></i>
                             <span>Équipements</span>
                         </a>
                     </div>
                     
                     <div class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('administrateur.announcements.*') ? 'active' : '' }}" href="{{ route('administrateur.announcements.index') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.announcements.*') ? 'active' : '' }}" href="{{ route('admin.announcements.index') }}">
                             <i class="fas fa-bullhorn"></i>
                             <span>Annonces</span>
                         </a>
                     </div>
                     
                     <div class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('administrateur.services.*') ? 'active' : '' }}" href="{{ route('administrateur.services.index') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.services.*') ? 'active' : '' }}" href="{{ route('admin.services.index') }}">
                             <i class="fas fa-briefcase"></i>
                             <span>Services</span>
                         </a>
                     </div>
                     
                     <div class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('administrateur.reviews.*') ? 'active' : '' }}" href="{{ route('administrateur.reviews.index') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}" href="{{ route('admin.reviews.index') }}">
                             <i class="fas fa-star"></i>
                             <span>Avis</span>
                         </a>
@@ -672,7 +826,7 @@
                     <div class="nav-section-title">Gestion des activités</div>
                     
                     <div class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('administrateur.bookings.*') ? 'active' : '' }}" href="{{ route('administrateur.bookings.index') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.bookings.*') ? 'active' : '' }}" href="{{ route('admin.bookings.index') }}">
                             <i class="fas fa-calendar-check"></i>
                             <span>Réservations</span>
                             @php
@@ -695,7 +849,7 @@
                     <div class="nav-section-title">Communication</div>
                     
                     <div class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('administrateur.notifications.*') ? 'active' : '' }}" href="{{ route('administrateur.notifications.index') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}" href="{{ route('admin.notifications.index') }}">
                             <i class="fas fa-bell"></i>
                             <span>Notifications</span>
                             @php
@@ -708,7 +862,7 @@
                     </div>
                     
                     <div class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('administrateur.messages.*') ? 'active' : '' }}" href="{{ route('administrateur.messages.index') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.messages.*') ? 'active' : '' }}" href="{{ route('admin.messages.index') }}">
                             <i class="fas fa-comments"></i>
                             <span>Messages</span>
                             @php
@@ -823,13 +977,46 @@
         // Sidebar toggle for mobile
         document.addEventListener('DOMContentLoaded', function() {
             const sidebarToggle = document.getElementById('sidebarToggle');
-            const sidebar = document.querySelector('.sidebar');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const body = document.body;
+            
+            function toggleSidebar() {
+                sidebar.classList.toggle('active');
+                sidebarOverlay.classList.toggle('active');
+                body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+            }
+            
+            function closeSidebar() {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+                body.style.overflow = '';
+            }
             
             if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', function() {
-                    sidebar.classList.toggle('active');
-                });
+                sidebarToggle.addEventListener('click', toggleSidebar);
             }
+            
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', closeSidebar);
+            }
+            
+            // Close sidebar on window resize if screen becomes large
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    closeSidebar();
+                }
+            });
+            
+            // Close sidebar when clicking on nav links on mobile
+            const navLinks = sidebar.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        setTimeout(closeSidebar, 150);
+                    }
+                });
+            });
         });
     </script>
     

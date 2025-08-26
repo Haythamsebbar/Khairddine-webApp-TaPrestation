@@ -212,12 +212,14 @@
                                 </div>
                             </div>
 
-                            <!-- Photo -->
-                            @if(session('equipment_step3.temp_image_path'))
+                            <!-- Photos -->
+                            @if(session('equipment_step3.temp_image_paths') && count(session('equipment_step3.temp_image_paths')) > 0)
                             <div class="mt-4 sm:mt-6">
-                                <h4 class="font-semibold text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">Photo principale</h4>
-                                <div class="flex justify-center">
-                                    <img src="{{ asset('storage/' . session('equipment_step3.temp_image_path')) }}" alt="Photo de l'équipement" class="w-32 h-32 sm:w-48 sm:h-48 object-cover rounded-lg border-2 border-green-300">
+                                <h4 class="font-semibold text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">Photos de l'équipement ({{ count(session('equipment_step3.temp_image_paths')) }})</h4>
+                                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                    @foreach(session('equipment_step3.temp_image_paths') as $imagePath)
+                                        <img src="{{ asset('storage/' . $imagePath) }}" alt="Photo de l'équipement" class="w-full h-24 sm:h-32 object-cover rounded-lg border-2 border-green-300">
+                                    @endforeach
                                 </div>
                             </div>
                             @endif

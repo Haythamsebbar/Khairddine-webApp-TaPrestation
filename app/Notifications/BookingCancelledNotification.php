@@ -69,6 +69,7 @@ class BookingCancelledNotification extends Notification implements ShouldQueue
     {
         return [
             'booking_id' => $this->booking->id,
+            'title' => 'Réservation annulée',
             'message' => 'La réservation #' . $this->booking->booking_number . ' a été annulée',
             'reason' => $this->booking->cancellation_reason,
             'type' => 'booking_cancelled',

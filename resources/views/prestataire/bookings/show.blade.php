@@ -1,12 +1,37 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    // Ensure variables are defined for backward compatibility
+    $isMultiSlotSession = $isMultiSlotSession ?? false;
+    $allBookings = $allBookings ?? collect([$booking]);
+    $relatedBookings = $relatedBookings ?? collect();
+    $totalSessionPrice = $totalSessionPrice ?? $booking->total_price;
+    
+    // Function to clean session ID from notes for display
+    function cleanNotesForDisplay($notes) {
+        if (!$notes) return null;
+        return trim(preg_replace('/\[SESSION:[^\]]+\]/', '', $notes)) ?: null;
+    }
+@endphp
+
 <div class="bg-blue-50">
     <div class="container mx-auto px-4 py-8">
         <div class="max-w-4xl mx-auto">
             <div class="mb-8 text-center">
-                <h1 class="text-4xl font-extrabold text-blue-900 mb-2">Détails de la réservation</h1>
-                <p class="text-lg text-blue-700">Numéro: {{ $booking->booking_number }}</p>
+                @if($isMultiSlotSession)
+                    <h1 class="text-4xl font-extrabold text-blue-900 mb-2">
+                        Réservations multiples
+                        <span class="text-lg font-normal text-blue-700">({{ $allBookings->count() }} créneaux)</span>
+                    </h1>
+                    <p class="text-lg text-blue-700">
+                        Du {{ $allBookings->first()->start_datetime->format('d/m/Y à H:i') }} 
+                        au {{ $allBookings->last()->end_datetime->format('d/m/Y à H:i') }}
+                    </p>
+                @else
+                    <h1 class="text-4xl font-extrabold text-blue-900 mb-2">Détails de la réservation</h1>
+                    <p class="text-lg text-blue-700">Numéro: {{ $booking->booking_number }}</p>
+                @endif
             </div>
             
             <div class="flex justify-center mb-8">
@@ -28,19 +53,75 @@
             </div>
         @endif
 
+        <!-- Multi-Slot Booking Overview -->
+        @if($isMultiSlotSession)
+            <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6 mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-bold text-blue-800">
+                        <i class="fas fa-calendar-check text-blue-500 mr-2"></i>
+                        Créneaux réservés ({{ $allBookings->count() }})
+                    </h2>
+                    <div class="text-right">
+                        <div class="text-sm text-gray-600">Prix total</div>
+                        <div class="text-xl font-bold text-green-600">{{ number_format($totalSessionPrice, 2) }} €</div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    @foreach($allBookings as $sessionBooking)
+                        <div class="border rounded-lg p-3 {{ $sessionBooking->id === $booking->id ? 'bg-blue-50 border-blue-300' : 'bg-gray-50 border-gray-200' }}">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="text-sm font-medium text-gray-900">
+                                    #{{ $sessionBooking->booking_number }}
+                                </div>
+                                @if($sessionBooking->id === $booking->id)
+                                    <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Actuel</span>
+                                @endif
+                            </div>
+                            <div class="text-sm text-gray-600">
+                                <div class="font-medium">{{ $sessionBooking->start_datetime->format('d/m/Y') }}</div>
+                                <div>{{ $sessionBooking->start_datetime->format('H:i') }} - {{ $sessionBooking->end_datetime->format('H:i') }}</div>
+                                <div class="text-xs mt-1">{{ number_format($sessionBooking->total_price, 2) }} €</div>
+                            </div>
+                            @if($sessionBooking->id !== $booking->id)
+                                <div class="mt-2">
+                                    <a href="{{ route('prestataire.bookings.show', $sessionBooking->id) }}" 
+                                       class="text-blue-600 hover:text-blue-800 text-xs">
+                                        Voir détails
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Informations principales -->
             <div class="lg:col-span-2 space-y-6">
                 <!-- Statut et actions -->
                 <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6">
-                    <h2 class="text-2xl font-bold text-blue-800 mb-5 border-b-2 border-blue-200 pb-3">Statut de la réservation</h2>
-                    <span class="status-badge
-                        @if($booking->status === 'pending') pending
-                        @elseif($booking->status === 'confirmed') confirmed
-                        @elseif($booking->status === 'completed') completed
-                        @elseif($booking->status === 'cancelled') cancelled
-                        @elseif($booking->status === 'refused') refused
-                        @endif">
+                    <h2 class="text-2xl font-bold text-blue-800 mb-5 border-b-2 border-blue-200 pb-3">
+                        Statut de la réservation
+                        @if($isMultiSlotSession)
+                            <span class="text-sm font-normal text-gray-600">(Créneau {{ array_search($booking, $allBookings->toArray()) + 1 }}/{{ $allBookings->count() }})</span>
+                        @endif
+                    </h2>
+                    
+                    @if($isMultiSlotSession)
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                                <span class="text-blue-700 text-sm">
+                                    <strong>Session multiple:</strong> Cette réservation fait partie d'une session de {{ $allBookings->count() }} créneaux. 
+                                    <strong>Toute action (confirmer/refuser) s'appliquera à l'ensemble de la session.</strong>
+                                </span>
+                            </div>
+                        </div>
+                    @endif
+                    
+                    <span class="status-badge {{ $booking->status === 'pending' ? 'pending' : ($booking->status === 'confirmed' ? 'confirmed' : ($booking->status === 'completed' ? 'completed' : ($booking->status === 'cancelled' ? 'cancelled' : ($booking->status === 'refused' ? 'refused' : '')))) }}">
                         @if($booking->status === 'pending') 
                             <i class="fas fa-clock"></i> En attente de confirmation
                         @elseif($booking->status === 'confirmed') 
@@ -60,13 +141,13 @@
                             <form action="{{ route('bookings.confirm', $booking) }}" method="POST" class="inline">
                                 @csrf
                                 <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-200">
-                                    <i class="fas fa-check mr-2"></i>Confirmer
+                                    <i class="fas fa-check mr-2"></i>Confirmer @if($isMultiSlotSession) la session @endif
                                 </button>
                             </form>
                             <form action="{{ route('bookings.refuse', $booking) }}" method="POST" class="inline">
                                 @csrf
                                 <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200">
-                                    <i class="fas fa-times mr-2"></i>Refuser
+                                    <i class="fas fa-times mr-2"></i>Refuser @if($isMultiSlotSession) la session @endif
                                 </button>
                             </form>
                         </div>
@@ -75,13 +156,13 @@
                             <form action="{{ route('bookings.complete', $booking) }}" method="POST" class="inline">
                                 @csrf
                                 <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-200">
-                                    <i class="fas fa-check-double mr-2"></i>Marquer comme terminé
+                                    <i class="fas fa-check-double mr-2"></i>Marquer @if($isMultiSlotSession) la session @endif comme terminé@if($isMultiSlotSession)e@endif
                                 </button>
                             </form>
                             <form action="{{ route('bookings.cancel', $booking) }}" method="POST" class="inline">
                                 @csrf
                                 <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200">
-                                    <i class="fas fa-ban mr-2"></i>Annuler
+                                    <i class="fas fa-ban mr-2"></i>Annuler @if($isMultiSlotSession) la session @endif
                                 </button>
                             </form>
                         </div>
@@ -97,17 +178,28 @@
                             <p class="text-lg font-bold text-blue-900">{{ $booking->service->name }}</p>
                         </div>
                         <div>
-                            <p class="text-gray-600 font-medium">Prix:</p>
+                            <p class="text-gray-600 font-medium">Prix @if($isMultiSlotSession) par créneau @endif:</p>
                             <p class="text-lg font-bold text-green-600">{{ number_format($booking->service->price, 2) }} €</p>
                         </div>
-                        <div>
-                            <p class="text-gray-600 font-medium">Date de réservation:</p>
-                            <p class="text-lg font-bold text-blue-900">{{ $booking->start_datetime->format('d/m/Y') }}</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-600 font-medium">Heure:</p>
-                            <p class="text-lg font-bold text-blue-900">{{ $booking->start_datetime->format('H:i') }}</p>
-                        </div>
+                        @if($isMultiSlotSession)
+                            <div>
+                                <p class="text-gray-600 font-medium">Prix total session:</p>
+                                <p class="text-lg font-bold text-green-600">{{ number_format($totalSessionPrice, 2) }} €</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-600 font-medium">Nombre de créneaux:</p>
+                                <p class="text-lg font-bold text-blue-900">{{ $allBookings->count() }}</p>
+                            </div>
+                        @else
+                            <div>
+                                <p class="text-gray-600 font-medium">Date de réservation:</p>
+                                <p class="text-lg font-bold text-blue-900">{{ $booking->start_datetime->format('d/m/Y') }}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-600 font-medium">Heure:</p>
+                                <p class="text-lg font-bold text-blue-900">{{ $booking->start_datetime->format('H:i') }}</p>
+                            </div>
+                        @endif
                     </div>
                     @if($booking->service->description)
                         <div class="mt-4">
@@ -144,11 +236,11 @@
                     </div>
                 </div>
 
-                @if($booking->notes)
+                @if(cleanNotesForDisplay($booking->client_notes))
                 <!-- Notes -->
                 <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6">
                     <h2 class="text-2xl font-bold text-blue-800 mb-5 border-b-2 border-blue-200 pb-3">Notes</h2>
-                    <p class="text-gray-800">{{ $booking->notes }}</p>
+                    <p class="text-gray-800">{{ cleanNotesForDisplay($booking->client_notes) }}</p>
                 </div>
                 @endif
             </div>
@@ -159,35 +251,41 @@
                 <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6">
                     <h3 class="text-xl font-bold text-blue-800 mb-4">Résumé</h3>
                     <div class="space-y-3">
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Numéro:</span>
-                            <span class="font-bold">{{ $booking->booking_number }}</span>
-                        </div>
+                        @if($isMultiSlotSession)
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Type:</span>
+                                <span class="font-bold">Session multiple</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Créneaux:</span>
+                                <span class="font-bold">{{ $allBookings->count() }}</span>
+                            </div>
+                        @else
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Numéro:</span>
+                                <span class="font-bold">{{ $booking->booking_number }}</span>
+                            </div>
+                        @endif
                         <div class="flex justify-between">
                             <span class="text-gray-600">Date de création:</span>
                             <span class="font-bold">{{ $booking->created_at->format('d/m/Y') }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Statut:</span>
-                            <span class="font-bold
-                                @if($booking->status === 'pending') text-yellow-600
-                                @elseif($booking->status === 'confirmed') text-green-600
-                                @elseif($booking->status === 'completed') text-blue-600
-                                @elseif($booking->status === 'cancelled') text-red-600
-                                @elseif($booking->status === 'refused') text-red-600
-                                @endif">
+                            <span class="font-bold {{ $booking->status === 'pending' ? 'text-yellow-600' : ($booking->status === 'confirmed' ? 'text-green-600' : ($booking->status === 'completed' ? 'text-blue-600' : ($booking->status === 'cancelled' ? 'text-red-600' : ($booking->status === 'refused' ? 'text-red-600' : '')))) }}">
                                 @if($booking->status === 'pending') En attente
                                 @elseif($booking->status === 'confirmed') Confirmée
                                 @elseif($booking->status === 'completed') Terminée
                                 @elseif($booking->status === 'cancelled') Annulée
                                 @elseif($booking->status === 'refused') Refusée
                                 @endif
+                                @endif
                             </span>
                         </div>
                         <hr class="border-gray-200">
                         <div class="flex justify-between text-lg font-bold">
                             <span>Total:</span>
-                            <span class="text-green-600">{{ number_format($booking->service->price, 2) }} €</span>
+                            <span class="text-green-600">{{ number_format($isMultiSlotSession ? $totalSessionPrice : $booking->service->price, 2) }} €</span>
                         </div>
                     </div>
                 </div>

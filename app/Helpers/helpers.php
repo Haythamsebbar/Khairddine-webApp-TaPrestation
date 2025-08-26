@@ -9,7 +9,10 @@ if (!function_exists('generate_time_slots')) {
     {
         $slots = [];
         $availabilities = $prestataire->availabilities()->where('is_active', true)->get();
-        $bookings = $prestataire->bookings()->whereIn('status', ['confirmed', 'pending'])->where('start_datetime', '<=', $endDate->endOfDay())->where('end_datetime', '>=', $startDate->startOfDay())->get();
+        // Only consider confirmed bookings as "booked" - pending bookings should still allow new reservations
+        $confirmedBookings = $prestataire->bookings()->where('status', 'confirmed')->where('start_datetime', '<=', $endDate->endOfDay())->where('end_datetime', '>=', $startDate->startOfDay())->get();
+        // Get all bookings (including pending) for display purposes
+        $allBookings = $prestataire->bookings()->whereIn('status', ['confirmed', 'pending'])->where('start_datetime', '<=', $endDate->endOfDay())->where('end_datetime', '>=', $startDate->startOfDay())->get();
 
         for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
             // Utiliser dayOfWeek (0=dimanche, 1=lundi, etc.) au lieu de dayOfWeekIso
@@ -26,9 +29,17 @@ if (!function_exists('generate_time_slots')) {
                 for ($slotTime = $startTime->copy(); $slotTime->lt($endTime); $slotTime->addMinutes($slotDuration)) {
                     $slotEnd = $slotTime->copy()->addMinutes($slotDuration);
 
-                    $bookedBooking = $bookings->first(function ($booking) use ($slotTime, $slotEnd) {
-                        // Check if the slot overlaps with a booking
-                        // Handle case where booking has same start and end time (duration 0)
+                    // Check if slot is booked by a CONFIRMED booking
+                    $confirmedBooking = $confirmedBookings->first(function ($booking) use ($slotTime, $slotEnd) {
+                        // Check if the slot overlaps with a confirmed booking
+                        if ($booking->start_datetime == $booking->end_datetime) {
+                            return $booking->start_datetime >= $slotTime && $booking->start_datetime < $slotEnd;
+                        }
+                        return ($booking->start_datetime < $slotEnd) && ($booking->end_datetime > $slotTime);
+                    });
+                    
+                    // Check if slot has any booking (for display info)
+                    $anyBooking = $allBookings->first(function ($booking) use ($slotTime, $slotEnd) {
                         if ($booking->start_datetime == $booking->end_datetime) {
                             return $booking->start_datetime >= $slotTime && $booking->start_datetime < $slotEnd;
                         }
@@ -52,9 +63,16 @@ if (!function_exists('generate_time_slots')) {
                     if (!$isBreak) {
                         $slots[] = [
                             'datetime' => $slotTime->copy(),
-                            'is_booked' => (bool) $bookedBooking,
-                            'booking_status' => $bookedBooking ? $bookedBooking->status : null,
-                            'booking_id' => $bookedBooking ? $bookedBooking->id : null
+                            'end_datetime' => $slotEnd->copy(),
+                            'duration' => $slotDuration,
+                            'is_booked' => (bool) $confirmedBooking, // Only confirmed bookings mark slot as booked
+                            'has_pending' => $anyBooking && $anyBooking->status === 'pending',
+                            'booking_status' => $anyBooking ? $anyBooking->status : null,
+                            'booking_id' => $anyBooking ? $anyBooking->id : null,
+                            'break_start_time' => $availability->break_start_time,
+                            'break_end_time' => $availability->break_end_time,
+                            'availability_start' => $availability->start_time,
+                            'availability_end' => $availability->end_time
                         ];
                     }
                 }

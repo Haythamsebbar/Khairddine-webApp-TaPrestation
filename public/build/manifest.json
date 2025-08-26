@@ -1,11 +1,11 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-CfpNjz1h.css",
+    "file": "assets/app-1mQ8vo8C.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-C5tefEM-.js",
+    "file": "assets/app-LyIx18sI.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -14,7 +14,7 @@
     ]
   },
   "resources/js/video-recorder.js": {
-    "file": "assets/video-recorder-3fjQp2cJ.js",
+    "file": "assets/video-recorder-B02hl55S.js",
     "name": "video-recorder",
     "src": "resources/js/video-recorder.js",
     "isEntry": true

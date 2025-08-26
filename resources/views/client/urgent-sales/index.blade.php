@@ -150,10 +150,23 @@
                             <!-- Image -->
                             <div class="relative">
                                 @if($sale->photos && count($sale->photos) > 0)
-                                    <img src="{{ Storage::url($sale->photos[0]) }}" alt="{{ $sale->title }}" class="w-full h-48 object-cover">
+                                    <img src="{{ Storage::url($sale->photos[0]) }}" 
+                                         alt="{{ $sale->title }}" 
+                                         class="w-full h-48 object-cover"
+                                         onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xNzUgMTI1SDE4NVYxMzVIMTc1VjEyNVoiIGZpbGw9IiM5Q0EzQUYiLz4KPHA+dGggZD0iTTE2NSAxNDVIMjM1VjE1NUgxNjVWMTQ1WiIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNMTg1IDEwNUMxOTEuNjI3IDEwNSAxOTcgMTEwLjM3MyAxOTcgMTE3QzE5NyAxMjMuNjI3IDE5MS42MjcgMTI5IDE4NSAxMjlDMTc4LjM3MyAxMjkgMTczIDEyMy42MjcgMTczIDExN0MxNzMgMTEwLjM3MyAxNzguMzczIDEwNSAxODUgMTA1WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K'; this.classList.add('opacity-50');">
+                                    
+                                    <!-- Nombre de photos -->
+                                    @if(count($sale->photos) > 1)
+                                        <div class="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded-full text-xs font-medium backdrop-blur-sm">
+                                            <i class="fas fa-images mr-1"></i>{{ count($sale->photos) }}
+                                        </div>
+                                    @endif
                                 @else
                                     <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
-                                        <i class="fas fa-image text-gray-400 text-3xl"></i>
+                                        <div class="text-center">
+                                            <i class="fas fa-image text-gray-400 text-3xl mb-2"></i>
+                                            <p class="text-gray-500 text-sm">Aucune image</p>
+                                        </div>
                                     </div>
                                 @endif
                                 

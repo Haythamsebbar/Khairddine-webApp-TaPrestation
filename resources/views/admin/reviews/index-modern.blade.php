@@ -18,12 +18,9 @@
             <div class="flex justify-center gap-4">
                 <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center text-sm sm:text-base" onclick="toggleFilters()">
                     <i class="fas fa-filter mr-2"></i>
-                    Filtres
+                    Afficher les filtres
                 </button>
-                <button class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm sm:text-base" onclick="exportReviews()">
-                    <i class="fas fa-download mr-2"></i>
-                    Exporter
-                </button>
+
             </div>
         </div>
     </div>
@@ -480,10 +477,6 @@ function bulkDelete() {
     }
 }
 
-// Export reviews
-function exportReviews() {
-    // Implement export logic
-    console.log('Exporting reviews');
-}
+
 </script>
 @endpush

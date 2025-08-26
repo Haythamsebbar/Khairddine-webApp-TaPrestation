@@ -37,6 +37,47 @@ class UrgentSale extends Model
         'contact_count' => 'integer'
     ];
 
+    /**
+     * Accesseur pour photos - gère les cas où les données sont stockées comme string JSON
+     * et normalise les chemins des photos
+     */
+    public function getPhotosAttribute($value)
+    {
+        if (is_null($value)) {
+            return [];
+        }
+        
+        $photos = [];
+        
+        if (is_array($value)) {
+            $photos = $value;
+        } elseif (is_string($value)) {
+            $decoded = json_decode($value, true);
+            
+            // Handle double-encoded JSON strings
+            if (is_string($decoded)) {
+                $decoded = json_decode($decoded, true);
+            }
+            
+            $photos = is_array($decoded) ? $decoded : [];
+        }
+        
+        // Normaliser les chemins des photos
+        return array_map(function($photo) {
+            // Si c'est une URL complète, la retourner telle quelle
+            if (filter_var($photo, FILTER_VALIDATE_URL)) {
+                return $photo;
+            }
+            
+            // Si le chemin ne contient pas le préfixe du dossier, l'ajouter
+            if (strpos($photo, 'urgent-sales/') === false) {
+                return 'urgent-sales/' . $photo;
+            }
+            
+            return $photo;
+        }, $photos);
+    }
+
     protected $dates = [
         'deleted_at'
     ];

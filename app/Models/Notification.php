@@ -116,4 +116,91 @@ class Notification extends Model
     {
         return $query->whereNull('read_at');
     }
+    
+    /**
+     * Get the notification title.
+     *
+     * @return string
+     */
+    public function getTitleAttribute(): string
+    {
+        $data = $this->getDecodedData();
+        return $data['title'] ?? $this->getDefaultTitle();
+    }
+
+    /**
+     * Get the notification message.
+     *
+     * @return string
+     */
+    public function getMessageAttribute(): string
+    {
+        $data = $this->getDecodedData();
+        return $data['message'] ?? $this->getDefaultMessage();
+    }
+
+    /**
+     * Get the notification action URL.
+     *
+     * @return string|null
+     */
+    public function getActionUrlAttribute(): ?string
+    {
+        $data = $this->getDecodedData();
+        return $data['url'] ?? $data['action_url'] ?? null;
+    }
+
+    /**
+     * Get the notification action text.
+     *
+     * @return string|null
+     */
+    public function getActionTextAttribute(): ?string
+    {
+        $data = $this->getDecodedData();
+        return $data['action_text'] ?? null;
+    }
+    
+    /**
+     * Get notification data in a consistent format.
+     *
+     * @return array
+     */
+    public function getDecodedData(): array
+    {
+        if (is_string($this->data)) {
+            return json_decode($this->data, true) ?? [];
+        }
+        
+        return $this->data ?? [];
+    }
+    
+    /**
+     * Get default title based on notification type.
+     *
+     * @return string
+     */
+    private function getDefaultTitle(): string
+    {
+        $typeMap = [
+            'App\\Notifications\\NewBookingNotification' => 'Nouvelle réservation',
+            'App\\Notifications\\BookingConfirmedNotification' => 'Réservation confirmée',
+            'App\\Notifications\\BookingRejectedNotification' => 'Réservation refusée',
+            'App\\Notifications\\NewMessageNotification' => 'Nouveau message',
+            'App\\Notifications\\NewReviewNotification' => 'Nouvel avis',
+            // Add other types as needed
+        ];
+        
+        return $typeMap[$this->type] ?? 'Notification';
+    }
+    
+    /**
+     * Get default message based on notification type.
+     *
+     * @return string
+     */
+    private function getDefaultMessage(): string
+    {
+        return 'Vous avez reçu une notification.';
+    }
 }

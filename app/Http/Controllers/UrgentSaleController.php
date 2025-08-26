@@ -16,6 +16,9 @@ class UrgentSaleController extends Controller
      */
     public function index(Request $request)
     {
+        // Debug logging - remove after fixing
+        \Log::info('UrgentSale index called with parameters:', $request->all());
+        
         $query = UrgentSale::active()->with(['prestataire.user']);
         
         // Recherche par mot-clé
@@ -27,34 +30,105 @@ class UrgentSaleController extends Controller
             });
         }
         
-        // Filtrage par localisation
+        // Filtrage par localisation avec recherche fuzzy
         if ($request->filled('city')) {
-            $query->whereHas('prestataire', function ($q) use ($request) {
-                $q->where('city', 'like', '%' . $request->city . '%');
+            \Log::info('City filter applied with value:', ['city' => $request->city]);
+            $cityParam = $request->city;
+            // Extraire le nom de la ville si la chaîne contient des virgules (format GPS: "Oujda, 60000")
+            $cityParts = explode(',', $cityParam);
+            $city = trim($cityParts[0]); // Prendre seulement la première partie (nom de la ville)
+            \Log::info('Extracted city:', ['original' => $cityParam, 'extracted' => $city]);
+            
+            $query->where(function($mainQ) use ($city, $cityParam) {
+                $mainQ->whereHas('prestataire', function ($q) use ($city, $cityParam) {
+                    $q->where(function ($subQ) use ($city, $cityParam) {
+                        $subQ->where('city', 'like', '%' . $city . '%')
+                             ->orWhere('address', 'like', '%' . $city . '%')
+                             ->orWhere('postal_code', 'like', '%' . $city . '%')
+                             // Recherche aussi avec la chaîne complète au cas où
+                             ->orWhere('city', 'like', '%' . $cityParam . '%')
+                             ->orWhere('address', 'like', '%' . $cityParam . '%')
+                             // Recherche fuzzy dans l'adresse complète du prestataire
+                             ->orWhereRaw("CONCAT(COALESCE(address, ''), ', ', COALESCE(city, ''), ', ', COALESCE(postal_code, '')) LIKE ?", ['%' . $city . '%']);
+                    });
+                })
+                // Aussi chercher dans la localisation de l'urgentSale elle-même
+                ->orWhere('location', 'like', '%' . $city . '%')
+                ->orWhere('location', 'like', '%' . $cityParam . '%');
             });
         }
         
-        // Recherche géolocalisée
+        // Recherche géolocalisée - seulement si on a une ville ET des prestataires de cette ville avec GPS
         if ($request->filled('latitude') && $request->filled('longitude')) {
             $latitude = $request->latitude;
             $longitude = $request->longitude;
             $radius = $request->filled('radius') ? $request->radius : 50; // 50km par défaut
 
-            // Utilisation de la formule de Haversine pour calculer la distance
-            $query->whereHas('prestataire', function($q) use ($latitude, $longitude, $radius) {
-                $q->selectRaw(
-                    'prestataires.*, 
-                    ( 6371 * acos( cos( radians(?) ) * 
-                      cos( radians( latitude ) ) * 
-                      cos( radians( longitude ) - radians(?) ) + 
-                      sin( radians(?) ) * 
-                      sin( radians( latitude ) ) ) ) AS distance',
-                    [$latitude, $longitude, $latitude]
-                )
+            \Log::info('GPS coordinates provided, checking for relevant prestataires with GPS data');
+            
+            // Si on a une ville spécifiée, vérifier s'il y a des prestataires de cette ville avec GPS
+            if ($request->filled('city')) {
+                $cityParam = $request->city;
+                // Extraction du nom de ville (même logique que pour le filtre de ville)
+                $city = $cityParam;
+                if (strpos($cityParam, ',') !== false) {
+                    $city = trim(explode(',', $cityParam)[0]);
+                }
+                
+                \Log::info('Checking GPS for city:', ['original' => $cityParam, 'extracted' => $city]);
+                
+                // Vérifier s'il y a des prestataires dans cette ville avec des coordonnées GPS
+                $cityPrestataireWithGps = \App\Models\Prestataire::where(function($q) use ($city, $cityParam) {
+                    $q->where('city', 'like', '%' . $city . '%')
+                      ->orWhere('address', 'like', '%' . $city . '%')
+                      ->orWhere('postal_code', 'like', '%' . $city . '%')
+                      ->orWhere('city', 'like', '%' . $cityParam . '%')
+                      ->orWhere('address', 'like', '%' . $cityParam . '%');
+                })
                 ->whereNotNull('latitude')
                 ->whereNotNull('longitude')
-                ->havingRaw('distance <= ?', [$radius]);
-            });
+                ->exists();
+                
+                \Log::info('City prestataires with GPS check result:', ['city' => $city, 'has_gps' => $cityPrestataireWithGps]);
+                
+                // Appliquer le filtre GPS seulement s'il y a des prestataires de cette ville avec GPS
+                if ($cityPrestataireWithGps) {
+                    \Log::info('Applying GPS distance filter for city prestataires');
+                    $query->whereHas('prestataire', function($q) use ($latitude, $longitude, $radius) {
+                        $q->selectRaw(
+                            'prestataires.*, 
+                            ( 6371 * acos( cos( radians(?) ) * 
+                              cos( radians( latitude ) ) * 
+                              cos( radians( longitude ) - radians(?) ) + 
+                              sin( radians(?) ) * 
+                              sin( radians( latitude ) ) ) ) AS distance',
+                            [$latitude, $longitude, $latitude]
+                        )
+                        ->whereNotNull('latitude')
+                        ->whereNotNull('longitude')
+                        ->havingRaw('distance <= ?', [$radius]);
+                    });
+                } else {
+                    \Log::info('Skipping GPS filter - no prestataires in this city have GPS coordinates');
+                }
+            } else {
+                // Pas de ville spécifiée, appliquer le filtre GPS global
+                \Log::info('No city specified, applying global GPS filter');
+                $query->whereHas('prestataire', function($q) use ($latitude, $longitude, $radius) {
+                    $q->selectRaw(
+                        'prestataires.*, 
+                        ( 6371 * acos( cos( radians(?) ) * 
+                          cos( radians( latitude ) ) * 
+                          cos( radians( longitude ) - radians(?) ) + 
+                          sin( radians(?) ) * 
+                          sin( radians( latitude ) ) ) ) AS distance',
+                        [$latitude, $longitude, $latitude]
+                    )
+                    ->whereNotNull('latitude')
+                    ->whereNotNull('longitude')
+                    ->havingRaw('distance <= ?', [$radius]);
+                });
+            }
         }
         
         // Filtrage par prix
@@ -99,19 +173,19 @@ class UrgentSaleController extends Controller
                 $query->orderBy('created_at', 'desc');
         }
         
+        // Debug logging - remove after fixing
+        \Log::info('Final SQL Query:', ['sql' => $query->toSql(), 'bindings' => $query->getBindings()]);
+        
         $urgentSales = $query->paginate(12)->withQueryString();
+        
+        // Debug logging - remove after fixing
+        \Log::info('UrgentSales result count:', ['total' => $urgentSales->total(), 'current_page_count' => $urgentSales->count()]);
         
         // Données pour les filtres
         $priceRange = UrgentSale::active()->selectRaw('MIN(price) as min_price, MAX(price) as max_price')->first();
         $conditions = UrgentSale::CONDITION_OPTIONS;
         
-        // Annonces en vedette
-        $featuredSales = UrgentSale::active()
-                                  ->with(['prestataire.user'])
-                                  ->limit(6)
-                                  ->get();
-        
-        return view('urgent-sales.index', compact('urgentSales', 'priceRange', 'conditions', 'featuredSales'));
+        return view('urgent-sales.index', compact('urgentSales', 'priceRange', 'conditions'));
     }
     
     /**

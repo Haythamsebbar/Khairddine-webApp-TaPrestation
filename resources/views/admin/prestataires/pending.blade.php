@@ -21,7 +21,7 @@
                     <i class="bi bi-list mr-2"></i> Tous les prestataires
                 </a>
                 <button class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse">
-                    <i class="bi bi-funnel mr-2"></i> Filtres
+                    <i class="bi bi-funnel mr-2"></i> Afficher les filtres
                 </button>
             </div>
         </div>

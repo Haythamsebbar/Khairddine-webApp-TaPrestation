@@ -3,86 +3,89 @@
 @section('page-title', 'Gestion des Commandes')
 
 @section('content')
-<!-- Header Actions -->
-<div style="display: flex; justify-content: between; align-items: center; margin-bottom: 2rem;">
-    <div>
-        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--dark); margin: 0;">Commandes</h2>
-        <p style="color: var(--secondary); margin: 0.5rem 0 0 0;">Gérez toutes les commandes et transactions</p>
-    </div>
-    <div style="display: flex; gap: 1rem;">
-        <button class="btn btn-outline" onclick="exportOrders()">
-            <i class="fas fa-download"></i>
-            Exporter
-        </button>
-        <button class="btn btn-outline" onclick="toggleFilters()">
-            <i class="fas fa-filter"></i>
-            Filtres
-        </button>
+<!-- Header Section -->
+<div class="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-2xl shadow-2xl mb-6 sm:mb-8 overflow-hidden">
+    <div class="absolute inset-0 bg-black opacity-10"></div>
+    <div class="relative px-6 sm:px-8 py-8 sm:py-12">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6">
+            <div class="text-white">
+                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3">Gestion des Commandes</h1>
+                <p class="text-blue-100 text-sm sm:text-base lg:text-lg opacity-90">Gérez toutes les commandes et transactions de votre plateforme</p>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                <button onclick="toggleFilters()" class="bg-white/20 hover:bg-white/30 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-medium transition-all duration-200 backdrop-blur-sm border border-white/20 hover:border-white/40 flex items-center justify-center gap-2">
+                    <i class="fas fa-filter text-sm"></i>
+                    <span class="text-sm sm:text-base">Afficher les filtres</span>
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- Stats Cards -->
-<div class="stats-grid" style="margin-bottom: 2rem;">
-    <div class="stat-card primary">
-        <div class="stat-header">
-            <div>
-                <div class="stat-title">Total Commandes</div>
-                <div class="stat-value">{{ $orders->total() ?? 0 }}</div>
-                <div class="stat-change positive">
-                    <i class="fas fa-arrow-up"></i>
-                    <span>+8% ce mois</span>
+<div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 mb-6 sm:mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <div class="text-xs sm:text-sm font-medium text-blue-600 uppercase tracking-wide">Total Commandes</div>
+                    <div class="text-2xl sm:text-3xl font-bold text-blue-900 mt-1">{{ $pagination['total'] ?? 0 }}</div>
+                    <div class="flex items-center mt-2 text-xs sm:text-sm text-green-600">
+                        <i class="fas fa-arrow-up mr-1"></i>
+                        <span>+8% ce mois</span>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-icon primary">
-                <i class="fas fa-shopping-cart"></i>
+                <div class="bg-blue-100 p-3 rounded-full">
+                    <i class="fas fa-shopping-cart text-blue-600 text-xl"></i>
+                </div>
             </div>
         </div>
-    </div>
-    
-    <div class="stat-card success">
-        <div class="stat-header">
-            <div>
-                <div class="stat-title">Commandes Complétées</div>
-                <div class="stat-value">{{ $completedOrders ?? 0 }}</div>
-                <div class="stat-change positive">
-                    <i class="fas fa-arrow-up"></i>
-                    <span>+12% ce mois</span>
+        
+        <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <div class="text-xs sm:text-sm font-medium text-green-600 uppercase tracking-wide">Confirmées</div>
+                    <div class="text-2xl sm:text-3xl font-bold text-blue-900 mt-1">{{ $stats['confirmed_orders'] ?? 0 }}</div>
+                    <div class="flex items-center mt-2 text-xs sm:text-sm text-green-600">
+                        <i class="fas fa-arrow-up mr-1"></i>
+                        <span>+12% ce mois</span>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-icon success">
-                <i class="fas fa-check-circle"></i>
+                <div class="bg-green-100 p-3 rounded-full">
+                    <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                </div>
             </div>
         </div>
-    </div>
-    
-    <div class="stat-card warning">
-        <div class="stat-header">
-            <div>
-                <div class="stat-title">En Cours</div>
-                <div class="stat-value">{{ $pendingOrders ?? 0 }}</div>
-                <div class="stat-change neutral">
-                    <i class="fas fa-minus"></i>
-                    <span>Stable</span>
+        
+        <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <div class="text-xs sm:text-sm font-medium text-orange-600 uppercase tracking-wide">En Attente</div>
+                    <div class="text-2xl sm:text-3xl font-bold text-blue-900 mt-1">{{ $stats['pending_orders'] ?? 0 }}</div>
+                    <div class="flex items-center mt-2 text-xs sm:text-sm text-gray-600">
+                        <i class="fas fa-minus mr-1"></i>
+                        <span>Stable</span>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-icon warning">
-                <i class="fas fa-clock"></i>
+                <div class="bg-orange-100 p-3 rounded-full">
+                    <i class="fas fa-clock text-orange-600 text-xl"></i>
+                </div>
             </div>
         </div>
-    </div>
-    
-    <div class="stat-card info">
-        <div class="stat-header">
-            <div>
-                <div class="stat-title">Chiffre d'Affaires</div>
-                <div class="stat-value"><!-- Revenu total supprimé pour confidentialité --></div>
-                <div class="stat-change positive">
-                    <i class="fas fa-arrow-up"></i>
-                    <span>+15% ce mois</span>
+        
+        <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <div class="text-xs sm:text-sm font-medium text-blue-600 uppercase tracking-wide">Chiffre d'Affaires</div>
+                    <div class="text-2xl sm:text-3xl font-bold text-blue-900 mt-1">***</div>
+                    <div class="flex items-center mt-2 text-xs sm:text-sm text-green-600">
+                        <i class="fas fa-arrow-up mr-1"></i>
+                        <span>+15% ce mois</span>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-icon info">
-                <i class="fas fa-euro-sign"></i>
+                <div class="bg-blue-100 p-3 rounded-full">
+                    <i class="fas fa-euro-sign text-blue-600 text-xl"></i>
+                </div>
             </div>
         </div>
     </div>
@@ -207,48 +210,56 @@
                 @forelse($orders ?? [] as $order)
                     <tr style="border-bottom: 1px solid #e2e8f0; transition: background-color 0.2s ease;" onmouseover="this.style.backgroundColor='#f8fafc'" onmouseout="this.style.backgroundColor='transparent'">
                         <td style="padding: 1rem;">
-                            <input type="checkbox" name="selected_orders[]" value="{{ $order->id }}" class="order-checkbox">
-                        </td>
-                        
-                        <td style="padding: 1rem;">
-                            <div style="font-weight: 600; color: var(--primary); margin-bottom: 0.25rem;">#{{ $order->order_number ?? 'ORD-' . str_pad($order->id, 6, '0', STR_PAD_LEFT) }}</div>
-                            <div style="font-size: 0.8rem; color: var(--secondary);">ID: {{ $order->id }}</div>
+                            <input type="checkbox" name="selected_orders[]" value="{{ $order['id'] }}-{{ $order['type'] }}" class="order-checkbox">
                         </td>
                         
                         <td style="padding: 1rem;">
                             <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.8rem;">
-                                    {{ strtoupper(substr($order->client->name ?? 'U', 0, 1)) }}
+                                <div style="width: 32px; height: 32px; border-radius: 50%; background: {{ $order['type'] === 'service' ? 'var(--primary)' : 'var(--success)' }}; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.8rem;">
+                                    <i class="{{ $order['type'] === 'service' ? 'fas fa-concierge-bell' : 'fas fa-tools' }}"></i>
                                 </div>
                                 <div>
-                                    <div style="font-weight: 500; color: var(--dark);">{{ $order->client->name ?? 'Client inconnu' }}</div>
-                                    <div style="font-size: 0.8rem; color: var(--secondary);">{{ $order->client->email ?? '' }}</div>
+                                    <div style="font-weight: 600; color: var(--primary); margin-bottom: 0.25rem;">#{{ $order['type'] === 'service' ? 'SRV' : 'EQP' }}-{{ str_pad($order['id'], 6, '0', STR_PAD_LEFT) }}</div>
+                                    <div style="font-size: 0.8rem; color: var(--secondary);">{{ $order['type'] === 'service' ? 'Réservation de service' : 'Location d\'équipement' }}</div>
                                 </div>
                             </div>
                         </td>
                         
                         <td style="padding: 1rem;">
                             <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--success); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.8rem;">
-                                    {{ strtoupper(substr($order->prestataire->name ?? 'P', 0, 1)) }}
+                                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--info); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.8rem;">
+                                    {{ strtoupper(substr($order['client_name'] ?? 'U', 0, 1)) }}
                                 </div>
                                 <div>
-                                    <div style="font-weight: 500; color: var(--dark);">{{ $order->prestataire->name ?? 'Prestataire inconnu' }}</div>
-                                    <div style="font-size: 0.8rem; color: var(--secondary);">{{ $order->prestataire->email ?? '' }}</div>
+                                    <div style="font-weight: 500; color: var(--dark);">{{ $order['client_name'] ?? 'Client inconnu' }}</div>
+                                    <div style="font-size: 0.8rem; color: var(--secondary);">Client</div>
                                 </div>
                             </div>
                         </td>
                         
                         <td style="padding: 1rem;">
-                            <div style="font-weight: 500; color: var(--dark); margin-bottom: 0.25rem;">{{ $order->service->title ?? 'Service supprimé' }}</div>
-                            <div style="font-size: 0.8rem; color: var(--secondary);">{{ $order->service->category->name ?? 'Catégorie inconnue' }}</div>
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--warning); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.8rem;">
+                                    {{ strtoupper(substr($order['prestataire_name'] ?? 'P', 0, 1)) }}
+                                </div>
+                                <div>
+                                    <div style="font-weight: 500; color: var(--dark);">{{ $order['prestataire_name'] ?? 'Prestataire inconnu' }}</div>
+                                    <div style="font-size: 0.8rem; color: var(--secondary);">Prestataire</div>
+                                </div>
+                            </div>
                         </td>
                         
                         <td style="padding: 1rem;">
-                            <div style="font-weight: 600; color: var(--dark); font-size: 1.1rem;">{{ number_format($order->total_amount ?? 0, 2, ',', ' ') }}€</div>
-                            @if($order->commission_amount)
-                                <div style="font-size: 0.8rem; color: var(--secondary);">Commission: {{ number_format($order->commission_amount, 2, ',', ' ') }}€</div>
-                            @endif
+                            <div style="font-weight: 500; color: var(--dark); margin-bottom: 0.25rem;">{{ $order['service_name'] ?? 'N/A' }}</div>
+                            <div style="font-size: 0.8rem; color: var(--secondary);">
+                                <span style="padding: 0.25rem 0.5rem; background: {{ $order['type'] === 'service' ? 'rgba(59, 130, 246, 0.1)' : 'rgba(16, 185, 129, 0.1)' }}; color: {{ $order['type'] === 'service' ? 'var(--primary)' : 'var(--success)' }}; border-radius: 4px; font-size: 0.75rem; font-weight: 500;">
+                                    {{ $order['type'] === 'service' ? 'Service' : 'Équipement' }}
+                                </span>
+                            </div>
+                        </td>
+                        
+                        <td style="padding: 1rem;">
+                            <div style="font-weight: 600; color: var(--dark); font-size: 1.1rem;">{{ number_format($order['amount'] ?? 0, 2, ',', ' ') }}€</div>
                         </td>
                         
                         <td style="padding: 1rem;">
@@ -258,9 +269,11 @@
                                     'confirmed' => ['color' => 'var(--info)', 'bg' => 'rgba(59, 130, 246, 0.1)', 'icon' => 'fas fa-check', 'text' => 'Confirmée'],
                                     'in_progress' => ['color' => 'var(--primary)', 'bg' => 'rgba(99, 102, 241, 0.1)', 'icon' => 'fas fa-play', 'text' => 'En cours'],
                                     'completed' => ['color' => 'var(--success)', 'bg' => 'rgba(16, 185, 129, 0.1)', 'icon' => 'fas fa-check-circle', 'text' => 'Terminée'],
-                                    'cancelled' => ['color' => 'var(--danger)', 'bg' => 'rgba(239, 68, 68, 0.1)', 'icon' => 'fas fa-times-circle', 'text' => 'Annulée']
+                                    'cancelled' => ['color' => 'var(--danger)', 'bg' => 'rgba(239, 68, 68, 0.1)', 'icon' => 'fas fa-times-circle', 'text' => 'Annulée'],
+                                    'accepted' => ['color' => 'var(--info)', 'bg' => 'rgba(59, 130, 246, 0.1)', 'icon' => 'fas fa-check', 'text' => 'Acceptée'],
+                                    'active' => ['color' => 'var(--primary)', 'bg' => 'rgba(99, 102, 241, 0.1)', 'icon' => 'fas fa-play', 'text' => 'Active']
                                 ];
-                                $status = $statusConfig[$order->status ?? 'pending'] ?? $statusConfig['pending'];
+                                $status = $statusConfig[$order['status'] ?? 'pending'] ?? $statusConfig['pending'];
                             @endphp
                             
                             <span style="padding: 0.375rem 0.75rem; background: {{ $status['bg'] }}; color: {{ $status['color'] }}; border-radius: 6px; font-size: 0.8rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.375rem;">
@@ -270,42 +283,42 @@
                         </td>
                         
                         <td style="padding: 1rem;">
-                            <div style="font-weight: 500; color: var(--dark);">{{ $order->created_at->format('d/m/Y') }}</div>
-                            <div style="font-size: 0.8rem; color: var(--secondary);">{{ $order->created_at->format('H:i') }}</div>
+                            <div style="font-weight: 500; color: var(--dark);">{{ \Carbon\Carbon::parse($order['created_at'])->format('d/m/Y') }}</div>
+                            <div style="font-size: 0.8rem; color: var(--secondary);">{{ \Carbon\Carbon::parse($order['created_at'])->format('H:i') }}</div>
                         </td>
                         
                         <td style="padding: 1rem; text-align: center;">
                             <div style="display: flex; gap: 0.5rem; justify-content: center;">
-                                <a href="{{ route('administrateur.orders.show', $order->id) }}" class="btn btn-outline" style="padding: 0.375rem 0.75rem; font-size: 0.8rem;" title="Voir les détails">
+                                <a href="{{ route('administrateur.orders.show', $order['id']) }}" class="btn btn-outline" style="padding: 0.375rem 0.75rem; font-size: 0.8rem;" title="Voir les détails">
                                     <i class="fas fa-eye"></i>
                                 </a>
                                 
-                                @if($order->status === 'pending')
-                                    <button onclick="confirmOrder({{ $order->id }})" class="btn btn-success" style="padding: 0.375rem 0.75rem; font-size: 0.8rem;" title="Confirmer">
+                                @if($order['status'] === 'pending')
+                                    <button onclick="confirmOrder({{ $order['id'] }})" class="btn btn-success" style="padding: 0.375rem 0.75rem; font-size: 0.8rem;" title="Confirmer">
                                         <i class="fas fa-check"></i>
                                     </button>
                                 @endif
                                 
-                                @if(in_array($order->status, ['pending', 'confirmed']))
-                                    <button onclick="cancelOrder({{ $order->id }})" class="btn btn-danger" style="padding: 0.375rem 0.75rem; font-size: 0.8rem;" title="Annuler">
+                                @if(in_array($order['status'], ['pending', 'confirmed']))
+                                    <button onclick="cancelOrder({{ $order['id'] }})" class="btn btn-danger" style="padding: 0.375rem 0.75rem; font-size: 0.8rem;" title="Annuler">
                                         <i class="fas fa-times"></i>
                                     </button>
                                 @endif
                                 
                                 <div style="position: relative; display: inline-block;">
-                                    <button onclick="toggleOrderMenu({{ $order->id }})" class="btn btn-outline" style="padding: 0.375rem 0.75rem; font-size: 0.8rem;" title="Plus d'actions">
+                                    <button onclick="toggleOrderMenu({{ $order['id'] }})" class="btn btn-outline" style="padding: 0.375rem 0.75rem; font-size: 0.8rem;" title="Plus d'actions">
                                         <i class="fas fa-ellipsis-v"></i>
                                     </button>
-                                    <div id="orderMenu{{ $order->id }}" style="position: absolute; top: 100%; right: 0; background: white; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); z-index: 100; min-width: 150px; display: none;">
-                                        <a href="{{ route('administrateur.orders.edit', $order->id) }}" style="display: block; padding: 0.75rem 1rem; color: var(--dark); text-decoration: none; border-bottom: 1px solid #e2e8f0;" onmouseover="this.style.backgroundColor='#f8fafc'" onmouseout="this.style.backgroundColor='transparent'">
+                                    <div id="orderMenu{{ $order['id'] }}" style="position: absolute; top: 100%; right: 0; background: white; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); z-index: 100; min-width: 150px; display: none;">
+                                        <a href="{{ route('administrateur.orders.edit', $order['id']) }}" style="display: block; padding: 0.75rem 1rem; color: var(--dark); text-decoration: none; border-bottom: 1px solid #e2e8f0;" onmouseover="this.style.backgroundColor='#f8fafc'" onmouseout="this.style.backgroundColor='transparent'">
                                             <i class="fas fa-edit" style="margin-right: 0.5rem;"></i>
                                             Modifier
                                         </a>
-                                        <button onclick="duplicateOrder({{ $order->id }})" style="width: 100%; text-align: left; padding: 0.75rem 1rem; background: none; border: none; color: var(--dark); border-bottom: 1px solid #e2e8f0;" onmouseover="this.style.backgroundColor='#f8fafc'" onmouseout="this.style.backgroundColor='transparent'">
+                                        <button onclick="duplicateOrder({{ $order['id'] }})" style="width: 100%; text-align: left; padding: 0.75rem 1rem; background: none; border: none; color: var(--dark); border-bottom: 1px solid #e2e8f0;" onmouseover="this.style.backgroundColor='#f8fafc'" onmouseout="this.style.backgroundColor='transparent'">
                                             <i class="fas fa-copy" style="margin-right: 0.5rem;"></i>
                                             Dupliquer
                                         </button>
-                                        <button onclick="deleteOrder({{ $order->id }})" style="width: 100%; text-align: left; padding: 0.75rem 1rem; background: none; border: none; color: var(--danger);" onmouseover="this.style.backgroundColor='#fef2f2'" onmouseout="this.style.backgroundColor='transparent'">
+                                        <button onclick="deleteOrder({{ $order['id'] }})" style="width: 100%; text-align: left; padding: 0.75rem 1rem; background: none; border: none; color: var(--danger);" onmouseover="this.style.backgroundColor='#fef2f2'" onmouseout="this.style.backgroundColor='transparent'">
                                             <i class="fas fa-trash" style="margin-right: 0.5rem;"></i>
                                             Supprimer
                                         </button>
@@ -352,10 +365,7 @@
             <i class="fas fa-times"></i>
             Annuler
         </button>
-        <button class="btn btn-info" onclick="bulkExport()">
-            <i class="fas fa-download"></i>
-            Exporter
-        </button>
+
         <button class="btn btn-outline" onclick="clearSelection()">
             <i class="fas fa-times"></i>
             Annuler
@@ -531,18 +541,6 @@ function bulkCancel() {
     }
 }
 
-function bulkExport() {
-    const checkedBoxes = document.querySelectorAll('.order-checkbox:checked');
-    if (checkedBoxes.length === 0) return;
-    
-    // Implement bulk export logic
-    console.log('Bulk exporting orders');
-}
 
-// Export orders
-function exportOrders() {
-    // Implement export logic
-    console.log('Exporting all orders');
-}
 </script>
 @endpush
