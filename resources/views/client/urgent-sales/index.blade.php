@@ -143,7 +143,7 @@
             </div>
             
             <!-- Grille des ventes -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 mb-8">
                 @foreach($sales as $sale)
                     <div class="bg-white rounded-lg shadow hover:shadow-lg transition-shadow duration-200 overflow-hidden">
                         <a href="{{ route('urgent-sales.show', $sale) }}" class="block">
@@ -204,17 +204,22 @@
                                 <p class="text-gray-700 text-sm line-clamp-2 mb-3">{{ $sale->description }}</p>
                                 
                                 <!-- Prestataire -->
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center">
+                                <div class="border-t border-gray-100 pt-3">
+                                    <div class="flex items-center mb-3">
                                         <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-2">
                                             <i class="fas fa-user text-gray-600 text-xs"></i>
                                         </div>
                                         <span class="text-sm font-medium text-gray-900">{{ $sale->prestataire->user->name ?? 'Prestataire' }}</span>
                                     </div>
                                     
-                                    <div class="flex items-center text-xs text-gray-500">
-                                        <i class="fas fa-eye mr-1"></i>
-                                        <span>{{ $sale->views_count }}</span>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center text-xs text-gray-500">
+                                            <i class="fas fa-eye mr-1"></i>
+                                            <span>{{ $sale->views_count }}</span>
+                                        </div>
+                                        <button class="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 text-xs font-medium">
+                                            <i class="fas fa-envelope mr-1"></i>Contacter
+                                        </button>
                                     </div>
                                 </div>
                             </div>

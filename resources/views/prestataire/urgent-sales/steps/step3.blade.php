@@ -11,22 +11,12 @@
         <!-- Description -->
         <div>
             <label for="description" class="block text-xs sm:text-sm font-medium text-red-700 mb-1 sm:mb-2">Description détaillée *</label>
-            <textarea id="description" name="description" required rows="5" maxlength="2000" class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('description') border-red-500 @enderror" placeholder="Décrivez votre produit en détail : caractéristiques, raison de la vente, défauts éventuels...">{{ old('description') }}</textarea>
+            <textarea id="description" name="description" required rows="5" class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('description') border-red-500 @enderror" placeholder="Décrivez votre produit en détail : caractéristiques, raison de la vente, défauts éventuels...">{{ old('description') }}</textarea>
             <div class="mt-1">
                 @error('description')
                     <p class="text-red-500 text-xs sm:text-sm">{{ $message }}</p>
                 @enderror
-                <div id="description-error" class="text-red-500 text-xs sm:text-sm hidden">
-                    <p class="font-medium">Description trop courte (minimum 50 caractères)</p>
-                    <p class="text-xs mt-1">Structure suggérée : Ce que c'est / Pour qui / Ce qui est inclus / Conditions</p>
-                </div>
-                <div id="description-warning" class="text-yellow-600 text-xs sm:text-sm hidden">
-                    <p>Ajoutez bénéfices, état, accessoires, délais, garanties</p>
-                </div>
-                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mt-1 gap-1 sm:gap-2">
-                    <p class="text-red-600 text-xs flex-1">Recommandé : 150–600 caractères</p>
-                    <p class="text-gray-500 text-xs flex-shrink-0"><span id="description-count">0</span> caractères</p>
-                </div>
+                <p class="text-red-600 text-xs">Soyez précis et complet dans votre description</p>
             </div>
         </div>
         
@@ -86,28 +76,11 @@
 <script>
 // Validation en temps réel pour la description
 const descriptionInput = document.getElementById('description');
-const descriptionCount = document.getElementById('description-count');
-const descriptionError = document.getElementById('description-error');
-const descriptionWarning = document.getElementById('description-warning');
 
 function validateDescription() {
-    const length = descriptionInput.value.length;
-    descriptionCount.textContent = length;
-    
-    // Réinitialiser les styles
+    // Always show green border for any input
     descriptionInput.classList.remove('border-red-500', 'border-yellow-500', 'border-green-500');
-    descriptionError.classList.add('hidden');
-    descriptionWarning.classList.add('hidden');
-    
-    if (length < 50) {
-        descriptionInput.classList.add('border-red-500');
-        descriptionError.classList.remove('hidden');
-    } else if (length < 150) {
-        descriptionInput.classList.add('border-yellow-500');
-        descriptionWarning.classList.remove('hidden');
-    } else {
-        descriptionInput.classList.add('border-green-500');
-    }
+    descriptionInput.classList.add('border-green-500');
 }
 
 descriptionInput.addEventListener('input', validateDescription);

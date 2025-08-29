@@ -177,7 +177,7 @@
 
                 <!-- Liste des ventes -->
                 @if($urgentSales->count() > 0)
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
                         @foreach($urgentSales as $sale)
                             <div class="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden" data-lat="{{ $sale->prestataire->latitude }}" data-lon="{{ $sale->prestataire->longitude }}">
                                 <a href="{{ route('urgent-sales.show', $sale) }}" class="block">
@@ -240,27 +240,25 @@
                         @endif
                                         
                                         <div class="pt-3 border-t border-gray-100">
-                                            <div class="flex items-center justify-between">
-                                                <div class="flex items-center text-xs sm:text-sm text-gray-600">
-                                                    <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full mr-2 flex items-center justify-center overflow-hidden">
-                                                        @if($sale->prestataire->photo)
-                                                            <img src="{{ Storage::url($sale->prestataire->photo) }}" alt="{{ $sale->prestataire->user->name }}" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover">
-                                                        @elseif($sale->prestataire->user->avatar)
-                                                            <img src="{{ Storage::url($sale->prestataire->user->avatar) }}" alt="{{ $sale->prestataire->user->name }}" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover">
-                                                        @elseif($sale->prestataire->user->profile_photo_path)
-                                                            <img src="{{ asset('storage/' . $sale->prestataire->user->profile_photo_path) }}" alt="{{ $sale->prestataire->user->name }}" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover">
-                                                        @else
-                                                            <div class="w-6 h-6 sm:w-8 sm:h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                                                                <span class="text-xs font-medium">{{ substr($sale->prestataire->user->name, 0, 1) }}</span>
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                    <span class="truncate">{{ $sale->prestataire->user->name }}</span>
+                                            <div class="flex items-center text-xs sm:text-sm text-gray-600 mb-3">
+                                                <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full mr-2 flex items-center justify-center overflow-hidden">
+                                                    @if($sale->prestataire->photo)
+                                                        <img src="{{ Storage::url($sale->prestataire->photo) }}" alt="{{ $sale->prestataire->user->name }}" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover">
+                                                    @elseif($sale->prestataire->user->avatar)
+                                                        <img src="{{ Storage::url($sale->prestataire->user->avatar) }}" alt="{{ $sale->prestataire->user->name }}" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover">
+                                                    @elseif($sale->prestataire->user->profile_photo_path)
+                                                        <img src="{{ asset('storage/' . $sale->prestataire->user->profile_photo_path) }}" alt="{{ $sale->prestataire->user->name }}" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover">
+                                                    @else
+                                                        <div class="w-6 h-6 sm:w-8 sm:h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                                                            <span class="text-xs font-medium">{{ substr($sale->prestataire->user->name, 0, 1) }}</span>
+                                                        </div>
+                                                    @endif
                                                 </div>
-                                                <button class="px-2 sm:px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 text-xs font-medium">
-                                                    Contacter
-                                                </button>
+                                                <span class="truncate">{{ $sale->prestataire->user->name }}</span>
                                             </div>
+                                            <button class="w-full px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 text-sm font-medium">
+                                                <i class="fas fa-envelope mr-2"></i>Contacter
+                                            </button>
                                         </div>
                                     </div>
                                 </a>

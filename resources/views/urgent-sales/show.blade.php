@@ -8,33 +8,33 @@
 @section('title', $urgentSale->title . ' - Vente urgente - TaPrestation')
 
 @section('content')
-<div class="min-h-screen bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
+<div class="bg-red-50">
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 py-2 sm:py-3 lg:py-4">
         <!-- Breadcrumb -->
-        <nav class="flex mb-4 md:mb-8" aria-label="Breadcrumb">
-            <ol class="inline-flex items-center space-x-1 md:space-x-3 text-xs md:text-sm">
+        <nav class="flex mb-2 sm:mb-3" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 sm:space-x-2">
                 <li class="inline-flex items-center">
-                    <a href="{{ route('home') }}" class="inline-flex items-center font-medium text-gray-700 hover:text-red-600">
-                        <svg class="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <a href="{{ route('home') }}" class="inline-flex items-center text-xs sm:text-sm font-medium text-gray-700 hover:text-red-600">
+                        <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
                         </svg>
-                        Accueil
+                        <span class="hidden sm:inline">Accueil</span>
                     </a>
                 </li>
                 <li>
                     <div class="flex items-center">
-                        <svg class="w-4 h-4 md:w-6 md:h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                         </svg>
-                        <a href="{{ route('urgent-sales.index') }}" class="ml-1 md:ml-2 font-medium text-gray-700 hover:text-red-600">Annonces</a>
+                        <a href="{{ route('urgent-sales.index') }}" class="ml-1 text-xs sm:text-sm font-medium text-gray-700 hover:text-red-600">Annonces</a>
                     </div>
                 </li>
                 <li aria-current="page">
                     <div class="flex items-center">
-                        <svg class="w-4 h-4 md:w-6 md:h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                         </svg>
-                        <span class="ml-1 md:ml-2 font-medium text-gray-500 truncate">{{ Str::limit($urgentSale->title, 20) }}</span>
+                        <span class="ml-1 text-xs sm:text-sm font-medium text-gray-500">{{ Str::limit($urgentSale->title, 30) }}</span>
                     </div>
                 </li>
             </ol>
@@ -67,13 +67,13 @@
             </div>
         @endif
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
             <!-- Galerie d'images -->
             <div class="lg:col-span-2">
                 <!-- Titre et prix au-dessus de l'image -->
-                <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-6 border border-red-100">
-                    <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-2 sm:mb-3 leading-tight break-words">{{ $urgentSale->title }}</h1>
-                    <div class="text-xl sm:text-2xl lg:text-3xl font-bold text-red-600">{{ number_format($urgentSale->price, 2) }}€</div>
+                <div class="bg-white rounded-lg shadow-sm p-3 sm:p-4 mb-3 border border-red-100">
+                    <h1 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-1 sm:mb-2 leading-tight break-words">{{ $urgentSale->title }}</h1>
+                    <div class="text-lg sm:text-xl lg:text-2xl font-bold text-red-600">{{ number_format($urgentSale->price, 2) }}€</div>
                 </div>
                 
                 <div class="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -81,51 +81,60 @@
                     @if($urgentSale->photos && count($urgentSale->photos ?? []) > 0)
                         <div class="relative">
                             <!-- Image principale -->
-                            <div class="aspect-w-16 aspect-h-12">
-                                <img id="mainImage" src="{{ Storage::url($urgentSale->photos[0]) }}" alt="{{ $urgentSale->title }}" class="w-full h-64 sm:h-80 lg:h-96 object-cover">
+                            <div class="relative">
+                                <img id="mainImage" src="{{ Storage::url($urgentSale->photos[0]) }}" alt="{{ $urgentSale->title }}" class="w-full h-32 sm:h-40 lg:h-48 object-cover cursor-pointer rounded-t-lg" onclick="openImageModal(0)">
                             </div>
                             
-                            <div class="absolute top-3 right-3 md:top-4 md:right-4 bg-black/50 text-white px-2 md:px-3 py-1 rounded-full text-xs md:text-sm">
+                            <div class="absolute top-2 right-2 bg-black/50 text-white px-2 py-1 rounded-full text-xs">
                                 État: {{ $urgentSale->condition_label }}
                             </div>
                         </div>
                         
                         <!-- Miniatures -->
                         @if(count($urgentSale->photos ?? []) > 1)
-                            <div class="p-3 md:p-4 border-t">
-                                <div class="flex space-x-2 overflow-x-auto pb-2">
+                            <div class="p-2 border-t">
+                                <div class="flex space-x-2 overflow-x-auto pb-1">
                                     @foreach($urgentSale->photos as $index => $photo)
-                                        <button onclick="changeMainImage('{{ Storage::url($photo) }}')"
-                                                class="flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden border-2 {{ $index === 0 ? 'border-red-500' : 'border-gray-200' }} hover:border-red-500 transition duration-200">
-                                            <img src="{{ Storage::url($photo) }}" alt="Photo {{ $index + 1 }}" class="w-full h-full object-cover">
+                                        <button onclick="changeMainImage('{{ Storage::url($photo) }}', {{ $index }})"
+                                                class="flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-lg overflow-hidden border-2 {{ $index === 0 ? 'border-red-500' : 'border-gray-200' }} hover:border-red-500 transition duration-200">
+                                            <img src="{{ Storage::url($photo) }}" alt="Photo {{ $index + 1 }}" class="w-full h-full object-cover cursor-pointer" onclick="event.stopPropagation(); openImageModal({{ $index }})">
                                         </button>
                                     @endforeach
                                 </div>
                             </div>
                         @endif
                     @else
-                        <div class="h-96 bg-gray-200 flex items-center justify-center">
+                        <div class="h-32 sm:h-40 lg:h-48 bg-gray-200 flex items-center justify-center">
                             <div class="text-center">
-                                <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                 </svg>
-                                <p class="text-gray-500">Aucune photo disponible</p>
+                                <p class="text-sm text-gray-500">Aucune photo disponible</p>
                             </div>
                         </div>
                     @endif
                 </div>
                 
                 <!-- Description détaillée -->
-                <div class="bg-white rounded-lg shadow-sm p-6 mt-6 border border-red-100">
-                    <h2 class="text-xl font-semibold text-red-800 mb-4">Description</h2>
-                    <div class="prose max-w-none text-gray-700">
+                <div class="bg-white rounded-xl shadow-lg border border-red-200 p-3 sm:p-4 mt-3">
+                    <h2 class="text-base sm:text-lg font-bold text-red-800 mb-2 sm:mb-3">Description de l'article</h2>
+                    
+                    <!-- Description principale -->
+                    <div class="prose max-w-none text-gray-700 text-sm leading-relaxed mb-3">
                         {!! nl2br(e($urgentSale->description)) !!}
                     </div>
                     
                     @if($urgentSale->reason)
-                        <div class="mt-6 p-4 bg-red-50 rounded-lg border border-red-200">
-                            <h3 class="text-sm font-medium text-red-800 mb-2">Raison de la vente urgente</h3>
-                            <p class="text-sm text-red-700">{{ $urgentSale->reason }}</p>
+                        <div class="border-t border-gray-200 pt-3">
+                            <div class="bg-red-50 p-2 rounded-lg">
+                                <div class="flex items-center mb-1">
+                                    <svg class="w-3 h-3 text-red-600 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                    </svg>
+                                    <span class="text-xs font-medium text-red-800">Raison de la vente urgente</span>
+                                </div>
+                                <p class="text-red-700 text-xs">{{ $urgentSale->reason }}</p>
+                            </div>
                         </div>
                     @endif
                 </div>
@@ -133,149 +142,208 @@
             
             <!-- Sidebar d'informations -->
             <div class="lg:col-span-1">
-                <div class="bg-white rounded-lg shadow-sm p-4 md:p-6 lg:sticky lg:top-4">
-                    <!-- Informations supplémentaires -->
-                    <div class="mb-4 md:mb-6">
-                        @if($urgentSale->quantity > 1)
-                            <div class="text-sm md:text-base text-gray-600 mb-3">Quantité disponible: {{ $urgentSale->quantity }}</div>
-                        @endif
-                    </div>
+                <div class="bg-white rounded-lg shadow-sm p-3 sm:p-4 lg:sticky lg:top-4">
                     
                     <!-- Informations du vendeur -->
-                    <div class="border-t border-red-200 pt-4 md:pt-6 mb-4 md:mb-6">
-                        <h3 class="text-base md:text-lg font-semibold text-red-800 mb-3">Vendeur</h3>
-                        <a href="{{ route('prestataires.show', $urgentSale->prestataire) }}" class="block hover:bg-red-50 p-2 rounded-lg transition-colors duration-200">
-                            <div class="flex items-center mb-3 md:mb-4">
-                                <div class="w-10 h-10 md:w-12 md:h-12 bg-gray-300 rounded-full mr-3 flex items-center justify-center flex-shrink-0">
+                    <div class="mb-3 sm:mb-4">
+                        <h3 class="text-base sm:text-lg font-bold text-red-800 mb-2">Vendeur</h3>
+                        <a href="{{ route('prestataires.show', $urgentSale->prestataire) }}" class="block">
+                            <div class="flex items-center mb-2 cursor-pointer hover:bg-red-50 p-2 rounded-lg transition-colors duration-200">
+                                <div class="relative w-8 h-8 sm:w-10 sm:h-10 mr-2 flex-shrink-0">
                                     @if($urgentSale->prestataire->user->avatar)
-                                        <img src="{{ Storage::url($urgentSale->prestataire->user->avatar) }}" alt="{{ $urgentSale->prestataire->user->name }}" class="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover">
+                                        <img src="{{ Storage::url($urgentSale->prestataire->user->avatar) }}" alt="{{ $urgentSale->prestataire->user->name }}" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover">
                                     @else
-                                        <span class="text-sm md:text-lg font-medium text-gray-600">{{ substr($urgentSale->prestataire->user->name, 0, 1) }}</span>
+                                        <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        </div>
                                     @endif
                                 </div>
-                                <div class="min-w-0 flex-1">
-                                    <div class="font-medium text-gray-900 text-sm md:text-base truncate hover:text-red-700">{{ $urgentSale->prestataire->user->name }}</div>
-                                    @if($urgentSale->prestataire->company_name)
-                                        <div class="text-xs md:text-sm text-gray-600 truncate">{{ $urgentSale->prestataire->company_name }}</div>
-                                    @endif
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex flex-col">
+                                        <span class="font-medium text-sm text-gray-900 hover:text-red-600 transition-colors duration-200 truncate">{{ $urgentSale->prestataire->user->name }}</span>
+                                        @if($urgentSale->prestataire->company_name)
+                                            <span class="text-xs text-gray-600 truncate">{{ $urgentSale->prestataire->company_name }}</span>
+                                        @endif
+                                    </div>
                                     
-                                    <!-- Évaluations avec étoiles -->
+                                    <!-- Évaluations compactes -->
                                     @php
                                         $averageRating = $urgentSale->prestataire->reviews()->avg('rating') ?? 0;
                                         $reviewCount = $urgentSale->prestataire->reviews()->count();
                                     @endphp
                                     @if($reviewCount > 0)
                                         <div class="flex items-center mt-1">
-                                            <div class="flex items-center mr-2">
+                                            <div class="flex items-center mr-1">
                                                 @for($i = 1; $i <= 5; $i++)
-                                                    @if($i <= floor($averageRating))
-                                                        <svg class="w-3 h-3 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                                        </svg>
-                                                    @elseif($i == ceil($averageRating) && $averageRating - floor($averageRating) >= 0.5)
-                                                        <svg class="w-3 h-3 text-yellow-400" viewBox="0 0 20 20">
-                                                            <defs>
-                                                                <linearGradient id="half-fill-urgent-{{ $i }}">
-                                                                    <stop offset="50%" stop-color="currentColor"/>
-                                                                    <stop offset="50%" stop-color="#e5e7eb"/>
-                                                                </linearGradient>
-                                                            </defs>
-                                                            <path fill="url(#half-fill-urgent-{{ $i }})" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                                        </svg>
-                                                    @else
-                                                        <svg class="w-3 h-3 text-gray-300 fill-current" viewBox="0 0 20 20">
-                                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                                        </svg>
-                                                    @endif
+                                                    <svg class="w-3 h-3 {{ $i <= floor($averageRating) ? 'text-yellow-400' : 'text-gray-300' }} fill-current" viewBox="0 0 20 20">
+                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                    </svg>
                                                 @endfor
                                             </div>
-                                            <span class="text-xs text-gray-600">{{ number_format($averageRating, 1) }} ({{ $reviewCount }} avis)</span>
+                                            <span class="text-xs text-gray-600">{{ number_format($averageRating, 1) }} ({{ $reviewCount }})</span>
                                         </div>
                                     @else
                                         <div class="flex items-center mt-1">
-                                            <span class="text-xs text-gray-500">Aucun avis pour le moment</span>
+                                            <span class="text-xs text-gray-500">Aucun avis</span>
                                         </div>
                                     @endif
-                                    <div class="text-xs text-red-600 mt-1">Cliquez pour voir le profil</div>
+                                    
+                                    <div class="text-xs text-red-600 mt-1">Voir le profil</div>
                                 </div>
                             </div>
                         </a>
                         
-                        <div class="space-y-2 text-xs md:text-sm text-gray-600">
+                        <!-- Toggle button for more info -->
+                        <button onclick="toggleVendeurInfo()" class="w-full text-xs text-red-600 hover:text-red-800 py-1 border-t border-gray-200 mt-2 pt-2 transition-colors duration-200">
+                            <span id="vendeurToggleText">Voir plus d'informations</span>
+                            <svg id="vendeurToggleIcon" class="w-3 h-3 inline-block ml-1 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        
+                        <!-- Additional information (initially hidden) -->
+                        <div id="vendeurExtraInfo" class="hidden mt-2 space-y-2 text-xs">
+                            
+                            <!-- Location info -->
                             @if($urgentSale->location)
-                                <div class="flex items-center">
-                                    <svg class="w-3 h-3 md:w-4 md:h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    </svg>
-                                    <span class="truncate">{{ $urgentSale->location }}</span>
+                                <div class="bg-red-50 p-2 rounded-lg">
+                                    <div class="flex items-start">
+                                        <svg class="w-3 h-3 mr-1 flex-shrink-0 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                        </svg>
+                                        <div class="flex-1">
+                                            <div class="font-medium text-red-800 text-xs mb-1">Localisation</div>
+                                            <div class="text-gray-700 text-xs">{{ $urgentSale->location }}</div>
+                                        </div>
+                                    </div>
                                 </div>
                             @endif
                             
-                            <div class="flex items-center">
-                                <svg class="w-3 h-3 md:w-4 md:h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <!-- Contact info -->
+                            @if($urgentSale->prestataire->phone || $urgentSale->prestataire->user->email)
+                                <div class="bg-gray-50 p-2 rounded-lg">
+                                    <div class="font-medium text-gray-800 text-xs mb-1">Contact</div>
+                                    @if($urgentSale->prestataire->phone)
+                                        <div class="flex items-center mb-1">
+                                            <svg class="w-3 h-3 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                                            </svg>
+                                            <span class="text-gray-700 text-xs">{{ $urgentSale->prestataire->phone }}</span>
+                                        </div>
+                                    @endif
+                                    @if($urgentSale->prestataire->user->email)
+                                        <div class="flex items-center">
+                                            <svg class="w-3 h-3 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                            </svg>
+                                            <span class="text-gray-700 truncate text-xs">{{ Str::limit($urgentSale->prestataire->user->email, 25) }}</span>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endif
+                            
+                            <!-- Publication time -->
+                            <div class="flex items-center text-gray-600">
+                                <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
-                                Publié {{ $urgentSale->created_at->diffForHumans() }}
+                                <span class="truncate">Publié {{ $urgentSale->created_at->diffForHumans() }}</span>
                             </div>
                         </div>
 
                         @if ($urgentSale->latitude && $urgentSale->longitude)
-                            <div class="border-t border-red-200 pt-4 md:pt-6">
-                                <h3 class="text-base md:text-lg font-semibold text-red-800 mb-3">Localisation sur carte</h3>
-                                <div id="map" style="height: 200px;" class="md:h-64 rounded-lg z-10"></div>
+                            <div class="border-t border-gray-200 pt-2 mt-2">
+                                <h3 class="text-sm font-semibold text-red-800 mb-2">Carte</h3>
+                                <div id="map" style="height: 120px;" class="rounded-lg z-10"></div>
                             </div>
                         @endif
                     </div>
                     
                     <!-- Détails du produit -->
-                    <div class="border-t border-red-200 pt-4 md:pt-6 mb-4 md:mb-6">
-                        <h3 class="text-base md:text-lg font-semibold text-red-800 mb-3">Détails</h3>
-                        <div class="space-y-2 md:space-y-3 text-xs md:text-sm">
-                            <div class="flex justify-between items-center">
-                                <span class="text-gray-600">État:</span>
-                                <span class="font-medium">{{ $urgentSale->condition_label }}</span>
+                    <div class="border-t border-gray-200 pt-3 mb-3">
+                        <h3 class="text-sm font-semibold text-red-800 mb-2">Détails</h3>
+                        
+                        <!-- Informations principales (toujours visibles) -->
+                        <div class="mb-2">
+                            <div class="text-xs text-gray-600 mb-1">Quantité disponible</div>
+                            <div class="text-sm font-medium text-gray-800">{{ $urgentSale->quantity }}</div>
+                        </div>
+                        
+                        <!-- Toggle button for more details -->
+                        <button onclick="toggleProductDetails()" class="w-full text-xs text-red-600 hover:text-red-800 py-1 border-t border-gray-200 mt-2 pt-2 transition-colors duration-200">
+                            <span id="productDetailsToggleText">Voir plus de détails</span>
+                            <svg id="productDetailsToggleIcon" class="w-3 h-3 inline-block ml-1 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        
+                        <!-- Additional details (initially hidden) -->
+                        <div id="productExtraDetails" class="hidden mt-2 space-y-2">
+                            <!-- Informations principales -->
+                            <div class="bg-gray-50 rounded-lg p-2 mb-2">
+                                <div class="grid grid-cols-2 gap-2 text-xs">
+                                    <div>
+                                        <div class="text-gray-600 mb-0.5">État</div>
+                                        <div class="font-medium text-gray-800">{{ $urgentSale->condition_label }}</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-gray-600 mb-0.5">Référence</div>
+                                        <div class="font-medium text-gray-800">#{{ $urgentSale->id }}</div>
+                                    </div>
+                                    @if($urgentSale->quantity > 1)
+                                        <div class="col-span-2">
+                                            <div class="text-gray-600 mb-0.5">Quantité</div>
+                                            <div class="font-medium text-gray-800">{{ $urgentSale->quantity }} unités disponibles</div>
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
                             
-                            @if($urgentSale->quantity > 1)
-                                <div class="flex justify-between items-center">
-                                    <span class="text-gray-600">Quantité:</span>
-                                    <span class="font-medium">{{ $urgentSale->quantity }}</span>
+                            <!-- Date de publication -->
+                            <div class="bg-red-50 p-2 rounded-lg">
+                                <div class="flex items-center text-gray-700 text-xs">
+                                    <svg class="w-3 h-3 mr-1 flex-shrink-0 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span class="font-medium text-red-800 mr-1">Publié:</span>
+                                    <span>{{ $urgentSale->created_at->diffForHumans() }}</span>
                                 </div>
-                            @endif
-                            
-                            <div class="flex justify-between items-center">
-                                <span class="text-gray-600">Référence:</span>
-                                <span class="font-medium text-xs">#{{ $urgentSale->id }}</span>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Actions -->
-                    <div class="space-y-2 md:space-y-3">
+                    <div class="mt-2">
                         @auth
                             @if(auth()->user()->id !== $urgentSale->prestataire->user_id)
-                                <button onclick="openContactModal('{{ addslashes($urgentSale->title) }}', '{{ $urgentSale->id }}', '{{ number_format($urgentSale->price, 2) }}')" class="w-full bg-red-600 text-white px-4 md:px-6 py-2 md:py-3 rounded-lg hover:bg-red-700 transition duration-200 font-medium text-sm md:text-base">
-    Contacter le vendeur
-</button>
+                                <div class="grid grid-cols-1 gap-2 mb-2">
+                                    <button onclick="openContactModal('{{ addslashes($urgentSale->title) }}', '{{ $urgentSale->id }}', '{{ number_format($urgentSale->price, 2) }}')" class="w-full bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition duration-200 font-bold text-center text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                                         <span class="truncate">Contacter le vendeur</span>
+                                     </button>
+                                     <button onclick="shareProduct()" class="w-full bg-red-100 text-red-800 px-3 py-2 rounded-lg hover:bg-red-200 transition duration-200 font-bold text-center text-sm">
+                                         <span class="truncate">Partager</span>
+                                     </button>
+                                </div>
+                                
+                                <!-- Bouton de signalement -->
+                                <button onclick="reportProduct()" class="w-full bg-gray-50 text-red-600 border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-50 hover:border-red-300 transition duration-200 text-center text-xs flex items-center justify-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                    </svg>
+                                    <span>Signaler</span>
+                                </button>
                             @else
-                                <div class="bg-gray-100 text-gray-600 px-4 md:px-6 py-2 md:py-3 rounded-lg text-center text-sm md:text-base">
+                                <div class="bg-gray-100 text-gray-600 px-3 py-2 rounded-lg text-center text-sm">
                                     Votre annonce
                                 </div>
                             @endif
                         @else
-                            <a href="{{ route('login') }}" class="block w-full bg-red-600 text-white px-4 md:px-6 py-2 md:py-3 rounded-lg hover:bg-red-700 transition duration-200 font-medium text-center text-sm md:text-base">
-                                Se connecter pour contacter
-                            </a>
+                            <a href="{{ route('login') }}" class="w-full bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition duration-200 font-bold text-center text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                                 <span class="truncate">Se connecter</span>
+                             </a>
                         @endauth
-                        
-                        <button onclick="shareProduct()" class="w-full bg-red-100 text-red-700 px-4 md:px-6 py-2 md:py-3 rounded-lg hover:bg-red-200 transition duration-200 font-medium text-sm md:text-base">
-                            Partager
-                        </button>
-                        
-                        <button onclick="reportProduct()" class="w-full text-red-600 hover:text-red-700 text-xs md:text-sm font-medium py-2">
-                            Signaler cette annonce
-                        </button>
                     </div>
                 </div>
             </div>
@@ -283,13 +351,13 @@
         
         <!-- Ventes similaires -->
         @if($similarSales && $similarSales->count() > 0)
-            <div class="mt-8 md:mt-12">
-                <h2 class="text-xl md:text-2xl font-bold text-red-800 mb-4 md:mb-6 px-4 md:px-0">Ventes similaires</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 px-4 md:px-0">
+            <div class="mt-4 sm:mt-6">
+                <h2 class="text-lg sm:text-xl font-bold text-red-900 mb-3 px-4 sm:px-0">Ventes similaires</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4">
                     @foreach($similarSales as $sale)
                         <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition duration-200 overflow-hidden">
                             <a href="{{ route('urgent-sales.show', $sale) }}" class="block">
-                                <div class="relative h-32 md:h-40 bg-gray-200">
+                                <div class="relative h-32 bg-gray-200">
                                     @if($sale->photos && count($sale->photos ?? []) > 0)
                                         <img src="{{ Storage::url($sale->first_photo) }}" alt="{{ $sale->title }}" class="w-full h-full object-cover">
                                     @else
@@ -303,15 +371,51 @@
 
                                 </div>
                                 
-                                <div class="p-3 md:p-4">
-                                    <h3 class="font-medium text-gray-900 mb-2 line-clamp-2 text-sm md:text-base">{{ Str::limit($sale->title, 40) }}</h3>
-                                    <div class="text-base md:text-lg font-bold text-red-600 mb-2">{{ number_format($sale->price, 2) }}€</div>
-                                    <div class="text-xs md:text-sm text-gray-500">{{ $sale->location ?? 'Non spécifié' }}</div>
+                                <div class="p-2">
+                                    <h3 class="font-medium text-gray-900 mb-1 line-clamp-2 text-sm">{{ Str::limit($sale->title, 40) }}</h3>
+                                    <div class="text-sm font-bold text-red-600 mb-1">{{ number_format($sale->price, 2) }}€</div>
+                                    <div class="text-xs text-gray-500 truncate">{{ $sale->location ?? 'Non spécifié' }}</div>
                                 </div>
                             </a>
                         </div>
                     @endforeach
                 </div>
+            </div>
+        @endif
+    </div>
+</div>
+
+<!-- Modal d'affichage d'image plein écran -->
+<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden flex items-center justify-center p-4">
+    <div class="relative max-w-7xl max-h-full">
+        <!-- Image principale -->
+        <img id="modalImage" src="" alt="" class="max-w-full max-h-full object-contain">
+        
+        <!-- Bouton fermer -->
+        <button onclick="closeImageModal()" class="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+        
+        <!-- Flèche gauche -->
+        <button id="prevButton" onclick="navigateImage(-1)" class="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 transition-colors bg-black bg-opacity-50 rounded-full p-3 hover:bg-opacity-70">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+        </button>
+        
+        <!-- Flèche droite -->
+        <button id="nextButton" onclick="navigateImage(1)" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 transition-colors bg-black bg-opacity-50 rounded-full p-3 hover:bg-opacity-70">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+        </button>
+        
+        <!-- Indicateur d'image -->
+        @if($urgentSale->photos && count($urgentSale->photos) > 0)
+            <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white bg-black bg-opacity-50 px-3 py-1 rounded-full text-sm">
+                <span id="imageCounter">1 / {{ count($urgentSale->photos) }}</span>
             </div>
         @endif
     </div>
@@ -437,17 +541,152 @@
 
 @push('scripts')
 <script>
-function changeMainImage(src) {
+// Images de l'annonce pour le modal
+const saleImages = [
+    @if($urgentSale->photos && count($urgentSale->photos) > 0)
+        @foreach($urgentSale->photos as $index => $photo)
+            {
+                url: '{{ Storage::url($photo) }}',
+                alt: '{{ $urgentSale->title }} - Photo {{ $index + 1 }}'
+            }{{ !$loop->last ? ',' : '' }}
+        @endforeach
+    @endif
+];
+
+let currentImageIndex = 0;
+
+function changeMainImage(src, index = null) {
     document.getElementById('mainImage').src = src;
     
-    // Mettre à jour les bordures des miniatures
-    document.querySelectorAll('.flex-shrink-0 button').forEach(btn => {
-        btn.classList.remove('border-red-500');
-        btn.classList.add('border-gray-200');
-    });
+    if (index !== null) {
+        currentImageIndex = index;
+    }
     
-    event.target.closest('button').classList.remove('border-gray-200');
-    event.target.closest('button').classList.add('border-red-500');
+    // Mettre à jour les bordures des miniatures
+    const buttons = document.querySelectorAll('.flex-shrink-0');
+    buttons.forEach((button, i) => {
+        const img = button.querySelector('img');
+        if (i === currentImageIndex) {
+            button.classList.add('border-red-500');
+            button.classList.remove('border-gray-200');
+        } else {
+            button.classList.remove('border-red-500');
+            button.classList.add('border-gray-200');
+        }
+    });
+}
+
+function openImageModal(index) {
+    if (saleImages.length === 0) return;
+    
+    currentImageIndex = index;
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const imageCounter = document.getElementById('imageCounter');
+    const prevButton = document.getElementById('prevButton');
+    const nextButton = document.getElementById('nextButton');
+    
+    if (modal && modalImage && imageCounter) {
+        modalImage.src = saleImages[index].url;
+        modalImage.alt = saleImages[index].alt;
+        imageCounter.textContent = `${index + 1} / ${saleImages.length}`;
+        
+        // Afficher/masquer les boutons de navigation
+        if (prevButton) prevButton.style.display = saleImages.length > 1 ? 'block' : 'none';
+        if (nextButton) nextButton.style.display = saleImages.length > 1 ? 'block' : 'none';
+        
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeImageModal() {
+    const modal = document.getElementById('imageModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+}
+
+function navigateImage(direction) {
+    const newIndex = currentImageIndex + direction;
+    
+    if (newIndex >= 0 && newIndex < saleImages.length) {
+        currentImageIndex = newIndex;
+        const modalImage = document.getElementById('modalImage');
+        const imageCounter = document.getElementById('imageCounter');
+        
+        if (modalImage && imageCounter) {
+            modalImage.src = saleImages[currentImageIndex].url;
+            modalImage.alt = saleImages[currentImageIndex].alt;
+            imageCounter.textContent = `${currentImageIndex + 1} / ${saleImages.length}`;
+            
+            // Mettre à jour l'image principale aussi
+            changeMainImage(saleImages[currentImageIndex].url, currentImageIndex);
+        }
+    }
+}
+
+// Fonction pour toggler les informations du vendeur
+function toggleVendeurInfo() {
+    const extraInfo = document.getElementById('vendeurExtraInfo');
+    const toggleText = document.getElementById('vendeurToggleText');
+    const toggleIcon = document.getElementById('vendeurToggleIcon');
+    
+    if (extraInfo && toggleText && toggleIcon) {
+        if (extraInfo.classList.contains('hidden')) {
+            extraInfo.classList.remove('hidden');
+            toggleText.textContent = 'Masquer les informations';
+            toggleIcon.style.transform = 'rotate(180deg)';
+        } else {
+            extraInfo.classList.add('hidden');
+            toggleText.textContent = 'Voir plus d\'informations';
+            toggleIcon.style.transform = 'rotate(0deg)';
+        }
+    }
+}
+
+// Fonction pour toggler les détails du produit
+function toggleProductDetails() {
+    const extraDetails = document.getElementById('productExtraDetails');
+    const toggleText = document.getElementById('productDetailsToggleText');
+    const toggleIcon = document.getElementById('productDetailsToggleIcon');
+    
+    if (extraDetails && toggleText && toggleIcon) {
+        if (extraDetails.classList.contains('hidden')) {
+            extraDetails.classList.remove('hidden');
+            toggleText.textContent = 'Masquer les détails';
+            toggleIcon.style.transform = 'rotate(180deg)';
+        } else {
+            extraDetails.classList.add('hidden');
+            toggleText.textContent = 'Voir plus de détails';
+            toggleIcon.style.transform = 'rotate(0deg)';
+        }
+    }
+}
+
+// Gestion du clavier pour le modal d'image
+document.addEventListener('keydown', function(event) {
+    const modal = document.getElementById('imageModal');
+    if (modal && !modal.classList.contains('hidden')) {
+        if (event.key === 'Escape') {
+            closeImageModal();
+        } else if (event.key === 'ArrowLeft') {
+            navigateImage(-1);
+        } else if (event.key === 'ArrowRight') {
+            navigateImage(1);
+        }
+    }
+});
+
+// Fermer le modal en cliquant à l'extérieur
+const imageModal = document.getElementById('imageModal');
+if (imageModal) {
+    imageModal.addEventListener('click', function(event) {
+        if (event.target === this) {
+            closeImageModal();
+        }
+    });
 }
 
 function openContactModal(title, id, price) {
@@ -506,21 +745,6 @@ document.addEventListener('click', function(event) {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-}
-
-.aspect-w-16 {
-    position: relative;
-    padding-bottom: 75%; /* 16:12 aspect ratio */
-}
-
-.aspect-w-16 > * {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
 }
 </style>
 @endpush

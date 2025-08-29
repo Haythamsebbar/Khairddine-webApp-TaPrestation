@@ -241,7 +241,7 @@
         
         @if($urgentSales->count() > 0)
             <!-- Grille des ventes -->
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6 mb-6 sm:mb-8">
                 @foreach($urgentSales as $sale)
                     <div class="bg-white rounded-xl shadow-lg border border-red-200 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                         <!-- Image de la vente -->

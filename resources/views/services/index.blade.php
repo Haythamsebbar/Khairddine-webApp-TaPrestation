@@ -7,6 +7,7 @@
     $sessionFilters = session('services_filters', []);
     $currentSearch = request('search', $sessionFilters['search'] ?? '');
     $currentCategory = request('category', $sessionFilters['category'] ?? '');
+    $currentMainCategory = request('main_category', $sessionFilters['main_category'] ?? '');
     $currentPriceMin = request('price_min', $sessionFilters['price_min'] ?? '');
     $currentPriceMax = request('price_max', $sessionFilters['price_max'] ?? '');
     $currentLocation = request('location', $sessionFilters['location'] ?? '');
@@ -46,17 +47,37 @@
             
             <form method="GET" action="{{ route('services.index') }}" class="space-y-4 sm:space-y-6" id="filtersForm" style="display: none;">
                 <!-- Première ligne de filtres -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                    <!-- Catégorie -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
+                    <!-- Recherche par mot-clé -->
                     <div>
-                        <label for="category" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Catégorie</label>
+                        <label for="search" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Recherche</label>
+                        <div class="relative">
+                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <input type="text" name="search" id="search" value="{{ $currentSearch }}" placeholder="Services, prestataires, mots-clés..." class="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-sm sm:text-base">
+                        </div>
+                    </div>
+                    
+                    <!-- Catégorie principale -->
+                    <div>
+                        <label for="main_category" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Catégorie principale</label>
                         <div class="relative">
                             <i class="fas fa-tags absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
-                            <select name="category" id="category" class="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-sm sm:text-base">
+                            <select name="main_category" id="main_category" class="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-sm sm:text-base">
                                 <option value="">Toutes les catégories</option>
-                                @foreach($categories as $category)
-                                    <option value="{{ $category->id }}" {{ $currentCategory == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                @foreach($categories->whereNull('parent_id') as $category)
+                                    <option value="{{ $category->id }}" {{ request('main_category') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                                 @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Sous-catégorie -->
+                    <div>
+                        <label for="category" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Sous-catégorie</label>
+                        <div class="relative">
+                            <i class="fas fa-tag absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <select name="category" id="category" class="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-sm sm:text-base" disabled>
+                                <option value="">Sélectionnez d'abord une catégorie principale</option>
                             </select>
                         </div>
                     </div>
@@ -95,7 +116,7 @@
                 </div>
                 
                 <!-- Deuxième ligne de filtres -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                     <!-- Localisation -->
                     <div>
                         <label for="location" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Localisation</label>
@@ -130,7 +151,7 @@
                         <i class="fas fa-times mr-2"></i>Effacer tout
                     </button>
                     
-                    @if($currentSearch || $currentCategory || $currentPriceMin || $currentPriceMax || $currentLocation || $currentVerifiedOnly || $currentSort)
+                    @if($currentSearch || $currentCategory || $currentMainCategory || $currentPriceMin || $currentPriceMax || $currentLocation || $currentVerifiedOnly || $currentSort)
                         <a href="{{ route('services.index') }}" class="bg-white hover:bg-gray-50 text-blue-600 border border-blue-200 font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm sm:text-base">
                             <i class="fas fa-undo mr-2"></i>Réinitialiser
                         </a>
@@ -175,10 +196,68 @@ document.addEventListener('DOMContentLoaded', function() {
             chevron.classList.add('fa-chevron-down');
         }
     });
+    
+    // Gestion des catégories hiérarchiques
+    const mainCategorySelect = document.getElementById('main_category');
+    const subcategorySelect = document.getElementById('category');
+    
+    // Données des catégories (passées depuis le contrôleur)
+    const categoriesData = @json($categories->mapWithKeys(function($category) {
+        return [$category->id => $category->children];
+    }));
+    
+    // Fonction pour charger les sous-catégories
+    function loadSubcategories(mainCategoryId) {
+        subcategorySelect.innerHTML = '<option value="">Toutes les sous-catégories</option>';
+        
+        if (mainCategoryId && categoriesData[mainCategoryId]) {
+            const subcategories = categoriesData[mainCategoryId];
+            
+            if (subcategories.length > 0) {
+                subcategorySelect.disabled = false;
+                subcategories.forEach(function(subcategory) {
+                    const option = document.createElement('option');
+                    option.value = subcategory.id;
+                    option.textContent = subcategory.name;
+                    if ('{{ $currentCategory }}' == subcategory.id) {
+                        option.selected = true;
+                    }
+                    subcategorySelect.appendChild(option);
+                });
+            } else {
+                subcategorySelect.disabled = true;
+                subcategorySelect.innerHTML = '<option value="">Aucune sous-catégorie disponible</option>';
+            }
+        } else {
+            subcategorySelect.disabled = true;
+            subcategorySelect.innerHTML = '<option value="">Sélectionnez d\'abord une catégorie principale</option>';
+        }
+    }
+    
+    // Écouter les changements de catégorie principale
+    mainCategorySelect.addEventListener('change', function() {
+        loadSubcategories(this.value);
+    });
+    
+    // Charger les sous-catégories si une catégorie principale est déjà sélectionnée
+    const selectedMainCategory = mainCategorySelect.value;
+    if (selectedMainCategory) {
+        loadSubcategories(selectedMainCategory);
+    }
 });
 
 function clearFilters() {
-    document.getElementById('filtersForm').reset();
+    const form = document.getElementById('filtersForm');
+    form.reset();
+    
+    // Clear search input
+    document.getElementById('search').value = '';
+    
+    // Reset subcategory dropdown
+    const subcategorySelect = document.getElementById('category');
+    subcategorySelect.innerHTML = '<option value="">Sélectionnez d\'abord une catégorie principale</option>';
+    subcategorySelect.disabled = true;
+    
     window.location.href = '{{ route('services.index') }}';
 }
 
@@ -269,7 +348,7 @@ function getMyLocation() {
         <!-- Section des résultats -->
         <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-8">
         @if($services->count() > 0)
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
                 @foreach($services as $service)
                     <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-blue-100 service-card flex flex-col h-full">
                         <!-- Images du service -->

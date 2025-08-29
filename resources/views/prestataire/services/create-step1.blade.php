@@ -103,23 +103,23 @@
                         <!-- Titre -->
                         <div>
                             <label for="title" class="block text-xs sm:text-sm font-medium text-blue-700 mb-1 sm:mb-2">Titre du service *</label>
-                            <input type="text" id="title" name="title" value="{{ old('title', session('service_data.title')) }}" required maxlength="255" class="w-full px-3 py-2 sm:py-2.5 text-sm sm:text-base border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('title') border-red-500 @enderror">
+                            <input type="text" id="title" name="title" value="{{ old('title', session('service_data.title')) }}" required class="w-full px-3 py-2 sm:py-2.5 text-sm sm:text-base border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('title') border-red-500 @enderror">
                             <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mt-1 space-y-1 sm:space-y-0">
                                 <div class="flex-1">
                                     @error('title')
                                         <p class="text-red-500 text-xs">{{ $message }}</p>
                                     @enderror
                                     <p id="title-warning" class="text-yellow-600 text-xs hidden">Titre trop court, précisez l'usage ou le modèle</p>
-                                    <p id="title-tip" class="text-blue-600 text-xs">Idéal : 5–9 mots, sans abréviations</p>
+                                    <p id="title-tip" class="text-blue-600 text-xs">Saisissez le titre de votre service - aucune limite de caractères</p>
                                 </div>
-                                <p class="text-gray-500 text-xs flex-shrink-0 sm:ml-2"><span id="title-count">0</span>/70</p>
+                                <p class="text-gray-500 text-xs flex-shrink-0 sm:ml-2"><span id="title-count">0</span> caractères</p>
                             </div>
                         </div>
                         
                         <!-- Description -->
                         <div>
                             <label for="description" class="block text-xs sm:text-sm font-medium text-blue-700 mb-1 sm:mb-2">Description détaillée *</label>
-                            <textarea id="description" name="description" required rows="3" sm:rows="4" lg:rows="6" maxlength="2000" class="w-full px-3 py-2 sm:py-2.5 text-sm sm:text-base border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('description') border-red-500 @enderror" placeholder="Décrivez en détail votre service, vos compétences et ce qui vous différencie...">{{ old('description', session('service_data.description')) }}</textarea>
+                            <textarea id="description" name="description" required rows="3" sm:rows="4" lg:rows="6" class="w-full px-3 py-2 sm:py-2.5 text-sm sm:text-base border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('description') border-red-500 @enderror" placeholder="Décrivez en détail votre service, vos compétences et ce qui vous différencie...">{{ old('description', session('service_data.description')) }}</textarea>
                             <div class="mt-1">
                                 @error('description')
                                     <p class="text-red-500 text-xs">{{ $message }}</p>
@@ -132,7 +132,7 @@
                                     <p>Ajoutez bénéfices, état, accessoires, délais, garanties</p>
                                 </div>
                                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mt-1 space-y-1 sm:space-y-0">
-                                    <p class="text-blue-600 text-xs flex-1">Recommandé : 150–600 caractères</p>
+                                    <p class="text-blue-600 text-xs flex-1">Aucune limite de caractères - décrivez votre service comme vous le souhaitez</p>
                                     <p class="text-gray-500 text-xs flex-shrink-0 sm:ml-2"><span id="description-count">0</span> caractères</p>
                                 </div>
                             </div>
@@ -186,19 +186,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const length = titleInput.value.length;
         titleCount.textContent = length;
         
-        // Réinitialiser les styles
+        // Always show green border for any input
         titleInput.classList.remove('border-red-500', 'border-yellow-500', 'border-green-500');
-        
-        if (length < 10) {
-            titleInput.classList.add('border-yellow-500');
-            titleWarning.classList.remove('hidden');
-        } else if (length <= 70) {
-            titleInput.classList.add('border-green-500');
-            titleWarning.classList.add('hidden');
-        } else {
-            titleInput.classList.add('border-red-500');
-            titleWarning.classList.add('hidden');
-        }
+        titleInput.classList.add('border-green-500');
+        titleWarning.classList.add('hidden');
     }
 
     titleInput.addEventListener('input', validateTitle);
@@ -214,20 +205,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const length = descriptionInput.value.length;
         descriptionCount.textContent = length;
         
-        // Réinitialiser les styles
+        // Always show green border for any input
         descriptionInput.classList.remove('border-red-500', 'border-yellow-500', 'border-green-500');
+        descriptionInput.classList.add('border-green-500');
         descriptionError.classList.add('hidden');
         descriptionWarning.classList.add('hidden');
-        
-        if (length < 50) {
-            descriptionInput.classList.add('border-red-500');
-            descriptionError.classList.remove('hidden');
-        } else if (length < 150) {
-            descriptionInput.classList.add('border-yellow-500');
-            descriptionWarning.classList.remove('hidden');
-        } else {
-            descriptionInput.classList.add('border-green-500');
-        }
     }
 
     descriptionInput.addEventListener('input', validateDescription);
@@ -237,17 +219,10 @@ document.addEventListener('DOMContentLoaded', function () {
     validateTitle();
     validateDescription();
 
-    // Validation du formulaire
+    // Validation du formulaire - removed length restrictions
     document.getElementById('step1Form').addEventListener('submit', function(e) {
-        const description = document.getElementById('description').value.trim();
-        
-        // Vérifier la longueur minimale de la description (bloquant)
-        if (description.length < 50) {
-            e.preventDefault();
-            alert('La description doit contenir au moins 50 caractères.');
-            descriptionInput.focus();
-            return;
-        }
+        // Allow submission without any length checks
+        return true;
     });
 });
 </script>

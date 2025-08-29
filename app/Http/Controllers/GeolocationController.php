@@ -237,7 +237,7 @@ class GeolocationController extends Controller
     }
 
     /**
-     * Récupère la liste des villes disponibles.
+     * Récupère la liste des villes et codes postaux disponibles dans le monde.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
@@ -245,38 +245,219 @@ class GeolocationController extends Controller
     public function getCities(Request $request)
     {
         $search = $request->get('search', '');
-        $region = $request->get('region');
+        $limit = min($request->get('limit', 10), 50); // Max 50 results
+
+        if (strlen($search) < 2) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Au moins 2 caractères requis'
+            ]);
+        }
 
         try {
-            $query = DB::table('prestataires')
-                ->select('city')
-                ->whereNotNull('city')
-                ->where('city', '!=', '')
-                ->distinct();
-
-            if ($search) {
-                $query->where('city', 'LIKE', '%' . $search . '%');
-            }
-
-            if ($region) {
-                $query->where('region', $region);
-            }
-
-            $cities = $query->orderBy('city')
-                ->limit(50)
-                ->pluck('city')
-                ->toArray();
+            // First, try to get suggestions from our database
+            $localResults = $this->getLocalSuggestions($search, $limit);
+            
+            // Then get worldwide suggestions using Nominatim API
+            $worldwideResults = $this->getWorldwideSuggestions($search, $limit - count($localResults));
+            
+            // Combine and format results
+            $allResults = array_merge($localResults, $worldwideResults);
+            
+            // Remove duplicates and limit results
+            $uniqueResults = $this->removeDuplicates($allResults);
+            $finalResults = array_slice($uniqueResults, 0, $limit);
 
             return response()->json([
                 'success' => true,
-                'data' => $cities
+                'data' => $finalResults
             ]);
         } catch (\Exception $e) {
+            // Fallback to local suggestions only if external API fails
+            $localResults = $this->getLocalSuggestions($search, $limit);
+            
             return response()->json([
-                'success' => false,
-                'message' => 'Erreur lors de la récupération des villes'
-            ], 500);
+                'success' => true,
+                'data' => $localResults,
+                'warning' => 'Suggestions mondiales temporairement indisponibles'
+            ]);
         }
+    }
+    
+    /**
+     * Récupère les suggestions depuis la base de données locale.
+     *
+     * @param string $search
+     * @param int $limit
+     * @return array
+     */
+    private function getLocalSuggestions(string $search, int $limit): array
+    {
+        try {
+            $suggestions = [];
+            
+            // Search cities in prestataires table
+            $cities = DB::table('prestataires')
+                ->select('city', 'postal_code', 'country')
+                ->whereNotNull('city')
+                ->where('city', '!=', '')
+                ->where(function($query) use ($search) {
+                    $query->where('city', 'LIKE', '%' . $search . '%')
+                          ->orWhere('postal_code', 'LIKE', $search . '%');
+                })
+                ->distinct()
+                ->limit($limit)
+                ->get();
+
+            foreach ($cities as $city) {
+                $displayText = $city->city;
+                if ($city->postal_code) {
+                    $displayText .= ' (' . $city->postal_code . ')';
+                }
+                if ($city->country && $city->country !== 'France') {
+                    $displayText .= ', ' . $city->country;
+                }
+                
+                $suggestions[] = [
+                    'text' => $displayText,
+                    'city' => $city->city,
+                    'postal_code' => $city->postal_code,
+                    'country' => $city->country ?? 'France',
+                    'source' => 'local'
+                ];
+            }
+            
+            return $suggestions;
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+    
+    /**
+     * Récupère les suggestions depuis l'API mondiale Nominatim.
+     *
+     * @param string $search
+     * @param int $limit
+     * @return array
+     */
+    private function getWorldwideSuggestions(string $search, int $limit): array
+    {
+        if ($limit <= 0) {
+            return [];
+        }
+        
+        try {
+            // Use Nominatim API for worldwide geocoding
+            $url = 'https://nominatim.openstreetmap.org/search?'
+                 . http_build_query([
+                     'q' => $search,
+                     'format' => 'json',
+                     'addressdetails' => 1,
+                     'limit' => $limit,
+                     'accept-language' => 'fr,en',
+                     'countrycodes' => '', // No restriction - worldwide
+                     'featuretype' => 'city'
+                 ]);
+            
+            $context = stream_context_create([
+                'http' => [
+                    'timeout' => 5,
+                    'user_agent' => 'TaPrestation/1.0 (Location Autocomplete)'
+                ]
+            ]);
+            
+            $response = @file_get_contents($url, false, $context);
+            
+            if ($response === false) {
+                return [];
+            }
+            
+            $data = json_decode($response, true);
+            
+            if (!$data || !is_array($data)) {
+                return [];
+            }
+            
+            $suggestions = [];
+            
+            foreach ($data as $item) {
+                if (!isset($item['display_name']) || !isset($item['address'])) {
+                    continue;
+                }
+                
+                $address = $item['address'];
+                
+                // Extract city information
+                $city = $address['city'] 
+                     ?? $address['town'] 
+                     ?? $address['municipality'] 
+                     ?? $address['village']
+                     ?? $address['hamlet']
+                     ?? null;
+                
+                if (!$city) {
+                    continue;
+                }
+                
+                $country = $address['country'] ?? '';
+                $postcode = $address['postcode'] ?? '';
+                $state = $address['state'] ?? '';
+                
+                // Format display text
+                $displayText = $city;
+                
+                if ($postcode) {
+                    $displayText .= ' (' . $postcode . ')';
+                }
+                
+                if ($state && $country !== 'France') {
+                    $displayText .= ', ' . $state;
+                }
+                
+                if ($country) {
+                    $displayText .= ', ' . $country;
+                }
+                
+                $suggestions[] = [
+                    'text' => $displayText,
+                    'city' => $city,
+                    'postal_code' => $postcode,
+                    'country' => $country,
+                    'state' => $state,
+                    'source' => 'worldwide',
+                    'lat' => $item['lat'] ?? null,
+                    'lon' => $item['lon'] ?? null
+                ];
+            }
+            
+            return $suggestions;
+            
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+    
+    /**
+     * Supprime les doublons des suggestions.
+     *
+     * @param array $suggestions
+     * @return array
+     */
+    private function removeDuplicates(array $suggestions): array
+    {
+        $seen = [];
+        $unique = [];
+        
+        foreach ($suggestions as $suggestion) {
+            $key = strtolower($suggestion['city'] . '|' . ($suggestion['postal_code'] ?? '') . '|' . ($suggestion['country'] ?? ''));
+            
+            if (!isset($seen[$key])) {
+                $seen[$key] = true;
+                $unique[] = $suggestion;
+            }
+        }
+        
+        return $unique;
     }
 
     /**

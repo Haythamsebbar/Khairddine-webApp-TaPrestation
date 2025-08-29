@@ -24,7 +24,7 @@ class EquipmentRentalController extends Controller
     public function index(Request $request)
     {
         $query = EquipmentRental::where('client_id', Auth::user()->client->id)
-                               ->with(['equipment.prestataire.user', 'equipment.categories']);
+                               ->with(['equipment.prestataire.user', 'equipment.category', 'equipment.subcategory']);
         
         // Filtrage par statut
         if ($request->filled('status')) {
@@ -121,7 +121,8 @@ class EquipmentRentalController extends Controller
         
         $rental->load([
             'equipment.prestataire.user',
-            'equipment.categories',
+            'equipment.category',
+            'equipment.subcategory',
             'equipment.photos',
             'rentalRequest',
             'review'
@@ -292,7 +293,7 @@ class EquipmentRentalController extends Controller
             return back()->with('info', 'Vous avez déjà laissé un avis pour cette location.');
         }
         
-        $rental->load(['equipment.prestataire.user', 'equipment.categories']);
+        $rental->load(['equipment.prestataire.user', 'equipment.category', 'equipment.subcategory']);
         
         return view('client.equipment.rentals.review', compact('rental'));
     }

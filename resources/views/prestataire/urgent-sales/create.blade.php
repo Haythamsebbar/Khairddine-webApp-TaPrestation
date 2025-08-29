@@ -22,6 +22,27 @@
 
             <!-- Indicateur d'étapes -->
             <div class="bg-white rounded-xl shadow-lg border border-red-200 p-4 sm:p-6 mb-6">
+                <!-- Display validation errors if any -->
+                @if($errors->any())
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+                        <div class="flex">
+                            <div class="py-1">
+                                <svg class="fill-current h-6 w-6 text-red-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-bold">Erreurs de validation détectées :</p>
+                                <ul class="mt-2 text-sm">
+                                    @foreach ($errors->all() as $error)
+                                        <li>• {{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                                <p class="mt-2 text-sm"><strong>Le formulaire vous redirigera automatiquement vers l'étape contenant l'erreur.</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                @endif
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center space-x-3 sm:space-x-4">
                         <a href="{{ route('prestataire.urgent-sales.index') }}" class="text-red-600 hover:text-red-900 transition-colors duration-200">
@@ -148,7 +169,10 @@ function showStep(step) {
     document.getElementById(`step-${step}`).classList.remove('hidden');
     
     // Mettre à jour l'indicateur d'étape
-    document.getElementById('current-step').textContent = step;
+    const currentStepEl = document.getElementById('current-step');
+    if (currentStepEl) {
+        currentStepEl.textContent = step;
+    }
     
     // Mettre à jour les indicateurs visuels
     updateStepIndicators(step);
@@ -162,7 +186,12 @@ function showStep(step) {
     }
     
     if (step === 4) {
-        updateReviewStep();
+        // Call updateReviewStep if it exists (defined in step4.blade.php)
+        setTimeout(function() {
+            if (typeof updateReviewStep === 'function') {
+                updateReviewStep();
+            }
+        }, 100);
     }
 }
 
@@ -171,21 +200,28 @@ function updateStepIndicators(step) {
         const indicator = document.getElementById(`step-${i}-indicator`);
         const line = document.getElementById(`line-${i}`);
         
-        if (i < step) {
-            // Étapes complétées
-            indicator.className = 'w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-sm font-bold';
-            indicator.innerHTML = '<i class="fas fa-check"></i>';
-            if (line) line.className = 'flex-1 h-1 bg-green-600 mx-2';
-        } else if (i === step) {
-            // Étape courante
-            indicator.className = 'w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center text-sm font-bold';
-            indicator.textContent = i;
-            if (line) line.className = 'flex-1 h-1 bg-gray-300 mx-2';
-        } else {
-            // Étapes futures
-            indicator.className = 'w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-bold';
-            indicator.textContent = i;
-            if (line) line.className = 'flex-1 h-1 bg-gray-300 mx-2';
+        if (indicator) {
+            if (i < step) {
+                // Étapes complétées
+                indicator.className = 'w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-sm font-bold';
+                indicator.innerHTML = '<i class="fas fa-check"></i>';
+            } else if (i === step) {
+                // Étape courante
+                indicator.className = 'w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center text-sm font-bold';
+                indicator.textContent = i;
+            } else {
+                // Étapes futures
+                indicator.className = 'w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-bold';
+                indicator.textContent = i;
+            }
+        }
+        
+        if (line) {
+            if (i < step) {
+                line.className = 'flex-1 h-1 bg-green-600 mx-2';
+            } else {
+                line.className = 'flex-1 h-1 bg-gray-300 mx-2';
+            }
         }
     }
 }
@@ -221,10 +257,30 @@ function validateCurrentStep() {
         case 3:
             return validateStep3();
         case 4:
-            return true; // Pas de validation spécifique pour la révision
+            return validateStep4();
         default:
             return true;
     }
+}
+
+// Add validation for step 4
+function validateStep4() {
+    const termsCheckbox = document.getElementById('terms-checkbox');
+    const contactCheckbox = document.getElementById('contact-checkbox');
+    
+    if (!termsCheckbox || !termsCheckbox.checked) {
+        alert('Veuillez accepter les conditions d\'utilisation.');
+        if (termsCheckbox) termsCheckbox.focus();
+        return false;
+    }
+    
+    if (!contactCheckbox || !contactCheckbox.checked) {
+        alert('Veuillez accepter d\'\u00eatre contacté par les acheteurs.');
+        if (contactCheckbox) contactCheckbox.focus();
+        return false;
+    }
+    
+    return true;
 }
 
 function validateStep1() {
@@ -236,12 +292,6 @@ function validateStep1() {
     
     if (!title) {
         alert('Veuillez saisir un titre pour votre vente.');
-        document.getElementById('title').focus();
-        return false;
-    }
-    
-    if (title.length < 10) {
-        alert('Le titre doit contenir au moins 10 caractères.');
         document.getElementById('title').focus();
         return false;
     }
@@ -274,16 +324,30 @@ function validateStep1() {
 }
 
 function validateStep2() {
-    const location = document.getElementById('selectedAddress').value.trim();
-    const latitude = document.getElementById('selectedLatitude').value;
-    const longitude = document.getElementById('selectedLongitude').value;
-    
-    if (!location || !latitude || !longitude) {
-        alert('Veuillez sélectionner une localisation sur la carte.');
+    try {
+        const locationEl = document.getElementById('selectedAddress');
+        const latitudeEl = document.getElementById('selectedLatitude');
+        const longitudeEl = document.getElementById('selectedLongitude');
+        
+        if (!locationEl || !latitudeEl || !longitudeEl) {
+            console.error('Location elements not found');
+            return false;
+        }
+        
+        const location = locationEl.value.trim();
+        const latitude = latitudeEl.value;
+        const longitude = longitudeEl.value;
+        
+        if (!location || !latitude || !longitude) {
+            alert('Veuillez sélectionner une localisation sur la carte ou saisir une adresse.');
+            return false;
+        }
+        
+        return true;
+    } catch (error) {
+        console.error('Error in validateStep2:', error);
         return false;
     }
-    
-    return true;
 }
 
 function validateStep3() {
@@ -295,55 +359,161 @@ function validateStep3() {
         return false;
     }
     
-    if (description.length < 50) {
-        alert('La description doit contenir au moins 50 caractères.');
-        document.getElementById('description').focus();
-        return false;
-    }
-    
     return true;
 }
 
-function updateReviewStep() {
-    // Mettre à jour les informations dans l'étape de révision
-    document.getElementById('review-title').textContent = document.getElementById('title').value;
-    document.getElementById('review-price').textContent = document.getElementById('price').value + ' €';
-    document.getElementById('review-condition').textContent = document.getElementById('condition').selectedOptions[0].text;
-    document.getElementById('review-category').textContent = document.getElementById('parent_category_id').selectedOptions[0].text;
-    document.getElementById('review-quantity').textContent = document.getElementById('quantity').value;
-    document.getElementById('review-location').textContent = document.getElementById('selectedAddress').value;
-    document.getElementById('review-description').textContent = document.getElementById('description').value;
+
+
+// Function to detect which step has validation errors (simplified)
+function getStepWithErrors() {
+    // Only redirect to error step if we have actual Laravel validation errors
+    const hasValidationErrors = @json($errors->any());
     
-    // Sous-catégorie (optionnelle)
-    const subcategory = document.getElementById('category_id');
-    if (subcategory.value) {
-        document.getElementById('review-subcategory').textContent = subcategory.selectedOptions[0].text;
-        document.getElementById('review-subcategory-container').classList.remove('hidden');
-    } else {
-        document.getElementById('review-subcategory-container').classList.add('hidden');
+    if (!hasValidationErrors) {
+        return 1; // Always start at step 1 if no validation errors
     }
+    
+    // Check for specific step errors only if validation errors exist
+    const step1Errors = @json($errors->has('title') || $errors->has('price') || $errors->has('condition') || $errors->has('parent_category_id') || $errors->has('quantity'));
+    const step2Errors = @json($errors->has('location') || $errors->has('latitude') || $errors->has('longitude'));
+    const step3Errors = @json($errors->has('description') || $errors->has('photos'));
+    
+    if (step1Errors) return 1;
+    if (step2Errors) return 2;
+    if (step3Errors) return 3;
+    
+    return 1; // Default to step 1
 }
 
 // Événements de navigation
-document.getElementById('next-btn').addEventListener('click', function() {
-    if (validateCurrentStep()) {
-        if (currentStep < totalSteps) {
-            currentStep++;
-            showStep(currentStep);
-        }
-    }
-});
-
-document.getElementById('prev-btn').addEventListener('click', function() {
-    if (currentStep > 1) {
-        currentStep--;
-        showStep(currentStep);
-    }
-});
-
-// Initialisation
 document.addEventListener('DOMContentLoaded', function() {
-    showStep(1);
+    const nextBtn = document.getElementById('next-btn');
+    const prevBtn = document.getElementById('prev-btn');
+    const submitBtn = document.getElementById('submit-btn');
+    const form = document.getElementById('urgent-sale-form');
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Next button clicked, current step:', currentStep);
+            
+            if (validateCurrentStep()) {
+                if (currentStep < totalSteps) {
+                    currentStep++;
+                    console.log('Moving to step:', currentStep);
+                    showStep(currentStep);
+                }
+            } else {
+                console.log('Validation failed for step:', currentStep);
+            }
+        });
+    } else {
+        console.error('Next button not found!');
+    }
+    
+    if (prevBtn) {
+        prevBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (currentStep > 1) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        });
+    }
+    
+    // Handle submit button
+    if (submitBtn && form) {
+        submitBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Submit button clicked, current step:', currentStep);
+            
+            // First, ensure we're on step 4
+            if (currentStep !== 4) {
+                console.log('Not on step 4, redirecting to step 4');
+                currentStep = 4;
+                showStep(currentStep);
+                return;
+            }
+            
+            // Validate step 4 first (the current visible step)
+            if (!validateStep4()) {
+                console.log('Step 4 validation failed - checkboxes not checked');
+                return;
+            }
+            
+            console.log('Step 4 validation passed, now validating all previous steps...');
+            
+            // Validate all previous steps without changing UI
+            let allStepsValid = true;
+            let firstInvalidStep = null;
+            
+            // Validate step 1
+            const title = document.getElementById('title')?.value?.trim();
+            const price = document.getElementById('price')?.value;
+            const condition = document.getElementById('condition')?.value;
+            const parentCategory = document.getElementById('parent_category_id')?.value;
+            const quantity = document.getElementById('quantity')?.value;
+            
+            if (!title || !price || parseFloat(price) <= 0 || !condition || !parentCategory || !quantity || parseInt(quantity) <= 0) {
+                allStepsValid = false;
+                firstInvalidStep = 1;
+            }
+            
+            // Validate step 2 if step 1 is valid
+            if (allStepsValid) {
+                const locationEl = document.getElementById('selectedAddress');
+                const latitudeEl = document.getElementById('selectedLatitude');
+                const longitudeEl = document.getElementById('selectedLongitude');
+                
+                const location = locationEl?.value?.trim();
+                const latitude = latitudeEl?.value;
+                const longitude = longitudeEl?.value;
+                
+                if (!location || !latitude || !longitude) {
+                    allStepsValid = false;
+                    firstInvalidStep = 2;
+                }
+            }
+            
+            // Validate step 3 if previous steps are valid
+            if (allStepsValid) {
+                const description = document.getElementById('description')?.value?.trim();
+                if (!description) {
+                    allStepsValid = false;
+                    firstInvalidStep = 3;
+                }
+            }
+            
+            if (allStepsValid) {
+                console.log('All steps valid, submitting form');
+                console.log('Form data check:');
+                console.log('- Title:', title);
+                console.log('- Price:', price);
+                console.log('- Location:', location);
+                console.log('- Description:', description);
+                form.submit();
+            } else {
+                console.log('Form validation failed at step:', firstInvalidStep);
+                alert(`Veuillez compléter toutes les informations requises à l'étape ${firstInvalidStep}.`);
+                currentStep = firstInvalidStep;
+                showStep(currentStep);
+            }
+        });
+    }
+    
+    // Determine initial step - only use error detection if we have actual validation errors
+    const hasActualErrors = @json($errors->any());
+    if (hasActualErrors) {
+        const errorStep = getStepWithErrors();
+        currentStep = errorStep;
+        console.log('Starting at step:', currentStep, 'due to validation errors');
+    } else {
+        currentStep = 1;
+        console.log('Starting at step 1 (no validation errors)');
+    }
+    
+    // Initialisation
+    showStep(currentStep);
 });
 </script>
 @endpush

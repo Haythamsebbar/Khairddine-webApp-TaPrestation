@@ -31,7 +31,7 @@ class EquipmentRentalRequestController extends Controller
     public function index(Request $request)
     {
         $query = EquipmentRentalRequest::where('client_id', Auth::user()->client->id)
-                                     ->with(['equipment.prestataire.user', 'equipment.categories']);
+                                     ->with(['equipment.prestataire.user', 'equipment.category', 'equipment.subcategory']);
         
         // Filtrage par statut
         if ($request->filled('status')) {
@@ -175,7 +175,8 @@ class EquipmentRentalRequestController extends Controller
         
         $request->load([
             'equipment.prestataire.user',
-            'equipment.categories',
+            'equipment.category',
+            'equipment.subcategory',
             'rental' // Si la demande a été acceptée et confirmée
         ]);
         
@@ -290,7 +291,7 @@ class EquipmentRentalRequestController extends Controller
             return back()->with('error', 'Cette demande ne peut plus être modifiée.');
         }
         
-        $request->load(['equipment.prestataire.user', 'equipment.categories']);
+        $request->load(['equipment.prestataire.user', 'equipment.category', 'equipment.subcategory']);
         
         return view('client.equipment.requests.edit', compact('request'));
     }

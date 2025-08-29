@@ -11,16 +11,14 @@
         <!-- Titre -->
         <div class="md:col-span-2">
             <label for="title" class="block text-xs sm:text-sm font-medium text-red-700 mb-1 sm:mb-2">Titre de la vente *</label>
-            <input type="text" id="title" name="title" value="{{ old('title') }}" required maxlength="255" class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('title') border-red-500 @enderror">
+            <input type="text" id="title" name="title" value="{{ old('title') }}" required class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('title') border-red-500 @enderror">
             <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mt-1 gap-1 sm:gap-2">
                 <div class="flex-1">
                     @error('title')
                         <p class="text-red-500 text-xs sm:text-sm">{{ $message }}</p>
                     @enderror
-                    <p id="title-warning" class="text-yellow-600 text-xs sm:text-sm hidden">Titre trop court, précisez l'usage ou le modèle</p>
-                    <p id="title-tip" class="text-red-600 text-xs">Idéal : 5–9 mots, sans abréviations</p>
+                    <p class="text-red-600 text-xs">Soyez précis et descriptif</p>
                 </div>
-                <p class="text-gray-500 text-xs sm:text-sm flex-shrink-0"><span id="title-count">0</span>/70</p>
             </div>
         </div>
         
@@ -89,26 +87,11 @@
 <script>
 // Validation en temps réel pour le titre
 const titleInput = document.getElementById('title');
-const titleCount = document.getElementById('title-count');
-const titleWarning = document.getElementById('title-warning');
 
 function validateTitle() {
-    const length = titleInput.value.length;
-    titleCount.textContent = length;
-    
-    // Réinitialiser les styles
+    // Always show green border for any input
     titleInput.classList.remove('border-red-500', 'border-yellow-500', 'border-green-500');
-    
-    if (length < 10) {
-        titleInput.classList.add('border-yellow-500');
-        titleWarning.classList.remove('hidden');
-    } else if (length <= 70) {
-        titleInput.classList.add('border-green-500');
-        titleWarning.classList.add('hidden');
-    } else {
-        titleInput.classList.add('border-red-500');
-        titleWarning.classList.add('hidden');
-    }
+    titleInput.classList.add('border-green-500');
 }
 
 titleInput.addEventListener('input', validateTitle);

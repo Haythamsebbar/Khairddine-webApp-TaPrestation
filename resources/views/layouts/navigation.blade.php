@@ -173,7 +173,7 @@
                                     
                                     <x-dropdown-link :href="route('prestataire.videos.manage')" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-red-600 transition-colors duration-200">
                                         <svg class="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.55a1 1 0 01.8 1.6L18 15H6a1 1 0 01-1-1v-4a1 1 0 011-1h1.5l1.5-2.5a1 1 0 011.6 0L12 9h3zm-3 1a2 2 0 100-4 2 2 0 000 4z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                         </svg>
                                         {{ __('Mes Vidéos') }}
                                     </x-dropdown-link>

@@ -116,9 +116,9 @@ class ServiceController extends Controller
     public function storeStep1(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string|min:10',
-            'delivery_time' => 'required|integer|min:1'
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'delivery_time' => 'nullable|integer'
         ]);
 
         // Stocker les données dans la session
@@ -265,10 +265,10 @@ class ServiceController extends Controller
 
         // Processus de création classique (pour compatibilité)
         $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string|min:10',
+            'title' => 'required|string',
+            'description' => 'required|string',
             'price' => 'required|numeric|min:0',
-            'delivery_time' => 'required|integer|min:1',
+            'delivery_time' => 'nullable|integer|min:1',
             'category_id' => 'required|exists:categories,id',
             'subcategory_id' => 'nullable|exists:categories,id',
             'images' => 'nullable|array|max:5',
@@ -311,7 +311,7 @@ class ServiceController extends Controller
         $request->validate([
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
-            'address' => 'nullable|string|max:255'
+            'address' => 'nullable|string'
         ]);
 
         $prestataire = Auth::user()->prestataire;

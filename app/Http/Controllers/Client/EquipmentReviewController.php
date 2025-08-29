@@ -94,7 +94,8 @@ class EquipmentReviewController extends Controller
         
         $review->load([
             'equipment.prestataire.user',
-            'equipment.categories',
+            'equipment.category',
+            'equipment.subcategory',
             'rental',
             'prestataireResponse'
         ]);

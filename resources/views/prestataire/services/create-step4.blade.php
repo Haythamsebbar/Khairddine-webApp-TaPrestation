@@ -123,10 +123,14 @@
                     
                     <div class="map-container">
                         <div id="serviceMap" class="h-40 sm:h-48 lg:h-64 rounded-lg border border-blue-300 shadow-inner"></div>
-                        <div class="mt-2 sm:mt-3">
-                            <input type="text" id="selectedAddress" name="address" value="{{ old('address', session('service_data.address')) }}" class="w-full px-3 py-2 sm:py-2.5 text-sm sm:text-base border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('address') border-red-500 @enderror" placeholder="Cliquez sur la carte pour sélectionner une localisation" readonly>
-                            <input type="hidden" id="latitude" name="latitude" value="{{ old('latitude', session('service_data.latitude')) }}">
-                            <input type="hidden" id="longitude" name="longitude" value="{{ old('longitude', session('service_data.longitude')) }}">
+                        <div class="mt-2 sm:mt-3 relative">
+                            <input type="text" id="selectedAddress" name="address" value="{{ old('address', session('service_creation.step4.address')) }}" class="w-full px-3 py-2 sm:py-2.5 text-sm sm:text-base border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('address') border-red-500 @enderror" placeholder="Saisissez l'adresse ou cliquez sur la carte pour sélectionner une localisation" autocomplete="off">
+                            <!-- Dropdown suggestions -->
+                            <div id="address-suggestions" class="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-lg shadow-xl mt-1 z-[99999] hidden max-h-60 overflow-y-auto" style="z-index: 99999 !important; position: absolute !important;">
+                                <!-- Suggestions will be populated here -->
+                            </div>
+                            <input type="hidden" id="latitude" name="latitude" value="{{ old('latitude', session('service_creation.step4.latitude')) }}">
+                            <input type="hidden" id="longitude" name="longitude" value="{{ old('longitude', session('service_creation.step4.longitude')) }}">
                             @error('address')
                                 <p class="text-red-500 text-xs sm:text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -152,16 +156,16 @@
                         <!-- Titre -->
                         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-1 sm:space-y-0">
                             <span class="text-xs sm:text-sm font-medium text-gray-600">Titre :</span>
-                            <p class="text-blue-900 font-semibold text-sm sm:text-base sm:text-right sm:max-w-xs" id="recap-title">{{ session('service_data.title', 'Non défini') }}</p>
+                            <p class="text-blue-900 font-semibold text-sm sm:text-base sm:text-right sm:max-w-xs" id="recap-title">{{ session('service_creation.step1.title', 'Non défini') }}</p>
                         </div>
                         
                         <!-- Prix -->
                         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-1 sm:space-y-0">
                             <span class="text-xs sm:text-sm font-medium text-gray-600">Prix :</span>
                             <p class="text-green-600 font-semibold text-sm sm:text-base sm:text-right" id="recap-price">
-                                {{ session('service_data.price') ? session('service_data.price') . '€' : 'Non défini' }}
-                                @if(session('service_data.price_type'))
-                                    <span class="text-xs sm:text-sm text-gray-600">({{ session('service_data.price_type') }})</span>
+                                {{ session('service_creation.step2.price') ? session('service_creation.step2.price') . '€' : 'Non défini' }}
+                                @if(session('service_creation.step2.price_type'))
+                                    <span class="text-xs sm:text-sm text-gray-600">({{ session('service_creation.step2.price_type') }})</span>
                                 @endif
                             </p>
                         </div>
@@ -170,7 +174,7 @@
                         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-1 sm:space-y-0">
                             <span class="text-xs sm:text-sm font-medium text-gray-600">Réservable :</span>
                             <p class="text-blue-900 font-semibold text-sm sm:text-base" id="recap-reservable">
-                                {{ session('service_data.reservable') ? 'Oui' : 'Non' }}
+                                {{ session('service_creation.step1.reservable') ? 'Oui' : 'Non' }}
                             </p>
                         </div>
                         
@@ -178,14 +182,14 @@
                         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-1 sm:space-y-0">
                             <span class="text-xs sm:text-sm font-medium text-gray-600">Délai de livraison :</span>
                             <p class="text-blue-900 font-semibold text-sm sm:text-base sm:text-right sm:max-w-xs" id="recap-delivery">
-                                {{ session('service_data.delivery_time') ? session('service_data.delivery_time') . ' jours' : 'Non défini' }}
+                                {{ session('service_creation.step1.delivery_time') ? session('service_creation.step1.delivery_time') . ' jours' : 'Non défini' }}
                             </p>
                         </div>
                         
                         <!-- Description -->
                         <div class="flex flex-col space-y-2 pt-3 sm:pt-4 border-t border-green-200">
                             <span class="text-xs sm:text-sm font-medium text-gray-600">Description :</span>
-                            <p class="text-gray-800 text-xs sm:text-sm leading-relaxed" id="recap-description">{{ Str::limit(session('service_data.description', 'Non définie'), 150) }}</p>
+                            <p class="text-gray-800 text-xs sm:text-sm leading-relaxed" id="recap-description">{{ Str::limit(session('service_creation.step1.description', 'Non définie'), 150) }}</p>
                         </div>
                     </div>
                 </div>
@@ -217,6 +221,12 @@ document.addEventListener('DOMContentLoaded', function () {
     let marker = null;
     const defaultLat = 33.5731; // Casablanca
     const defaultLng = -7.5898;
+    
+    // Autocomplete variables
+    let searchTimeout;
+    let currentFocus = -1;
+    const addressInput = document.getElementById('selectedAddress');
+    const suggestionsContainer = document.getElementById('address-suggestions');
 
     function initializeMap() {
         const mapElement = document.getElementById('serviceMap');
@@ -244,14 +254,215 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Initialize autocomplete functionality
+    function initAutocomplete() {
+        if (!addressInput || !suggestionsContainer) return;
+
+        // Handle input changes
+        addressInput.addEventListener('input', function() {
+            const query = this.value.trim();
+            
+            // Clear previous timeout
+            clearTimeout(searchTimeout);
+            
+            if (query.length < 2) {
+                hideSuggestions();
+                return;
+            }
+            
+            // Debounce the search to avoid too many API calls
+            searchTimeout = setTimeout(() => {
+                fetchLocationSuggestions(query);
+            }, 300);
+        });
+        
+        // Handle keyboard navigation
+        addressInput.addEventListener('keydown', function(e) {
+            const suggestions = suggestionsContainer.querySelectorAll('.suggestion-item');
+            
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                currentFocus++;
+                if (currentFocus >= suggestions.length) currentFocus = 0;
+                setActiveSuggestion(suggestions);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                currentFocus--;
+                if (currentFocus < 0) currentFocus = suggestions.length - 1;
+                setActiveSuggestion(suggestions);
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (currentFocus > -1 && suggestions[currentFocus]) {
+                    suggestions[currentFocus].click();
+                }
+            } else if (e.key === 'Escape') {
+                hideSuggestions();
+                currentFocus = -1;
+            }
+        });
+        
+        // Handle focus events
+        addressInput.addEventListener('focus', function() {
+            const query = this.value.trim();
+            if (query.length >= 2) {
+                fetchLocationSuggestions(query);
+            }
+        });
+    }
+
     function updateMarker(lat, lng) {
         if (marker) {
             marker.setLatLng([lat, lng]);
         } else {
             marker = L.marker([lat, lng]).addTo(map);
         }
+        // Make marker globally accessible
+        window.serviceMapMarker = marker;
+        window.serviceMap = map;
+        
         document.getElementById('latitude').value = lat.toFixed(6);
         document.getElementById('longitude').value = lng.toFixed(6);
+    }
+
+    // Autocomplete functions
+    function fetchLocationSuggestions(query) {
+        console.log('Fetching suggestions for:', query);
+        fetch(`/api/public/geolocation/cities?search=${encodeURIComponent(query)}&limit=10`)
+            .then(response => {
+                console.log('API Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('API Data received:', data);
+                if (data.success && data.data && data.data.length > 0) {
+                    displaySuggestions(data.data, query);
+                    if (data.warning) {
+                        console.warn('Location API warning:', data.warning);
+                    }
+                } else {
+                    displayNoSuggestions();
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching location suggestions:', error);
+                displayNoSuggestions();
+            });
+    }
+
+    function displaySuggestions(suggestions, query) {
+        let html = '';
+        
+        suggestions.forEach((suggestion, index) => {
+            // Determine the display text and highlight matching parts
+            let displayText = suggestion.text || suggestion.city;
+            const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
+            const highlightedText = displayText.replace(regex, '<strong>$1</strong>');
+            
+            // Determine icon and styling based on source
+            const isLocal = suggestion.source === 'local';
+            const iconColor = isLocal ? 'text-blue-500' : 'text-green-500';
+            const bgHover = isLocal ? 'hover:bg-blue-50' : 'hover:bg-green-50';
+            
+            html += `
+                <div class="suggestion-item px-4 py-3 ${bgHover} cursor-pointer border-b border-gray-100 last:border-b-0" 
+                     data-suggestion='${JSON.stringify(suggestion).replace(/'/g, "&apos;")}' 
+                     onclick="selectLocationFromData(this)">
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 ${iconColor} mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-sm text-gray-900 truncate">${highlightedText}</div>
+                            ${suggestion.source === 'worldwide' ? '<div class="text-xs text-gray-500 mt-0.5">Suggestion mondiale</div>' : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        suggestionsContainer.innerHTML = html;
+        suggestionsContainer.classList.remove('hidden');
+        currentFocus = -1;
+    }
+
+    function displayNoSuggestions() {
+        suggestionsContainer.innerHTML = `
+            <div class="px-4 py-3 text-gray-500 text-sm">
+                <div class="flex items-center">
+                    <svg class="w-4 h-4 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    Aucune ville trouvée
+                </div>
+            </div>
+        `;
+        suggestionsContainer.classList.remove('hidden');
+    }
+
+    function selectLocationFromData(element) {
+        const suggestion = JSON.parse(element.getAttribute('data-suggestion'));
+        selectLocation(suggestion);
+    }
+    
+    // Make this function globally accessible
+    window.selectLocationFromData = selectLocationFromData;
+
+    function selectLocation(suggestion) {
+        // Handle both old format (string) and new format (object)
+        let locationText;
+        let lat, lng;
+        
+        if (typeof suggestion === 'string') {
+            locationText = suggestion;
+        } else if (suggestion && suggestion.text) {
+            locationText = suggestion.text;
+            lat = suggestion.latitude || suggestion.lat;
+            lng = suggestion.longitude || suggestion.lng;
+        } else if (suggestion && suggestion.city) {
+            locationText = suggestion.city;
+            if (suggestion.postal_code) {
+                locationText += ' (' + suggestion.postal_code + ')';
+            }
+            if (suggestion.country && suggestion.country !== 'France') {
+                locationText += ', ' + suggestion.country;
+            }
+            lat = suggestion.latitude || suggestion.lat;
+            lng = suggestion.longitude || suggestion.lng;
+        } else {
+            locationText = 'Localisation sélectionnée';
+        }
+        
+        addressInput.value = locationText;
+        hideSuggestions();
+        currentFocus = -1;
+        
+        // Update map if coordinates are available
+        if (lat && lng && map) {
+            updateMarker(parseFloat(lat), parseFloat(lng));
+            map.setView([parseFloat(lat), parseFloat(lng)], 13);
+        }
+    }
+
+    function hideSuggestions() {
+        if (suggestionsContainer) {
+            suggestionsContainer.classList.add('hidden');
+            suggestionsContainer.innerHTML = '';
+        }
+    }
+
+    function setActiveSuggestion(suggestions) {
+        // Remove active class from all suggestions
+        suggestions.forEach(s => s.classList.remove('bg-blue-50', 'bg-green-50'));
+        
+        // Add active class to current suggestion
+        if (currentFocus >= 0 && suggestions[currentFocus]) {
+            suggestions[currentFocus].classList.add('bg-blue-100');
+        }
+    }
+
+    function escapeRegExp(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
     async function reverseGeocode(lat, lng) {
@@ -320,6 +531,18 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     initializeMap();
+    initAutocomplete();
+});
+
+// Hide suggestions when clicking outside
+document.addEventListener('click', function(e) {
+    const addressInput = document.getElementById('selectedAddress');
+    const suggestionsContainer = document.getElementById('address-suggestions');
+    
+    if (addressInput && suggestionsContainer && 
+        !addressInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+        suggestionsContainer.classList.add('hidden');
+    }
 });
 </script>
 @endpush

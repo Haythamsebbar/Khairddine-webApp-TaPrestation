@@ -56,9 +56,9 @@
 
 @section('content')
 <div class="min-h-screen bg-green-50">
-    <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 lg:py-8">
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 py-2 sm:py-3 lg:py-4">
         <!-- Breadcrumb -->
-        <nav class="flex mb-4 sm:mb-6 lg:mb-8 overflow-x-auto" aria-label="Breadcrumb">
+        <nav class="flex mb-2 sm:mb-3 lg:mb-4 overflow-x-auto" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 sm:space-x-2 md:space-x-3 whitespace-nowrap">
                 <li class="inline-flex items-center">
                     <a href="{{ route('home') }}" class="inline-flex items-center text-xs sm:text-sm font-medium text-green-700 hover:text-green-600">
@@ -88,16 +88,16 @@
         </nav>
 
         <!-- Titre et prix par jour au-dessus de l'image -->
-        <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-6 border border-green-100">
-            <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-2 sm:mb-3 leading-tight break-words">{{ $equipment->name }}</h1>
+        <div class="bg-white rounded-lg shadow-sm p-3 sm:p-4 mb-3 sm:mb-4 border border-green-100">
+            <h1 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-1 sm:mb-2 leading-tight break-words">{{ $equipment->name }}</h1>
             
             <!-- Prix par jour uniquement -->
             @if($equipment->price_per_day)
-                <div class="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600">{{ number_format($equipment->price_per_day, 2) }}€ / jour</div>
+                <div class="text-lg sm:text-xl lg:text-2xl font-bold text-green-600">{{ number_format($equipment->price_per_day, 2) }}€ / jour</div>
             @endif
         </div>
 
-        <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
             <!-- Image et description -->
             <div class="xl:col-span-2">
                 <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-green-100 card-hover fade-in">
@@ -105,7 +105,7 @@
                         <div class="relative">
                             <!-- Image principale -->
                             <div class="aspect-w-16 aspect-h-12">
-                                <img id="mainImage" src="{{ Storage::url($equipment->photos[0]) }}" alt="{{ $equipment->name }}" class="w-full h-64 sm:h-80 lg:h-96 object-cover">
+                                <img id="mainImage" src="{{ Storage::url($equipment->photos[0]) }}" alt="{{ $equipment->name }}" class="w-full h-48 sm:h-56 lg:h-64 object-cover cursor-pointer" onclick="openImageModal(0)">
                             </div>
                             <div class="absolute top-2 sm:top-4 left-2 sm:left-4 status-badge status-available pulse-green text-xs sm:text-sm">
                                 Disponible
@@ -114,12 +114,12 @@
                         
                         <!-- Miniatures -->
                         @if(count($equipment->photos) > 1)
-                            <div class="p-3 sm:p-4 border-t">
-                                <div class="flex space-x-2 overflow-x-auto pb-2">
+                            <div class="p-2 sm:p-3 border-t">
+                                <div class="flex space-x-1.5 overflow-x-auto pb-1">
                                     @foreach($equipment->photos as $index => $photo)
-                                        <button onclick="changeMainImage('{{ Storage::url($photo) }}')"
-                                                class="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 {{ $index === 0 ? 'border-green-500' : 'border-gray-200' }} hover:border-green-500 transition duration-200">
-                                            <img src="{{ Storage::url($photo) }}" alt="Photo {{ $index + 1 }}" class="w-full h-full object-cover">
+                                        <button onclick="changeMainImage('{{ Storage::url($photo) }}'); updateActiveIndex({{ $index }})" 
+                                                class="flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-lg overflow-hidden border-2 {{ $index === 0 ? 'border-green-500' : 'border-gray-200' }} hover:border-green-500 transition duration-200">
+                                            <img src="{{ Storage::url($photo) }}" alt="Photo {{ $index + 1 }}" class="w-full h-full object-cover cursor-pointer" onclick="event.stopPropagation(); openImageModal({{ $index }})">
                                         </button>
                                     @endforeach
                                 </div>
@@ -128,14 +128,14 @@
                     @elseif($equipment->main_photo)
                         <div class="relative">
                             <div class="aspect-w-16 aspect-h-12">
-                                <img id="mainImage" src="{{ Storage::url($equipment->main_photo) }}" alt="{{ $equipment->name }}" class="w-full h-64 sm:h-80 lg:h-96 object-cover">
+                                <img id="mainImage" src="{{ Storage::url($equipment->main_photo) }}" alt="{{ $equipment->name }}" class="w-full h-48 sm:h-56 lg:h-64 object-cover cursor-pointer" onclick="openImageModal(0)">
                             </div>
                             <div class="absolute top-2 sm:top-4 left-2 sm:left-4 status-badge status-available pulse-green text-xs sm:text-sm">
                                 Disponible
                             </div>
                         </div>
                     @else
-                        <div class="h-64 sm:h-80 lg:h-96 bg-gray-200 flex items-center justify-center">
+                        <div class="h-48 sm:h-56 lg:h-64 bg-gray-200 flex items-center justify-center">
                             <div class="text-center px-4">
                                 <svg class="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-3 sm:mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -147,8 +147,8 @@
                 </div>
 
                 <!-- Description -->
-                <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mt-4 sm:mt-6 border border-green-100 card-hover fade-in">
-                    <h2 class="text-lg sm:text-xl font-semibold text-green-900 mb-3 sm:mb-4">Description</h2>
+                <div class="bg-white rounded-lg shadow-sm p-3 sm:p-4 mt-3 sm:mt-4 border border-green-100 card-hover fade-in">
+                    <h2 class="text-base sm:text-lg font-semibold text-green-900 mb-2 sm:mb-3">Description</h2>
                     <div class="prose max-w-none text-sm sm:text-base text-green-700 leading-relaxed">
                         {!! nl2br(e($equipment->description)) !!}
                     </div>
@@ -158,8 +158,8 @@
                 
                 <!-- Spécifications techniques -->
                 @if($equipment->technical_specifications)
-                    <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mt-4 sm:mt-6 border border-green-100 card-hover fade-in">
-                        <h2 class="text-lg sm:text-xl font-semibold text-green-900 mb-3 sm:mb-4">Spécifications techniques</h2>
+                    <div class="bg-white rounded-lg shadow-sm p-3 sm:p-4 mt-3 sm:mt-4 border border-green-100 card-hover fade-in">
+                        <h2 class="text-base sm:text-lg font-semibold text-green-900 mb-2 sm:mb-3">Spécifications techniques</h2>
                         <div class="prose max-w-none text-sm sm:text-base text-green-700 leading-relaxed">
                             {!! nl2br(e($equipment->technical_specifications)) !!}
                         </div>
@@ -168,13 +168,13 @@
                  
                  <!-- Accessoires -->
                  @if($equipment->included_accessories || $equipment->optional_accessories)
-                     <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mt-4 sm:mt-6 border border-green-100 card-hover fade-in">
-                         <h2 class="text-lg sm:text-xl font-semibold text-green-900 mb-3 sm:mb-4">Accessoires</h2>
+                     <div class="bg-white rounded-lg shadow-sm p-3 sm:p-4 mt-3 sm:mt-4 border border-green-100 card-hover fade-in">
+                         <h2 class="text-base sm:text-lg font-semibold text-green-900 mb-2 sm:mb-3">Accessoires</h2>
                          
                          @if($equipment->included_accessories && count($equipment->included_accessories) > 0)
-                             <div class="mb-3 sm:mb-4">
-                                 <h3 class="font-medium text-sm sm:text-base text-green-900 mb-2">Inclus dans la location</h3>
-                                 <ul class="list-disc list-inside space-y-1 text-xs sm:text-sm text-green-700 ml-2">
+                             <div class="mb-2 sm:mb-3">
+                                 <h3 class="font-medium text-sm sm:text-base text-green-900 mb-1">Inclus dans la location</h3>
+                                 <ul class="list-disc list-inside space-y-0.5 text-xs sm:text-sm text-green-700 ml-2">
                                      @foreach($equipment->included_accessories as $accessory)
                                          <li class="break-words">{{ $accessory }}</li>
                                      @endforeach
@@ -184,8 +184,8 @@
                          
                          @if($equipment->optional_accessories && count($equipment->optional_accessories) > 0)
                              <div>
-                                 <h3 class="font-medium text-sm sm:text-base text-green-900 mb-2">Accessoires optionnels</h3>
-                                 <ul class="list-disc list-inside space-y-1 text-xs sm:text-sm text-green-700 ml-2">
+                                 <h3 class="font-medium text-sm sm:text-base text-green-900 mb-1">Accessoires optionnels</h3>
+                                 <ul class="list-disc list-inside space-y-0.5 text-xs sm:text-sm text-green-700 ml-2">
                                      @foreach($equipment->optional_accessories as $accessory)
                                          <li class="break-words">{{ $accessory }}</li>
                                      @endforeach
@@ -197,8 +197,8 @@
                  
                  <!-- Conditions de location -->
                  @if($equipment->rental_conditions)
-                     <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mt-4 sm:mt-6 border border-green-100 card-hover fade-in">
-                         <h2 class="text-lg sm:text-xl font-semibold text-green-900 mb-3 sm:mb-4">Conditions de location</h2>
+                     <div class="bg-white rounded-lg shadow-sm p-3 sm:p-4 mt-3 sm:mt-4 border border-green-100 card-hover fade-in">
+                         <h2 class="text-base sm:text-lg font-semibold text-green-900 mb-2 sm:mb-3">Conditions de location</h2>
                          <div class="prose max-w-none text-sm sm:text-base text-green-700 leading-relaxed">
                              {!! nl2br(e($equipment->rental_conditions)) !!}
                          </div>
@@ -233,17 +233,17 @@
 
             <!-- Sidebar -->
             <div class="xl:col-span-1">
-                <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 sticky top-4 card-hover fade-in">
+                <div class="bg-white rounded-lg shadow-sm p-3 sm:p-4 sticky top-4 card-hover fade-in">
                     <!-- Propriétaire -->
-                    <div class="mb-4 sm:mb-6">
-                        <h2 class="text-lg sm:text-xl font-semibold text-green-900 mb-3 sm:mb-4">Propriétaire</h2>
+                    <div class="mb-3 sm:mb-4">
+                        <h2 class="text-base sm:text-lg font-semibold text-green-900 mb-2 sm:mb-3">Propriétaire</h2>
                         <a href="{{ route('prestataires.show', $equipment->prestataire) }}" class="block hover:bg-green-50 p-2 rounded-lg transition-colors duration-200">
-                            <div class="flex items-center space-x-3 sm:space-x-4">
+                            <div class="flex items-center space-x-2 sm:space-x-3">
                                 @if($equipment->prestataire && $equipment->prestataire->photo)
-                                    <img src="{{ Storage::url($equipment->prestataire->photo) }}" alt="{{ $equipment->prestataire->user->name ?? '' }}" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-green-200">
+                                    <img src="{{ Storage::url($equipment->prestataire->photo) }}" alt="{{ $equipment->prestataire->user->name ?? '' }}" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-green-200">
                                 @else
-                                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-full flex items-center justify-center border-2 border-green-200">
-                                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-full flex items-center justify-center border-2 border-green-200">
+                                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                         </svg>
                                     </div>
@@ -332,11 +332,42 @@
                         </a>
                     </div>
                     
-                    <!-- Informations détaillées -->
-                    <div class="mb-4 sm:mb-6">
-                        <h2 class="text-lg sm:text-xl font-semibold text-green-900 mb-3 sm:mb-4">Informations détaillées</h2>
+                    <!-- Détails -->
+                    <div class="mb-3 sm:mb-4">
+                        <div class="flex items-center justify-between mb-2 sm:mb-3">
+                            <h2 class="text-base sm:text-lg font-semibold text-green-900">Détails</h2>
+                        </div>
                         
-                        <div class="space-y-3 sm:space-y-4">
+                        <!-- Catégories (toujours visibles) -->
+                        @if($equipment->category || $equipment->subcategory)
+                        <div class="space-y-2 sm:space-y-3 mb-3">
+                            @if($equipment->category)
+                                <div class="text-sm sm:text-base">
+                                    <span class="font-medium text-green-900">Catégorie :</span>
+                                    <span class="text-green-700">{{ $equipment->category->name }}</span>
+                                </div>
+                            @endif
+                            
+                            @if($equipment->subcategory && $equipment->subcategory->id !== $equipment->category_id)
+                                <div class="text-sm sm:text-base">
+                                    <span class="font-medium text-green-900">Sous-catégorie :</span>
+                                    <span class="text-green-700">{{ $equipment->subcategory->name }}</span>
+                                </div>
+                            @endif
+                        </div>
+                        @endif
+
+                        <!-- Bouton View more details -->
+                        <button id="toggleDetailsBtn" onclick="toggleEquipmentDetails()" 
+                                class="w-full text-left bg-green-50 hover:bg-green-100 border border-green-200 rounded-lg p-2 mb-3 transition-colors duration-200 flex items-center justify-between">
+                            <span class="text-sm font-medium text-green-700">Voir plus de détails</span>
+                            <svg id="toggleDetailsIcon" class="w-4 h-4 text-green-500 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+                        
+                        <!-- Détails complets (cachés par défaut) -->
+                        <div id="equipmentDetailsContent" class="space-y-2 sm:space-y-3 hidden">
                             <!-- Autres prix -->
                             @if($equipment->price_per_hour)
                                 <div class="text-sm sm:text-base">
@@ -434,60 +465,60 @@
                                     <span class="text-red-600">{{ $equipment->required_license_type ?? 'Oui' }}</span>
                                 </div>
                             @endif
-                        </div>
-                        
-                        @if($equipment->minimum_rental_duration || $equipment->maximum_rental_duration)
-                            <div class="border-t border-green-200 pt-3 sm:pt-4 mt-4">
-                                <h3 class="font-medium text-sm sm:text-base text-green-900 mb-2">Durée de location</h3>
-                                <div class="space-y-1 text-xs sm:text-sm text-green-700">
-                                    @if($equipment->minimum_rental_duration)
-                                        <div>Durée minimum : {{ $equipment->minimum_rental_duration }} jour(s)</div>
-                                    @endif
-                                    @if($equipment->maximum_rental_duration)
-                                        <div>Durée maximum : {{ $equipment->maximum_rental_duration }} jour(s)</div>
-                                    @endif
+                            
+                            @if($equipment->minimum_rental_duration || $equipment->maximum_rental_duration)
+                                <div class="border-t border-green-200 pt-3 sm:pt-4 mt-4">
+                                    <h3 class="font-medium text-sm sm:text-base text-green-900 mb-2">Durée de location</h3>
+                                    <div class="space-y-1 text-xs sm:text-sm text-green-700">
+                                        @if($equipment->minimum_rental_duration)
+                                            <div>Durée minimum : {{ $equipment->minimum_rental_duration }} jour(s)</div>
+                                        @endif
+                                        @if($equipment->maximum_rental_duration)
+                                            <div>Durée maximum : {{ $equipment->maximum_rental_duration }} jour(s)</div>
+                                        @endif
+                                    </div>
                                 </div>
-                            </div>
-                        @endif
+                            @endif
+                        </div>
                     </div>
                     
                     <!-- Boutons d'action -->
-                    <div class="border-t border-green-200 pt-4 sm:pt-6 mt-4 sm:mt-6">
-                        <div class="space-y-3">
+                    <div class="border-t border-green-200 pt-3 sm:pt-4 mt-3 sm:mt-4">
+                        <div class="flex gap-2">
                             <!-- Bouton principal de réservation -->
                             <a href="{{ route('equipment.reserve', $equipment) }}" 
-                               class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg transition duration-200 font-semibold shadow-lg hover:shadow-xl flex items-center justify-center text-center text-sm">
-                                <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                               class="flex-1 bg-green-600 hover:bg-green-700 text-white px-2 py-2 rounded-lg transition duration-200 font-semibold shadow-lg hover:shadow-xl flex items-center justify-center text-center text-xs">
+                                <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0V6a2 2 0 012-2h4a2 2 0 012 2v1m-6 0h6m-6 0l-.5 3.5A2 2 0 003.5 13H20.5a2 2 0 002-2l-.5-3.5m-15 0h15"></path>
                                 </svg>
-                                <span>Réserver cet équipement</span>
+                                <span>Réserver</span>
                             </a>
                             
                             <!-- Bouton secondaire de contact -->
                              <a href="#" 
-                                class="w-full bg-white hover:bg-gray-50 text-green-600 border border-green-600 px-4 py-3 rounded-lg transition duration-200 font-semibold flex items-center justify-center text-center text-sm">
-                                 <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                class="flex-1 bg-white hover:bg-gray-50 text-green-600 border border-green-600 px-2 py-2 rounded-lg transition duration-200 font-semibold flex items-center justify-center text-center text-xs">
+                                 <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                                  </svg>
-                                 <span>Contacter le propriétaire</span>
+                                 <span>Contacter</span>
                              </a>
                              
                              <!-- Bouton de signalement -->
                              <button onclick="openReportModal()" 
-                                     class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 px-4 py-3 rounded-lg transition duration-200 font-medium flex items-center justify-center text-center text-sm">
-                                 <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                     class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 px-2 py-2 rounded-lg transition duration-200 font-medium flex items-center justify-center text-center text-xs">
+                                 <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
                                  </svg>
-                                 <span>Signaler cet équipement</span>
+                                 <span>Signaler</span>
                              </button>
                          </div>
                      </div>
 
                     <!-- Location Map -->
                     @if ($equipment->latitude && $equipment->longitude)
-                        <div class="border-t border-green-200 pt-4 sm:pt-6 mt-4 sm:mt-6">
-                            <h3 class="text-base sm:text-lg font-semibold text-green-900 mb-2 sm:mb-3">Localisation sur carte</h3>
-                            <div id="map" style="height: 200px;" class="sm:h-64 rounded-lg z-10"></div>
+                        <div class="border-t border-green-200 pt-3 sm:pt-4 mt-3 sm:mt-4">
+                            <h3 class="text-sm sm:text-base font-semibold text-green-900 mb-1 sm:mb-2">Localisation sur carte</h3>
+                            <div id="map" style="height: 150px;" class="sm:h-48 rounded-lg z-10"></div>
                         </div>
                     @endif
                 </div>
@@ -495,47 +526,20 @@
         </div>
 
         <!-- Similar Equipment -->
-        <div class="mt-12">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">Équipements similaires</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="mt-6">
+            <h2 class="text-lg font-bold text-gray-900 mb-4">Équipements similaires</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
                 @if(isset($similarEquipment) && $similarEquipment->count() > 0)
                     @foreach($similarEquipment as $item)
                         <div class="bg-white rounded-lg shadow-sm overflow-hidden">
                             <a href="{{ route('equipment.show', $item) }}">
-                                <img src="{{ $item->photo_url }}" alt="{{ $item->name }}" class="h-48 w-full object-cover">
+                                <img src="{{ $item->photo_url }}" alt="{{ $item->name }}" class="h-32 w-full object-cover">
                             </a>
-                            <div class="p-4">
-                                <h3 class="font-semibold text-lg mb-2"><a href="{{ route('equipment.show', $item) }}">{{ $item->name }}</a></h3>
-                                <p class="text-gray-600 text-sm mb-4">{{ Str::limit($item->description, 75) }}</p>
+                            <div class="p-2">
+                                <h3 class="font-semibold text-sm mb-1"><a href="{{ route('equipment.show', $item) }}">{{ Str::limit($item->name, 25) }}</a></h3>
                                 <div class="flex items-center justify-between">
-                                    <span class="font-bold text-green-600">{{ number_format($item->daily_rate, 2) }}€/jour</span>
-                                    <a href="{{ route('equipment.show', $item) }}" class="text-green-600 hover:text-green-800 font-semibold">Voir</a>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                @else
-                    <p class="text-gray-500">Aucun équipement similaire trouvé.</p>
-                @endif
-            </div>
-        </div>
-
-        <!-- Similar Equipment -->
-        <div class="mt-12">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">Équipements similaires</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                @if(isset($similarEquipment) && $similarEquipment->count() > 0)
-                    @foreach($similarEquipment as $item)
-                        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-                            <a href="{{ route('equipment.show', $item) }}">
-                                <img src="{{ $item->photo_url }}" alt="{{ $item->name }}" class="h-48 w-full object-cover">
-                            </a>
-                            <div class="p-4">
-                                <h3 class="font-semibold text-lg mb-2"><a href="{{ route('equipment.show', $item) }}">{{ $item->name }}</a></h3>
-                                <p class="text-gray-600 text-sm mb-4">{{ Str::limit($item->description, 75) }}</p>
-                                <div class="flex items-center justify-between">
-                                    <span class="font-bold text-green-600">{{ number_format($item->daily_rate, 2) }}€/jour</span>
-                                    <a href="{{ route('equipment.show', $item) }}" class="text-green-600 hover:text-green-800 font-semibold">Voir</a>
+                                    <span class="font-bold text-green-600 text-xs">{{ number_format($item->daily_rate, 0) }}€/j</span>
+                                    <a href="{{ route('equipment.show', $item) }}" class="text-green-600 hover:text-green-800 font-semibold text-xs">Voir</a>
                                 </div>
                             </div>
                         </div>
@@ -599,6 +603,38 @@
         </div>
     </div>
 </div>
+
+<!-- Image Modal -->
+<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden flex items-center justify-center p-4">
+    <div class="relative max-w-7xl max-h-full">
+        <img id="modalImage" src="" alt="" class="max-w-full max-h-full object-contain">
+        
+        <!-- Close button -->
+        <button onclick="closeImageModal()" class="absolute top-4 right-4 text-white hover:text-gray-300 z-10">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+        
+        <!-- Navigation arrows -->
+        <button id="prevBtn" onclick="navigateImage(-1)" class="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 z-10">
+            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+        </button>
+        
+        <button id="nextBtn" onclick="navigateImage(1)" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 z-10">
+            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+        </button>
+        
+        <!-- Image counter -->
+        <div id="imageCounter" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white bg-black bg-opacity-50 px-3 py-1 rounded-full">
+            <span id="currentImageNumber">1</span> / <span id="totalImages">1</span>
+        </div>
+    </div>
+</div>
     </div>
 </div>
 @endsection
@@ -621,6 +657,121 @@
 @endif
 
 <script>
+    // Image gallery functionality
+    let currentImageIndex = 0;
+    const images = [
+        @if($equipment->photos && count($equipment->photos) > 0)
+            @foreach($equipment->photos as $photo)
+                '{{ Storage::url($photo) }}',
+            @endforeach
+        @elseif($equipment->main_photo)
+            '{{ Storage::url($equipment->main_photo) }}'
+        @endif
+    ];
+    
+    function updateActiveIndex(index) {
+        currentImageIndex = index;
+    }
+    
+    function openImageModal(index) {
+        currentImageIndex = index;
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const currentNumber = document.getElementById('currentImageNumber');
+        const totalImages = document.getElementById('totalImages');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        
+        modalImage.src = images[currentImageIndex];
+        currentNumber.textContent = currentImageIndex + 1;
+        totalImages.textContent = images.length;
+        
+        // Show/hide navigation buttons based on images length
+        if (images.length <= 1) {
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+        } else {
+            prevBtn.style.display = 'block';
+            nextBtn.style.display = 'block';
+        }
+        
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeImageModal() {
+        document.getElementById('imageModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+    
+    function navigateImage(direction) {
+        currentImageIndex += direction;
+        if (currentImageIndex < 0) currentImageIndex = images.length - 1;
+        if (currentImageIndex >= images.length) currentImageIndex = 0;
+        
+        const modalImage = document.getElementById('modalImage');
+        const currentNumber = document.getElementById('currentImageNumber');
+        
+        modalImage.src = images[currentImageIndex];
+        currentNumber.textContent = currentImageIndex + 1;
+        
+        // Update main image and thumbnail border
+        changeMainImage(images[currentImageIndex]);
+        updateThumbnailBorders(currentImageIndex);
+    }
+    
+    function updateThumbnailBorders(activeIndex) {
+        const buttons = document.querySelectorAll('.flex-shrink-0');
+        buttons.forEach((button, index) => {
+            if (index === activeIndex) {
+                button.classList.add('border-green-500');
+                button.classList.remove('border-gray-200');
+            } else {
+                button.classList.remove('border-green-500');
+                button.classList.add('border-gray-200');
+            }
+        });
+    }
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        const modal = document.getElementById('imageModal');
+        if (!modal.classList.contains('hidden')) {
+            if (e.key === 'Escape') {
+                closeImageModal();
+            } else if (e.key === 'ArrowLeft') {
+                navigateImage(-1);
+            } else if (e.key === 'ArrowRight') {
+                navigateImage(1);
+            }
+        }
+    });
+    
+    // Close modal when clicking outside the image
+    document.getElementById('imageModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeImageModal();
+        }
+    });
+    
+    // Equipment details toggle functionality
+    function toggleEquipmentDetails() {
+        const content = document.getElementById('equipmentDetailsContent');
+        const btn = document.getElementById('toggleDetailsBtn');
+        const icon = document.getElementById('toggleDetailsIcon');
+        const btnText = btn.querySelector('span');
+        
+        if (content.classList.contains('hidden')) {
+            content.classList.remove('hidden');
+            icon.classList.add('rotate-90');
+            btnText.textContent = 'Masquer les détails';
+        } else {
+            content.classList.add('hidden');
+            icon.classList.remove('rotate-90');
+            btnText.textContent = 'Voir plus de détails';
+        }
+    }
+
     function changeMainImage(url) {
         document.getElementById('mainImage').src = url;
         // Update border on thumbnails

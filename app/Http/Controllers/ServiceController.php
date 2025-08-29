@@ -18,7 +18,7 @@ class ServiceController extends Controller
     public function index(Request $request)
     {
         // Sauvegarder les filtres en session pour pouvoir les récupérer lors du retour
-        $filters = $request->only(['search', 'category', 'price_min', 'price_max', 'location', 'verified_only', 'sort']);
+        $filters = $request->only(['search', 'category', 'main_category', 'price_min', 'price_max', 'location', 'verified_only', 'sort']);
         session(['services_filters' => $filters]);
         
         $query = Service::with(['prestataire', 'categories'])
@@ -36,15 +36,30 @@ class ServiceController extends Controller
                       $userQuery->where('name', 'like', '%' . $keyword . '%');
                   })
                   ->orWhereHas('categories', function($catQuery) use ($keyword) {
-                      $catQuery->where('name', 'like', '%' . $keyword . '%');
+                      $catQuery->where('name', 'like', '%' . $keyword . '%')
+                               // Rechercher aussi dans les catégories parentes
+                               ->orWhereHas('parent', function($parentQuery) use ($keyword) {
+                                   $parentQuery->where('name', 'like', '%' . $keyword . '%');
+                               });
                   });
             });
         }
         
-        // Filtrage par catégorie
+        // Filtrage par catégorie (principale ou sous-catégorie)
         if ($request->filled('category') && $request->category != '') {
+            // Utilisateur a sélectionné une sous-catégorie spécifique
             $query->whereHas('categories', function($q) use ($request) {
                 $q->where('categories.id', $request->category);
+            });
+        } elseif ($request->filled('main_category') && $request->main_category != '') {
+            // Utilisateur a sélectionné seulement une catégorie principale
+            $query->whereHas('categories', function($q) use ($request) {
+                $q->where(function($subQ) use ($request) {
+                    // Inclure la catégorie principale elle-même
+                    $subQ->where('categories.id', $request->main_category)
+                         // ET toutes ses sous-catégories
+                         ->orWhere('categories.parent_id', $request->main_category);
+                });
             });
         }
         
@@ -121,7 +136,7 @@ class ServiceController extends Controller
         }
 
         $services = $query->paginate(12)->withQueryString();
-        $categories = Category::orderBy('name')->get();
+        $categories = Category::with('children')->whereNull('parent_id')->orderBy('name')->get();
         
         return view('services.index', compact('services', 'categories'));
     }

@@ -76,15 +76,15 @@ class UrgentSaleController extends Controller
         $prestataire = Auth::user()->prestataire;
         
         $request->validate([
-            'title' => 'required|string|min:10|max:255',
-            'description' => 'required|string|min:50|max:2000',
+            'title' => 'required|string',
+            'description' => 'required|string',
             'price' => 'required|numeric|min:0',
             'condition' => 'required|in:excellent,very_good,good,fair,poor',
             'parent_category_id' => 'required|exists:categories,id',
             'category_id' => 'nullable|exists:categories,id',
             'quantity' => 'required|integer|min:1',
             'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
-            'location' => 'required|string|max:500',
+            'location' => 'required|string',
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
         ]);
@@ -165,15 +165,15 @@ class UrgentSaleController extends Controller
         $this->authorize('update', $urgentSale);
         
         $request->validate([
-            'title' => 'required|string|min:10|max:255',
-            'description' => 'required|string|min:50|max:2000',
+            'title' => 'required|string',
+            'description' => 'required|string',
             'price' => 'required|numeric|min:0',
             'condition' => 'required|in:excellent,very_good,good,fair,poor',
             'parent_category_id' => 'required|exists:categories,id',
             'category_id' => 'nullable|exists:categories,id',
             'quantity' => 'required|integer|min:1',
             'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
-            'location' => 'required|string|max:500',
+            'location' => 'required|string',
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
         ]);
