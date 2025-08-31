@@ -150,6 +150,81 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentVideoIndex = 0;
     let isScrolling = false;
 
+    // Video view tracking
+    const viewTracking = new Map();
+    
+    function trackVideoView(videoElement) {
+        const videoId = videoElement.dataset.videoId;
+        if (!viewTracking.has(videoId)) {
+            // Start tracking
+            const startTime = Date.now();
+            const trackingId = setInterval(() => {
+                const currentTime = Date.now();
+                const watchedDuration = (currentTime - startTime) / 1000; // in seconds
+                
+                // Get video duration (if available)
+                const videoDuration = videoElement.duration || 0;
+                
+                // Check if we've watched for at least 10 seconds or 30% of video duration
+                const minDuration = Math.min(10, videoDuration * 0.3);
+                if (watchedDuration >= minDuration && !videoElement.dataset.viewCounted) {
+                    // Mark as counted to avoid multiple requests
+                    videoElement.dataset.viewCounted = 'true';
+                    
+                    // Send AJAX request to increment view count
+                    incrementVideoViewCount(videoId, Math.floor(watchedDuration), Math.floor(videoDuration));
+                    
+                    // Stop tracking
+                    stopTrackingVideoView(videoElement);
+                }
+            }, 1000); // Check every second
+            
+            viewTracking.set(videoId, {
+                trackingId: trackingId,
+                startTime: startTime
+            });
+        }
+    }
+    
+    function stopTrackingVideoView(videoElement) {
+        const videoId = videoElement.dataset.videoId;
+        if (viewTracking.has(videoId)) {
+            const trackingInfo = viewTracking.get(videoId);
+            clearInterval(trackingInfo.trackingId);
+            viewTracking.delete(videoId);
+        }
+    }
+    
+    function incrementVideoViewCount(videoId, watchedDuration, videoDuration) {
+        fetch(`/videos/${videoId}/increment-views`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                watched_duration: watchedDuration,
+                video_duration: videoDuration
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update the view count display
+                const videoSlide = document.querySelector(`.video-slide[data-index="${currentVideoIndex}"]`);
+                if (videoSlide) {
+                    const viewCountElement = videoSlide.querySelector('.flex.items-center.gap-1:first-child span:nth-child(2)');
+                    if (viewCountElement) {
+                        viewCountElement.textContent = data.views_count;
+                    }
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error incrementing view count:', error);
+        });
+    }
+
     // Configuration de l'Intersection Observer pour détecter la vidéo visible
     const observerOptions = {
         root: videosContainer,
@@ -173,9 +248,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         otherVideo.pause();
                     }
                 });
+                
+                // Track view when video is visible and playing
+                trackVideoView(video);
             } else {
                 // Vidéo non visible - la mettre en pause
                 video.pause();
+                // Stop tracking this video
+                stopTrackingVideoView(video);
             }
         });
     }, observerOptions);

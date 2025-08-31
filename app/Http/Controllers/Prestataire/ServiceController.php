@@ -157,6 +157,8 @@ class ServiceController extends Controller
     {
         $request->validate([
             'price' => 'required|numeric|min:0',
+            'price_type' => 'required|string|in:fixe,heure,jour,projet,devis',
+            'quantity' => 'nullable|integer|min:1',
             'category_id' => 'required|exists:categories,id',
             'subcategory_id' => 'nullable|exists:categories,id'
         ]);
@@ -164,6 +166,8 @@ class ServiceController extends Controller
         // Stocker les données dans la session
         session(['service_creation.step2' => [
             'price' => $request->price,
+            'price_type' => $request->price_type,
+            'quantity' => $request->quantity,
             'category_id' => $request->category_id,
             'subcategory_id' => $request->subcategory_id
         ]]);

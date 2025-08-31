@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Equipment;
 use App\Models\EquipmentRentalRequest;
@@ -49,7 +48,6 @@ class Prestataire extends Model
         'availability_radius',
         'profile_image',
         'cover_image',
-        'portfolio_images',
         'certifications',
         'insurance_number',
         'tax_number',
@@ -90,7 +88,6 @@ class Prestataire extends Model
         // 'hourly_rate_min' => 'decimal:2', // Supprimé pour confidentialité
         // 'hourly_rate_max' => 'decimal:2', // Supprimé pour confidentialité
         'availability_radius' => 'integer',
-        'portfolio_images' => 'array',
         'certifications' => 'array',
         'bank_details' => 'array',
         'preferred_payment_methods' => 'array',
@@ -135,14 +132,6 @@ class Prestataire extends Model
     }
 
     /**
-     * Relation avec les compétences
-     */
-    public function skills(): BelongsToMany
-    {
-        return $this->belongsToMany(Skill::class, 'prestataire_skill');
-    }
-
-    /**
      * Relation avec les réservations
      */
     public function bookings(): HasMany
@@ -158,8 +147,6 @@ class Prestataire extends Model
         return $this->hasMany(Review::class);
     }
 
-
-
     /**
      * Relation avec les disponibilités
      */
@@ -167,8 +154,6 @@ class Prestataire extends Model
     {
         return $this->hasMany(PrestataireAvailability::class);
     }
-
-
 
     /**
      * Relation avec les équipements
@@ -251,8 +236,6 @@ class Prestataire extends Model
         return $this->hasOne(PrestataireVerificationRequest::class)->latest();
     }
 
-
-
     /**
      * Scope pour les prestataires approuvés
      */
@@ -317,21 +300,6 @@ class Prestataire extends Model
     }
 
     /**
-     * Scope pour filtrer par fourchette de prix
-     */
-    // Scope de filtrage par prix supprimé pour confidentialité
-    // public function scopeWithPriceRange($query, $minPrice = null, $maxPrice = null)
-    // {
-    //     if ($minPrice) {
-    //         $query->where('hourly_rate_min', '>=', $minPrice);
-    //     }
-    //     if ($maxPrice) {
-    //         $query->where('hourly_rate_max', '<=', $maxPrice);
-    //     }
-    //     return $query;
-    // }
-
-    /**
      * Accesseur pour le nom complet
      */
     public function getFullNameAttribute()
@@ -361,20 +329,6 @@ class Prestataire extends Model
     public function getCoverImageUrlAttribute()
     {
         return $this->cover_image ? asset('storage/' . $this->cover_image) : null;
-    }
-
-    /**
-     * Accesseur pour les URLs des images du portfolio
-     */
-    public function getPortfolioImageUrlsAttribute()
-    {
-        if (!$this->portfolio_images) {
-            return [];
-        }
-        
-        return collect($this->portfolio_images)->map(function ($image) {
-            return asset('storage/' . $image);
-        })->toArray();
     }
 
     /**
@@ -451,8 +405,6 @@ class Prestataire extends Model
         ];
     }
 
-
-
     /**
      * Vérifier si le prestataire peut être contacté
      */
@@ -473,8 +425,6 @@ class Prestataire extends Model
         $availabilities = $this->availabilities()
             ->where('day_of_week', $dayOfWeek)
             ->get();
-            
-
             
         $bookedSlots = $this->bookings()
             ->whereDate('start_datetime', $date)

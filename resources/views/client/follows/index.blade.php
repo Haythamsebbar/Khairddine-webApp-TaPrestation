@@ -79,7 +79,7 @@
                                             </div>
                                         @endif
                                         @if($prestataire->isVerified())
-                                            <div class="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                                            <div class="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
                                                 <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                                                 </svg>
@@ -91,7 +91,7 @@
                                         <div class="flex items-center gap-2">
                                             <h3 class="text-lg font-semibold text-gray-800">{{ $prestataire->user->name ?? 'Prestataire' }}</h3>
                                             @if($prestataire->isVerified())
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
                                                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                                         <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                                                     </svg>
@@ -128,16 +128,16 @@
                                     </div>
                                 @endif
                                 
-                                <!-- Boutons d'action -->
-                                <div class="mt-4 flex items-center justify-between">
-                                    <a href="{{ route('client.browse.prestataire', $prestataire->id) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors duration-200">
-                                        Voir profil
+                                <!-- Actions -->
+                                <div class="mt-4 flex space-x-2">
+                                    <a href="{{ route('client.browse.prestataire', $prestataire->id) }}" class="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-center font-semibold text-white hover:bg-blue-700">
+                                        Voir le profil
                                     </a>
-                                    <form action="{{ route('client.prestataire-follows.unfollow', $prestataire->id) }}" method="POST" class="inline">
+                                    <form action="{{ route('client.follows.destroy', $prestataire->id) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-medium transition-colors duration-200" onclick="return confirm('Êtes-vous sûr de vouloir vous désabonner ?')">
-                                            Se désabonner
+                                        <button type="submit" class="rounded-lg bg-gray-100 px-3 py-2 text-gray-700 hover:bg-gray-200">
+                                            <i class="fas fa-star text-yellow-500"></i>
                                         </button>
                                     </form>
                                 </div>

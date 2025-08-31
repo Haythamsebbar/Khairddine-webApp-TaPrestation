@@ -200,110 +200,6 @@
                     </div>
                 </div>
                         
-                <!-- Compétences -->
-                <div class="bg-white rounded-xl shadow-lg border border-purple-100 p-4 sm:p-6">
-                    <div class="flex items-center gap-3 mb-4 sm:mb-6">
-                        <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-xl">
-                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 class="text-lg sm:text-xl font-bold text-purple-900">Compétences et expertise</h3>
-                            <p class="text-sm text-purple-700">Sélectionnez vos compétences principales. Elles servent de base aux filtres de recherche.</p>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6">
-                        @foreach($skills as $skill)
-                            <div class="flex items-center p-3 border border-purple-200 rounded-xl hover:bg-purple-50 transition-colors">
-                                <input type="checkbox" name="skills[]" value="{{ $skill->id }}" id="skill_{{ $skill->id }}"
-                                       {{ $prestataire && $prestataire->skills->contains($skill->id) ? 'checked' : '' }}
-                                       class="w-4 h-4 text-purple-600 border-purple-300 rounded focus:ring-purple-500 focus:ring-2">
-                                <label for="skill_{{ $skill->id }}" class="ml-3 text-sm font-medium text-purple-900 cursor-pointer">{{ $skill->name }}</label>
-                            </div>
-                        @endforeach
-                    </div>
-                    
-                    <!-- Zone de service -->
-                    <div class="pt-4 border-t border-purple-100">
-                        <label for="service_area" class="block text-sm font-bold text-purple-900 mb-2">Zone de service</label>
-                        <input type="text" name="service_area" id="service_area" value="{{ old('service_area', $prestataire->service_area ?? '') }}" placeholder="Ex: Paris et banlieue" class="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors">
-                    </div>
-                </div>
-                        
-                <!-- Portfolio -->
-                <div class="bg-white rounded-xl shadow-lg border border-purple-100 p-4 sm:p-6">
-                    <div class="flex items-center gap-3 mb-4 sm:mb-6">
-                        <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-xl">
-                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 class="text-lg sm:text-xl font-bold text-purple-900">Portfolio de réalisations</h3>
-                            <p class="text-sm text-purple-700">Montrez vos meilleurs travaux. Le portfolio est un critère déterminant pour la sélection.</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Portfolio existant -->
-                    @if($prestataire && is_array($prestataire->portfolio_images) && count($prestataire->portfolio_images) > 0)
-                        <div class="mb-6">
-                            <h4 class="text-base font-bold text-purple-900 mb-4">Réalisations actuelles</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                @foreach($prestataire->portfolio_images as $index => $item)
-                                    <div class="border border-purple-200 rounded-xl p-4 bg-gradient-to-br from-purple-50 to-indigo-50">
-                                        @if(isset($item['image']))
-                                            <img src="{{ Storage::url($item['image']) }}" alt="{{ $item['title'] ?? 'Portfolio item' }}" class="w-full h-32 object-cover rounded-xl mb-3 border-2 border-purple-200">
-                                        @endif
-                                        <h5 class="font-bold text-sm text-purple-900">{{ $item['title'] ?? 'Sans titre' }}</h5>
-                                        <p class="text-xs text-purple-700 mt-1">{{ $item['description'] ?? '' }}</p>
-                                        @if(isset($item['link']) && $item['link'])
-                                            <a href="{{ $item['link'] }}" target="_blank" class="text-xs text-purple-600 hover:text-purple-500 font-medium">Voir le projet</a>
-                                        @endif
-                                        <button type="button" onclick="deletePortfolioItem({{ $index }})" class="mt-2 text-xs text-red-600 hover:text-red-500 font-medium">Supprimer</button>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
-                    
-                    <!-- Ajouter de nouveaux éléments -->
-                    <div id="portfolio-container">
-                        <h4 class="text-base font-bold text-purple-900 mb-4">Ajouter de nouvelles réalisations</h4>
-                        <div class="portfolio-item border-2 border-dashed border-purple-300 rounded-xl p-4 bg-gradient-to-br from-purple-50 to-indigo-50">
-                            <div class="grid grid-cols-1 gap-4">
-                                <div>
-                                    <label class="block text-sm font-bold text-purple-900 mb-2">Image</label>
-                                    <input type="file" name="portfolio_images[]" accept="image/*" class="block w-full text-sm text-purple-700 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-purple-50 file:to-indigo-50 file:text-purple-700 hover:file:from-purple-100 hover:file:to-indigo-100 file:shadow-sm">
-                                </div>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-bold text-purple-900 mb-2">Titre</label>
-                                        <input type="text" name="portfolio_titles[]" placeholder="Nom du projet" class="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-bold text-purple-900 mb-2">Lien (optionnel)</label>
-                                        <input type="url" name="portfolio_links[]" placeholder="https://" class="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors">
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-purple-900 mb-2">Description</label>
-                                    <textarea name="portfolio_descriptions[]" rows="2" placeholder="Décrivez brièvement ce projet..." class="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors resize-none"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button type="button" onclick="addPortfolioItem()" class="mt-6 inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:from-purple-700 hover:to-indigo-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200 w-full sm:w-auto justify-center">
-                        <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                        <span class="hidden sm:inline">Ajouter une réalisation</span>
-                        <span class="sm:hidden">Ajouter</span>
-                    </button>
-                    <p class="mt-3 text-xs sm:text-sm text-purple-700">Maximum 10 réalisations. Taille max par image : 5MB</p>
-                </div>
-                        
                 <!-- Boutons d'action -->
                 <div class="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 pt-6 border-t border-purple-100">
                     <a href="{{ route('prestataire.dashboard') }}" class="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base bg-white border-2 border-purple-200 text-purple-700 font-bold rounded-xl shadow-lg hover:bg-purple-50 hover:border-purple-300 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
@@ -321,7 +217,7 @@
                         <span class="sm:hidden">Enregistrer</span>
                     </button>
                 </div>
-                    </div>
+            </div>
         </form>
         
         <!-- Section Suppression du compte -->
@@ -435,53 +331,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Ajouter un élément de portfolio
-function addPortfolioItem() {
-    const container = document.getElementById('portfolio-container');
-    const items = container.querySelectorAll('.portfolio-item');
-    
-    if (items.length >= 10) {
-        alert('Vous ne pouvez ajouter que 10 réalisations maximum.');
-        return;
-    }
-    
-    const newItem = items[0].cloneNode(true);
-    // Vider les champs
-    newItem.querySelectorAll('input, textarea').forEach(input => input.value = '');
-    
-    // Ajouter un bouton de suppression
-    const removeBtn = document.createElement('button');
-    removeBtn.type = 'button';
-    removeBtn.className = 'mt-2 text-sm text-red-600 hover:text-red-500';
-    removeBtn.innerHTML = '<i class="fas fa-trash mr-1"></i>Supprimer';
-    removeBtn.onclick = function() { newItem.remove(); };
-    
-    newItem.appendChild(removeBtn);
-    container.appendChild(newItem);
-}
-
 // Supprimer la photo de profil
 function deletePhoto() {
     if (confirm('Êtes-vous sûr de vouloir supprimer votre photo de profil ?')) {
         fetch('{{ route('prestataire.profile.delete-photo') }}', {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Content-Type': 'application/json'
-            }
-        }).then(response => {
-            if (response.ok) {
-                location.reload();
-            }
-        });
-    }
-}
-
-// Supprimer un élément du portfolio
-function deletePortfolioItem(index) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette réalisation ?')) {
-        const url = '{{ route('prestataire.profile.delete-portfolio-item', ':index') }}'.replace(':index', index);
-        fetch(url, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',

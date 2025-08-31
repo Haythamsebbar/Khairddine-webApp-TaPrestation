@@ -122,7 +122,7 @@
                                                     </div>
                                                 @endif
                                                 @if($prestataire->isVerified())
-                                                    <div class="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center border-2 border-white">
+                                                    <div class="absolute -top-1 -right-1 w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center border-2 border-white">
                                                         <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                                                         </svg>
@@ -142,7 +142,7 @@
                                                             </a>
                                                         </h3>
                                                         @if($prestataire->isVerified())
-                                                            <span class="inline-flex items-center bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                                                            <span class="inline-flex items-center bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full">
                                                                 <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                                                                 </svg>
@@ -233,7 +233,21 @@
                                                 
                                                 @auth
                                                     @if(auth()->user()->role === 'client')
-                                                        <!-- Boutons supprimés -->
+                                                        <div class="flex flex-wrap gap-2 mt-3">
+                                                            <a href="{{ route('prestataires.show', $prestataire->id) }}" 
+                                                               class="inline-block bg-blue-100 hover:bg-blue-200 text-blue-800 hover:text-blue-900 rounded px-3 py-1 text-sm font-medium transition-colors">
+                                                                <i class="fas fa-user-circle mr-1"></i>
+                                                                Voir profil
+                                                            </a>
+                                                            
+                                                            @if($prestataire->services->count() > 0)
+                                                                <a href="{{ route('services.index', ['prestataire' => $prestataire->id]) }}" 
+                                                                   class="inline-block bg-green-100 hover:bg-green-200 text-green-800 hover:text-green-900 rounded px-3 py-1 text-sm font-medium transition-colors">
+                                                                    <i class="fas fa-tools mr-1"></i>
+                                                                    Services
+                                                                </a>
+                                                            @endif
+                                                        </div>
                                                     @endif
                                                 @endauth
                                             </div>

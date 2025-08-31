@@ -137,7 +137,7 @@
                         <!-- Badge de vérification -->
                         @if($prestataire->isVerified())
                             <div class="absolute top-3 left-3">
-                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
                                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                     </svg>
@@ -163,7 +163,7 @@
                                     {{ $prestataire->user->prenom }} {{ $prestataire->user->nom }}
                                 </h3>
                                 @if($prestataire->isVerified())
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
                                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                         </svg>

@@ -52,10 +52,13 @@ class MessageController extends Controller
             ->whereNull('read_at')
             ->update(['read_at' => now()]);
         
-        // Charger les relations pour le statut en ligne
+        // Charger les relations pour le statut en ligne et les photos de profil
         $user->load(['client', 'prestataire']);
         
-        return view('messaging.conversation', compact('messages', 'user'));
+        // Passer $user comme $otherUser pour correspondre à la vue
+        $otherUser = $user;
+        
+        return view('messaging.conversation', compact('messages', 'otherUser'));
     }
 
     /**

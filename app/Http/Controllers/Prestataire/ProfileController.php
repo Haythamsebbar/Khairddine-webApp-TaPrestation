@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Prestataire;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Prestataire;
-use App\Models\Skill;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -34,7 +33,6 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         $prestataire = $user->prestataire;
-        $skills = Skill::all();
         $categories = Category::orderBy('name')->get();
         
         // Calculer le pourcentage de complétion du profil
@@ -43,7 +41,6 @@ class ProfileController extends Controller
         return view('prestataire.profile.edit', [
             'user' => $user,
             'prestataire' => $prestataire,
-            'skills' => $skills,
             'categories' => $categories,
             'completion_percentage' => $completionPercentage
         ]);
@@ -71,21 +68,10 @@ class ProfileController extends Controller
             ],
             'phone' => 'nullable|string|max:20',
             'description' => 'nullable|string|min:200|max:2000',
-            'skills' => 'nullable|array',
-            'skills.*' => 'exists:skills,id',
             'sector' => 'nullable|string|max:255',
-            'portfolio' => 'nullable|url|max:500',
             'daily_rate' => 'nullable|numeric|min:0|max:9999.99',
             'average_delivery_time' => 'nullable|integer|min:1|max:365',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'portfolio_images' => 'nullable|array|max:10',
-            'portfolio_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
-            'portfolio_titles' => 'nullable|array',
-            'portfolio_titles.*' => 'nullable|string|max:100',
-            'portfolio_descriptions' => 'nullable|array',
-            'portfolio_descriptions.*' => 'nullable|string|max:500',
-            'portfolio_links' => 'nullable|array',
-            'portfolio_links.*' => 'nullable|url|max:500',
             'current_password' => 'nullable|required_with:new_password|current_password',
             'new_password' => 'nullable|min:8|confirmed',
         ]);
@@ -122,34 +108,8 @@ class ProfileController extends Controller
             $prestataireData['photo'] = $request->file('photo')->store('photos/prestataires', 'public');
         }
 
-        // Gestion du portfolio
-        if ($request->hasFile('portfolio_images')) {
-            $portfolioData = $prestataire->portfolio_images ?? [];
-
-            foreach ($request->file('portfolio_images') as $index => $file) {
-                $imagePath = $file->store('portfolio/prestataires', 'public');
-
-                $portfolioData[] = [
-                    'image' => $imagePath,
-                    'title' => $request->portfolio_titles[$index] ?? '',
-                    'description' => $request->portfolio_descriptions[$index] ?? '',
-                    'link' => $request->portfolio_links[$index] ?? '',
-                    'created_at' => now()->toISOString()
-                ];
-            }
-
-            $prestataireData['portfolio_images'] = $portfolioData;
-        }
-
         $prestataire->fill($prestataireData);
         $prestataire->save();
-
-        // Mise à jour des compétences
-        if ($request->has('skills')) {
-            $prestataire->skills()->sync($request->skills);
-        } else {
-            $prestataire->skills()->detach();
-        }
 
         // Calculer le pourcentage de complétion du profil
         $completionPercentage = $this->calculateProfileCompletion($prestataire);
@@ -248,7 +208,7 @@ class ProfileController extends Controller
      */
     public function publicShow($id)
     {
-        $prestataire = Prestataire::with(['user', 'skills', 'services', 'reviews.client.user'])
+        $prestataire = Prestataire::with(['user', 'services', 'reviews.client.user'])
             ->where('is_approved', true)
             ->findOrFail($id);
         
@@ -292,43 +252,11 @@ class ProfileController extends Controller
             'photo' => $prestataire->photo ? 15 : 0,
             'description' => ($prestataire->description && strlen($prestataire->description) >= 200) ? 20 : 0,
             'phone' => $prestataire->phone ? 10 : 0,
-            'skills' => $prestataire->skills()->count() > 0 ? 15 : 0,
             'secteur_activite' => $prestataire->secteur_activite ? 10 : 0,
             // 'hourly_rate' => $prestataire->hourly_rate ? 10 : 0, // Supprimé pour confidentialité
-            'portfolio' => (is_array($prestataire->portfolio_images) && count($prestataire->portfolio_images) > 0) ? 20 : 0,
         ];
         
         return array_sum($fields);
-    }
-    
-    /**
-     * Supprime un élément du portfolio.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function deletePortfolioItem(Request $request)
-    {
-        $user = Auth::user();
-        $prestataire = $user->prestataire;
-        $index = $request->input('index');
-        
-        if ($prestataire && is_array($prestataire->portfolio_images) && isset($prestataire->portfolio_images[$index])) {
-            $portfolioData = $prestataire->portfolio_images;
-            
-            // Supprimer le fichier image du stockage
-            if (isset($portfolioData[$index]['image']) && Storage::disk('public')->exists($portfolioData[$index]['image'])) {
-                Storage::disk('public')->delete($portfolioData[$index]['image']);
-            }
-            
-            // Supprimer l'élément du tableau
-            unset($portfolioData[$index]);
-            $prestataire->portfolio_images = array_values($portfolioData); // Réindexer le tableau
-            $prestataire->save();
-        }
-        
-        return redirect()->route('prestataire.profile.edit')
-            ->with('success', 'Élément du portfolio supprimé avec succès.');
     }
     
     /**
@@ -398,15 +326,6 @@ class ProfileController extends Controller
             // Supprimer la photo de profil
             if ($prestataire->photo && Storage::disk('public')->exists($prestataire->photo)) {
                 Storage::disk('public')->delete($prestataire->photo);
-            }
-
-            // Supprimer les images du portfolio
-            if ($prestataire->portfolio_images && is_array($prestataire->portfolio_images)) {
-                foreach ($prestataire->portfolio_images as $portfolioItem) {
-                    if (isset($portfolioItem['image']) && Storage::disk('public')->exists($portfolioItem['image'])) {
-                        Storage::disk('public')->delete($portfolioItem['image']);
-                    }
-                }
             }
         }
 

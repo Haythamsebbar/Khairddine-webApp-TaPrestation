@@ -96,6 +96,9 @@ class EquipmentController extends Controller
      */
     public function create()
     {
+        // Nettoyer les données de session précédentes
+        session()->forget('equipment_creation');
+        
         $categories = \App\Models\Category::whereNull('parent_id')->with('children')->orderBy('name')->get();
         return view('prestataire.equipment.create', compact('categories'));
     }
@@ -105,6 +108,16 @@ class EquipmentController extends Controller
      */
     public function createStep1()
     {
+        // Check if we're trying to access a wizard step for an equipment that's already published
+        $equipmentId = session('equipment_creation.equipment_id');
+        if ($equipmentId) {
+            $equipment = Equipment::find($equipmentId);
+            if ($equipment && $equipment->status === 'active') {
+                return redirect()->route('prestataire.equipment.show', $equipment)
+                    ->with('info', 'Cet équipement est déjà publié. Vous ne pouvez pas modifier les étapes du wizard.');
+            }
+        }
+        
         $categories = \App\Models\Category::whereNull('parent_id')->with('children')->orderBy('name')->get();
         return view('prestataire.equipment.create-step1', compact('categories'));
     }
@@ -119,7 +132,7 @@ class EquipmentController extends Controller
             'subcategory_id' => 'nullable|exists:categories,id',
         ]);
 
-        session(['equipment_step1' => $validated]);
+        session(['equipment_creation.step1' => $validated]);
         return redirect()->route('prestataire.equipment.create.step2');
     }
 
@@ -128,7 +141,17 @@ class EquipmentController extends Controller
      */
     public function createStep2()
     {
-        if (!session('equipment_step1')) {
+        // Check if we're trying to access a wizard step for an equipment that's already published
+        $equipmentId = session('equipment_creation.equipment_id');
+        if ($equipmentId) {
+            $equipment = Equipment::find($equipmentId);
+            if ($equipment && $equipment->status === 'active') {
+                return redirect()->route('prestataire.equipment.show', $equipment)
+                    ->with('info', 'Cet équipement est déjà publié. Vous ne pouvez pas modifier les étapes du wizard.');
+            }
+        }
+        
+        if (!session('equipment_creation.step1')) {
             return redirect()->route('prestataire.equipment.create.step1')
                            ->with('error', 'Veuillez d\'abord compléter l\'étape 1.');
         }
@@ -152,7 +175,7 @@ class EquipmentController extends Controller
             'rental_conditions' => 'nullable|string',
         ]);
 
-        session(['equipment_step2' => $validated]);
+        session(['equipment_creation.step2' => $validated]);
         return redirect()->route('prestataire.equipment.create.step3');
     }
 
@@ -161,7 +184,17 @@ class EquipmentController extends Controller
      */
     public function createStep3()
     {
-        if (!session('equipment_step1') || !session('equipment_step2')) {
+        // Check if we're trying to access a wizard step for an equipment that's already published
+        $equipmentId = session('equipment_creation.equipment_id');
+        if ($equipmentId) {
+            $equipment = Equipment::find($equipmentId);
+            if ($equipment && $equipment->status === 'active') {
+                return redirect()->route('prestataire.equipment.show', $equipment)
+                    ->with('info', 'Cet équipement est déjà publié. Vous ne pouvez pas modifier les étapes du wizard.');
+            }
+        }
+        
+        if (!session('equipment_creation.step1') || !session('equipment_creation.step2')) {
             return redirect()->route('prestataire.equipment.create.step1')
                            ->with('error', 'Veuillez compléter les étapes précédentes.');
         }
@@ -184,7 +217,7 @@ class EquipmentController extends Controller
         }
 
         // Ne pas stocker l'objet UploadedFile dans la session, seulement les chemins
-        session(['equipment_step3' => ['temp_image_paths' => $tempImagePaths]]);
+        session(['equipment_creation.step3' => ['temp_image_paths' => $tempImagePaths]]);
         return redirect()->route('prestataire.equipment.create.step4');
     }
 
@@ -193,13 +226,23 @@ class EquipmentController extends Controller
      */
     public function createStep4()
     {
-        if (!session('equipment_step1') || !session('equipment_step2') || !session('equipment_step3')) {
+        // Check if we're trying to access a wizard step for an equipment that's already published
+        $equipmentId = session('equipment_creation.equipment_id');
+        if ($equipmentId) {
+            $equipment = Equipment::find($equipmentId);
+            if ($equipment && $equipment->status === 'active') {
+                return redirect()->route('prestataire.equipment.show', $equipment)
+                    ->with('info', 'Cet équipement est déjà publié. Vous ne pouvez pas modifier les étapes du wizard.');
+            }
+        }
+        
+        if (!session('equipment_creation.step1') || !session('equipment_creation.step2') || !session('equipment_creation.step3')) {
             return redirect()->route('prestataire.equipment.create.step1')
                            ->with('error', 'Veuillez compléter les étapes précédentes.');
         }
 
         // Récupérer les noms des catégories pour l'affichage
-        $step1 = session('equipment_step1');
+        $step1 = session('equipment_creation.step1');
         $categoryName = null;
         $subcategoryName = null;
 
@@ -236,9 +279,9 @@ class EquipmentController extends Controller
         ]);
 
         // Récupérer toutes les données des sessions
-        $step1 = session('equipment_step1');
-        $step2 = session('equipment_step2');
-        $step3 = session('equipment_step3');
+        $step1 = session('equipment_creation.step1');
+        $step2 = session('equipment_creation.step2');
+        $step3 = session('equipment_creation.step3');
 
         if (!$step1 || !$step2 || !$step3) {
             return redirect()->route('prestataire.equipment.create.step1')
@@ -276,7 +319,7 @@ class EquipmentController extends Controller
         $equipment = Equipment::create($allData);
 
         // Nettoyer les sessions
-        session()->forget(['equipment_step1', 'equipment_step2', 'equipment_step3']);
+        session()->forget(['equipment_creation']);
 
         return redirect()->route('prestataire.equipment.show', $equipment)
                         ->with('success', 'Équipement ajouté avec succès!');

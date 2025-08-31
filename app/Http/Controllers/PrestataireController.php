@@ -20,7 +20,7 @@ class PrestataireController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Prestataire::with(['user', 'skills', 'services'])
+        $query = Prestataire::with(['user', 'services'])
             ->where('is_approved', true);
         
         // Filtrage par nom
@@ -33,13 +33,6 @@ class PrestataireController extends Controller
         // Filtrage par secteur d'activité
         if ($request->has('secteur')) {
             $query->where('secteur_activite', 'like', '%' . $request->secteur . '%');
-        }
-        
-        // Filtrage par compétence
-        if ($request->has('skill')) {
-            $query->whereHas('skills', function($q) use ($request) {
-                $q->where('skills.id', $request->skill);
-            });
         }
         
         // Filtrage par catégorie de service
@@ -73,7 +66,6 @@ class PrestataireController extends Controller
         // Load all necessary relationships for the show view
         $prestataire->load([
             'user', 
-            'skills', 
             'services' => function($query) {
                 $query->latest();
             },

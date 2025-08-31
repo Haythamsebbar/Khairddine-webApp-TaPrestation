@@ -182,16 +182,50 @@ class BookingController extends Controller
     /**
      * Display the specified booking
      */
-    public function show(Booking $booking)
+    public function show(Request $request, $id)
     {
+        // Find the booking or return 404
+        $booking = Booking::find($id);
+        
+        if (!$booking) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "La demande avec l'ID {$id} n'existe pas ou a été supprimée"
+                ], 404);
+            }
+            
+            abort(404, "La demande avec l'ID {$id} n'existe pas ou a été supprimée");
+        }
+        
         $user = Auth::user();
         
         // Vérifier que la réservation appartient au prestataire connecté
         if ($booking->prestataire_id !== $user->prestataire->id) {
-            abort(403);
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Accès non autorisé'], 403);
+            }
+            
+            abort(403, 'Accès non autorisé');
         }
         
         $booking->load(['service', 'client.user', 'timeSlot']);
+        
+        // For AJAX requests, return JSON data
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'id' => $booking->id,
+                'title' => $booking->service->name ?? 'Service',
+                'client_name' => $booking->client->user->name ?? 'Client',
+                'date' => $booking->start_datetime->format('d/m/Y à H:i'),
+                'duration' => $booking->start_datetime->diffInHours($booking->end_datetime) . ' heures',
+                'price' => number_format($booking->total_price, 2, ',', ' ') . ' €',
+                'description' => $booking->client_notes ?? 'Aucune description',
+                'status' => $booking->status,
+                'status_label' => $this->getStatusLabel($booking->status)
+            ]);
+        }
         
         // Extract session ID from notes if it exists
         $sessionId = null;
@@ -234,18 +268,34 @@ class BookingController extends Controller
     }
 
     /**
+     * Get status label for display
+     */
+    private function getStatusLabel($status)
+    {
+        $labels = [
+            'pending' => 'En attente',
+            'confirmed' => 'Confirmé',
+            'rejected' => 'Refusé',
+            'cancelled' => 'Annulé',
+            'completed' => 'Terminé'
+        ];
+        
+        return $labels[$status] ?? ucfirst($status);
+    }
+
+    /**
      * Accept a booking or entire session
      */
-    public function accept(Booking $booking)
+    public function accept(Request $request, Booking $booking)
     {
         $user = Auth::user();
         
         if ($booking->prestataire_id !== $user->prestataire->id) {
-            abort(403);
+            return response()->json(['success' => false, 'message' => 'Accès non autorisé.'], 403);
         }
         
         if ($booking->status !== 'pending') {
-            return redirect()->back()->with('error', 'Cette réservation ne peut pas être acceptée.');
+            return response()->json(['success' => false, 'message' => 'Cette réservation ne peut pas être acceptée.'], 400);
         }
         
         // Check if this is part of a multi-slot session
@@ -283,6 +333,15 @@ class BookingController extends Controller
             ? "Session de {$updatedCount} créneaux acceptée avec succès."
             : 'Réservation acceptée avec succès.';
             
+        // Return JSON response for AJAX requests
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'updated_count' => $updatedCount
+            ]);
+        }
+        
         return redirect()->back()->with('success', $message);
     }
 
@@ -294,11 +353,11 @@ class BookingController extends Controller
         $user = Auth::user();
         
         if ($booking->prestataire_id !== $user->prestataire->id) {
-            abort(403);
+            return response()->json(['success' => false, 'message' => 'Accès non autorisé.'], 403);
         }
         
         if ($booking->status !== 'pending') {
-            return redirect()->back()->with('error', 'Cette réservation ne peut pas être refusée.');
+            return response()->json(['success' => false, 'message' => 'Cette réservation ne peut pas être refusée.'], 400);
         }
         
         $rejectionReason = $request->get('rejection_reason');
@@ -341,6 +400,15 @@ class BookingController extends Controller
             ? "Session de {$updatedCount} créneaux refusée."
             : 'Réservation refusée.';
             
+        // Return JSON response for AJAX requests
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'updated_count' => $updatedCount
+            ]);
+        }
+        
         return redirect()->back()->with('success', $message);
     }
 

@@ -121,6 +121,29 @@
                             @enderror
                         </div>
                     </div>
+
+                    <!-- Champ dynamique pour le nombre d'heures/jours -->
+                    <div id="quantity-container" class="mt-4 sm:mt-6" style="display: none;">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
+                            <div>
+                                <label id="quantity-label" for="quantity" class="block text-xs sm:text-sm font-medium text-blue-700 mb-1 sm:mb-2"></label>
+                                <input type="number" id="quantity" name="quantity" min="1" value="{{ old('quantity', session('service_data.quantity')) }}" class="w-full px-3 py-2 sm:py-2.5 text-sm sm:text-base border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('quantity') border-red-500 @enderror">
+                                @error('quantity')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Affichage du prix total -->
+                    <div id="total-price-container" class="mt-4 sm:mt-6" style="display: none;">
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm sm:text-base font-medium text-blue-700">Prix total estimé :</span>
+                                <span id="total-price" class="text-lg sm:text-xl font-bold text-blue-900">0,00 €</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Catégorie -->
@@ -174,6 +197,46 @@ document.addEventListener('DOMContentLoaded', function () {
     const categorySelect = document.getElementById('category_id');
     const subcategorySelect = document.getElementById('subcategory_id');
     const subcategoryGroup = document.getElementById('subcategory-group');
+    
+    // Gestion du prix dynamique
+    const priceInput = document.getElementById('price');
+    const priceTypeSelect = document.getElementById('price_type');
+    const quantityContainer = document.getElementById('quantity-container');
+    const quantityLabel = document.getElementById('quantity-label');
+    const quantityInput = document.getElementById('quantity');
+    const totalPriceContainer = document.getElementById('total-price-container');
+    const totalPriceDisplay = document.getElementById('total-price');
+    
+    // Fonction pour mettre à jour le prix total
+    function updateTotalPrice() {
+        const price = parseFloat(priceInput.value) || 0;
+        const quantity = parseFloat(quantityInput.value) || 0;
+        const priceType = priceTypeSelect.value;
+        
+        // Afficher le conteneur de quantité uniquement pour les types "heure" ou "jour"
+        if (priceType === 'heure' || priceType === 'jour') {
+            quantityContainer.style.display = 'block';
+            totalPriceContainer.style.display = 'block';
+            
+            // Mettre à jour le label en fonction du type
+            quantityLabel.textContent = priceType === 'heure' ? 'Nombre d\'heures' : 'Nombre de jours';
+            
+            // Calculer et afficher le prix total
+            const total = price * quantity;
+            totalPriceDisplay.textContent = total.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+        } else {
+            quantityContainer.style.display = 'none';
+            totalPriceContainer.style.display = 'none';
+        }
+    }
+    
+    // Écouter les changements sur les champs de prix, type et quantité
+    priceInput.addEventListener('input', updateTotalPrice);
+    priceTypeSelect.addEventListener('change', updateTotalPrice);
+    quantityInput.addEventListener('input', updateTotalPrice);
+    
+    // Initialiser l'affichage au chargement de la page
+    updateTotalPrice();
     
     // Fonctions pour charger les catégories
     function loadMainCategories() {

@@ -138,13 +138,34 @@ class User extends Authenticatable
      */
     public function getProfilePhotoUrlAttribute()
     {
-        if ($this->prestataire && $this->prestataire->photo) {
-            return asset('storage/' . $this->prestataire->photo);
+        if ($this->prestataire) {
+            if ($this->prestataire->photo) {
+                return asset('storage/' . $this->prestataire->photo);
+            } elseif ($this->prestataire->profile_image) {
+                return asset('storage/' . $this->prestataire->profile_image);
+            }
         } elseif ($this->client && $this->client->photo) {
             return asset('storage/' . $this->client->photo);
         }
 
         return null; // Or a default image path
+    }
+
+    /**
+     * Get the profile photo URL for messaging.
+     *
+     * @return string
+     */
+    public function getMessagingPhotoUrl()
+    {
+        $photoUrl = $this->profile_photo_url;
+        
+        if ($photoUrl) {
+            return $photoUrl;
+        }
+        
+        // Return a default avatar if no photo is available
+        return asset('images/default-avatar.svg');
     }
 
     /**

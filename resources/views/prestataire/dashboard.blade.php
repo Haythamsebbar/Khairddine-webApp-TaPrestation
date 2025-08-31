@@ -51,7 +51,7 @@
                     <a href="{{ route('prestataire.videos.create') }}" class="dashboard-stat-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 text-center hover:shadow-lg hover:border-red-200 transition-all duration-300">
                         <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 bg-red-50 rounded-xl">
                             <svg class="w-5 h-5 sm:w-6 sm:h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 10.5l4.72-4.72a.75.75 0 111.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
                             </svg>
                         </div>
                         <div class="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">+</div>
@@ -65,8 +65,18 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                             </svg>
                         </div>
-                        <div class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1">{{ number_format($monthlyRentalRevenue ?? 0, 0, ',', ' ') }} €</div>
+                        <div class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1">{{ number_format($monthlyTotalRevenue ?? 0, 0, ',', ' ') }} €</div>
                         <div class="text-xs sm:text-sm font-medium text-gray-600">Revenus ce mois</div>
+                        <div class="text-xs text-gray-500 mt-1">
+                            <div class="flex justify-between">
+                                <span>Services:</span>
+                                <span>{{ number_format($monthlyServiceRevenue ?? 0, 0, ',', ' ') }} €</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Équipements:</span>
+                                <span>{{ number_format($monthlyEquipmentRevenue ?? 0, 0, ',', ' ') }} €</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -129,7 +139,7 @@
                     <div class="flex-shrink-0">
                         <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-green-50 rounded-xl">
                             <svg class="h-5 w-5 sm:h-6 sm:w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                             </svg>
                         </div>
                     </div>
@@ -392,7 +402,7 @@
                 </ul>
                 <a href="{{ route('prestataire.profile.edit') }}" class="w-full inline-flex items-center justify-center px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 border border-transparent text-xs sm:text-sm md:text-base font-semibold rounded-xl text-white bg-purple-600 hover:bg-purple-700 transition-all duration-300 shadow-sm hover:shadow-md mt-auto">
                     <svg class="-ml-1 mr-1 sm:mr-2 md:mr-3 h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L16.732 3.732z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536a1 1 0 113.536 3.536L6.5 21.036H3v-3.5L16.732 3.732z" />
                     </svg>
                     <span class="hidden sm:inline">Compléter mon profil</span>
                     <span class="sm:hidden">Profil</span>

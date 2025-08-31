@@ -73,7 +73,8 @@ class EquipmentRental extends Model
         'internal_notes',
         'cancellation_reason',
         'cancelled_at',
-        'cancelled_by'
+        'cancelled_by',
+        'completed_at'
     ];
 
     /**
@@ -113,7 +114,8 @@ class EquipmentRental extends Model
         'metadata' => 'array',
 
         'client_validated_pickup_at' => 'datetime',
-        'cancelled_at' => 'datetime'
+        'cancelled_at' => 'datetime',
+        'completed_at' => 'datetime'
     ];
 
     /**

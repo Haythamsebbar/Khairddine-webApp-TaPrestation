@@ -156,4 +156,37 @@ class VideoController extends Controller
             'comments' => $comments
         ]);
     }
+
+    public function incrementViewCount(Request $request, Video $video)
+    {
+        // Validate the request
+        $request->validate([
+            'watched_duration' => 'nullable|integer|min:0',
+            'video_duration' => 'nullable|integer|min:0'
+        ]);
+
+        // Check if we should count this view (at least 10 seconds or 30% of video duration)
+        $shouldCountView = true;
+        if ($request->watched_duration && $request->video_duration) {
+            $minDuration = min(10, $request->video_duration * 0.3); // 10 seconds or 30% of video, whichever is smaller
+            $shouldCountView = $request->watched_duration >= $minDuration;
+        }
+
+        if ($shouldCountView) {
+            // Increment the view count
+            $video->increment('views_count');
+            
+            return response()->json([
+                'success' => true,
+                'views_count' => $video->fresh()->views_count,
+                'message' => 'View count incremented'
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'views_count' => $video->views_count,
+            'message' => 'View not counted (insufficient watch time)'
+        ]);
+    }
 }

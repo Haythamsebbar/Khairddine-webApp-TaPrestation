@@ -57,32 +57,6 @@
                         </div>
                     @endif
 
-                    <!-- Réalisations (Portfolio) -->
-                    @if($prestataire && is_array($prestataire->portfolio_images) && count($prestataire->portfolio_images) > 0)
-                        <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                            <h2 class="text-2xl font-bold text-gray-800 mb-4">
-                                <i class="fas fa-images mr-3 text-indigo-500"></i>Réalisations
-                            </h2>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                @foreach($prestataire->portfolio_images as $item)
-                                    <div class="bg-gray-50 rounded-lg overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
-                                        <a href="{{ $item['link'] ?? '#' }}" target="_blank">
-                                            @if(isset($item['image']))
-                                                <img src="{{ Storage::url($item['image']) }}" alt="{{ $item['title'] ?? 'Portfolio item' }}" class="w-full h-40 object-cover">
-                                            @endif
-                                            <div class="p-4">
-                                                <h3 class="font-semibold text-gray-800 truncate">{{ $item['title'] ?? 'Sans titre' }}</h3>
-                                                @if(isset($item['link']) && $item['link'])
-                                                    <span class="text-sm text-indigo-600 hover:underline">Voir le projet</span>
-                                                @endif
-                                            </div>
-                                        </a>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
-
                     <!-- Avis Clients -->
                     @if(isset($reviews) && $reviews->count() > 0)
                         <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">

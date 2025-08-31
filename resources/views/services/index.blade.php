@@ -448,7 +448,11 @@ function getMyLocation() {
                                 @endif
                                 
                                 <!-- Informations complémentaires -->
-                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs sm:text-sm text-gray-600 mb-4 pt-3 border-t border-gray-100 gap-2">
+                                <div class="flex flex-col text-xs sm:text-sm text-gray-600 mb-4 pt-3 border-t border-gray-100 gap-2">
+                                    <span class="flex items-center font-medium text-gray-500">
+                                        <i class="fas fa-clock mr-1 text-gray-400"></i>
+                                        {{ $service->created_at->diffForHumans() }}
+                                    </span>
                                     <span class="flex items-center font-medium truncate">
                                         <i class="fas fa-map-marker-alt mr-1 text-gray-400 flex-shrink-0"></i>
                                         <span class="truncate">
@@ -468,10 +472,6 @@ function getMyLocation() {
                                                 Non spécifié
                                             @endif
                                         </span>
-                                    </span>
-                                    <span class="flex items-center font-medium text-gray-500">
-                                        <i class="fas fa-clock mr-1 text-gray-400"></i>
-                                        {{ $service->created_at->diffForHumans() }}
                                     </span>
                                 </div>
                             </div>

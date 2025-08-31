@@ -2,9 +2,9 @@
 
 @section('content')
 <link rel="stylesheet" href="{{ asset('css/prestataires-list.css') }}">
-<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+<div class="container mx-auto px-2 sm:px-3 lg:px-4 py-2 sm:py-3 lg:py-4">
     <!-- En-tête du profil prestataire -->
-    <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl shadow-xl p-6 sm:p-8 lg:p-10 mb-6 sm:mb-8 text-white relative overflow-hidden">
+    <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl shadow-xl p-3 sm:p-4 lg:p-6 mb-3 sm:mb-4 text-white relative overflow-hidden">
         <!-- Motif de fond décoratif -->
         <div class="absolute inset-0 opacity-10">
             <svg class="w-full h-full" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -19,33 +19,93 @@
         
         <div class="relative z-10">
             <!-- Layout principal en trois colonnes -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-2 sm:gap-3 items-center">
                 
                 <!-- Colonne gauche : Photo + Évaluations (mobile: en haut) -->
-                <div class="lg:col-span-3 flex flex-col items-center lg:items-start space-y-4 sm:space-y-6">
+                <div class="lg:col-span-3 flex flex-col items-center lg:items-start space-y-3 sm:space-y-4">
                     <!-- Photo de profil agrandie -->
                     <div class="prestataire-avatar relative flex-shrink-0">
                         @if($prestataire->photo)
-                            <img src="{{ asset('storage/' . $prestataire->photo) }}" alt="{{ $prestataire->user->name }}" class="h-32 w-32 sm:h-40 sm:w-40 lg:h-56 lg:w-56 object-cover rounded-full border-4 sm:border-6 border-white shadow-2xl ring-2 sm:ring-4 ring-white/20">
+                            <img src="{{ asset('storage/' . $prestataire->photo) }}" alt="{{ $prestataire->user->name }}" class="h-24 w-24 sm:h-32 sm:w-32 lg:h-40 lg:w-40 object-cover rounded-full border-2 sm:border-3 border-white shadow-lg ring-1 ring-white/20">
                         @elseif($prestataire->user->avatar)
-                            <img src="{{ asset('storage/' . $prestataire->user->avatar) }}" alt="{{ $prestataire->user->name }}" class="h-32 w-32 sm:h-40 sm:w-40 lg:h-56 lg:w-56 object-cover rounded-full border-4 sm:border-6 border-white shadow-2xl ring-2 sm:ring-4 ring-white/20">
+                            <img src="{{ asset('storage/' . $prestataire->user->avatar) }}" alt="{{ $prestataire->user->name }}" class="h-24 w-24 sm:h-32 sm:w-32 lg:h-40 lg:w-40 object-cover rounded-full border-2 sm:border-3 border-white shadow-lg ring-1 ring-white/20">
                         @elseif($prestataire->user->profile_photo_url)
-                            <img src="{{ $prestataire->user->profile_photo_url }}" alt="{{ $prestataire->user->name }}" class="h-32 w-32 sm:h-40 sm:w-40 lg:h-56 lg:w-56 object-cover rounded-full border-4 sm:border-6 border-white shadow-2xl ring-2 sm:ring-4 ring-white/20">
+                            <img src="{{ $prestataire->user->profile_photo_url }}" alt="{{ $prestataire->user->name }}" class="h-24 w-24 sm:h-32 sm:w-32 lg:h-40 lg:w-40 object-cover rounded-full border-2 sm:border-3 border-white shadow-lg ring-1 ring-white/20">
                         @else
-                            <div class="h-32 w-32 sm:h-40 sm:w-40 lg:h-56 lg:w-56 flex items-center justify-center bg-white text-blue-600 rounded-full border-4 sm:border-6 border-white shadow-2xl ring-2 sm:ring-4 ring-white/20">
-                                <svg class="h-16 w-16 sm:h-20 sm:w-20 lg:h-28 lg:w-28" fill="currentColor" viewBox="0 0 24 24">
+                            <div class="h-24 w-24 sm:h-32 sm:w-32 lg:h-40 lg:w-40 flex items-center justify-center bg-white text-blue-600 rounded-full border-2 sm:border-3 border-white shadow-lg ring-1 ring-white/20">
+                                <svg class="h-12 w-12 sm:h-16 sm:w-16 lg:h-20 lg:w-20" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
                                 </svg>
                             </div>
                         @endif
                         @if($prestataire->isVerified())
-                            <div class="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 w-8 h-8 sm:w-12 sm:h-12 bg-green-500 rounded-full flex items-center justify-center border-2 sm:border-4 border-white shadow-lg">
-                                <svg class="w-4 h-4 sm:w-6 sm:h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <div class="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 w-6 h-6 sm:w-8 sm:h-8 bg-orange-500 rounded-full flex items-center justify-center border-2 sm:border-3 border-white shadow-md">
+                                <svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                                 </svg>
                             </div>
                         @endif
                     </div>
+                    
+                    <!-- PHP definition for ratings moved to the top level of the page -->
+                </div>
+                
+                <!-- Colonne centrale : Nom + Description -->
+                <div class="lg:col-span-6 text-center lg:text-left">
+                    <div class="flex items-center justify-center lg:justify-start gap-2 mb-1 sm:mb-2">
+                        <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold leading-tight">{{ $prestataire->user->name }}</h1>
+                        
+                        @if($prestataire->isVerified())
+                            <div class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-orange-500/20 text-orange-100 border border-orange-400/30 backdrop-blur-sm flex-shrink-0">
+                                <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                                Profil Vérifié
+                            </div>
+                        @endif
+                    </div>
+                    
+                    <p class="text-sm sm:text-base lg:text-lg font-bold text-blue-100 mb-1 sm:mb-2 tracking-wide">{{ $prestataire->secteur_activite }}</p>
+                    <p class="text-xs sm:text-sm lg:text-base text-blue-50/90 leading-relaxed line-clamp-2">{{ $prestataire->description }}</p>
+                </div>
+                
+                <!-- Colonne droite : Boutons d'action -->
+                <div class="lg:col-span-3 flex flex-col gap-1 sm:gap-1.5">
+                    @auth
+                        @if(auth()->user()->isClient())
+                            <div class="flex flex-row gap-1 sm:gap-1.5">
+                                @if(auth()->user()->client && auth()->user()->client->isFollowing($prestataire->id))
+                                    <form action="{{ route('client.prestataire-follows.unfollow', $prestataire) }}" method="POST" class="flex-1">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="w-full inline-flex items-center justify-center px-1.5 py-1 border border-white rounded-md text-xs font-semibold text-white bg-white/10 hover:bg-white hover:text-blue-600 transition-all duration-300 backdrop-blur-sm shadow-sm hover:shadow">
+                                            <svg class="-ml-0.5 mr-1 h-2.5 w-2.5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                            </svg>
+                                            Abonné(e)
+                                        </button>
+                                    </form>
+                                @else
+                                    <form action="{{ route('client.prestataire-follows.follow', $prestataire) }}" method="POST" class="flex-1">
+                                        @csrf
+                                        <button type="submit" class="w-full inline-flex items-center justify-center px-1.5 py-1 border border-white rounded-md text-xs font-semibold text-white bg-white/10 hover:bg-white hover:text-blue-600 transition-all duration-300 backdrop-blur-sm shadow-sm hover:shadow">
+                                            <svg class="-ml-0.5 mr-1 h-2.5 w-2.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                            </svg>
+                                            S'abonner
+                                        </button>
+                                    </form>
+                                @endif
+                                
+                                <a href="{{ route('messaging.start', $prestataire) }}" class="flex-1 inline-flex items-center justify-center px-1.5 py-1 bg-white text-blue-600 rounded-md text-xs font-semibold hover:bg-blue-50 transition-all duration-300 shadow-sm hover:shadow">
+                                    <svg class="-ml-0.5 mr-1 h-2.5 w-2.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                    </svg>
+                                    Contacter
+                                </a>
+                            </div>
+                        @endif
+                    @endauth
                     
                     <!-- Évaluations compactes -->
                     @php
@@ -54,18 +114,18 @@
                         $roundedRating = round($averageRating, 1);
                     @endphp
                     
-                    <div class="bg-yellow-500/30 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-yellow-400/50 w-full max-w-xs">
+                    <div class="bg-yellow-500/30 backdrop-blur-sm rounded-lg p-1.5 sm:p-2 border border-yellow-400/50 w-full mt-1 sm:mt-1.5">
                         @if($totalReviews > 0)
                             <div class="text-center">
-                                <div class="text-xl sm:text-2xl font-bold text-yellow-100 mb-1">{{ $roundedRating }}</div>
-                                <div class="flex justify-center items-center mb-1">
+                                <div class="text-base sm:text-lg font-bold text-yellow-100 mb-0.5">{{ $roundedRating }}</div>
+                                <div class="flex justify-center items-center mb-0.5">
                                     @for($i = 1; $i <= 5; $i++)
                                         @if($i <= floor($averageRating))
-                                            <svg class="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
                                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
                                             </svg>
                                         @elseif($i == ceil($averageRating) && $averageRating - floor($averageRating) >= 0.5)
-                                            <svg class="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
                                                 <defs>
                                                     <linearGradient id="half-star-compact">
                                                         <stop offset="50%" stop-color="currentColor"/>
@@ -75,7 +135,7 @@
                                                 <path fill="url(#half-star-compact)" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
                                             </svg>
                                         @else
-                                            <svg class="w-3 h-3 sm:w-4 sm:h-4 text-yellow-200/40" fill="currentColor" viewBox="0 0 20 20">
+                                            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-yellow-200/40" fill="currentColor" viewBox="0 0 20 20">
                                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
                                             </svg>
                                         @endif
@@ -85,9 +145,9 @@
                             </div>
                         @else
                             <div class="text-center">
-                                <div class="flex justify-center items-center mb-1">
+                                <div class="flex justify-center items-center mb-0.5">
                                     @for($i = 1; $i <= 5; $i++)
-                                        <svg class="w-3 h-3 sm:w-4 sm:h-4 text-yellow-200/40" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-yellow-200/40" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
                                         </svg>
                                     @endfor
@@ -97,84 +157,17 @@
                         @endif
                     </div>
                 </div>
-                
-                <!-- Colonne centrale : Nom + Description -->
-                <div class="lg:col-span-6 text-center lg:text-left">
-                    <h1 class="text-3xl sm:text-4xl lg:text-6xl font-black mb-3 sm:mb-4 leading-tight">{{ $prestataire->user->name }}</h1>
-                    
-                    @if($prestataire->isVerified())
-                        <div class="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold bg-green-500/20 text-green-100 border border-green-400/30 backdrop-blur-sm mb-3 sm:mb-4">
-                            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                            </svg>
-                            Profil Vérifié
-                        </div>
-                    @endif
-                    
-                    <p class="text-lg sm:text-xl lg:text-3xl font-bold text-blue-100 mb-4 sm:mb-6 tracking-wide">{{ $prestataire->secteur_activite }}</p>
-                    <p class="text-base sm:text-lg lg:text-xl text-blue-50/90 leading-relaxed">{{ $prestataire->description }}</p>
-                </div>
-                
-                <!-- Colonne droite : Boutons d'action -->
-                <div class="lg:col-span-3 flex flex-col sm:flex-row gap-2 sm:gap-3">
-                    @auth
-                        @if(auth()->user()->isClient())
-                            @if(auth()->user()->client && auth()->user()->client->isFollowing($prestataire->id))
-                                <form action="{{ route('client.prestataire-follows.unfollow', $prestataire) }}" method="POST" class="flex-1">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="w-full inline-flex items-center justify-center px-3 sm:px-4 py-2.5 sm:py-2 border-2 border-white rounded-lg text-xs sm:text-sm font-semibold text-white bg-white/10 hover:bg-white hover:text-blue-600 transition-all duration-300 backdrop-blur-sm shadow-md hover:shadow-lg">
-                                        <svg class="-ml-1 mr-1.5 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                        </svg>
-                                        Abonné(e)
-                                    </button>
-                                </form>
-                            @else
-                                <form action="{{ route('client.prestataire-follows.follow', $prestataire) }}" method="POST" class="flex-1">
-                                    @csrf
-                                    <button type="submit" class="w-full inline-flex items-center justify-center px-3 sm:px-4 py-2.5 sm:py-2 border-2 border-white rounded-lg text-xs sm:text-sm font-semibold text-white bg-white/10 hover:bg-white hover:text-blue-600 transition-all duration-300 backdrop-blur-sm shadow-md hover:shadow-lg">
-                                        <svg class="-ml-1 mr-1.5 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                        </svg>
-                                        S'abonner
-                                    </button>
-                                </form>
-                            @endif
-                            
-                            <a href="{{ route('messaging.start', $prestataire) }}" class="flex-1 inline-flex items-center justify-center px-3 sm:px-4 py-2.5 sm:py-2 bg-white text-blue-600 rounded-lg text-xs sm:text-sm font-semibold hover:bg-blue-50 transition-all duration-300 shadow-md hover:shadow-lg">
-                                <svg class="-ml-1 mr-1.5 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                                </svg>
-                                Contacter
-                            </a>
-                        @endif
-                    @endauth
-                </div>
             </div>
         </div>
         
-        
-        @if($prestataire->skills->count() > 0)
-            <div class="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-white/20">
-                <h3 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-white">Compétences</h3>
-                <div class="flex flex-wrap gap-2 sm:gap-3">
-                    @foreach($prestataire->skills as $skill)
-                        <span class="bg-white/20 text-white text-sm sm:text-base font-semibold px-4 sm:px-6 py-2 sm:py-3 rounded-full border border-white/30 backdrop-blur-sm hover:bg-white/30 transition-all duration-300">
-                            {{ $skill->name }}
-                        </span>
-                    @endforeach
-                </div>
-            </div>
-        @endif
         </div>
     </div>
     
     
     
     <!-- Structure à deux colonnes -->
-    <div class="container mx-auto px-4">
-        <div class="flex flex-col lg:flex-row gap-6 lg:gap-8">
+    <div class="container mx-auto px-2 sm:px-3 lg:px-4">
+        <div class="flex flex-col lg:flex-row gap-3 lg:gap-4">
             <!-- Colonne gauche (70%) - Contenus métier -->
             <div class="lg:w-[70%] w-full space-y-4 sm:space-y-6">
                 <!-- Bloc 1: Services proposés -->

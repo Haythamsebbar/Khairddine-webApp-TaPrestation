@@ -1,45 +1,175 @@
 @extends('layouts.app')
 
+@push('styles')
+<style>
+    .dashboard-stat-card {
+        background-color: white;
+        border-radius: 0.75rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid #f1f5f9;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .dashboard-stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .dashboard-primary-card {
+        background-color: white;
+        border-radius: 0.75rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid #f1f5f9;
+        transition: all 0.3s ease;
+    }
+    
+    .dashboard-primary-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .fade-in-up {
+        animation: fadeInUp 0.5s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .stat-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .section-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-left: 0.75rem;
+    }
+    
+    .profile-section {
+        background: white;
+        border-radius: 0.75rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid #f1f5f9;
+        transition: all 0.3s ease;
+        padding: 1.5rem;
+    }
+    
+    .profile-section:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Adding the same color variations used in dashboard cards */
+    .bg-blue-50 {
+        background-color: #eff6ff;
+    }
+    
+    .text-blue-600 {
+        color: #2563eb;
+    }
+    
+    .bg-green-50 {
+        background-color: #f0fdf4;
+    }
+    
+    .text-green-600 {
+        color: #16a34a;
+    }
+    
+    .bg-red-50 {
+        background-color: #fef2f2;
+    }
+    
+    .text-red-600 {
+        color: #dc2626;
+    }
+    
+    .bg-purple-50 {
+        background-color: #f5f3ff;
+    }
+    
+    .text-purple-600 {
+        color: #9333ea;
+    }
+    
+    .bg-orange-50 {
+        background-color: #fff7ed;
+    }
+    
+    .text-orange-600 {
+        color: #ea580c;
+    }
+</style>
+@endpush
+
 @section('content')
-<div class="py-10">
-    <header>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 class="text-3xl font-bold leading-tight text-gray-900">Mon Profil</h1>
-            <p class="mt-2 text-sm text-gray-600">érez vos informations personnelles et vos préférences</p>
+<div class="min-h-screen" style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-6 sm:mb-8">
+            <div class="text-center mb-6 sm:mb-8 fade-in-up">
+                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">Mon Profil</h1>
+                <p class="text-lg sm:text-xl text-gray-600 px-4">Gérez vos informations personnelles et vos préférences</p>
+            </div>
         </div>
-    </header>
-    <main>
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="px-4 py-6 sm:px-0">
-                @if ($errors->any())
-                    <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative">
-                        <ul class="list-disc list-inside text-sm">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-                
-                @if (session('success'))
-                    <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative">
-                        {{ session('success') }}
-                    </div>
-                @endif
-                
-                <form action="{{ route('client.profile.update') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    @method('PUT')
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+            <div class="lg:col-span-3">
+                <div class="profile-section">
+                    @if ($errors->any())
+                        <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative">
+                            <ul class="list-disc list-inside text-sm">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     
-                    <div class="space-y-6">
-                        <!-- Informations de base -->
-                        <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
-                            <div class="md:grid md:grid-cols-3 md:gap-6">
-                                <div class="md:col-span-1">
-                                    <h3 class="text-lg font-medium leading-6 text-gray-900">Informations personnelles</h3>
-                                    <p class="mt-1 text-sm text-gray-500">Ces informations seront visibles par les prestataires.</p>
+                    @if (session('success'))
+                        <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                    
+                    <form action="{{ route('client.profile.update') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+                        
+                        <div class="space-y-6">
+                            <!-- Informations de base -->
+                            <div class="dashboard-primary-card p-4 sm:p-6">
+                                <div class="section-header">
+                                    <div class="stat-icon bg-blue-50">
+                                        <svg class="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="section-title text-gray-900">Informations personnelles</h3>
+                                        <p class="text-sm text-gray-600">Ces informations seront visibles par les prestataires.</p>
+                                    </div>
                                 </div>
-                                <div class="mt-5 md:mt-0 md:col-span-2">
+                                <div class="mt-5 md:mt-0">
                                     <div class="grid grid-cols-6 gap-6">
                                         <!-- Avatar -->
                                         <div class="col-span-6">
@@ -53,7 +183,7 @@
                                                     </div>
                                                 @endif
                                                 <div class="flex flex-col space-y-2">
-                                                    <input type="file" name="avatar" id="avatar" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                                                    <input type="file" name="avatar" id="avatar" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100">
                                                     @if(auth()->user()->client && auth()->user()->client->avatar)
                                                         <button type="button" onclick="deleteAvatar()" class="text-sm text-red-600 hover:text-red-500">Supprimer la photo</button>
                                                     @endif
@@ -64,113 +194,65 @@
                                         <!-- Nom -->
                                         <div class="col-span-6 sm:col-span-3">
                                             <label for="name" class="block text-sm font-medium text-gray-700">Nom complet</label>
-                                            <input type="text" name="name" id="name" value="{{ old('name', auth()->user()->name) }}" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required>
+                                            <input type="text" name="name" id="name" value="{{ old('name', auth()->user()->name) }}" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required>
                                         </div>
                                         
                                         <!-- Email -->
                                         <div class="col-span-6 sm:col-span-3">
                                             <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                                            <input type="email" name="email" id="email" value="{{ old('email', auth()->user()->email) }}" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required>
+                                            <input type="email" name="email" id="email" value="{{ old('email', auth()->user()->email) }}" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required>
                                         </div>
                                         
                                         <!-- Téléphone -->
                                         <div class="col-span-6 sm:col-span-3">
                                             <label for="phone" class="block text-sm font-medium text-gray-700">Téléphone</label>
-                                            <input type="tel" name="phone" id="phone" value="{{ old('phone', auth()->user()->client->phone ?? '') }}" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                            <input type="tel" name="phone" id="phone" value="{{ old('phone', auth()->user()->client->phone ?? '') }}" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                         </div>
                                         
                                         <!-- Localisation -->
                                         <div class="col-span-6 sm:col-span-3">
                                             <label for="location" class="block text-sm font-medium text-gray-700">Localisation</label>
-                                            <input type="text" name="location" id="location" value="{{ old('location', auth()->user()->client->location ?? '') }}" placeholder="Ville, Région" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                            <input type="text" name="location" id="location" value="{{ old('location', auth()->user()->client->location ?? '') }}" placeholder="Ville, Région" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                         </div>
                                         
                                         <!-- Bio -->
                                         <div class="col-span-6">
                                             <label for="bio" class="block text-sm font-medium text-gray-700">Présentation</label>
-                                            <textarea name="bio" id="bio" rows="4" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="Présentez-vous en quelques mots...">{{ old('bio', auth()->user()->client->bio ?? '') }}</textarea>
+                                            <textarea name="bio" id="bio" rows="4" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="Présentez-vous en quelques mots...">{{ old('bio', auth()->user()->client->bio ?? '') }}</textarea>
                                             <p class="mt-2 text-sm text-gray-500">Décrivez vos besoins habituels, vos préférences ou votre secteur d'activité.</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <!-- Préférences -->
-                        <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
-                            <div class="md:grid md:grid-cols-3 md:gap-6">
-                                <div class="md:col-span-1">
-                                    <h3 class="text-lg font-medium leading-6 text-gray-900">Préférences</h3>
-                                    <p class="mt-1 text-sm text-gray-500">Configurez vos préférences de communication et de notifications.</p>
-                                </div>
-                                <div class="mt-5 md:mt-0 md:col-span-2">
-                                    <div class="space-y-6">
-                                        <!-- Notifications -->
-                                        <fieldset>
-                                            <legend class="text-base font-medium text-gray-900">Notifications</legend>
-                                            <div class="mt-4 space-y-4">
-                                                <div class="flex items-start">
-                                                    <div class="flex items-center h-5">
-                                                        <input id="email_notifications" name="email_notifications" type="checkbox" {{ old('email_notifications', auth()->user()->client->email_notifications ?? true) ? 'checked' : '' }} class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                                                    </div>
-                                                    <div class="ml-3 text-sm">
-                                                        <label for="email_notifications" class="font-medium text-gray-700">Notifications par email</label>
-                                                        <p class="text-gray-500">Recevoir des notifications pour les nouveaux messages et offres.</p>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class="flex items-start">
-                                                    <div class="flex items-center h-5">
-                                                        <input id="sms_notifications" name="sms_notifications" type="checkbox" {{ old('sms_notifications', auth()->user()->client->sms_notifications ?? false) ? 'checked' : '' }} class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                                                    </div>
-                                                    <div class="ml-3 text-sm">
-                                                        <label for="sms_notifications" class="font-medium text-gray-700">Notifications SMS</label>
-                                                        <p class="text-gray-500">Recevoir des SMS pour les messages urgents.</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </fieldset>
-                                        
-                                        <!-- Visibilité du profil -->
-                                        <fieldset>
-                                            <legend class="text-base font-medium text-gray-900">Visibilité</legend>
-                                            <div class="mt-4 space-y-4">
-                                                <div class="flex items-start">
-                                                    <div class="flex items-center h-5">
-                                                        <input id="public_profile" name="public_profile" type="checkbox" {{ old('public_profile', auth()->user()->client->public_profile ?? true) ? 'checked' : '' }} class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                                                    </div>
-                                                    <div class="ml-3 text-sm">
-                                                        <label for="public_profile" class="font-medium text-gray-700">Profil public</label>
-                                                        <p class="text-gray-500">Permettre aux prestataires de voir votre profil et vos avis.</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </fieldset>
-                                    </div>
-                                </div>
+                            
+                            <!-- Boutons d'action -->
+                            <div class="flex justify-end space-x-3">
+                                <a href="{{ route('client.dashboard') }}" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dashboard-stat-card">
+                                    Annuler
+                                </a>
+                                <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dashboard-stat-card">
+                                    Enregistrer les modifications
+                                </button>
                             </div>
                         </div>
-                        
-                        <!-- Boutons d'action -->
-                        <div class="flex justify-end space-x-3">
-                            <a href="{{ route('client.dashboard') }}" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                Annuler
-                            </a>
-                            <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                Enregistrer les modifications
-                            </button>
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
                 
                 <!-- Section Suppression du compte -->
-                <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6 mt-6">
-                    <div class="md:grid md:grid-cols-3 md:gap-6">
-                        <div class="md:col-span-1">
-                            <h3 class="text-lg font-medium leading-6 text-red-600">Zone dangereuse</h3>
-                            <p class="mt-1 text-sm text-gray-500">Actions irréversibles concernant votre compte.</p>
+                <div class="profile-section mt-6">
+                    <div class="dashboard-primary-card p-4 sm:p-6">
+                        <div class="section-header">
+                            <div class="stat-icon bg-red-50">
+                                <svg class="h-5 w-5 text-red-600" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="section-title text-red-600">Zone dangereuse</h3>
+                                <p class="text-sm text-gray-600">Actions irréversibles concernant votre compte.</p>
+                            </div>
                         </div>
-                        <div class="mt-5 md:mt-0 md:col-span-2">
+                        <div class="mt-5 md:mt-0">
                             <div class="bg-red-50 border border-red-200 rounded-md p-4">
                                 <div class="flex">
                                     <div class="flex-shrink-0">
@@ -190,7 +272,7 @@
                                             </ul>
                                         </div>
                                         <div class="mt-4">
-                                        <button type="button" onclick="openDeleteModal()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-bold transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                                        <button type="button" onclick="openDeleteModal()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-bold transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 dashboard-stat-card">
                                             Supprimer mon compte
                                         </button>
                                     </div>
@@ -233,10 +315,10 @@
                     </div>
                     
                     <div class="flex justify-center space-x-4 mt-6">
-                        <button type="button" onclick="closeDeleteModal()" class="px-6 py-3 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200 transition-colors font-bold">
+                        <button type="button" onclick="closeDeleteModal()" class="px-6 py-3 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200 transition-colors font-bold dashboard-stat-card">
                             Annuler
                         </button>
-                        <button type="submit" class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                        <button type="submit" class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 dashboard-stat-card">
                             Supprimer définitivement
                         </button>
                     </div>

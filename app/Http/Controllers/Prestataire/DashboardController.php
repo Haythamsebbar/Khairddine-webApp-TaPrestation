@@ -40,6 +40,16 @@ class DashboardController extends Controller
             ->whereYear('completed_at', now()->year)
             ->sum('total_amount');
         
+        // Statistiques pour les services (revenus mensuels)
+        $monthlyServiceRevenue = $prestataire->bookings()
+            ->where('status', 'completed')
+            ->whereMonth('completed_at', now()->month)
+            ->whereYear('completed_at', now()->year)
+            ->sum('total_price');
+            
+        // Revenus totaux du mois (services + équipements)
+        $monthlyTotalRevenue = $monthlyServiceRevenue + $monthlyEquipmentRevenue;
+        
         // Statistiques pour les annonces
         $urgentSalesCount = UrgentSale::where('prestataire_id', $prestataire->id)
             ->where('status', 'active')
@@ -111,7 +121,11 @@ class DashboardController extends Controller
             'monthlyEquipmentRevenue' => $monthlyEquipmentRevenue,
             
             'urgentSalesCount' => $urgentSalesCount,
-            'urgentProductsCount' => $urgentProductsCount
+            'urgentProductsCount' => $urgentProductsCount,
+            
+            // Adding service revenue and total revenue
+            'monthlyServiceRevenue' => $monthlyServiceRevenue,
+            'monthlyTotalRevenue' => $monthlyTotalRevenue
         ]);
     }
     

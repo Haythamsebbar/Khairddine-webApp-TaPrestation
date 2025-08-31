@@ -19,7 +19,6 @@ use App\Http\Controllers\MatchingAlertController;
 use App\Http\Controllers\QrCodeController;
 use App\Http\Controllers\UrgentSaleController;
 use App\Http\Controllers\VideoController;
-use App\Http\Controllers\EquipmentController;
 use App\Models\Video;
 // use App\Http\Controllers\Prestataire\MissionController;
 use App\Http\Controllers\Prestataire\VerificationController;
@@ -46,12 +45,8 @@ if (app()->environment('local')) {
     require __DIR__ . '/debug-routes.php';
 }
 
-
-
 // Page d'accueil
 Route::get('/', [HomeController::class, 'index'])->name('home');
-
-
 
 // API Routes
 Route::get('/api/categories/{category}/subcategories', function($categoryId) {
@@ -299,6 +294,7 @@ Route::get('/videos/{video}', [VideoController::class, 'show'])->name('videos.sh
 Route::post('/videos/{video}/like', [VideoController::class, 'like'])->name('videos.like');
 Route::post('/videos/{video}/comments', [VideoController::class, 'comment'])->name('videos.comment');
 Route::get('/videos/{video}/comments', [VideoController::class, 'getComments'])->name('videos.comments.get');
+Route::post('/videos/{video}/increment-views', [VideoController::class, 'incrementViewCount'])->name('videos.increment-views');
 Route::post('/prestataires/{prestataire}/follow', [VideoController::class, 'follow'])->name('prestataires.follow');
 
 // Routes pour les avis
@@ -473,7 +469,8 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
     // Routes pour les prestataires
     Route::middleware(['role:prestataire'])->prefix('prestataire')->name('prestataire.')->group(function () {
         Route::put('availability/update-weekly', [\App\Http\Controllers\Prestataire\AvailabilityController::class, 'updateWeeklyAvailability'])->name('availability.updateWeekly');
-        Route::resource('bookings', App\Http\Controllers\Prestataire\BookingController::class)->only(['index', 'show']);
+        Route::resource('bookings', App\Http\Controllers\Prestataire\BookingController::class)->only(['index']);
+        Route::get('/bookings/{id}', [\App\Http\Controllers\Prestataire\BookingController::class, 'show'])->name('bookings.show');
         Route::patch('/bookings/{booking}/accept', [\App\Http\Controllers\Prestataire\BookingController::class, 'accept'])->name('bookings.accept');
         Route::patch('/bookings/{booking}/reject', [\App\Http\Controllers\Prestataire\BookingController::class, 'reject'])->name('bookings.reject');
         Route::resource('agenda', App\Http\Controllers\Prestataire\AgendaController::class)->only(['index']);
@@ -481,7 +478,6 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
         Route::get('/profile', [\App\Http\Controllers\Prestataire\ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile', [\App\Http\Controllers\Prestataire\ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile/photo', [\App\Http\Controllers\Prestataire\ProfileController::class, 'deletePhoto'])->name('profile.delete-photo');
-        Route::delete('/profile/portfolio/{index}', [\App\Http\Controllers\Prestataire\ProfileController::class, 'deletePortfolioItem'])->name('profile.delete-portfolio-item');
         Route::delete('/profile/destroy', [\App\Http\Controllers\Prestataire\ProfileController::class, 'destroy'])->name('profile.destroy');
         Route::get('/profile/preview', [\App\Http\Controllers\Prestataire\ProfileController::class, 'preview'])->name('profile.preview');
         Route::get('/profile/public/{id}', [\App\Http\Controllers\Prestataire\ProfileController::class, 'publicShow'])->name('profile.public');
@@ -516,6 +512,8 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
         Route::get('services/create/step3', [\App\Http\Controllers\Prestataire\ServiceController::class, 'createStep3'])->name('services.create.step3');
         Route::post('services/create/step3', [\App\Http\Controllers\Prestataire\ServiceController::class, 'storeStep3'])->name('services.create.step3.store');
         Route::get('services/create/step4', [\App\Http\Controllers\Prestataire\ServiceController::class, 'createStep4'])->name('services.create.step4');
+        Route::post('services/create/step4', [\App\Http\Controllers\Prestataire\ServiceController::class, 'storeStep4'])->name('services.create.step4.store');
+        Route::get('services/create/review', [\App\Http\Controllers\Prestataire\ServiceController::class, 'createReview'])->name('services.create.review');
         
         Route::get('services/{service}/availabilities', [\App\Http\Controllers\Prestataire\AvailabilityController::class, 'index'])->name('availabilities.index');
         Route::post('services/{service}/availabilities', [\App\Http\Controllers\Prestataire\AvailabilityController::class, 'store'])->name('availabilities.store');
@@ -540,6 +538,10 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
         Route::get('/agenda/events', [\App\Http\Controllers\Prestataire\AgendaController::class, 'events'])->name('agenda.events');
         Route::get('/agenda/booking/{booking}', [\App\Http\Controllers\Prestataire\AgendaController::class, 'show'])->name('agenda.booking.show');
         Route::put('/agenda/booking/{booking}/status', [\App\Http\Controllers\Prestataire\AgendaController::class, 'updateStatus'])->name('agenda.booking.update-status');
+        Route::get('/agenda/equipment-request/{request}', [\App\Http\Controllers\Prestataire\AgendaController::class, 'showEquipmentRequest'])->name('agenda.equipment-request.show');
+        Route::get('/agenda/equipment-rental/{rental}', [\App\Http\Controllers\Prestataire\AgendaController::class, 'showEquipmentRental'])->name('agenda.equipment-rental.show');
+        Route::put('/agenda/equipment-request/{request}/accept', [\App\Http\Controllers\Prestataire\AgendaController::class, 'acceptEquipmentRequest'])->name('agenda.equipment-request.accept');
+        Route::put('/agenda/equipment-request/{request}/reject', [\App\Http\Controllers\Prestataire\AgendaController::class, 'rejectEquipmentRequest'])->name('agenda.equipment-request.reject');
         
         // Routes pour la messagerie prestataire (redirigées vers le contrôleur unifié)
         Route::get('/messages', [\App\Http\Controllers\MessagingController::class, 'index'])->name('prestataire.messages.index');
@@ -572,7 +574,7 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
         // Routes pour les demandes de location d'équipement
         Route::prefix('equipment-rental-requests')->name('equipment-rental-requests.')->group(function () {
             Route::get('/', [\App\Http\Controllers\Prestataire\EquipmentRentalRequestController::class, 'index'])->name('index');
-            Route::get('/{request}', [\App\Http\Controllers\Prestataire\EquipmentRentalRequestController::class, 'show'])->name('show');
+            Route::get('/{id}', [\App\Http\Controllers\Prestataire\EquipmentRentalRequestController::class, 'show'])->name('show');
             Route::patch('/{request}/accept', [\App\Http\Controllers\Prestataire\EquipmentRentalRequestController::class, 'accept'])->name('accept');
             Route::patch('/{request}/reject', [\App\Http\Controllers\Prestataire\EquipmentRentalRequestController::class, 'reject'])->name('reject');
         });
@@ -816,8 +818,49 @@ Route::get('/test/availability', function () {
     return view('test.availability_test');
 })->name('test.availability');
 
-// Add these routes in the admin section
-// ... existing code ...
-// Remove these duplicate lines (587-589):
+// Service creation wizard routes WITHOUT return blocking middleware
+Route::middleware(['auth', 'role:prestataire'])->group(function () {
+    Route::get('prestataire/services/create/step1', [\App\Http\Controllers\Prestataire\ServiceController::class, 'createStep1'])->name('prestataire.services.create.step1');
+    Route::post('prestataire/services/create/step1', [\App\Http\Controllers\Prestataire\ServiceController::class, 'storeStep1'])->name('prestataire.services.create.step1.store');
+    Route::get('prestataire/services/create/step2', [\App\Http\Controllers\Prestataire\ServiceController::class, 'createStep2'])->name('prestataire.services.create.step2');
+    Route::post('prestataire/services/create/step2', [\App\Http\Controllers\Prestataire\ServiceController::class, 'storeStep2'])->name('prestataire.services.create.step2.store');
+    Route::get('prestataire/services/create/step3', [\App\Http\Controllers\Prestataire\ServiceController::class, 'createStep3'])->name('prestataire.services.create.step3');
+    Route::post('prestataire/services/create/step3', [\App\Http\Controllers\Prestataire\ServiceController::class, 'storeStep3'])->name('prestataire.services.create.step3.store');
+    Route::get('prestataire/services/create/step4', [\App\Http\Controllers\Prestataire\ServiceController::class, 'createStep4'])->name('prestataire.services.create.step4');
+    Route::post('prestataire/services/create/step4', [\App\Http\Controllers\Prestataire\ServiceController::class, 'storeStep4'])->name('prestataire.services.create.step4.store');
+    Route::get('prestataire/services/create/review', [\App\Http\Controllers\Prestataire\ServiceController::class, 'createReview'])->name('prestataire.services.create.review');
+    Route::post('prestataire/services/create', [\App\Http\Controllers\Prestataire\ServiceController::class, 'store'])->name('prestataire.services.create.store');
+});
 
-// Route::get('/prestataires/{prestataire}/download-document/{type}', [\App\Http\Controllers\Admin\PrestataireController::class, 'downloadDocument'])->name('prestataires.download-document');
+// Equipment creation wizard routes WITHOUT return blocking middleware
+Route::middleware(['auth', 'role:prestataire'])->group(function () {
+    Route::get('prestataire/equipment/create/step1', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'createStep1'])->name('prestataire.equipment.create.step1');
+    Route::post('prestataire/equipment/create/step1', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'storeStep1'])->name('prestataire.equipment.store.step1');
+    Route::get('prestataire/equipment/create/step2', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'createStep2'])->name('prestataire.equipment.create.step2');
+    Route::post('prestataire/equipment/create/step2', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'storeStep2'])->name('prestataire.equipment.store.step2');
+    Route::get('prestataire/equipment/create/step3', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'createStep3'])->name('prestataire.equipment.create.step3');
+    Route::post('prestataire/equipment/create/step3', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'storeStep3'])->name('prestataire.equipment.store.step3');
+    Route::get('prestataire/equipment/create/step4', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'createStep4'])->name('prestataire.equipment.create.step4');
+    Route::post('prestataire/equipment', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'store'])->name('prestataire.equipment.store');
+});
+
+// Urgent sales creation route WITHOUT return blocking middleware
+Route::middleware(['auth', 'role:prestataire'])->group(function () {
+    Route::get('prestataire/urgent-sales/create', [\App\Http\Controllers\Prestataire\UrgentSaleController::class, 'create'])->name('prestataire.urgent-sales.create');
+    Route::get('prestataire/urgent-sales/create/step1', [\App\Http\Controllers\Prestataire\UrgentSaleController::class, 'createStep1'])->name('prestataire.urgent-sales.create.step1');
+    Route::post('prestataire/urgent-sales/create/step1', [\App\Http\Controllers\Prestataire\UrgentSaleController::class, 'storeStep1'])->name('prestataire.urgent-sales.create.step1.store');
+    Route::get('prestataire/urgent-sales/create/step2', [\App\Http\Controllers\Prestataire\UrgentSaleController::class, 'createStep2'])->name('prestataire.urgent-sales.create.step2');
+    Route::post('prestataire/urgent-sales/create/step2', [\App\Http\Controllers\Prestataire\UrgentSaleController::class, 'storeStep2'])->name('prestataire.urgent-sales.create.step2.store');
+    Route::get('prestataire/urgent-sales/create/step3', [\App\Http\Controllers\Prestataire\UrgentSaleController::class, 'createStep3'])->name('prestataire.urgent-sales.create.step3');
+    Route::post('prestataire/urgent-sales/create/step3', [\App\Http\Controllers\Prestataire\UrgentSaleController::class, 'storeStep3'])->name('prestataire.urgent-sales.create.step3.store');
+    Route::get('prestataire/urgent-sales/create/step4', [\App\Http\Controllers\Prestataire\UrgentSaleController::class, 'createStep4'])->name('prestataire.urgent-sales.create.step4');
+    Route::post('prestataire/urgent-sales', [\App\Http\Controllers\Prestataire\UrgentSaleController::class, 'store'])->name('prestataire.urgent-sales.store');
+});
+
+// Routes pour les ventes urgentes
+Route::prefix('urgent-sales')->name('urgent-sales.')->group(function () {
+    Route::get('/categories', [\App\Http\Controllers\Prestataire\UrgentSales\UrgentSalesController::class, 'getCategories']);
+    Route::get('/create/step1', [\App\Http\Controllers\Prestataire\UrgentSales\UrgentSalesController::class, 'createStep1'])->name('urgent-sales.create.step1');
+    Route::get('/create/step2', [\App\Http\Controllers\Prestataire\UrgentSales\UrgentSalesController::class, 'createStep2'])->name('urgent-sales.create.step2');
+    Route::post('/create/step2', [\App\Http\Controllers\Prestataire\UrgentSales\UrgentSalesController::class, 'storeStep2'])->name('urgent-sales.create.step2.store');
+});

@@ -50,7 +50,14 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                             </svg>
                             <!-- Badge de notification dynamique -->
-                            <span id="unread-messages-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+                            @php
+                                $unreadMessagesCount = Auth::user()->receivedMessages()->whereNull('read_at')->count();
+                            @endphp
+                            @if($unreadMessagesCount > 0)
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                                {{ $unreadMessagesCount > 99 ? '99+' : $unreadMessagesCount }}
+                            </span>
+                            @endif
                         </a>
                         
                         <!-- Notifications -->
@@ -196,16 +203,11 @@
                                     </x-dropdown-link>
                                     <x-dropdown-link :href="route('prestataire.equipment-rental-requests.index')" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-green-600 transition-colors duration-200">
                                         <svg class="w-4 h-4 mr-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                         </svg>
                                         {{ __('Gérer les demandes') }}
                                     </x-dropdown-link>
-                                    <x-dropdown-link :href="route('prestataire.equipment-rentals.index')" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-green-600 transition-colors duration-200">
-                                        <svg class="w-4 h-4 mr-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                        {{ __('Revenus liés à la location') }}
-                                    </x-dropdown-link>
+                                
 
                                     <!-- Bloc 3: Annonces -->
                                     <div class="px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50 border-b border-gray-200 mt-3">
@@ -241,14 +243,7 @@
                                     </x-dropdown-link>
                                 @endif
 
-                                <!-- Paramètres du compte -->
-                                <x-dropdown-link :href="route('profile.settings')" class="flex items-center">
-                                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    </svg>
-                                    {{ __('Paramètres du compte') }}
-                                </x-dropdown-link>
+                                
                             </div>
 
                             <!-- Séparateur et déconnexion -->
@@ -291,7 +286,14 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                         </svg>
                         <!-- Badge de notification pour mobile -->
-                        <span id="unread-messages-badge-mobile" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center hidden">0</span>
+                        @php
+                            $unreadMessagesCount = Auth::user()->receivedMessages()->whereNull('read_at')->count();
+                        @endphp
+                        @if($unreadMessagesCount > 0)
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                            {{ $unreadMessagesCount > 99 ? '99+' : $unreadMessagesCount }}
+                        </span>
+                        @endif
                     </a>
                     
                     <!-- Notifications mobile -->
@@ -537,4 +539,89 @@ function notificationDropdownMobile() {
         }
     }
 }
+
+// Function to update badge counts dynamically
+document.addEventListener('DOMContentLoaded', function() {
+    // Update message badge
+    function updateMessageBadge() {
+        fetch('/messaging/unread-count', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Update desktop badge
+            const desktopBadge = document.querySelector('#messaging-icon .absolute');
+            if (desktopBadge) {
+                if (data.unread_count > 0) {
+                    desktopBadge.innerHTML = data.unread_count > 99 ? '99+' : data.unread_count;
+                    desktopBadge.classList.remove('hidden');
+                } else {
+                    desktopBadge.classList.add('hidden');
+                }
+            }
+            
+            // Update mobile badge
+            const mobileBadges = document.querySelectorAll('a[href="{{ route('messaging.index') }}"] .absolute');
+            mobileBadges.forEach(badge => {
+                if (data.unread_count > 0) {
+                    badge.innerHTML = data.unread_count > 99 ? '99+' : data.unread_count;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            });
+        })
+        .catch(error => console.error('Error updating message badge:', error));
+    }
+    
+    // Update notification badge
+    function updateNotificationBadge() {
+        fetch('/notifications/unread-count', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Update desktop notification badge
+            const desktopBadge = document.querySelector('#notification-badge');
+            if (desktopBadge) {
+                if (data.count > 0) {
+                    desktopBadge.innerHTML = data.count > 99 ? '99+' : data.count;
+                    desktopBadge.classList.remove('hidden');
+                } else {
+                    desktopBadge.classList.add('hidden');
+                }
+            }
+            
+            // Update mobile notification badge
+            const mobileBadges = document.querySelectorAll('button[onclick*="notificationDropdownMobile"] .absolute');
+            mobileBadges.forEach(badge => {
+                if (data.count > 0) {
+                    badge.innerHTML = data.count > 99 ? '99+' : data.count;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            });
+        })
+        .catch(error => console.error('Error updating notification badge:', error));
+    }
+    
+    // Initial update
+    updateMessageBadge();
+    updateNotificationBadge();
+    
+    // Update periodically (every 30 seconds)
+    setInterval(() => {
+        updateMessageBadge();
+        updateNotificationBadge();
+    }, 30000);
+});
 </script>
+</body>
+</html>

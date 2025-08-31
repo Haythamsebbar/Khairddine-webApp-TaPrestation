@@ -64,16 +64,71 @@ class EquipmentRentalRequestController extends Controller
     /**
      * Affiche les détails d'une demande
      */
-    public function show(EquipmentRentalRequest $request)
+    public function show(Request $httpRequest, $id)
     {
-        // $this->authorize('view', $request);
+        // Find the rental request or return 404
+        $request = EquipmentRentalRequest::find($id);
+        
+        if (!$request) {
+            if ($httpRequest->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "La demande avec l'ID {$id} n'existe pas ou a été supprimée"
+                ], 404);
+            }
+            
+            abort(404, "La demande avec l'ID {$id} n'existe pas ou a été supprimée");
+        }
+        
+        // Verify the rental request belongs to the logged-in user's prestataire
+        $user = Auth::user();
+        if ($request->prestataire_id !== $user->prestataire->id) {
+            if ($httpRequest->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Accès non autorisé'], 403);
+            }
+            
+            abort(403, 'Accès non autorisé');
+        }
         
         $request->load(['equipment', 'client.user', 'prestataire']);
+        
+        // For AJAX requests, return JSON data
+        if ($httpRequest->ajax()) {
+            return response()->json([
+                'success' => true,
+                'id' => $request->id,
+                'title' => $request->equipment->name ?? 'Équipement',
+                'client_name' => $request->client->user->name ?? 'Client',
+                'date' => $request->start_date->format('d/m/Y') . ' au ' . $request->end_date->format('d/m/Y'),
+                'duration' => $request->duration_days . ' jours',
+                'price' => number_format($request->total_amount, 2, ',', ' ') . ' €',
+                'description' => $request->notes ?? 'Aucune description',
+                'status' => $request->status,
+                'status_label' => $this->getStatusLabel($request->status)
+            ]);
+        }
         
         // Vérifier les conflits de dates
         $conflicts = $this->checkDateConflicts($request);
         
         return view('prestataire.equipment-rental-requests.show', compact('request', 'conflicts'));
+    }
+    
+    /**
+     * Get status label for display
+     */
+    private function getStatusLabel($status)
+    {
+        $labels = [
+            'pending' => 'En attente',
+            'accepted' => 'Acceptée',
+            'rejected' => 'Refusée',
+            'cancelled' => 'Annulée',
+            'completed' => 'Terminée',
+            'expired' => 'Expirée'
+        ];
+        
+        return $labels[$status] ?? ucfirst($status);
     }
     
     /**

@@ -47,8 +47,59 @@
                 <div class="bg-white rounded-lg shadow-sm p-3 sm:p-4 mb-3 border border-blue-100">
                     <h1 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-1 sm:mb-2 leading-tight break-words">{{ $service->title }}</h1>
                     <div class="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600">
-                        {{ number_format($service->price, 2) }}€ 
-                        <span class="text-sm font-normal text-gray-500">/ {{ $service->price_type }}</span>
+                        @if($service->price_type === 'heure' || $service->price_type === 'jour')
+                            <div class="flex flex-col">
+                                <div class="flex items-baseline">
+                                    <span>{{ number_format($service->price, 2) }}€</span>
+                                    <span class="text-sm font-normal text-gray-500 ml-1">/ {{ $service->price_type }}</span>
+                                </div>
+                                
+                                @if($service->quantity)
+                                    <div class="mt-2 bg-blue-50 border border-blue-200 rounded-lg p-2.5 text-base">
+                                        <div class="grid grid-cols-1 gap-2 text-sm">
+                                            <div class="flex justify-between">
+                                                <div class="text-gray-600">Prix unitaire</div>
+                                                <div class="font-semibold text-blue-800">{{ number_format($service->price, 2) }}€ / {{ $service->price_type === 'heure' ? 'heure' : 'jour' }}</div>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <div class="text-gray-600">Nombre de {{ $service->price_type === 'heure' ? 'heures' : 'jours' }}</div>
+                                                <div class="font-semibold text-blue-800">{{ $service->quantity }}</div>
+                                            </div>
+                                            <div class="flex justify-between pt-2 border-t border-blue-200">
+                                                <div class="text-gray-600 font-medium">Prix total</div>
+                                                <div class="font-bold text-blue-900 text-lg">{{ number_format($service->price * $service->quantity, 2) }}€</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="mt-2 bg-blue-50 border border-blue-200 rounded-lg p-2.5 text-base">
+                                        <div class="grid grid-cols-2 gap-2 text-sm">
+                                            <div>
+                                                <div class="text-gray-600 text-xs mb-1">Prix unitaire</div>
+                                                <div class="font-semibold text-blue-800">{{ number_format($service->price, 2) }}€ / {{ $service->price_type === 'heure' ? 'heure' : 'jour' }}</div>
+                                            </div>
+                                            <div>
+                                                <div class="text-gray-600 text-xs mb-1">Exemple</div>
+                                                <div class="font-semibold text-blue-800">
+                                                    @if($service->price_type === 'heure')
+                                                        Pour 3 heures: {{ number_format($service->price * 3, 2) }}€
+                                                    @else
+                                                        Pour 3 jours: {{ number_format($service->price * 3, 2) }}€
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-2 text-xs text-blue-600">
+                                            <i class="fas fa-info-circle mr-1"></i>
+                                            Le prix total dépendra de la durée sélectionnée lors de la réservation
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        @else
+                            {{ number_format($service->price, 2) }}€ 
+                            <span class="text-sm font-normal text-gray-500">/ {{ $service->price_type }}</span>
+                        @endif
                     </div>
                 </div>
                 
@@ -120,7 +171,17 @@
                                             </svg>
                                             <span class="text-xs font-medium text-green-800">Tarification</span>
                                         </div>
-                                        <p class="text-gray-700 text-xs">{{ number_format($service->price, 2) }}€ / {{ $service->price_type }}</p>
+                                        <p class="text-gray-700 text-xs">
+                                            @if($service->price_type === 'heure' || $service->price_type === 'jour')
+                                                @if($service->quantity)
+                                                    {{ $service->quantity }} {{ $service->price_type === 'heure' ? 'heures' : 'jours' }} à {{ number_format($service->price, 2) }}€ l'unité = {{ number_format($service->price * $service->quantity, 2) }}€
+                                                @else
+                                                    Prix unitaire: {{ number_format($service->price, 2) }}€ / {{ $service->price_type }}
+                                                @endif
+                                            @else
+                                                {{ number_format($service->price, 2) }}€ / {{ $service->price_type }}
+                                            @endif
+                                        </p>
                                     </div>
                                 @endif
                             </div>
