@@ -3,6 +3,49 @@
 @push('styles')
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <style>
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            z-index: 10;
+        }
+        
+        .nav-arrow:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        
+        .nav-arrow.left {
+            left: 10px;
+        }
+        
+        .nav-arrow.right {
+            right: 10px;
+        }
+        
+        .image-counter {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+    </style>
 @endpush
 
 @section('title', $service->title . ' - Service - TaPrestation')
@@ -43,88 +86,39 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
             <!-- Galerie d'images -->
             <div class="lg:col-span-2">
-                <!-- Titre et prix au-dessus de l'image -->
-                <div class="bg-white rounded-lg shadow-sm p-3 sm:p-4 mb-3 border border-blue-100">
-                    <h1 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-1 sm:mb-2 leading-tight break-words">{{ $service->title }}</h1>
-                    <div class="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600">
-                        @if($service->price_type === 'heure' || $service->price_type === 'jour')
-                            <div class="flex flex-col">
-                                <div class="flex items-baseline">
-                                    <span>{{ number_format($service->price, 2) }}€</span>
-                                    <span class="text-sm font-normal text-gray-500 ml-1">/ {{ $service->price_type }}</span>
-                                </div>
-                                
-                                @if($service->quantity)
-                                    <div class="mt-2 bg-blue-50 border border-blue-200 rounded-lg p-2.5 text-base">
-                                        <div class="grid grid-cols-1 gap-2 text-sm">
-                                            <div class="flex justify-between">
-                                                <div class="text-gray-600">Prix unitaire</div>
-                                                <div class="font-semibold text-blue-800">{{ number_format($service->price, 2) }}€ / {{ $service->price_type === 'heure' ? 'heure' : 'jour' }}</div>
-                                            </div>
-                                            <div class="flex justify-between">
-                                                <div class="text-gray-600">Nombre de {{ $service->price_type === 'heure' ? 'heures' : 'jours' }}</div>
-                                                <div class="font-semibold text-blue-800">{{ $service->quantity }}</div>
-                                            </div>
-                                            <div class="flex justify-between pt-2 border-t border-blue-200">
-                                                <div class="text-gray-600 font-medium">Prix total</div>
-                                                <div class="font-bold text-blue-900 text-lg">{{ number_format($service->price * $service->quantity, 2) }}€</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @else
-                                    <div class="mt-2 bg-blue-50 border border-blue-200 rounded-lg p-2.5 text-base">
-                                        <div class="grid grid-cols-2 gap-2 text-sm">
-                                            <div>
-                                                <div class="text-gray-600 text-xs mb-1">Prix unitaire</div>
-                                                <div class="font-semibold text-blue-800">{{ number_format($service->price, 2) }}€ / {{ $service->price_type === 'heure' ? 'heure' : 'jour' }}</div>
-                                            </div>
-                                            <div>
-                                                <div class="text-gray-600 text-xs mb-1">Exemple</div>
-                                                <div class="font-semibold text-blue-800">
-                                                    @if($service->price_type === 'heure')
-                                                        Pour 3 heures: {{ number_format($service->price * 3, 2) }}€
-                                                    @else
-                                                        Pour 3 jours: {{ number_format($service->price * 3, 2) }}€
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="mt-2 text-xs text-blue-600">
-                                            <i class="fas fa-info-circle mr-1"></i>
-                                            Le prix total dépendra de la durée sélectionnée lors de la réservation
-                                        </div>
-                                    </div>
-                                @endif
-                            </div>
-                        @else
-                            {{ number_format($service->price, 2) }}€ 
-                            <span class="text-sm font-normal text-gray-500">/ {{ $service->price_type }}</span>
-                        @endif
-                    </div>
-                </div>
-                
                 <div class="bg-white rounded-lg shadow-sm overflow-hidden">
                     @if($service->images && count($service->images) > 0)
                         <div class="relative">
-                            <!-- Image principale -->
-                            <div class="aspect-w-16 aspect-h-12">
+                            <!-- Image principale avec flèches de navigation -->
+                            <div class="relative">
                                 <img id="mainImage" src="{{ Storage::url($service->images[0]->image_path) }}" alt="{{ $service->title }}" class="w-full h-40 sm:h-48 lg:h-56 object-cover cursor-pointer" onclick="openImageModal(0)">
+                                
+                                <!-- Flèche gauche -->
+                                @if(count($service->images) > 1)
+                                    <button id="prevButton" onclick="navigateImage(-1)" class="nav-arrow left">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                        </svg>
+                                    </button>
+                                @endif
+                                
+                                <!-- Flèche droite -->
+                                @if(count($service->images) > 1)
+                                    <button id="nextButton" onclick="navigateImage(1)" class="nav-arrow right">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                        </svg>
+                                    </button>
+                                @endif
+                                
+                                <!-- Indicateur d'image -->
+                                @if(count($service->images) > 1)
+                                    <div class="image-counter">
+                                        <span id="imageCounter">1 / {{ count($service->images) }}</span>
+                                    </div>
+                                @endif
                             </div>
                         </div>
-                        
-                        <!-- Miniatures -->
-                        @if(count($service->images) > 1)
-                            <div class="p-2 border-t">
-                                <div class="flex space-x-2 overflow-x-auto pb-1">
-                                    @foreach($service->images as $index => $image)
-                                        <button onclick="changeMainImage('{{ Storage::url($image->image_path) }}', {{ $index }})"
-                                                class="flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-lg overflow-hidden border-2 {{ $index === 0 ? 'border-blue-500' : 'border-gray-200' }} hover:border-blue-500 transition duration-200">
-                                            <img src="{{ Storage::url($image->image_path) }}" alt="Photo {{ $index + 1 }}" class="w-full h-full object-cover cursor-pointer" onclick="event.stopPropagation(); openImageModal({{ $index }})">
-                                        </button>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
                     @else
                         <div class="h-40 sm:h-48 lg:h-56 bg-gray-200 flex items-center justify-center">
                             <div class="text-center">
@@ -176,7 +170,7 @@
                                                 @if($service->quantity)
                                                     {{ $service->quantity }} {{ $service->price_type === 'heure' ? 'heures' : 'jours' }} à {{ number_format($service->price, 2) }}€ l'unité = {{ number_format($service->price * $service->quantity, 2) }}€
                                                 @else
-                                                    Prix unitaire: {{ number_format($service->price, 2) }}€ / {{ $service->price_type }}
+                                                    Prix unitaire: {{ number_format($service->price, 2) }}€ / {{ $service->price_type === 'heure' ? 'heure' : 'jour' }}
                                                 @endif
                                             @else
                                                 {{ number_format($service->price, 2) }}€ / {{ $service->price_type }}
@@ -208,6 +202,65 @@
             <!-- Sidebar d'informations -->
             <div class="lg:col-span-1">
                 <div class="bg-white rounded-lg shadow-sm p-3 sm:p-4 lg:sticky lg:top-4">
+                    <!-- Titre et prix -->
+                    <div class="bg-white rounded-lg shadow-sm p-3 sm:p-4 mb-3 border border-blue-100">
+                        <h1 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-1 sm:mb-2 leading-tight break-words">{{ $service->title }}</h1>
+                        <div class="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600">
+                            @if($service->price_type === 'heure' || $service->price_type === 'jour')
+                                <div class="flex flex-col">
+                                    <div class="flex items-baseline">
+                                        <span>{{ number_format($service->price, 2) }}€</span>
+                                        <span class="text-sm font-normal text-gray-500 ml-1">/ {{ $service->price_type }}</span>
+                                    </div>
+                                    
+                                    @if($service->quantity)
+                                        <div class="mt-2 bg-blue-50 border border-blue-200 rounded-lg p-2.5 text-base">
+                                            <div class="grid grid-cols-1 gap-2 text-sm">
+                                                <div class="flex justify-between">
+                                                    <div class="text-gray-600">Prix unitaire</div>
+                                                    <div class="font-semibold text-blue-800">{{ number_format($service->price, 2) }}€ / {{ $service->price_type === 'heure' ? 'heure' : 'jour' }}</div>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <div class="text-gray-600">Nombre de {{ $service->price_type === 'heure' ? 'heures' : 'jours' }}</div>
+                                                    <div class="font-semibold text-blue-800">{{ $service->quantity }}</div>
+                                                </div>
+                                                <div class="flex justify-between pt-2 border-t border-blue-200">
+                                                    <div class="text-gray-600 font-medium">Prix total</div>
+                                                    <div class="font-bold text-blue-900 text-lg">{{ number_format($service->price * $service->quantity, 2) }}€</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <div class="mt-2 bg-blue-50 border border-blue-200 rounded-lg p-2.5 text-base">
+                                            <div class="grid grid-cols-2 gap-2 text-sm">
+                                                <div>
+                                                    <div class="text-gray-600 text-xs mb-1">Prix unitaire</div>
+                                                    <div class="font-semibold text-blue-800">{{ number_format($service->price, 2) }}€ / {{ $service->price_type === 'heure' ? 'heure' : 'jour' }}</div>
+                                                </div>
+                                                <div>
+                                                    <div class="text-gray-600 text-xs mb-1">Exemple</div>
+                                                    <div class="font-semibold text-blue-800">
+                                                        @if($service->price_type === 'heure')
+                                                            Pour 3 heures: {{ number_format($service->price * 3, 2) }}€
+                                                        @else
+                                                            Pour 3 jours: {{ number_format($service->price * 3, 2) }}€
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="mt-2 text-xs text-blue-600">
+                                                <i class="fas fa-info-circle mr-1"></i>
+                                                Le prix total dépendra de la durée sélectionnée lors de la réservation
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                            @else
+                                {{ number_format($service->price, 2) }}€ 
+                                <span class="text-sm font-normal text-gray-500">/ {{ $service->price_type }}</span>
+                            @endif
+                        </div>
+                    </div>
                     
                     <!-- Informations du vendeur -->
                     <div class="mb-3 sm:mb-4">
@@ -468,7 +521,6 @@
                 </div>
             </div>
         </div>
-    </div>
 
     <!-- Modal d'affichage d'image plein écran -->
     <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden flex items-center justify-center p-4">
@@ -484,14 +536,14 @@
             </button>
             
             <!-- Flèche gauche -->
-            <button id="prevButton" onclick="navigateImage(-1)" class="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 transition-colors bg-black bg-opacity-50 rounded-full p-3 hover:bg-opacity-70">
+            <button id="prevButtonModal" onclick="navigateImageModal(-1)" class="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 transition-colors bg-black bg-opacity-50 rounded-full p-3 hover:bg-opacity-70">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                 </svg>
             </button>
             
             <!-- Flèche droite -->
-            <button id="nextButton" onclick="navigateImage(1)" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 transition-colors bg-black bg-opacity-50 rounded-full p-3 hover:bg-opacity-70">
+            <button id="nextButtonModal" onclick="navigateImageModal(1)" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 transition-colors bg-black bg-opacity-50 rounded-full p-3 hover:bg-opacity-70">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                 </svg>
@@ -499,7 +551,7 @@
             
             <!-- Indicateur d'image -->
             <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white bg-black bg-opacity-50 px-3 py-1 rounded-full text-sm">
-                <span id="imageCounter">1 / {{ $service->images->count() }}</span>
+                <span id="imageCounterModal">1 / {{ $service->images->count() }}</span>
             </div>
         </div>
     </div>
@@ -617,25 +669,31 @@
         
         let currentImageIndex = 0;
         
-        function changeMainImage(url, index = null) {
-            document.getElementById('mainImage').src = url;
+        // Fonction pour naviguer entre les images avec navigation circulaire
+        function navigateImage(direction) {
+            if (serviceImages.length <= 1) return;
             
-            if (index !== null) {
-                currentImageIndex = index;
+            // Calculer le nouvel index avec navigation circulaire
+            currentImageIndex += direction;
+            
+            if (currentImageIndex < 0) {
+                currentImageIndex = serviceImages.length - 1; // Revenir à la dernière image
+            } else if (currentImageIndex >= serviceImages.length) {
+                currentImageIndex = 0; // Revenir à la première image
             }
             
-            // Update border on thumbnails
-            const buttons = document.querySelectorAll('.flex-shrink-0');
-            buttons.forEach((button, i) => {
-                const img = button.querySelector('img');
-                if (i === currentImageIndex) {
-                    button.classList.add('border-blue-500');
-                    button.classList.remove('border-gray-200');
-                } else {
-                    button.classList.remove('border-blue-500');
-                    button.classList.add('border-gray-200');
-                }
-            });
+            // Mettre à jour l'image principale
+            const mainImage = document.getElementById('mainImage');
+            const imageCounter = document.getElementById('imageCounter');
+            
+            if (mainImage) {
+                mainImage.src = serviceImages[currentImageIndex].url;
+                mainImage.alt = serviceImages[currentImageIndex].alt;
+            }
+            
+            if (imageCounter) {
+                imageCounter.textContent = `${currentImageIndex + 1} / ${serviceImages.length}`;
+            }
         }
         
         function openImageModal(index) {
@@ -664,21 +722,25 @@
             document.body.style.overflow = 'auto';
         }
         
-        function navigateImage(direction) {
-            const newIndex = currentImageIndex + direction;
+        // Fonction pour naviguer dans le modal avec navigation circulaire
+        function navigateImageModal(direction) {
+            if (serviceImages.length <= 1) return;
             
-            if (newIndex >= 0 && newIndex < serviceImages.length) {
-                currentImageIndex = newIndex;
-                const modalImage = document.getElementById('modalImage');
-                const imageCounter = document.getElementById('imageCounter');
-                
-                modalImage.src = serviceImages[currentImageIndex].url;
-                modalImage.alt = serviceImages[currentImageIndex].alt;
-                imageCounter.textContent = `${currentImageIndex + 1} / ${serviceImages.length}`;
-                
-                // Mettre à jour l'image principale aussi
-                changeMainImage(serviceImages[currentImageIndex].url, currentImageIndex);
+            // Calculer le nouvel index avec navigation circulaire
+            currentImageIndex += direction;
+            
+            if (currentImageIndex < 0) {
+                currentImageIndex = serviceImages.length - 1; // Revenir à la dernière image
+            } else if (currentImageIndex >= serviceImages.length) {
+                currentImageIndex = 0; // Revenir à la première image
             }
+            
+            const modalImage = document.getElementById('modalImage');
+            const imageCounter = document.getElementById('imageCounter');
+            
+            modalImage.src = serviceImages[currentImageIndex].url;
+            modalImage.alt = serviceImages[currentImageIndex].alt;
+            imageCounter.textContent = `${currentImageIndex + 1} / ${serviceImages.length}`;
         }
         
         // Gestion du clavier
@@ -688,9 +750,9 @@
                 if (event.key === 'Escape') {
                     closeImageModal();
                 } else if (event.key === 'ArrowLeft') {
-                    navigateImage(-1);
+                    navigateImageModal(-1);
                 } else if (event.key === 'ArrowRight') {
-                    navigateImage(1);
+                    navigateImageModal(1);
                 }
             }
         });

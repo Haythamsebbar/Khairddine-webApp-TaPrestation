@@ -38,7 +38,28 @@ class PrestataireController extends Controller
         // Filtrage par catégorie de service
         if ($request->has('category')) {
             $query->whereHas('services', function($q) use ($request) {
-                $q->where('category_id', $request->category);
+                $q->whereHas('categories', function($q2) use ($request) {
+                    $q2->where('categories.id', $request->category);
+                });
+            });
+        }
+        
+        // Filtrage par sous-catégorie de service
+        if ($request->has('subcategory')) {
+            $query->whereHas('services', function($q) use ($request) {
+                $q->whereHas('categories', function($q2) use ($request) {
+                    $q2->where('categories.id', $request->subcategory);
+                });
+            });
+        }
+        
+        // Filtrage par ville - improved case-insensitive search
+        if ($request->has('city') && !empty($request->city)) {
+            $city = trim($request->city);
+            $query->where(function($q) use ($city) {
+                $q->where('city', 'like', '%' . $city . '%')
+                  ->orWhere('postal_code', 'like', '%' . $city . '%')
+                  ->orWhere('address', 'like', '%' . $city . '%');
             });
         }
         
@@ -47,7 +68,13 @@ class PrestataireController extends Controller
         // Récupérer les catégories pour le filtre
         $categories = Category::orderBy('name')->get();
         
-        return view('prestataires.index', compact('prestataires', 'categories'));
+        // Récupérer les sous-catégories si une catégorie est sélectionnée
+        $subcategories = collect();
+        if ($request->has('category') && $request->category) {
+            $subcategories = Category::where('parent_id', $request->category)->orderBy('name')->get();
+        }
+        
+        return view('prestataires.index', compact('prestataires', 'categories', 'subcategories'));
     }
 
     /**

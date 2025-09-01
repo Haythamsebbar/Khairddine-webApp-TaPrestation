@@ -3,21 +3,20 @@
 @section('title', 'Location de matériel')
 
 @section('content')
-<!-- Bannière d'en-tête -->
-<div class="bg-green-600 text-white relative overflow-hidden">
-    <div class="absolute inset-0 opacity-10 bg-grid-pattern"></div>
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <div class="text-center">
-            
-            <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight">
-                Location de Matériel
-            </h1>
-            <p class="mt-4 text-xl text-green-100 max-w-2xl mx-auto">
-                Trouvez l'équipement dont vous avez besoin pour vos projets.
-            </p>
+<div class="bg-green-50">
+    <!-- Bannière d'en-tête -->
+    <div class="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-6 sm:mb-8 text-center">
+                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-green-900 mb-2 leading-tight">
+                    Location de Matériel
+                </h1>
+                <p class="text-base sm:text-lg text-green-700 max-w-2xl mx-auto">
+                    Trouvez l'équipement dont vous avez besoin pour vos projets.
+                </p>
+            </div>
         </div>
     </div>
-</div>
     
 
 <div class="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">

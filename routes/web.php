@@ -19,7 +19,6 @@ use App\Http\Controllers\MatchingAlertController;
 use App\Http\Controllers\QrCodeController;
 use App\Http\Controllers\UrgentSaleController;
 use App\Http\Controllers\VideoController;
-use App\Models\Video;
 // use App\Http\Controllers\Prestataire\MissionController;
 use App\Http\Controllers\Prestataire\VerificationController;
 use App\Http\Controllers\Admin\VerificationController as AdminVerificationController;
@@ -42,7 +41,10 @@ use App\Http\Controllers\Prestataire\AvailabilityController;
 
 // Include debug routes
 if (app()->environment('local')) {
-    require __DIR__ . '/debug-routes.php';
+    $debugRoutesPath = __DIR__ . '/debug-routes.php';
+    if (file_exists($debugRoutesPath)) {
+        require $debugRoutesPath;
+    }
 }
 
 // Page d'accueil
@@ -162,6 +164,10 @@ Route::get('/about', function () {
 Route::get('/contact', function () {
     return view('contact');
 })->name('contact');
+
+Route::get('/faq', function () {
+    return view('faq');
+})->name('faq');
 
 // Authentication Routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -374,8 +380,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('messaging/{user}', [\App\Http\Controllers\MessagingController::class, 'show'])->name('messaging.show');
         Route::post('messaging/{user}', [\App\Http\Controllers\MessagingController::class, 'store'])->name('messaging.store');
         Route::delete('messaging/{user}', [\App\Http\Controllers\MessagingController::class, 'deleteConversation'])->name('messaging.delete');
-        Route::get('messaging/start/{prestataire}', [\App\Http\Controllers\MessagingController::class, 'startConversation'])->name('messaging.start');
-        
+        Route::get('messaging/start/{prestataire}', [\App\Http\Controllers\MessagingController::class, 'startConversationWithPrestataire'])->name('messaging.start');
+        Route::get('messaging/start-conversation-from-request/{clientRequestId}', [\App\Http\Controllers\MessagingController::class, 'startConversationFromRequest'])->name('messaging.start-conversation-from-request');
         // Route de test pour le système de messagerie
         Route::get('messaging-test', function () {
             return view('messaging.test');

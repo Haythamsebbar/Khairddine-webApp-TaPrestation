@@ -4,40 +4,40 @@
 
 @section('content')
 <div class="bg-blue-50">
-    <div class="container mx-auto px-4 py-8">
+    <div class="container mx-auto px-2 sm:px-4 py-4 sm:py-6">
         <!-- En-tête -->
-        <div class="mb-8 text-center">
-            <h1 class="text-4xl font-extrabold text-blue-900 mb-2">Mes Demandes</h1>
-            <p class="text-lg text-blue-700">Gérez toutes vos demandes de services, équipements et ventes urgentes</p>
+        <div class="mb-4 sm:mb-6 text-center">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-blue-900 mb-1">Mes Demandes</h1>
+            <p class="text-base sm:text-lg text-blue-700">Gérez toutes vos demandes de services, équipements et ventes urgentes</p>
         </div>
 
         <!-- Filtres -->
-        <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-4 sm:p-6 mb-6 sm:mb-8">
-            <div class="space-y-4">
+        <div class="bg-white rounded-lg shadow-md border border-blue-200 p-3 sm:p-4 mb-4 sm:mb-6">
+            <div class="space-y-3">
                 <!-- Boutons de filtrage par type -->
                 <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700">Type:</label>
-                    <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
-                        <button onclick="filterByType('all')" id="btn-all" class="filter-btn active px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition duration-200 text-xs sm:text-sm font-medium flex items-center justify-center">
-                            <i class="fas fa-list mr-1 sm:mr-2"></i><span class="hidden sm:inline">Tous</span><span class="sm:hidden">Tous</span>
+                    <label class="block text-xs sm:text-sm font-medium text-gray-700">Type:</label>
+                    <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-1.5 sm:gap-2">
+                        <button onclick="filterByType('all')" id="btn-all" class="filter-btn active px-2 py-1.5 sm:px-3 sm:py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition duration-200 text-xs font-medium flex items-center justify-center">
+                            <i class="fas fa-list mr-1"></i><span class="hidden sm:inline">Tous</span><span class="sm:hidden">Tous</span>
                         </button>
-                        <button onclick="filterByType('service')" id="btn-service" class="filter-btn px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition duration-200 text-xs sm:text-sm font-medium flex items-center justify-center">
-                            <i class="fas fa-concierge-bell mr-1 sm:mr-2"></i><span class="hidden sm:inline">Services</span><span class="sm:hidden">Services</span>
+                        <button onclick="filterByType('service')" id="btn-service" class="filter-btn px-2 py-1.5 sm:px-3 sm:py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-blue-100 hover:text-blue-700 transition duration-200 text-xs font-medium flex items-center justify-center">
+                            <i class="fas fa-concierge-bell mr-1"></i><span class="hidden sm:inline">Services</span><span class="sm:hidden">Services</span>
                         </button>
-                        <button onclick="filterByType('equipment')" id="btn-equipment" class="filter-btn px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-green-100 hover:text-green-700 transition duration-200 text-xs sm:text-sm font-medium flex items-center justify-center">
-                            <i class="fas fa-tools mr-1 sm:mr-2"></i><span class="hidden sm:inline">Équipements</span><span class="sm:hidden">Équip.</span>
+                        <button onclick="filterByType('equipment')" id="btn-equipment" class="filter-btn px-2 py-1.5 sm:px-3 sm:py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-green-100 hover:text-green-700 transition duration-200 text-xs font-medium flex items-center justify-center">
+                            <i class="fas fa-tools mr-1"></i><span class="hidden sm:inline">Équipements</span><span class="sm:hidden">Équip.</span>
                         </button>
-                        <button onclick="filterByType('urgent_sale')" id="btn-urgent_sale" class="filter-btn px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-red-100 hover:text-red-700 transition duration-200 text-xs sm:text-sm font-medium flex items-center justify-center">
-                            <i class="fas fa-tag mr-1 sm:mr-2"></i><span class="hidden sm:inline">Annonces</span><span class="sm:hidden">Annonces</span>
+                        <button onclick="filterByType('urgent_sale')" id="btn-urgent_sale" class="filter-btn px-2 py-1.5 sm:px-3 sm:py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-red-100 hover:text-red-700 transition duration-200 text-xs font-medium flex items-center justify-center">
+                            <i class="fas fa-tag mr-1"></i><span class="hidden sm:inline">Annonces</span><span class="sm:hidden">Annonces</span>
                         </button>
                     </div>
                 </div>
 
                 <!-- Filtre par statut et réinitialisation -->
-                <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
                     <div class="flex items-center space-x-2 flex-1">
-                        <label class="text-sm font-medium text-gray-700 whitespace-nowrap">Statut:</label>
-                        <select id="statusFilter" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                        <label class="text-xs font-medium text-gray-700 whitespace-nowrap">Statut:</label>
+                        <select id="statusFilter" class="flex-1 px-2 py-1.5 sm:px-3 sm:py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm">
                             <option value="all" {{ !request('status') ? 'selected' : '' }}>Tous</option>
                             <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>En attente</option>
                             <option value="accepted" {{ request('status') === 'accepted' ? 'selected' : '' }}>Acceptées</option>
@@ -46,8 +46,8 @@
                     </div>
 
                     <!-- Bouton de réinitialisation -->
-                    <button onclick="resetFilters()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition duration-200 text-sm font-medium w-full sm:w-auto">
-                        <i class="fas fa-undo mr-2"></i>Réinitialiser
+                    <button onclick="resetFilters()" class="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition duration-200 text-xs sm:text-sm font-medium w-full sm:w-auto">
+                        <i class="fas fa-undo mr-1.5"></i>Réinitialiser
                     </button>
                 </div>
             </div>
@@ -141,22 +141,22 @@
 
         <!-- Section Toutes les demandes -->
         @if($allRequests->count() > 0)
-            <div class="mb-8">
-                <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6">
-                    <div class="flex items-center mb-6 border-b-2 border-blue-200 pb-4">
-                        <div class="w-4 h-4 bg-blue-600 rounded-full mr-3"></div>
-                        <h2 id="section-title" class="text-2xl font-bold text-blue-800">Toutes les demandes</h2>
-                        <span class="ml-3 bg-blue-100 text-blue-800 text-sm font-bold px-3 py-1 rounded-full">{{ $allRequests->count() }}</span>
+            <div class="mb-4 sm:mb-6">
+                <div class="bg-white rounded-lg shadow-md border border-blue-200 p-3 sm:p-4">
+                    <div class="flex items-center mb-3 sm:mb-4 border-b-2 border-blue-200 pb-2 sm:pb-3">
+                        <div class="w-3 h-3 bg-blue-600 rounded-full mr-2"></div>
+                        <h2 id="section-title" class="text-lg sm:text-xl font-bold text-blue-800">Toutes les demandes</h2>
+                        <span class="ml-2 bg-blue-100 text-blue-800 text-xs font-bold px-2 py-0.5 rounded-full">{{ $allRequests->count() }}</span>
                     </div>
                 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4">
                     @foreach($allRequests as $item)
                         <div class="booking-item bg-white border-2 
                             @if($item->type === 'service') border-blue-200 hover:border-blue-300
                             @elseif($item->type === 'equipment') border-green-200 hover:border-green-300
                             @else border-red-200 hover:border-red-300
                             @endif
-                            rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden touch-manipulation"
+                            rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden touch-manipulation"
                             data-type="{{ $item->type }}" data-status="{{ $item->status }}">
                             
                             <a href="{{ $item->route_show }}" class="block">
@@ -174,21 +174,21 @@
                                             @endif
                                             flex items-center justify-center">
                                             @if($item->type === 'service')
-                                                <i class="fas fa-concierge-bell text-blue-400 text-4xl"></i>
+                                                <i class="fas fa-concierge-bell text-blue-400 text-2xl sm:text-3xl"></i>
                                             @elseif($item->type === 'equipment')
-                                                <i class="fas fa-tools text-green-400 text-4xl"></i>
+                                                <i class="fas fa-tools text-green-400 text-2xl sm:text-3xl"></i>
                                             @else
-                                                <i class="fas fa-tag text-red-400 text-4xl"></i>
+                                                <i class="fas fa-tag text-red-400 text-2xl sm:text-3xl"></i>
                                             @endif
                                         </div>
                                     @endif
                                 </div>
                                 
                                 <!-- Contenu -->
-                                <div class="p-3 sm:p-4">
+                                <div class="p-2 sm:p-3">
                                     <!-- Badge de type -->
-                                    <div class="mb-3">
-                                        <span class="inline-block px-3 py-1 text-xs font-bold rounded-full
+                                    <div class="mb-2">
+                                        <span class="inline-block px-2 py-0.5 text-xs font-bold rounded-full
                                             @if($item->type === 'service') bg-blue-100 text-blue-800
                                             @elseif($item->type === 'equipment') bg-green-100 text-green-800
                                             @else bg-red-100 text-red-800
@@ -201,18 +201,18 @@
                                     </div>
                                     
                                     <!-- Titre -->
-                                    <h3 class="text-base sm:text-lg font-bold 
+                                    <h3 class="text-sm sm:text-base font-bold 
                                         @if($item->type === 'service') text-blue-900
                                         @elseif($item->type === 'equipment') text-green-900
                                         @else text-red-900
                                         @endif
-                                        mb-2 line-clamp-2">{{ $item->title }}</h3>
+                                        mb-1.5 line-clamp-2">{{ $item->title }}</h3>
                                     
                                     <!-- Informations -->
-                                    <div class="space-y-2 text-xs sm:text-sm mb-4">
+                                    <div class="space-y-1.5 text-xs mb-3">
                                         <!-- Client avec photo -->
-                                        <div class="flex items-center space-x-3">
-                                            <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full overflow-hidden flex-shrink-0">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-4 h-4 sm:w-5 sm:h-5 rounded-full overflow-hidden flex-shrink-0">
                                                 @if($item->type === 'service' && $item->original->client->user->avatar)
                                                     <img src="{{ asset('storage/' . $item->original->client->user->avatar) }}" 
                                                          alt="{{ $item->client_name }}" 
@@ -261,7 +261,7 @@
                                         @if($item->type === 'service')
                                             @if(isset($item->is_multi_slot) && $item->is_multi_slot)
                                                 <!-- Multi-slot session information -->
-                                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-2 mb-2">
+                                                <div class="bg-blue-50 border border-blue-200 rounded-md p-1.5 mb-1.5">
                                                     <div class="flex items-center justify-between text-xs">
                                                         <span class="text-blue-700 font-medium flex items-center">
                                                             <i class="fas fa-calendar-alt mr-1"></i>
@@ -305,8 +305,8 @@
                                     </div>
                                     
                                     <!-- Statut et actions -->
-                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
-                                        <span class="inline-block px-3 py-1 text-xs font-bold rounded-full self-start
+                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-1.5 sm:space-y-0">
+                                        <span class="inline-block px-2 py-0.5 text-xs font-bold rounded-full self-start
                                             @if($item->status === 'pending') bg-yellow-100 text-yellow-800
                                             @elseif($item->status === 'accepted') bg-green-100 text-green-800
                                             @elseif($item->status === 'rejected') bg-red-100 text-red-800
@@ -317,12 +317,12 @@
                                             @endif
                                         </span>
                                         
-                                        <button class="px-3 py-2 w-full sm:w-auto
+                                        <button class="px-2 py-1.5 w-full sm:w-auto
                                             @if($item->type === 'service') bg-blue-600 hover:bg-blue-700
                                             @elseif($item->type === 'equipment') bg-green-600 hover:bg-green-700
                                             @else bg-red-600 hover:bg-red-700
                                             @endif
-                                            text-white rounded-lg transition-colors duration-200 text-xs font-medium min-h-[44px] flex items-center justify-center">
+                                            text-white rounded-md transition-colors duration-200 text-xs font-medium min-h-[36px] flex items-center justify-center">
                                             Voir détails
                                         </button>
                                     </div>
@@ -334,21 +334,21 @@
                 </div>
             </div>
         @else
-            <div class="text-center py-16">
-                <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-12">
-                    <div class="text-blue-400 mb-6">
-                        <svg class="mx-auto h-24 w-24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="text-center py-8 sm:py-12">
+                <div class="bg-white rounded-lg shadow-md border border-blue-200 p-6 sm:p-8">
+                    <div class="text-blue-400 mb-4 sm:mb-6">
+                        <svg class="mx-auto h-16 w-16 sm:h-24 sm:w-24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-blue-900 mb-4">Aucune demande pour le moment</h3>
-                    <p class="text-blue-700 text-lg mb-8">Vous n'avez reçu aucune demande de réservation pour vos services, équipements ou annonces.</p>
-                    <div class="space-y-4">
-                        <a href="{{ route('prestataire.services.index') }}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 mr-4">
-                            <i class="fas fa-plus mr-2"></i>Ajouter un service
+                    <h3 class="text-lg sm:text-xl font-bold text-blue-900 mb-2 sm:mb-3">Aucune demande pour le moment</h3>
+                    <p class="text-blue-700 text-base sm:text-lg mb-4 sm:mb-6">Vous n'avez reçu aucune demande de réservation pour vos services, équipements ou annonces.</p>
+                    <div class="space-y-3 sm:space-y-0 sm:space-x-4">
+                        <a href="{{ route('prestataire.services.index') }}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 sm:py-3 sm:px-6 rounded-md transition duration-300 mr-0 sm:mr-4 mb-2 sm:mb-0">
+                            <i class="fas fa-plus mr-1.5"></i>Ajouter un service
                         </a>
-                        <a href="{{ route('prestataire.equipment.index') }}" class="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
-                            <i class="fas fa-tools mr-2"></i>Ajouter un équipement
+                        <a href="{{ route('prestataire.equipment.index') }}" class="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 sm:py-3 sm:px-6 rounded-md transition duration-300">
+                            <i class="fas fa-tools mr-1.5"></i>Ajouter un équipement
                         </a>
                     </div>
                 </div>

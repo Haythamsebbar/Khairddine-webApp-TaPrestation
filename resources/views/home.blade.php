@@ -313,14 +313,9 @@
                                 Contact
                             </a>
                         </li>
+                        
                         <li>
-                            <a href="#" class="text-xs sm:text-sm text-gray-300 hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center group">
-                                <i class="fas fa-question-circle text-green-400 mr-2 sm:mr-3 group-hover:text-green-300"></i>
-                                Centre d'aide
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="text-xs sm:text-sm text-gray-300 hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center group">
+                            <a href="{{ route('faq') }}" class="text-xs sm:text-sm text-gray-300 hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center group">
                                 <i class="fas fa-comments text-green-400 mr-2 sm:mr-3 group-hover:text-green-300"></i>
                                 FAQ
                             </a>
@@ -328,39 +323,7 @@
                     </ul>
                 </div>
                 
-                <!-- Légal -->
-                <div>
-                    <h3 class="text-base sm:text-lg font-semibold mb-4 sm:mb-6 flex items-center">
-                        <i class="fas fa-gavel text-yellow-400 mr-2"></i>
-                        Légal
-                    </h3>
-                    <ul class="space-y-2 sm:space-y-3">
-                        <li>
-                            <a href="#" class="text-xs sm:text-sm text-gray-300 hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center group">
-                                <i class="fas fa-file-contract text-yellow-400 mr-2 sm:mr-3 group-hover:text-yellow-300"></i>
-                                Conditions d'utilisation
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="text-xs sm:text-sm text-gray-300 hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center group">
-                                <i class="fas fa-shield-alt text-yellow-400 mr-2 sm:mr-3 group-hover:text-yellow-300"></i>
-                                Politique de confidentialité
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="text-xs sm:text-sm text-gray-300 hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center group">
-                                <i class="fas fa-balance-scale text-yellow-400 mr-2 sm:mr-3 group-hover:text-yellow-300"></i>
-                                Mentions légales
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="text-xs sm:text-sm text-gray-300 hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center group">
-                                <i class="fas fa-cookie-bite text-yellow-400 mr-2 sm:mr-3 group-hover:text-yellow-300"></i>
-                                Cookies
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+                
             </div>
         </div>
     </div>
@@ -382,10 +345,7 @@
                         <i class="fas fa-phone mr-1 sm:mr-2 text-green-400"></i>
                         Support 24/7
                     </span>
-                    <span class="flex items-center">
-                        <i class="fas fa-lock mr-1 sm:mr-2 text-yellow-400"></i>
-                        Paiements sécurisés
-                    </span>
+                    
                 </div>
             </div>
         </div>

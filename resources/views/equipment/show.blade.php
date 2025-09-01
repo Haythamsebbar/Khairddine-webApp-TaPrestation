@@ -49,6 +49,50 @@
         background-color: #dcfce7;
         color: #166534;
     }
+    
+    /* Navigation arrows */
+    .nav-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        z-index: 10;
+    }
+    
+    .nav-arrow:hover {
+        background-color: rgba(0, 0, 0, 0.7);
+    }
+    
+    .nav-arrow.left {
+        left: 10px;
+    }
+    
+    .nav-arrow.right {
+        right: 10px;
+    }
+    
+    /* Image counter */
+    .image-counter {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+    }
 </style>
 @endpush
 
@@ -103,31 +147,42 @@
                 <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-green-100 card-hover fade-in">
                     @if($equipment->photos && count($equipment->photos) > 0)
                         <div class="relative">
-                            <!-- Image principale -->
-                            <div class="aspect-w-16 aspect-h-12">
+                            <!-- Image principale avec flèches de navigation -->
+                            <div class="relative">
                                 <img id="mainImage" src="{{ Storage::url($equipment->photos[0]) }}" alt="{{ $equipment->name }}" class="w-full h-48 sm:h-56 lg:h-64 object-cover cursor-pointer" onclick="openImageModal(0)">
+                                
+                                <!-- Flèche gauche -->
+                                @if(count($equipment->photos) > 1)
+                                    <button id="prevButton" onclick="navigateImage(-1)" class="nav-arrow left">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                        </svg>
+                                    </button>
+                                @endif
+                                
+                                <!-- Flèche droite -->
+                                @if(count($equipment->photos) > 1)
+                                    <button id="nextButton" onclick="navigateImage(1)" class="nav-arrow right">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                        </svg>
+                                    </button>
+                                @endif
+                                
+                                <!-- Indicateur d'image -->
+                                @if(count($equipment->photos) > 1)
+                                    <div class="image-counter">
+                                        <span id="imageCounter">1 / {{ count($equipment->photos) }}</span>
+                                    </div>
+                                @endif
                             </div>
                             <div class="absolute top-2 sm:top-4 left-2 sm:left-4 status-badge status-available pulse-green text-xs sm:text-sm">
                                 Disponible
                             </div>
                         </div>
-                        
-                        <!-- Miniatures -->
-                        @if(count($equipment->photos) > 1)
-                            <div class="p-2 sm:p-3 border-t">
-                                <div class="flex space-x-1.5 overflow-x-auto pb-1">
-                                    @foreach($equipment->photos as $index => $photo)
-                                        <button onclick="changeMainImage('{{ Storage::url($photo) }}'); updateActiveIndex({{ $index }})" 
-                                                class="flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-lg overflow-hidden border-2 {{ $index === 0 ? 'border-green-500' : 'border-gray-200' }} hover:border-green-500 transition duration-200">
-                                            <img src="{{ Storage::url($photo) }}" alt="Photo {{ $index + 1 }}" class="w-full h-full object-cover cursor-pointer" onclick="event.stopPropagation(); openImageModal({{ $index }})">
-                                        </button>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
                     @elseif($equipment->main_photo)
                         <div class="relative">
-                            <div class="aspect-w-16 aspect-h-12">
+                            <div class="relative">
                                 <img id="mainImage" src="{{ Storage::url($equipment->main_photo) }}" alt="{{ $equipment->name }}" class="w-full h-48 sm:h-56 lg:h-64 object-cover cursor-pointer" onclick="openImageModal(0)">
                             </div>
                             <div class="absolute top-2 sm:top-4 left-2 sm:left-4 status-badge status-available pulse-green text-xs sm:text-sm">
@@ -498,7 +553,7 @@
                              <a href="#" 
                                 class="flex-1 bg-white hover:bg-gray-50 text-green-600 border border-green-600 px-2 py-2 rounded-lg transition duration-200 font-semibold flex items-center justify-center text-center text-xs">
                                  <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9 8s9 3.582 9 8z"></path>
                                  </svg>
                                  <span>Contacter</span>
                              </a>
@@ -617,20 +672,20 @@
         </button>
         
         <!-- Navigation arrows -->
-        <button id="prevBtn" onclick="navigateImage(-1)" class="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 z-10">
+        <button id="prevBtnModal" onclick="navigateImageModal(-1)" class="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 z-10">
             <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
             </svg>
         </button>
         
-        <button id="nextBtn" onclick="navigateImage(1)" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 z-10">
+        <button id="nextBtnModal" onclick="navigateImageModal(1)" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 z-10">
             <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
         </button>
         
         <!-- Image counter -->
-        <div id="imageCounter" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white bg-black bg-opacity-50 px-3 py-1 rounded-full">
+        <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white bg-black bg-opacity-50 px-3 py-1 rounded-full text-sm">
             <span id="currentImageNumber">1</span> / <span id="totalImages">1</span>
         </div>
     </div>
@@ -669,8 +724,30 @@
         @endif
     ];
     
-    function updateActiveIndex(index) {
-        currentImageIndex = index;
+    // Fonction pour naviguer entre les images avec navigation circulaire (image principale)
+    function navigateImage(direction) {
+        if (images.length <= 1) return;
+        
+        // Calculer le nouvel index avec navigation circulaire
+        currentImageIndex += direction;
+        
+        if (currentImageIndex < 0) {
+            currentImageIndex = images.length - 1; // Revenir à la dernière image
+        } else if (currentImageIndex >= images.length) {
+            currentImageIndex = 0; // Revenir à la première image
+        }
+        
+        // Mettre à jour l'image principale
+        const mainImage = document.getElementById('mainImage');
+        const imageCounter = document.getElementById('imageCounter');
+        
+        if (mainImage) {
+            mainImage.src = images[currentImageIndex];
+        }
+        
+        if (imageCounter) {
+            imageCounter.textContent = `${currentImageIndex + 1} / ${images.length}`;
+        }
     }
     
     function openImageModal(index) {
@@ -679,8 +756,8 @@
         const modalImage = document.getElementById('modalImage');
         const currentNumber = document.getElementById('currentImageNumber');
         const totalImages = document.getElementById('totalImages');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtnModal');
+        const nextBtn = document.getElementById('nextBtnModal');
         
         modalImage.src = images[currentImageIndex];
         currentNumber.textContent = currentImageIndex + 1;
@@ -704,55 +781,25 @@
         document.body.style.overflow = 'auto';
     }
     
-    function navigateImage(direction) {
+    // Fonction pour naviguer dans le modal avec navigation circulaire
+    function navigateImageModal(direction) {
+        if (images.length <= 1) return;
+        
+        // Calculer le nouvel index avec navigation circulaire
         currentImageIndex += direction;
-        if (currentImageIndex < 0) currentImageIndex = images.length - 1;
-        if (currentImageIndex >= images.length) currentImageIndex = 0;
+        
+        if (currentImageIndex < 0) {
+            currentImageIndex = images.length - 1; // Revenir à la dernière image
+        } else if (currentImageIndex >= images.length) {
+            currentImageIndex = 0; // Revenir à la première image
+        }
         
         const modalImage = document.getElementById('modalImage');
         const currentNumber = document.getElementById('currentImageNumber');
         
         modalImage.src = images[currentImageIndex];
         currentNumber.textContent = currentImageIndex + 1;
-        
-        // Update main image and thumbnail border
-        changeMainImage(images[currentImageIndex]);
-        updateThumbnailBorders(currentImageIndex);
     }
-    
-    function updateThumbnailBorders(activeIndex) {
-        const buttons = document.querySelectorAll('.flex-shrink-0');
-        buttons.forEach((button, index) => {
-            if (index === activeIndex) {
-                button.classList.add('border-green-500');
-                button.classList.remove('border-gray-200');
-            } else {
-                button.classList.remove('border-green-500');
-                button.classList.add('border-gray-200');
-            }
-        });
-    }
-    
-    // Keyboard navigation
-    document.addEventListener('keydown', function(e) {
-        const modal = document.getElementById('imageModal');
-        if (!modal.classList.contains('hidden')) {
-            if (e.key === 'Escape') {
-                closeImageModal();
-            } else if (e.key === 'ArrowLeft') {
-                navigateImage(-1);
-            } else if (e.key === 'ArrowRight') {
-                navigateImage(1);
-            }
-        }
-    });
-    
-    // Close modal when clicking outside the image
-    document.getElementById('imageModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeImageModal();
-        }
-    });
     
     // Equipment details toggle functionality
     function toggleEquipmentDetails() {
@@ -770,22 +817,6 @@
             icon.classList.remove('rotate-90');
             btnText.textContent = 'Voir plus de détails';
         }
-    }
-
-    function changeMainImage(url) {
-        document.getElementById('mainImage').src = url;
-        // Update border on thumbnails
-        const buttons = document.querySelectorAll('.flex-shrink-0');
-        buttons.forEach(button => {
-            const img = button.querySelector('img');
-            if (img.src === url) {
-                button.classList.add('border-green-500');
-                button.classList.remove('border-gray-200');
-            } else {
-                button.classList.remove('border-green-500');
-                button.classList.add('border-gray-200');
-            }
-        });
     }
 
     function openReportModal() {
@@ -817,6 +848,27 @@
     document.getElementById('reportModal').addEventListener('click', function(e) {
         if (e.target === this) {
             closeReportModal();
+        }
+    });
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        const modal = document.getElementById('imageModal');
+        if (!modal.classList.contains('hidden')) {
+            if (e.key === 'Escape') {
+                closeImageModal();
+            } else if (e.key === 'ArrowLeft') {
+                navigateImageModal(-1);
+            } else if (e.key === 'ArrowRight') {
+                navigateImageModal(1);
+            }
+        }
+    });
+    
+    // Close modal when clicking outside the image
+    document.getElementById('imageModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeImageModal();
         }
     });
 </script>

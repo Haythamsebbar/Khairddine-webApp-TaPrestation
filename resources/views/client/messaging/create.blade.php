@@ -31,7 +31,7 @@
                             </div>
                         @endif
                         
-                        <form action="{{ route('messaging.start-conversation', $prestataire->id) }}" method="POST">
+                        <form action="{{ route('prestataire.prestataire.messages.start-conversation', $prestataire->user) }}" method="POST">
                             @csrf
                             
                             <!-- Informations du prestataire -->

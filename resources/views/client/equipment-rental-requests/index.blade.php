@@ -3,6 +3,164 @@
 @section('title', 'Mes demandes de location')
 
 @section('content')
+<style>
+/* Adding the green color scheme and styling */
+.slot-option {
+    transition: all 0.2s ease-in-out;
+}
+
+.slot-option:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced button styles */
+.btn-primary {
+    background-color: #10b981;
+    color: white;
+    font-weight: 600;
+    border-radius: 0.75rem;
+    transition: all 0.2s ease-in-out;
+    border: none;
+    box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);
+}
+
+.btn-primary:hover {
+    background-color: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 8px rgba(16, 185, 129, 0.3);
+}
+
+.btn-secondary {
+    background-color: #e5e7eb;
+    color: #374151;
+    font-weight: 600;
+    border-radius: 0.75rem;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background-color: #d1d5db;
+    transform: translateY(-1px);
+}
+
+/* Enhanced toggle button */
+#toggleFilters {
+    background-color: #10b981;
+    color: white;
+    font-weight: 600;
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+}
+
+#toggleFilters:hover {
+    background-color: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(16, 185, 129, 0.4);
+}
+
+/* Enhanced action buttons */
+.action-button {
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.action-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Empty state enhancement */
+.empty-state {
+    background-color: #f0fdf4;
+    border-radius: 1rem;
+    border: 2px dashed #86efac;
+    padding: 2rem;
+    text-align: center;
+}
+
+/* Pagination enhancement */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.pagination a,
+.pagination span {
+    padding: 0.5rem 1rem;
+    margin: 0 0.25rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.pagination a:hover {
+    background-color: #dcfce7;
+    color: #059669;
+}
+
+.pagination .active {
+    background-color: #10b981;
+    color: white;
+}
+
+/* Equipment request card enhancement */
+.equipment-card {
+    transition: all 0.3s ease;
+    border: 1px solid #e5e7eb;
+    border-radius: 1rem;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.equipment-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.25);
+    border-color: #86efac;
+}
+
+/* Status badge enhancement */
+.status-badge {
+    border-radius: 9999px;
+    padding: 0.25rem 0.75rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+}
+
+.status-pending {
+    background-color: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fcd34d;
+}
+
+.status-accepted {
+    background-color: #dcfce7;
+    color: #166534;
+    border: 1px solid #86efac;
+}
+
+.status-rejected {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+/* Filter container enhancement */
+.filter-container {
+    background-color: white;
+    border-radius: 1rem;
+    border: 1px solid #bbf7d0;
+    box-shadow: 0 4px 6px rgba(16, 185, 129, 0.1);
+}
+</style>
+
 <div class="bg-green-50">
 <div class="container mx-auto px-4 py-6 sm:py-8">
     <div class="max-w-6xl mx-auto">
@@ -94,178 +252,350 @@
         
         <!-- Filtres -->
         <div class="bg-white rounded-xl shadow-lg border border-green-200 p-4 sm:p-6 mb-8">
-            <form method="GET" action="{{ route('client.equipment-rental-requests.index') }}" class="space-y-4 lg:space-y-0 lg:flex lg:flex-wrap lg:items-end lg:gap-4">
-                <div class="flex-1 lg:min-w-64">
-                    <label for="search" class="block text-sm font-semibold text-green-700 mb-2">
-                        <i class="fas fa-search mr-2 text-green-600"></i>Rechercher
-                    </label>
-                    <input type="text" 
-                           id="search" 
-                           name="search" 
-                           value="{{ request('search') }}"
-                           placeholder="Nom de l'équipement, prestataire..."
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200">
+            <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div class="text-center sm:text-left">
+                    <h3 class="text-xl sm:text-2xl font-bold text-green-800 mb-1 sm:mb-2">Filtres de recherche</h3>
+                    <p class="text-sm sm:text-base lg:text-lg text-green-700">Affinez votre recherche pour trouver la demande parfaite</p>
+                </div>
+                <button type="button" id="toggleFilters" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center text-sm sm:text-base">
+                    <span id="filterButtonText">Afficher les filtres</span>
+                    <i class="fas fa-chevron-down ml-2" id="filterChevron"></i>
+                </button>
+            </div>
+            
+            <form method="GET" action="{{ route('client.equipment-rental-requests.index') }}" class="space-y-4 sm:space-y-6" id="filtersForm" style="display: none;">
+                <!-- Première ligne de filtres -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
+                    <!-- Recherche -->
+                    <div>
+                        <label for="search" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Recherche</label>
+                        <div class="relative">
+                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <input type="text" 
+                                   id="search" 
+                                   name="search" 
+                                   value="{{ request('search') }}"
+                                   placeholder="Nom de l'équipement, prestataire..."
+                                   class="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-sm sm:text-base">
+                        </div>
+                    </div>
+                    
+                    <!-- Statut -->
+                    <div>
+                        <label for="status" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Statut</label>
+                        <div class="relative">
+                            <i class="fas fa-filter absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <select id="status" 
+                                    name="status"
+                                    class="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-sm sm:text-base">
+                                <option value="">Tous les statuts</option>
+                                <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>En attente</option>
+                                <option value="accepted" {{ request('status') === 'accepted' ? 'selected' : '' }}>Acceptée</option>
+                                <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Refusée</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Date de début -->
+                    <div>
+                        <label for="date_from" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Date de début</label>
+                        <div class="relative">
+                            <i class="fas fa-calendar-alt absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <input type="date" 
+                                   id="date_from" 
+                                   name="date_from" 
+                                   value="{{ request('date_from') }}"
+                                   class="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-sm sm:text-base">
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="w-full sm:w-auto sm:min-w-48">
-                    <label for="status" class="block text-sm font-semibold text-green-700 mb-2">
-                        <i class="fas fa-filter mr-2 text-green-600"></i>Statut
-                    </label>
-                    <select id="status" 
-                            name="status"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200">
-                        <option value="">Tous les statuts</option>
-                        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>En attente</option>
-                        <option value="accepted" {{ request('status') === 'accepted' ? 'selected' : '' }}>Acceptée</option>
-                        <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Refusée</option>
-                    </select>
-                </div>
-                
-                <div class="w-full sm:w-auto sm:min-w-48">
-                    <label for="date_from" class="block text-sm font-semibold text-green-700 mb-2">
-                        <i class="fas fa-calendar-alt mr-2 text-green-600"></i>Date de début
-                    </label>
-                    <input type="date" 
-                           id="date_from" 
-                           name="date_from" 
-                           value="{{ request('date_from') }}"
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200">
-                </div>
-                
-                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full lg:w-auto">
-                    <button type="submit" 
-                            class="px-4 sm:px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center">
-                        <i class="fas fa-search mr-2"></i>
-                        Filtrer
+                <!-- Boutons d'action -->
+                <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4 sm:pt-6 border-t-2 border-green-200">
+                    <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center text-sm sm:text-base">
+                        <i class="fas fa-search mr-2"></i>Appliquer les filtres
                     </button>
-                    <a href="{{ route('client.equipment-rental-requests.index') }}" 
-                       class="px-4 sm:px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center">
-                        <i class="fas fa-redo mr-2"></i>
-                        Réinitialiser
-                    </a>
+                    
+                    <button type="button" onclick="clearFilters()" class="flex-1 bg-green-100 hover:bg-green-200 text-green-800 font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm sm:text-base">
+                        <i class="fas fa-times mr-2"></i>Effacer tout
+                    </button>
+                    
+                    @if(request('search') || request('status') || request('date_from'))
+                        <a href="{{ route('client.equipment-rental-requests.index') }}" class="flex-1 bg-green-100 hover:bg-green-200 text-green-800 font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm sm:text-base">
+                            <i class="fas fa-undo mr-2"></i>Réinitialiser
+                        </a>
+                    @endif
                 </div>
             </form>
+            
+            <!-- Indicateur de filtres actifs -->
+            @if(request('search') || request('status') || request('date_from'))
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-4 border-t-2 border-green-200 mt-6 space-y-2 sm:space-y-0">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs sm:text-sm font-semibold text-green-800">Filtres actifs :</span>
+                        @if(request('search'))
+                            <span class="px-2 sm:px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs sm:text-sm font-bold">
+                                Recherche: {{ request('search') }}
+                            </span>
+                        @endif
+                        @if(request('status'))
+                            <span class="px-2 sm:px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs sm:text-sm font-bold">
+                                Statut: {{ ucfirst(request('status')) }}
+                            </span>
+                        @endif
+                        @if(request('date_from'))
+                            <span class="px-2 sm:px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs sm:text-sm font-bold">
+                                Date: {{ request('date_from') }}
+                            </span>
+                        @endif
+                    </div>
+                </div>
+            @endif
         </div>
         
         <!-- Liste des demandes -->
         @if($requests->count() > 0)
-        <div class="bg-white rounded-xl shadow-lg border border-green-200 overflow-hidden">
-            <div class="p-6 border-b border-green-200">
-                <h3 class="text-lg font-semibold text-green-900">Mes demandes de location ({{ $requests->total() }})</h3>
-            </div>
-            <!-- Vue Desktop -->
-            <div class="hidden lg:block overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
-                        <tr>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                                Équipement
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                                Prestataire
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                                Période
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                                Montant
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                                Statut
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                                Date de demande
-                            </th>
-                            <th class="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">
-                                Actions
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach($requests as $request)
-                        <tr class="hover:bg-gray-50 transition-colors duration-200">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-14 w-14">
-                                        @if($request->equipment->photos && count($request->equipment->photos) > 0)
-                                        <img class="h-14 w-14 rounded-xl object-cover shadow-md" 
+            <div class="space-y-4">
+                @foreach($requests as $request)
+                    <div class="equipment-card bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl">
+                        <!-- Desktop Layout (≥1024px) -->
+                        <div class="hidden lg:flex items-start justify-between p-5 sm:p-6">
+                            <!-- Section principale avec avatar et infos -->
+                            <div class="flex items-start space-x-6 flex-1">
+                                <!-- Avatar de l'équipement -->
+                                <div class="flex-shrink-0">
+                                    @if($request->equipment->photos && count($request->equipment->photos) > 0)
+                                        <img class="h-16 w-16 rounded-xl object-cover shadow-lg" 
                                              src="{{ Storage::url($request->equipment->photos[0]) }}" 
                                              alt="{{ $request->equipment->name }}">
-                                        @else
-                                        <div class="h-14 w-14 rounded-xl bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center shadow-md">
-                                            <svg class="w-7 h-7 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    @else
+                                        <div class="h-16 w-16 rounded-xl bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center shadow-lg">
+                                            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                                             </svg>
                                         </div>
-                                        @endif
+                                    @endif
+                                </div>
+                                
+                                <!-- Bloc informations -->
+                                <div class="flex-1 space-y-3">
+                                    <!-- Titre et équipement -->
+                                    <div>
+                                        <h3 class="text-xl font-bold text-gray-900 mb-2 leading-tight">{{ $request->equipment->name }}</h3>
+                                        <p class="text-gray-700 font-medium text-lg">avec {{ $request->equipment->prestataire->company_name ?? $request->equipment->prestataire->first_name . ' ' . $request->equipment->prestataire->last_name }}</p>
+                                        <p class="text-gray-500 text-sm mt-1">Demande #{{ $request->id }}</p>
                                     </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-semibold text-gray-900">{{ $request->equipment->name }}</div>
-                                        <div class="text-sm text-gray-500">
-                                            {{ $request->equipment->brand }} {{ $request->equipment->model }}
+                                    
+                                    <!-- Méta temporelles -->
+                                    <div class="flex items-center space-x-8 text-gray-600">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-calendar-alt mr-3 text-green-500 text-lg"></i>
+                                            <span class="font-medium">
+                                                Du {{ $request->start_date->format('d/m/Y') }}
+                                                au {{ $request->end_date->format('d/m/Y') }}
+                                            </span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <i class="fas fa-clock mr-3 text-green-500 text-lg"></i>
+                                            <span class="font-medium">{{ $request->duration_days }} jour{{ $request->duration_days > 1 ? 's' : '' }}</span>
                                         </div>
                                     </div>
+
+                                    <!-- Montant -->
+                                    <div class="flex items-center text-gray-600">
+                                        <i class="fas fa-euro-sign mr-3 text-green-500 text-lg"></i>
+                                        <span class="font-bold text-lg">{{ number_format($request->total_amount, 0) }}€</span>
+                                        @if($request->delivery_required && $request->delivery_cost > 0)
+                                            <span class="ml-2 text-sm text-gray-500">
+                                                (+ {{ number_format($request->delivery_cost, 0) }}€ livraison)
+                                            </span>
+                                        @endif
+                                    </div>
+
+                                    @if($request->client_notes)
+                                        <div class="mt-4">
+                                            <p class="text-sm text-gray-500 mb-1">Notes</p>
+                                            <p class="text-gray-700">{{ $request->client_notes }}</p>
+                                        </div>
+                                    @endif
                                 </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-semibold text-gray-900">
-                                    {{ $request->equipment->prestataire->company_name ?? $request->equipment->prestataire->first_name . ' ' . $request->equipment->prestataire->last_name }}
-                                </div>
-                                @if($request->equipment->prestataire->address)
-                                <div class="text-sm text-gray-500">{{ $request->equipment->prestataire->address }}</div>
-                                @endif
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900 font-medium">
-                                    Du {{ $request->start_date->format('d/m/Y') }}
-                                </div>
-                                <div class="text-sm text-gray-500">
-                                    au {{ $request->end_date->format('d/m/Y') }}
-                                </div>
-                                <div class="text-xs text-gray-400">
-                                    ({{ $request->duration_days }} jour{{ $request->duration_days > 1 ? 's' : '' }})
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-bold text-gray-900">
-                                    {{ number_format($request->total_amount, 0) }}€
-                                </div>
-                                @if($request->delivery_required && $request->delivery_cost > 0)
-                                <div class="text-xs text-gray-500">
-                                    (+ {{ number_format($request->delivery_cost, 0) }}€ livraison)
-                                </div>
-                                @endif
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                @if($request->status === 'pending')
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 shadow-sm">
-                                    <i class="fas fa-clock mr-1"></i>
-                                    En attente
-                                </span>
-                                @elseif($request->status === 'accepted')
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-green-100 to-green-200 text-green-800 shadow-sm">
-                                    <i class="fas fa-check-circle mr-1"></i>
-                                    Acceptée
-                                </span>
-                                @elseif($request->status === 'rejected')
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-red-100 to-red-200 text-red-800 shadow-sm">
-                                    <i class="fas fa-times-circle mr-1"></i>
-                                    Refusée
-                                </span>
-                                @endif
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-medium">
-                                {{ $request->created_at->format('d/m/Y H:i') }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <div class="flex items-center justify-end space-x-2">
-                                    <a href="{{ route('client.equipment-rental-requests.show', $request) }}" 
-                                       class="inline-flex items-center px-3 py-2 text-sm font-semibold text-green-600 hover:text-white hover:bg-green-600 border border-green-600 rounded-lg transition-all duration-200 hover:shadow-lg">
-                                        <i class="fas fa-eye mr-1"></i>
-                                        Voir
-                                    </a>
-                                    
+                            </div>
+                            
+                            <!-- Badge de statut en haut à droite -->
+                            <div class="ml-6">
+                                <span class="status-badge 
+                                    @if($request->status === 'pending') status-pending
+                                    @elseif($request->status === 'accepted') status-accepted
+                                    @elseif($request->status === 'rejected') status-rejected
+                                    @else status-pending
+                                    @endif">
                                     @if($request->status === 'pending')
+                                        <i class="fas fa-clock mr-2"></i> En attente
+                                    @elseif($request->status === 'accepted')
+                                        <i class="fas fa-check-circle mr-2"></i> Acceptée
+                                    @elseif($request->status === 'rejected')
+                                        <i class="fas fa-times-circle mr-2"></i> Refusée
+                                    @else
+                                        {{ ucfirst($request->status) }}
+                                    @endif
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Tablet Layout (768-1023px) -->
+                        <div class="hidden md:block lg:hidden p-5 sm:p-6">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-start space-x-4 flex-1">
+                                    <!-- Avatar -->
+                                    <div class="flex-shrink-0">
+                                        @if($request->equipment->photos && count($request->equipment->photos) > 0)
+                                            <img class="h-14 w-14 rounded-xl object-cover shadow-lg" 
+                                                 src="{{ Storage::url($request->equipment->photos[0]) }}" 
+                                                 alt="{{ $request->equipment->name }}">
+                                        @else
+                                            <div class="h-14 w-14 rounded-xl bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center shadow-lg">
+                                                <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                                </svg>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    
+                                    <!-- Titre et équipement -->
+                                    <div class="flex-1">
+                                        <h3 class="text-lg font-bold text-gray-900 mb-1 leading-tight">{{ $request->equipment->name }}</h3>
+                                        <p class="text-gray-700 font-medium">avec {{ $request->equipment->prestataire->company_name ?? $request->equipment->prestataire->first_name . ' ' . $request->equipment->prestataire->last_name }}</p>
+                                        <p class="text-gray-500 text-sm mt-1">Demande #{{ $request->id }}</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Badge de statut -->
+                                <span class="status-badge 
+                                    @if($request->status === 'pending') status-pending
+                                    @elseif($request->status === 'accepted') status-accepted
+                                    @elseif($request->status === 'rejected') status-rejected
+                                    @else status-pending
+                                    @endif">
+                                    @if($request->status === 'pending')
+                                        <i class="fas fa-clock mr-1"></i> En attente
+                                    @elseif($request->status === 'accepted')
+                                        <i class="fas fa-check-circle mr-1"></i> Acceptée
+                                    @elseif($request->status === 'rejected')
+                                        <i class="fas fa-times-circle mr-1"></i> Refusée
+                                    @else
+                                        {{ ucfirst($request->status) }}
+                                    @endif
+                                </span>
+                            </div>
+                            
+                            <!-- Méta temporelles sous le titre -->
+                            <div class="flex items-center space-x-6 text-gray-600 mb-4">
+                                <div class="flex items-center">
+                                    <i class="fas fa-calendar-alt mr-2 text-green-500"></i>
+                                    <span class="font-medium">
+                                        Du {{ $request->start_date->format('d/m/Y') }}
+                                        au {{ $request->end_date->format('d/m/Y') }}
+                                    </span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-clock mr-2 text-green-500"></i>
+                                    <span class="font-medium">{{ $request->duration_days }} jour{{ $request->duration_days > 1 ? 's' : '' }}</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Montant -->
+                            <div class="flex items-center text-gray-600 mb-4">
+                                <i class="fas fa-euro-sign mr-2 text-green-500"></i>
+                                <span class="font-bold">{{ number_format($request->total_amount, 0) }}€</span>
+                                @if($request->delivery_required && $request->delivery_cost > 0)
+                                    <span class="ml-2 text-sm text-gray-500">
+                                        (+ {{ number_format($request->delivery_cost, 0) }}€ livraison)
+                                    </span>
+                                @endif
+                            </div>
+                            
+                            @if($request->client_notes)
+                                <div class="mb-4">
+                                    <p class="text-sm text-gray-500 mb-1">Notes</p>
+                                    <p class="text-gray-700">{{ $request->client_notes }}</p>
+                                </div>
+                            @endif
+                        </div>
+                        
+                        <!-- Mobile Layout (<768px) -->
+                        <div class="block md:hidden p-5 sm:p-6">
+                            <div class="space-y-4">
+                                <!-- Titre -->
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-900 mb-1 leading-tight">{{ $request->equipment->name }}</h3>
+                                    <p class="text-gray-700 font-medium">avec {{ $request->equipment->prestataire->company_name ?? $request->equipment->prestataire->first_name . ' ' . $request->equipment->prestataire->last_name }}</p>
+                                    <p class="text-gray-500 text-sm mt-1">Demande #{{ $request->id }}</p>
+                                </div>
+                                
+                                <!-- Badge de statut -->
+                                <div class="flex justify-center">
+                                    <span class="status-badge 
+                                        @if($request->status === 'pending') status-pending
+                                        @elseif($request->status === 'accepted') status-accepted
+                                        @elseif($request->status === 'rejected') status-rejected
+                                        @else status-pending
+                                        @endif">
+                                        @if($request->status === 'pending')
+                                            <i class="fas fa-clock mr-2"></i> En attente
+                                        @elseif($request->status === 'accepted')
+                                            <i class="fas fa-check-circle mr-2"></i> Acceptée
+                                        @elseif($request->status === 'rejected')
+                                            <i class="fas fa-times-circle mr-2"></i> Refusée
+                                        @else
+                                            {{ ucfirst($request->status) }}
+                                        @endif
+                                    </span>
+                                </div>
+                                
+                                <!-- Méta temporelles -->
+                                <div class="space-y-2 text-gray-600">
+                                    <div class="flex items-center justify-center">
+                                        <i class="fas fa-calendar-alt mr-2 text-green-500"></i>
+                                        <span class="font-medium text-center">
+                                            Du {{ $request->start_date->format('d/m/Y') }}<br>
+                                            au {{ $request->end_date->format('d/m/Y') }}
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center justify-center">
+                                        <i class="fas fa-clock mr-2 text-green-500"></i>
+                                        <span class="font-medium">{{ $request->duration_days }} jour{{ $request->duration_days > 1 ? 's' : '' }}</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Montant -->
+                                <div class="flex items-center justify-center text-gray-600">
+                                    <i class="fas fa-euro-sign mr-2 text-green-500"></i>
+                                    <span class="font-bold">{{ number_format($request->total_amount, 0) }}€</span>
+                                    @if($request->delivery_required && $request->delivery_cost > 0)
+                                        <span class="ml-2 text-sm text-gray-500">
+                                            (+ {{ number_format($request->delivery_cost, 0) }}€ livraison)
+                                        </span>
+                                    @endif
+                                </div>
+                                
+                                @if($request->client_notes)
+                                    <div>
+                                        <p class="text-sm text-gray-500 mb-1">Notes</p>
+                                        <p class="text-gray-700">{{ $request->client_notes }}</p>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                        
+                        <!-- Actions - Responsive -->
+                        <div class="mt-6 pt-6 border-t border-gray-100 p-5 sm:p-6">
+                            <!-- Desktop & Tablet Actions -->
+                            <div class="hidden md:flex items-center justify-end space-x-4">
+                                <a href="{{ route('client.equipment-rental-requests.show', $request) }}" class="action-button inline-flex items-center justify-center px-4 py-2.5 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                                    <i class="fas fa-eye mr-2"></i> Voir détails
+                                </a>
+                                
+                                @if($request->status === 'pending')
                                     <form method="POST" 
                                           action="{{ route('client.equipment-rental-requests.destroy', $request) }}" 
                                           class="inline"
@@ -273,193 +603,102 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" 
-                                                class="inline-flex items-center px-3 py-2 text-sm font-semibold text-red-600 hover:text-white hover:bg-red-600 border border-red-600 rounded-lg transition-all duration-200 hover:shadow-lg">
-                                            <i class="fas fa-times mr-1"></i>
-                                            Annuler
+                                                class="action-button inline-flex items-center justify-center px-4 py-2.5 border border-transparent rounded-lg shadow-sm text-base font-semibold text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-200">
+                                            <i class="fas fa-times mr-2"></i> Annuler
                                         </button>
                                     </form>
-                                    @endif
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            
-            <!-- Vue Mobile et Tablette -->
-            <div class="lg:hidden">
-                <div class="space-y-4 p-4">
-                    @foreach($requests as $request)
-                    <div class="bg-gradient-to-r from-white to-gray-50 rounded-xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300">
-                        <!-- En-tête de la carte -->
-                        <div class="flex items-start space-x-4 mb-4">
-                            <div class="flex-shrink-0">
-                                @if($request->equipment->photos && count($request->equipment->photos) > 0)
-                                <img class="h-16 w-16 rounded-xl object-cover shadow-md" 
-                                     src="{{ Storage::url($request->equipment->photos[0]) }}" 
-                                     alt="{{ $request->equipment->name }}">
-                                @else
-                                <div class="h-16 w-16 rounded-xl bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center shadow-md">
-                                    <svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                                    </svg>
-                                </div>
-                                @endif
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <h3 class="text-lg font-bold text-gray-900 truncate">{{ $request->equipment->name }}</h3>
-                                <p class="text-sm text-gray-600">{{ $request->equipment->brand }} {{ $request->equipment->model }}</p>
-                                <div class="mt-2">
-                                    @if($request->status === 'pending')
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 shadow-sm">
-                                        <i class="fas fa-clock mr-1"></i>
-                                        En attente
-                                    </span>
-                                    @elseif($request->status === 'accepted')
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-green-100 to-green-200 text-green-800 shadow-sm">
-                                        <i class="fas fa-check-circle mr-1"></i>
-                                        Acceptée
-                                    </span>
-                                    @elseif($request->status === 'rejected')
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-red-100 to-red-200 text-red-800 shadow-sm">
-                                        <i class="fas fa-times-circle mr-1"></i>
-                                        Refusée
-                                    </span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Informations détaillées -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                            <div class="bg-white rounded-lg p-3 shadow-sm border border-gray-100">
-                                <div class="flex items-center mb-2">
-                                    <i class="fas fa-building text-blue-600 mr-2"></i>
-                                    <span class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Prestataire</span>
-                                </div>
-                                <p class="text-sm font-semibold text-gray-900">
-                                    {{ $request->equipment->prestataire->company_name ?? $request->equipment->prestataire->first_name . ' ' . $request->equipment->prestataire->last_name }}
-                                </p>
-                                @if($request->equipment->prestataire->address)
-                                <p class="text-xs text-gray-500 mt-1">{{ $request->equipment->prestataire->address }}</p>
                                 @endif
                             </div>
                             
-                            <div class="bg-white rounded-lg p-3 shadow-sm border border-gray-100">
-                                <div class="flex items-center mb-2">
-                                    <i class="fas fa-calendar-alt text-blue-600 mr-2"></i>
-                                    <span class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Période</span>
-                                </div>
-                                <p class="text-sm font-semibold text-gray-900">
-                                    Du {{ $request->start_date->format('d/m/Y') }}
-                                </p>
-                                <p class="text-sm text-gray-600">
-                                    au {{ $request->end_date->format('d/m/Y') }}
-                                </p>
-                                <p class="text-xs text-gray-400 mt-1">
-                                    ({{ $request->duration_days }} jour{{ $request->duration_days > 1 ? 's' : '' }})
-                                </p>
-                            </div>
-                            
-                            <div class="bg-white rounded-lg p-3 shadow-sm border border-gray-100">
-                                <div class="flex items-center mb-2">
-                                    <i class="fas fa-euro-sign text-blue-600 mr-2"></i>
-                                    <span class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Montant</span>
-                                </div>
-                                <p class="text-lg font-bold text-gray-900">
-                                    {{ number_format($request->total_amount, 0) }}€
-                                </p>
-                                @if($request->delivery_required && $request->delivery_cost > 0)
-                                <p class="text-xs text-gray-500">
-                                    (+ {{ number_format($request->delivery_cost, 0) }}€ livraison)
-                                </p>
+                            <!-- Mobile Actions -->
+                            <div class="block md:hidden space-y-3">
+                                <a href="{{ route('client.equipment-rental-requests.show', $request) }}" class="action-button w-full inline-flex items-center justify-center px-4 py-2.5 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                                    <i class="fas fa-eye mr-2"></i> Voir détails
+                                </a>
+                                
+                                @if($request->status === 'pending')
+                                    <form method="POST" 
+                                          action="{{ route('client.equipment-rental-requests.destroy', $request) }}" 
+                                          onsubmit="return confirm('Êtes-vous sûr de vouloir annuler cette demande ?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" 
+                                                class="action-button w-full inline-flex items-center justify-center px-4 py-2.5 border border-transparent rounded-lg shadow-sm text-base font-semibold text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-200">
+                                            <i class="fas fa-times mr-2"></i> Annuler
+                                        </button>
+                                    </form>
                                 @endif
                             </div>
-                            
-                            <div class="bg-white rounded-lg p-3 shadow-sm border border-gray-100">
-                                <div class="flex items-center mb-2">
-                                    <i class="fas fa-clock text-blue-600 mr-2"></i>
-                                    <span class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Demandé le</span>
-                                </div>
-                                <p class="text-sm font-semibold text-gray-900">
-                                    {{ $request->created_at->format('d/m/Y') }}
-                                </p>
-                                <p class="text-xs text-gray-500">
-                                    à {{ $request->created_at->format('H:i') }}
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <!-- Actions -->
-                        <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200">
-                            <a href="{{ route('client.equipment-rental-requests.show', $request) }}" 
-                               class="flex-1 inline-flex items-center justify-center px-4 py-3 text-sm font-semibold text-green-600 hover:text-white hover:bg-green-600 border border-green-600 rounded-lg transition-all duration-200 hover:shadow-lg">
-                                <i class="fas fa-eye mr-2"></i>
-                                Voir les détails
-                            </a>
-                            
-                            @if($request->status === 'pending')
-                            <form method="POST" 
-                                  action="{{ route('client.equipment-rental-requests.destroy', $request) }}" 
-                                  class="flex-1"
-                                  onsubmit="return confirm('Êtes-vous sûr de vouloir annuler cette demande ?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" 
-                                        class="w-full inline-flex items-center justify-center px-4 py-3 text-sm font-semibold text-red-600 hover:text-white hover:bg-red-600 border border-red-600 rounded-lg transition-all duration-200 hover:shadow-lg">
-                                    <i class="fas fa-times mr-2"></i>
-                                    Annuler la demande
-                                </button>
-                            </form>
-                            @endif
                         </div>
                     </div>
-                    @endforeach
-                </div>
+                @endforeach
             </div>
-            
+
             <!-- Pagination -->
-            @if($requests->hasPages())
-            <div class="bg-gradient-to-r from-gray-50 to-white px-6 py-4 border-t border-gray-200">
-                {{ $requests->appends(request()->query())->links() }}
-            </div>
-            @endif
-        </div>
-        @else
-        <div class="bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-lg border border-gray-200 p-12 text-center">
-            <div class="max-w-md mx-auto">
-                <div class="mx-auto h-24 w-24 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center mb-6 shadow-lg">
-                    <i class="fas fa-clipboard-list text-3xl text-blue-600"></i>
+            <div class="mt-8">
+                <div class="pagination">
+                    {{ $requests->appends(request()->query())->links() }}
                 </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-3">Aucune demande trouvée</h3>
-                <p class="text-gray-600 mb-8 leading-relaxed">
-                    @if(request()->hasAny(['search', 'status', 'date_from']))
-                        Aucune demande ne correspond à vos critères de recherche. Essayez de modifier vos filtres.
-                    @else
-                        Vous n'avez pas encore fait de demande de location d'équipement. Commencez dès maintenant !
-                    @endif
-                </p>
-                <div class="space-y-3">
-                    <a href="{{ route('equipment.index') }}" 
-                       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
-                        <i class="fas fa-search mr-2"></i>
-                        Parcourir les équipements
+            </div>
+        @else
+            <div class="col-span-1 sm:col-span-2 lg:col-span-3 empty-state">
+                <div class="text-green-500 mb-4">
+                    <svg class="mx-auto h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-green-900 mb-2">Aucune demande trouvée</h3>
+                <p class="text-green-800 mb-6">Vous n'avez pas encore effectué de demande de location ou aucune demande ne correspond à vos critères de recherche.</p>
+                <div class="space-y-4">
+                    <a href="{{ route('equipment.index') }}" class="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 shadow-lg hover:shadow-xl">
+                        Nouvelle demande
                     </a>
                     @if(request()->hasAny(['search', 'status', 'date_from']))
-                    <div>
-                        <a href="{{ route('client.equipment-rental-requests.index') }}" 
-                           class="inline-flex items-center px-4 py-2 text-green-600 hover:text-green-800 font-medium transition-colors duration-200">
-                            <i class="fas fa-redo mr-2"></i>
-                            Réinitialiser les filtres
-                        </a>
-                    </div>
+                        <div class="mt-6">
+                            <a href="{{ route('client.equipment-rental-requests.index') }}" class="text-green-600 hover:text-green-700 font-semibold text-lg hover:underline transition-all duration-200">
+                                Voir toutes mes demandes
+                            </a>
+                        </div>
                     @endif
                 </div>
             </div>
-        </div>
         @endif
     </div>
 </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleButton = document.getElementById('toggleFilters');
+        const filtersForm = document.getElementById('filtersForm');
+        const buttonText = document.getElementById('filterButtonText');
+        const chevron = document.getElementById('filterChevron');
+        
+        toggleButton.addEventListener('click', function() {
+            if (filtersForm.style.display === 'none') {
+                filtersForm.style.display = 'block';
+                buttonText.textContent = 'Masquer les filtres';
+                chevron.classList.remove('fa-chevron-down');
+                chevron.classList.add('fa-chevron-up');
+            } else {
+                filtersForm.style.display = 'none';
+                buttonText.textContent = 'Afficher les filtres';
+                chevron.classList.remove('fa-chevron-up');
+                chevron.classList.add('fa-chevron-down');
+            }
+        });
+    });
+    
+    function clearFilters() {
+        const form = document.getElementById('filtersForm');
+        form.reset();
+        
+        // Clear search input
+        document.getElementById('search').value = '';
+        
+        window.location.href = '{{ route('client.equipment-rental-requests.index') }}';
+    }
+</script>
+@endpush

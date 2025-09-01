@@ -93,8 +93,8 @@ use Illuminate\Support\Facades\Storage;
                                     
                                     <!-- Bouton like -->
                                     <button class="like-btn bg-black bg-opacity-50 rounded-full p-3 text-white hover:bg-opacity-70 transition-all {{ isset($video->is_liked_by_user) && $video->is_liked_by_user ? 'liked' : '' }}" data-video-id="{{ $video->id }}" data-is-liked="{{ isset($video->is_liked_by_user) && $video->is_liked_by_user ? 'true' : 'false' }}">
-                                        <svg class="w-6 h-6" fill="{{ isset($video->is_liked_by_user) && $video->is_liked_by_user ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                        <svg class="w-6 h-6 like-icon" fill="{{ isset($video->is_liked_by_user) && $video->is_liked_by_user ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="{{ isset($video->is_liked_by_user) && $video->is_liked_by_user ? '0' : '2' }}" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                                         </svg>
                                     </button>
                                     
@@ -113,11 +113,41 @@ use Illuminate\Support\Facades\Storage;
                                     </a>
                                     
                                     <!-- Bouton suivre -->
-                                    <button class="follow-btn bg-blue-600 rounded-full p-3 text-white hover:bg-blue-700 transition-all" data-prestataire-id="{{ $video->prestataire->id }}">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                                        </svg>
-                                    </button>
+                                    @auth
+                                        @if(auth()->user()->client)
+                                            <button class="follow-btn bg-blue-600 rounded-full p-3 text-white hover:bg-blue-700 transition-all {{ auth()->user()->client->isFollowing($video->prestataire) ? 'following' : '' }}" 
+                                                    data-prestataire-id="{{ $video->prestataire->id }}"
+                                                    data-is-following="{{ auth()->user()->client->isFollowing($video->prestataire) ? 'true' : 'false' }}">
+                                                @if(auth()->user()->client->isFollowing($video->prestataire))
+                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                @else
+                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                                    </svg>
+                                                @endif
+                                            </button>
+                                        @elseif(auth()->user()->prestataire)
+                                            <button class="follow-btn bg-gray-500 rounded-full p-3 text-white cursor-not-allowed transition-all" disabled>
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                                </svg>
+                                            </button>
+                                        @else
+                                            <a href="{{ route('login') }}" class="follow-btn bg-blue-600 rounded-full p-3 text-white hover:bg-blue-700 transition-all">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                                </svg>
+                                            </a>
+                                        @endif
+                                    @else
+                                        <a href="{{ route('login') }}" class="follow-btn bg-blue-600 rounded-full p-3 text-white hover:bg-blue-700 transition-all">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                            </svg>
+                                        </a>
+                                    @endauth
                                 </div>
                             </div>
                         </div>
@@ -322,13 +352,18 @@ document.addEventListener('DOMContentLoaded', function() {
         // Bouton like avec comptage dynamique
         const likeBtn = slide.querySelector('.like-btn');
         const likesCountElement = slide.querySelector('.likes-count');
+        const likeIcon = likeBtn.querySelector('.like-icon');
         let isLiked = likeBtn.dataset.isLiked === 'true';
         let likesCount = parseInt(likesCountElement.textContent) || 0;
         
         // Initialiser l'apparence du bouton like
         if (isLiked) {
-            likeBtn.style.color = '#ef4444';
-            likeBtn.querySelector('svg').setAttribute('fill', 'currentColor');
+            likeBtn.classList.add('liked');
+            likeIcon.setAttribute('fill', 'currentColor');
+            likeIcon.setAttribute('stroke-width', '0');
+        } else {
+            likeIcon.setAttribute('fill', 'none');
+            likeIcon.setAttribute('stroke-width', '2');
         }
         
         function handleLike() {
@@ -362,15 +397,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Mettre à jour l'apparence
                     if (isLiked) {
                         likeBtn.classList.add('liked');
-                        likeBtn.style.color = '#ef4444';
-                        likeBtn.querySelector('svg').setAttribute('fill', 'currentColor');
+                        likeIcon.setAttribute('fill', '#ef4444'); // red color
+                        likeIcon.setAttribute('stroke', '#ef4444'); // red color
+                        likeIcon.setAttribute('stroke-width', '0');
                         
                         // Animation de cœur qui apparaît
                         showHeartAnimation(slide);
                     } else {
                         likeBtn.classList.remove('liked');
-                        likeBtn.style.color = 'white';
-                        likeBtn.querySelector('svg').setAttribute('fill', 'none');
+                        likeIcon.setAttribute('fill', 'none');
+                        likeIcon.setAttribute('stroke', 'currentColor');
+                        likeIcon.setAttribute('stroke-width', '2');
                     }
                     
                     // Mettre à jour le compteur
@@ -384,6 +421,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Erreur lors du like:', error);
                 // Revenir à l'état précédent en cas d'erreur
                 isLiked = !isLiked;
+                // Revert UI changes
+                if (isLiked) {
+                    likeBtn.classList.add('liked');
+                    likeIcon.setAttribute('fill', '#ef4444');
+                    likeIcon.setAttribute('stroke', '#ef4444');
+                    likeIcon.setAttribute('stroke-width', '0');
+                } else {
+                    likeBtn.classList.remove('liked');
+                    likeIcon.setAttribute('fill', 'none');
+                    likeIcon.setAttribute('stroke', 'currentColor');
+                    likeIcon.setAttribute('stroke-width', '2');
+                }
             });
         }
         
@@ -412,61 +461,98 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Bouton message avec système de commentaires en superposition
-        const messageBtn = slide.querySelector('.message-btn');
-        messageBtn.addEventListener('click', () => {
-            const videoId = video.dataset.videoId;
-            showCommentsOverlay(videoId, slide);
-        });
-
         // Bouton suivre avec confirmation visuelle
         const followBtn = slide.querySelector('.follow-btn');
-        let isFollowing = false;
+        let isFollowing = followBtn.dataset.isFollowing === 'true';
         
-        followBtn.addEventListener('click', () => {
-            const prestataireId = followBtn.dataset.prestataireId;
-            
-            // Animation de suivi
-            followBtn.style.transform = 'scale(1.1)';
-            setTimeout(() => {
-                followBtn.style.transform = 'scale(1)';
-            }, 200);
-            
-            // Toggle follow state
-            isFollowing = !isFollowing;
-            
-            if (isFollowing) {
-                followBtn.style.backgroundColor = '#10b981';
-                followBtn.innerHTML = `
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                `;
-                showNotification('Vous suivez maintenant ce prestataire.', 'success');
-            } else {
-                followBtn.style.backgroundColor = '#3b82f6';
-                followBtn.innerHTML = `
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg>
-                `;
-                showNotification('Vous ne suivez plus ce prestataire.', 'info');
-            }
-            
-            // Appel AJAX pour sauvegarder le suivi
-            fetch(`/prestataires/${prestataireId}/follow`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({ following: isFollowing })
-            }).catch(error => {
-                console.error('Erreur lors du suivi:', error);
-                // Revenir à l'état précédent en cas d'erreur
+        // Only add event listener if follow button is not a link and is not disabled
+        if (followBtn.tagName !== 'A' && !followBtn.hasAttribute('disabled')) {
+            followBtn.addEventListener('click', () => {
+                const prestataireId = followBtn.dataset.prestataireId;
+                
+                // Animation de suivi
+                followBtn.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    followBtn.style.transform = 'scale(1)';
+                }, 200);
+                
+                // Toggle follow state
                 isFollowing = !isFollowing;
+                
+                if (isFollowing) {
+                    followBtn.classList.add('following');
+                    followBtn.innerHTML = `
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    `;
+                    showNotification('Vous suivez maintenant ce prestataire.', 'success');
+                } else {
+                    followBtn.classList.remove('following');
+                    followBtn.innerHTML = `
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                    `;
+                    showNotification('Vous ne suivez plus ce prestataire.', 'info');
+                }
+                
+                // Appel AJAX pour sauvegarder le suivi
+                fetch(`/prestataires/${prestataireId}/follow`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ following: isFollowing })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the button state based on server response
+                        isFollowing = data.is_following;
+                        if (isFollowing) {
+                            followBtn.classList.add('following');
+                            followBtn.innerHTML = `
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            `;
+                        } else {
+                            followBtn.classList.remove('following');
+                            followBtn.innerHTML = `
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                            `;
+                        }
+                        followBtn.dataset.isFollowing = isFollowing;
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors du suivi:', error);
+                    // Revenir à l'état précédent en cas d'erreur
+                    isFollowing = !isFollowing;
+                    if (isFollowing) {
+                        followBtn.classList.remove('following');
+                        followBtn.innerHTML = `
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                        `;
+                    } else {
+                        followBtn.classList.add('following');
+                        followBtn.innerHTML = `
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        `;
+                    }
+                    // Update data attribute
+                    followBtn.dataset.isFollowing = isFollowing;
+                });
             });
-        });
+        }
     });
 
     // Navigation par clavier
@@ -887,9 +973,10 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 /* Amélioration des boutons interactifs */
-.like-btn.liked svg {
+.like-btn.liked .like-icon {
     fill: #ef4444;
     stroke: #ef4444;
+    stroke-width: 0;
 }
 
 .follow-btn.following {

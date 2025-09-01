@@ -88,7 +88,7 @@ class PrestataireFollowController extends Controller
         $sort = $request->get('sort', 'recent');
         
         $query = $client->followedPrestataires()
-            ->with(['user', 'skills', 'services']);
+            ->with(['user', 'services']);
         
         if ($sort === 'oldest') {
             $query->orderBy('client_prestataire_follows.created_at', 'asc');

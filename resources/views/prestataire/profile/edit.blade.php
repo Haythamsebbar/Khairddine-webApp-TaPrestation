@@ -21,15 +21,7 @@
                         <p class="text-sm sm:text-base md:text-lg text-purple-700">Gérez vos informations professionnelles et votre présentation</p>
                     </div>
                 </div>
-                <div class="flex space-x-3">
-                    <a href="{{ route('prestataire.profile.preview') }}" class="inline-flex items-center px-3 sm:px-4 py-2 border border-transparent text-xs sm:text-sm font-bold rounded-xl text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
-                        <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                        Aperçu du profil public
-                    </a>
-                </div>
+                
             </div>
         </div>
     
@@ -117,13 +109,13 @@
                     </div>
                     <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
                         @if($prestataire && $prestataire->photo)
-                            <img class="h-20 w-20 sm:h-24 sm:w-24 rounded-full object-cover border-4 border-purple-200 shadow-lg" src="{{ asset('storage/' . $prestataire->photo) }}" alt="Photo actuelle">
+                            <img class="h-20 w-20 sm:h-24 sm:w-24 rounded-full object-cover border-4 border-purple-200 shadow-lg mx-auto sm:mx-0" src="{{ asset('storage/' . $prestataire->photo) }}" alt="Photo actuelle">
                         @else
-                            <div class="h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center border-4 border-purple-200 shadow-lg">
+                            <div class="h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center border-4 border-purple-200 shadow-lg mx-auto sm:mx-0">
                                 <span class="text-xl sm:text-2xl font-bold text-white">{{ substr(auth()->user()->name, 0, 1) }}</span>
                             </div>
                         @endif
-                        <div class="flex-1">
+                        <div class="flex-1 w-full">
                             <input type="file" name="photo" id="photo" accept="image/*" class="block w-full text-sm text-purple-700 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-purple-50 file:to-indigo-50 file:text-purple-700 hover:file:from-purple-100 hover:file:to-indigo-100 file:shadow-sm">
                             <p class="mt-1 text-xs text-purple-600">Format recommandé : JPEG, PNG. Taille max : 2MB</p>
                             @if($prestataire && $prestataire->photo)
@@ -146,27 +138,27 @@
                             <p class="text-sm text-purple-700">Ces informations seront visibles par les clients.</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                         <!-- Nom -->
-                        <div>
+                        <div class="col-span-1">
                             <label for="name" class="block text-sm font-bold text-purple-900 mb-2">Nom complet *</label>
                             <input type="text" name="name" id="name" value="{{ old('name', auth()->user()->name) }}" class="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" required>
                         </div>
                         
                         <!-- Email -->
-                        <div>
+                        <div class="col-span-1">
                             <label for="email" class="block text-sm font-bold text-purple-900 mb-2">Email *</label>
                             <input type="email" name="email" id="email" value="{{ old('email', auth()->user()->email) }}" class="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" required>
                         </div>
                         
                         <!-- Téléphone -->
-                        <div>
+                        <div class="col-span-1">
                             <label for="phone" class="block text-sm font-bold text-purple-900 mb-2">Téléphone</label>
                             <input type="tel" name="phone" id="phone" value="{{ old('phone', $prestataire->phone ?? '') }}" class="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors">
                         </div>
                         
                         <!-- Secteur d'activité -->
-                        <div>
+                        <div class="col-span-1">
                             <label for="sector" class="block text-sm font-bold text-purple-900 mb-2">Secteur d'activité</label>
                             <select name="sector" id="sector" class="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors bg-white">
                                 <option value="">Sélectionnez un secteur</option>
@@ -193,7 +185,7 @@
                     </div>
                     <div>
                         <textarea name="description" id="description" rows="6" class="w-full px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors resize-none" placeholder="Présentez votre expertise, votre expérience, vos points forts et votre manière de travailler...">{{ old('description', $prestataire->description ?? '') }}</textarea>
-                        <div class="mt-2 flex justify-between items-center">
+                        <div class="mt-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                             <p class="text-sm text-purple-700">Cette description améliore l'aspect humain de votre profil et favorise la confiance client.</p>
                             <span id="char-count" class="text-sm font-bold text-purple-600">0/2000</span>
                         </div>
@@ -202,14 +194,14 @@
                         
                 <!-- Boutons d'action -->
                 <div class="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 pt-6 border-t border-purple-100">
-                    <a href="{{ route('prestataire.dashboard') }}" class="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base bg-white border-2 border-purple-200 text-purple-700 font-bold rounded-xl shadow-lg hover:bg-purple-50 hover:border-purple-300 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
+                    <a href="{{ route('prestataire.dashboard') }}" class="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base bg-white border-2 border-purple-200 text-purple-700 font-bold rounded-xl shadow-lg hover:bg-purple-50 hover:border-purple-300 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200 w-full sm:w-auto">
                         <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                         <span class="hidden sm:inline">Annuler</span>
                         <span class="sm:hidden">Annuler</span>
                     </a>
-                    <button type="submit" class="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:from-purple-700 hover:to-indigo-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:from-purple-700 hover:to-indigo-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200 w-full sm:w-auto">
                         <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                         </svg>
@@ -234,7 +226,7 @@
                                 <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
                             </svg>
                         </div>
-                        <div class="sm:ml-4">
+                        <div class="sm:ml-4 flex-1">
                             <h3 class="text-base sm:text-lg font-semibold text-red-800">Supprimer définitivement mon compte</h3>
                             <div class="mt-2 sm:mt-3 text-xs sm:text-sm text-red-700">
                                 <p class="mb-2 sm:mb-3">Cette action est irréversible. Toutes vos données seront définitivement supprimées :</p>
@@ -262,7 +254,6 @@
             </div>
         </div>
     </div>
-</main>
 </div>
 
 <!-- Modal de confirmation de suppression -->

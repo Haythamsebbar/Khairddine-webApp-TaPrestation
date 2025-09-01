@@ -37,7 +37,7 @@ class DashboardController extends Controller
                 'name' => 'Rechercher un prestataire',
                 'description' => 'Trouvez les meilleurs talents.',
                 'icon' => 'fas fa-search',
-                'url' => route('client.prestataires.index')
+                'url' => route('prestataires.index')
             ],
             [
                 'name' => 'Voir mes réservations',

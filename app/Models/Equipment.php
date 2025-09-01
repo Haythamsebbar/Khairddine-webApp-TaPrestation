@@ -10,6 +10,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 
+/**
+ * Equipment Model
+ * 
+ * IMPORTANT: Equipment Status Management
+ * ====================================
+ * Equipment status remains unchanged by the rental process.
+ * - Equipment can have status: 'active', 'inactive', 'maintenance'
+ * - Equipment can be rented multiple times for different periods as long as:
+ *   1. It has status different from 'inactive' or 'maintenance'
+ *   2. It is marked as available (is_available = true)
+ *   3. There are no date conflicts with existing rentals
+ * - Availability is determined by checking for date conflicts in rentals,
+ *   not by changing the equipment's status
+ */
 class Equipment extends Model
 {
     use HasFactory, SoftDeletes;
@@ -173,10 +187,11 @@ class Equipment extends Model
 
     /**
      * Scope pour les équipements actifs
+     * Equipment is active as long as it's not explicitly inactive or in maintenance
      */
     public function scopeActive($query)
     {
-        return $query->where('status', 'active');
+        return $query->whereNotIn('status', ['inactive', 'maintenance']);
     }
 
     /**
@@ -197,26 +212,33 @@ class Equipment extends Model
 
     /**
      * Vérifie si l'équipement est actif
+     * Equipment is considered active as long as the status isn't explicitly 'inactive' or 'maintenance'
+     * This ensures equipment remains active even after being rented
      */
     public function isActive()
     {
-        return $this->status === 'active';
+        // Equipment is active unless it's explicitly set to inactive or maintenance
+        return !in_array($this->status, ['inactive', 'maintenance']);
     }
 
     /**
      * Vérifie si l'équipement est disponible
+     * Note: We only check the is_available flag, not the status
+     * Status should only reflect whether the equipment is active/inactive overall
+     * Actual rental availability is determined by checking specific time periods
      */
     public function isAvailable()
     {
-        return $this->is_available && $this->status === 'active';
+        return $this->is_available && $this->isActive();
     }
 
     /**
      * Scope pour les équipements disponibles
+     * Equipment is available if it's active (not inactive/maintenance) and marked as available
      */
     public function scopeAvailable($query)
     {
-        return $query->where('status', 'active')->where('is_available', true);
+        return $query->whereNotIn('status', ['inactive', 'maintenance'])->where('is_available', true);
     }
 
     /**
@@ -249,9 +271,14 @@ class Equipment extends Model
 
     /**
      * Vérifie si l'équipement est disponible pour une période donnée
+     * This is the key method for checking availability by date range
+     * It checks:
+     * 1. If the equipment is globally available (is_available flag is true and status is 'active')
+     * 2. If there are no overlapping rentals in the requested period
      */
     public function isAvailableForPeriod($startDate, $endDate)
     {
+        // First check if the equipment is globally available
         if (!$this->isAvailable()) {
             return false;
         }
@@ -259,12 +286,16 @@ class Equipment extends Model
         $start = Carbon::parse($startDate)->startOfDay();
         $end = Carbon::parse($endDate)->startOfDay();
 
-        // Vérifier s'il y a des locations qui se chevauchent
+        // Check for rental periods that overlap with the requested period
+        // We only consider active rentals (confirmed, in_use, delivered)
         $overlappingRentals = $this->rentals()
-            ->whereIn('status', ['in_use', 'confirmed', 'delivered'])
+            ->whereIn('status', ['confirmed', 'in_use', 'delivered'])
             ->where(function ($query) use ($start, $end) {
+                // Period starts during an existing rental
                 $query->whereBetween('start_date', [$start, $end])
+                      // Period ends during an existing rental
                       ->orWhereBetween('end_date', [$start, $end])
+                      // Period completely encompasses an existing rental
                       ->orWhere(function ($q) use ($start, $end) {
                           $q->where('start_date', '<=', $start)
                             ->where('end_date', '>=', $end);
@@ -447,5 +478,51 @@ class Equipment extends Model
         return $this->price_per_week;
     }
 
+    /**
+     * Update equipment rental statuses based on the current date
+     * This can be called from a scheduled command to automatically manage rental periods
+     */
+    public static function updateRentalStatuses()
+    {
+        $today = now()->startOfDay();
+        
+        // Find rentals that have ended (end_date < today) but are still marked as active
+        $endedRentals = EquipmentRental::whereIn('status', ['confirmed', 'in_use', 'delivered'])
+            ->where('end_date', '<', $today)
+            ->get();
+            
+        foreach ($endedRentals as $rental) {
+            // Mark the rental as returned if it hasn't been marked yet
+            $rental->update([
+                'status' => 'returned',
+                'actual_end_datetime' => now(),
+            ]);
+            
+            // Notify the prestataire that the rental period has ended
+            $rental->prestataire->user->notify(new \App\Notifications\RentalPeriodEndedNotification($rental));
+        }
+        
+        // Find rentals that should start today
+        $startingRentals = EquipmentRental::where('status', 'confirmed')
+            ->where('start_date', '=', $today)
+            ->get();
+            
+        foreach ($startingRentals as $rental) {
+            // Mark the rental as in_use
+            $rental->update([
+                'status' => 'in_use',
+                'actual_start_datetime' => now(),
+            ]);
+            
+            // Notify both client and prestataire
+            $rental->client->user->notify(new \App\Notifications\RentalStartedNotification($rental));
+            $rental->prestataire->user->notify(new \App\Notifications\RentalStartedNotification($rental));
+        }
+        
+        return [
+            'ended_rentals' => $endedRentals->count(),
+            'starting_rentals' => $startingRentals->count()
+        ];
+    }
 
 }

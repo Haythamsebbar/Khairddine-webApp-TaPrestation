@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Message;
 use App\Models\User;
+use App\Models\Prestataire;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -185,6 +186,35 @@ class MessagingController extends Controller
         }
 
         return redirect()->route('messaging.show', $user);
+    }
+
+    /**
+     * Démarre une nouvelle conversation avec un prestataire.
+     *
+     * @param  \App\Models\Prestataire  $prestataire
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function startConversationWithPrestataire(Prestataire $prestataire)
+    {
+        $currentUser = Auth::user();
+        
+        // Vérifier que l'utilisateur courant est un client
+        if (!$currentUser->isClient()) {
+            abort(403, 'Seuls les clients peuvent contacter les prestataires.');
+        }
+        
+        // Vérifier que le prestataire est approuvé
+        if (!$prestataire->is_approved) {
+            return redirect()->back()->with('error', 'Ce prestataire n\'est pas disponible.');
+        }
+        
+        // Vérifier que le prestataire a un utilisateur associé
+        if (!$prestataire->user) {
+            return redirect()->back()->with('error', 'Ce prestataire n\'est pas disponible.');
+        }
+        
+        // Rediriger vers la conversation avec l'utilisateur du prestataire
+        return redirect()->route('client.messaging.show', $prestataire->user);
     }
 
     /**

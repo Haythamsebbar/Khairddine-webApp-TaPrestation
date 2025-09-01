@@ -4,69 +4,80 @@
 
 @section('content')
 <div class="min-h-screen" style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6">
         <!-- Zone de bienvenue -->
-        <div class="mb-6 sm:mb-8">
-            <div class="text-center mb-6 sm:mb-8">
-                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-0"> 
+        <div class="mb-4 sm:mb-6">
+            <div class="text-center mb-4 sm:mb-6">
+                <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2"> 
     <span>Bienvenue Prestataire Approuvé</span>
     @if(auth()->user()->is_verified)
-        <span class="sm:ml-4 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800">
-            <svg class="-ml-0.5 mr-1.5 h-4 w-4 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
+        <span class="sm:ml-4 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800 mt-1 sm:mt-0">
+            <svg class="-ml-0.5 mr-1 h-3 w-3 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
             </svg>
             Vérifié
         </span>
     @endif
 </h1>
-                <p class="text-lg sm:text-xl text-gray-600 px-4">Gérez toutes vos activités depuis votre espace personnel</p>
+                <p class="text-base sm:text-lg text-gray-600 px-2">Gérez toutes vos activités depuis votre espace personnel</p>
             </div>
             
             <!-- Statistiques rapides centrées -->
-            <div class="flex justify-center mb-6 sm:mb-8">
-                <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-4xl w-full px-4 sm:px-0">
+            <div class="flex justify-center mb-4 sm:mb-6">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 max-w-6xl w-full px-2">
                     <!-- Réservations -->
-                    <a href="{{ route('prestataire.bookings.index') }}" class="dashboard-stat-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 text-center hover:shadow-lg hover:border-purple-200 transition-all duration-300">
-                        <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 bg-purple-50 rounded-xl">
-                            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="{{ route('prestataire.bookings.index') }}" class="dashboard-stat-card bg-white rounded-lg shadow-sm border border-gray-100 p-2 sm:p-4 text-center hover:shadow-md hover:border-purple-200 transition-all duration-300">
+                        <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-1 sm:mb-2 bg-purple-50 rounded-lg">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 8a2 2 0 100-4 2 2 0 000 4zm6-6V7a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-3" />
                             </svg>
                         </div>
-                        <div class="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">{{ $bookingsCount ?? 0 }}</div>
-                        <div class="text-xs sm:text-sm font-medium text-gray-600">Réservations</div>
+                        <div class="text-lg sm:text-2xl font-bold text-gray-900 mb-0.5">{{ $bookingsCount ?? 0 }}</div>
+                        <div class="text-xs font-medium text-gray-600">Mes Demandes</div>
                     </a>
 
                     <!-- QR Code -->
-                    <a href="{{ route('prestataire.qrcode.show') }}" class="dashboard-stat-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 text-center hover:shadow-lg hover:border-gray-200 transition-all duration-300">
-                        <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 bg-gray-50 rounded-xl">
-                            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="{{ route('prestataire.qrcode.show') }}" class="dashboard-stat-card bg-white rounded-lg shadow-sm border border-gray-100 p-2 sm:p-4 text-center hover:shadow-md hover:border-gray-200 transition-all duration-300">
+                        <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-1 sm:mb-2 bg-gray-50 rounded-lg">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
                             </svg>
                         </div>
-                        <div class="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">QR</div>
-                        <div class="text-xs sm:text-sm font-medium text-gray-600">Mon QR Code</div>
+                        <div class="text-lg sm:text-2xl font-bold text-gray-900 mb-0.5">QR</div>
+                        <div class="text-xs font-medium text-gray-600">Mon QR Code</div>
                     </a>
 
                     <!-- Mes Vidéos -->
-                    <a href="{{ route('prestataire.videos.create') }}" class="dashboard-stat-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 text-center hover:shadow-lg hover:border-red-200 transition-all duration-300">
-                        <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 bg-red-50 rounded-xl">
-                            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 10.5l4.72-4.72a.75.75 0 111.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
+                    <a href="{{ route('prestataire.videos.create') }}" class="dashboard-stat-card bg-white rounded-lg shadow-sm border border-gray-100 p-2 sm:p-4 text-center hover:shadow-md hover:border-red-200 transition-all duration-300">
+                        <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-1 sm:mb-2 bg-red-50 rounded-lg">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 10.5l4.72-4.72a.75.75 0 111.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                             </svg>
                         </div>
-                        <div class="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">+</div>
-                        <div class="text-xs sm:text-sm font-medium text-gray-600">Créer une vidéo</div>
+                        <div class="text-lg sm:text-2xl font-bold text-gray-900 mb-0.5">+</div>
+                        <div class="text-xs font-medium text-gray-600">Créer une vidéo</div>
+                    </a>
+
+                    <!-- Agenda -->
+                    <a href="{{ route('prestataire.agenda.index') }}" class="dashboard-stat-card bg-white rounded-lg shadow-sm border border-gray-100 p-2 sm:p-4 text-center hover:shadow-md hover:border-blue-200 transition-all duration-300">
+                        <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-1 sm:mb-2 bg-blue-50 rounded-lg">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6.75 3v2.25M16.5 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                            </svg>
+                        </div>
+                        <div class="text-lg sm:text-2xl font-bold text-gray-900 mb-0.5">Agenda</div>
+                        <div class="text-xs font-medium text-gray-600">Mon planning</div>
                     </a>
 
                     <!-- Revenus générés -->
-                    <div class="dashboard-stat-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 text-center hover:shadow-lg hover:border-green-200 transition-all duration-300">
-                        <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 bg-green-50 rounded-xl">
-                            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="dashboard-stat-card bg-white rounded-lg shadow-sm border border-gray-100 p-2 sm:p-4 text-center hover:shadow-md hover:border-green-200 transition-all duration-300">
+                        <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-1 sm:mb-2 bg-green-50 rounded-lg">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                             </svg>
                         </div>
-                        <div class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1">{{ number_format($monthlyTotalRevenue ?? 0, 0, ',', ' ') }} €</div>
-                        <div class="text-xs sm:text-sm font-medium text-gray-600">Revenus ce mois</div>
+                        <div class="text-base sm:text-xl lg:text-2xl font-bold text-gray-900 mb-0.5">{{ number_format($monthlyTotalRevenue ?? 0, 0, ',', ' ') }} €</div>
+                        <div class="text-xs font-medium text-gray-600">Revenus ce mois</div>
                         <div class="text-xs text-gray-500 mt-1">
                             <div class="flex justify-between">
                                 <span>Services:</span>
@@ -83,48 +94,48 @@
         </div>
 
         <!-- Bloc principal : Mes services, Mon matériel, Mes annonces -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-6 sm:mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
             <!-- Mes services -->
-            <div class="dashboard-primary-card bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-6 lg:p-8 hover:shadow-xl transition-all duration-300 flex flex-col min-h-[350px] sm:min-h-[400px] md:col-span-2 lg:col-span-1">
-                <div class="flex items-center justify-between mb-4 sm:mb-6">
+            <div class="dashboard-primary-card bg-white rounded-lg shadow-md border border-gray-100 p-2 sm:p-4 lg:p-5 hover:shadow-lg transition-all duration-300 flex flex-col min-h-[250px] sm:min-h-[300px] md:col-span-2 lg:col-span-1">
+                <div class="flex items-center justify-between mb-3 sm:mb-4">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
-                            <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-orange-50 rounded-xl">
-                            <svg class="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div class="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-orange-50 rounded-lg">
+                            <svg class="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2h8zM8 14v.01M12 14v.01M16 14v.01" />
                                 </svg>
                             </div>
                         </div>
-                        <div class="ml-3 sm:ml-4">
-                            <h3 class="text-lg sm:text-xl font-bold text-gray-900">Mes services</h3>
-                            <p class="text-sm sm:text-base text-gray-600">{{ $totalServices ?? 0 }} service(s) actif(s)</p>
+                        <div class="ml-2 sm:ml-3">
+                            <h3 class="text-base sm:text-lg font-bold text-gray-900">Mes services</h3>
+                            <p class="text-xs sm:text-sm text-gray-600">{{ $totalServices ?? 0 }} service(s) actif(s)</p>
                         </div>
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
+                <div class="grid grid-cols-2 gap-2 sm:gap-4 mb-3 sm:mb-4">
                     <div class="text-center">
-                        <div class="text-2xl sm:text-3xl font-bold text-blue-600 mb-1">{{ $activeServices ?? 0 }}</div>
-                        <div class="text-xs sm:text-sm font-medium text-gray-600">Services en cours</div>
+                        <div class="text-lg sm:text-xl font-bold text-blue-600 mb-0.5">{{ $activeServices ?? 0 }}</div>
+                        <div class="text-xs font-medium text-gray-600">Services en cours</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-2xl sm:text-3xl font-bold text-blue-600 mb-1">{{ $totalServices ?? 0 }}</div>
-                        <div class="text-xs sm:text-sm font-medium text-gray-600">Total services</div>
+                        <div class="text-lg sm:text-xl font-bold text-blue-600 mb-0.5">{{ $totalServices ?? 0 }}</div>
+                        <div class="text-xs font-medium text-gray-600">Total services</div>
                     </div>
                 </div>
                 
                 <div class="flex-grow"></div>
-                <div class="space-y-3 sm:space-y-4 mt-auto">
-                    <a href="{{ route('prestataire.services.index') }}" class="w-full inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 border border-transparent text-sm sm:text-base font-semibold rounded-xl text-white bg-blue-600 hover:bg-blue-700 transition-all duration-300 shadow-sm hover:shadow-md">
-                        <svg class="-ml-1 mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <div class="space-y-2 sm:space-y-3 mt-auto">
+                    <a href="{{ route('prestataire.services.index') }}" class="w-full inline-flex items-center justify-center px-3 sm:px-4 py-1.5 sm:py-2 border border-transparent text-xs font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-all duration-300 shadow-sm hover:shadow">
+                        <svg class="-ml-1 mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37.996.608 2.296.07 2.572-1.065z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                         <span class="hidden sm:inline">Gérer mes services</span>
                         <span class="sm:hidden">Gérer</span>
                     </a>
-                    <a href="{{ route('prestataire.services.create') }}" class="w-full inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 border border-blue-200 text-sm sm:text-base font-semibold rounded-xl text-blue-700 bg-blue-50 hover:bg-blue-100 transition-all duration-300">
-                        <svg class="-ml-1 mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="{{ route('prestataire.services.create') }}" class="w-full inline-flex items-center justify-center px-3 sm:px-4 py-1.5 sm:py-2 border border-blue-200 text-xs font-semibold rounded-lg text-blue-700 bg-blue-50 hover:bg-blue-100 transition-all duration-300">
+                        <svg class="-ml-1 mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
                         <span class="hidden sm:inline">Créer un service</span>
@@ -134,45 +145,45 @@
             </div>
 
             <!-- Mon matériel -->
-            <div class="dashboard-primary-card bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-6 lg:p-8 hover:shadow-xl transition-all duration-300 flex flex-col min-h-[350px] sm:min-h-[400px]">
-                <div class="flex items-center mb-4 sm:mb-6">
+            <div class="dashboard-primary-card bg-white rounded-lg shadow-md border border-gray-100 p-2 sm:p-4 lg:p-5 hover:shadow-lg transition-all duration-300 flex flex-col min-h-[250px] sm:min-h-[300px]">
+                <div class="flex items-center mb-3 sm:mb-4">
                     <div class="flex-shrink-0">
-                        <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-green-50 rounded-xl">
-                            <svg class="h-5 w-5 sm:h-6 sm:w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-green-50 rounded-lg">
+                            <svg class="h-4 w-4 sm:h-5 sm:w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                             </svg>
                         </div>
                     </div>
-                    <div class="ml-3 sm:ml-4">
-                        <h3 class="text-lg sm:text-xl font-bold text-gray-900">Mon matériel</h3>
-                        <p class="text-sm sm:text-base text-gray-600">{{ $equipmentCount ?? 0 }} équipement(s) disponible(s)</p>
+                    <div class="ml-2 sm:ml-3">
+                        <h3 class="text-base sm:text-lg font-bold text-gray-900">Mon matériel</h3>
+                        <p class="text-xs sm:text-sm text-gray-600">{{ $equipmentCount ?? 0 }} équipement(s) disponible(s)</p>
                     </div>
                 </div>
                 
                 <!-- Statistiques rapides -->
-                <div class="grid grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
+                <div class="grid grid-cols-2 gap-2 sm:gap-4 mb-3 sm:mb-4">
                     <div class="text-center">
-                        <div class="text-2xl sm:text-3xl font-bold text-green-600 mb-1">{{ $equipmentRentalRequestsCount ?? 0 }}</div>
-                        <div class="text-xs sm:text-sm font-medium text-gray-600">Demandes en attente</div>
+                        <div class="text-lg sm:text-xl font-bold text-green-600 mb-0.5">{{ $equipmentRentalRequestsCount ?? 0 }}</div>
+                        <div class="text-xs font-medium text-gray-600">Demandes en attente</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-2xl sm:text-3xl font-bold text-green-600 mb-1">{{ $activeRentalsCount ?? 0 }}</div>
-                        <div class="text-xs sm:text-sm font-medium text-gray-600">Locations en cours</div>
+                        <div class="text-lg sm:text-xl font-bold text-green-600 mb-0.5">{{ $activeRentalsCount ?? 0 }}</div>
+                        <div class="text-xs font-medium text-gray-600">Locations en cours</div>
                     </div>
                 </div>
                 
                 <div class="flex-grow"></div>
-                <div class="space-y-3 sm:space-y-4 mt-auto">
-                    <a href="{{ route('prestataire.equipment.index') }}" class="w-full inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 border border-transparent text-sm sm:text-base font-semibold rounded-xl text-white bg-green-600 hover:bg-green-700 transition-all duration-300 shadow-sm hover:shadow-md">
-                        <svg class="-ml-1 mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="space-y-2 sm:space-y-3 mt-auto">
+                    <a href="{{ route('prestataire.equipment.index') }}" class="w-full inline-flex items-center justify-center px-3 sm:px-4 py-1.5 sm:py-2 border border-transparent text-xs font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700 transition-all duration-300 shadow-sm hover:shadow">
+                        <svg class="-ml-1 mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                         <span class="hidden sm:inline">Gérer mon matériel</span>
                         <span class="sm:hidden">Gérer</span>
                     </a>
-                    <a href="{{ route('prestataire.equipment.create') }}" class="w-full inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 border border-green-200 text-sm sm:text-base font-semibold rounded-xl text-green-700 bg-green-50 hover:bg-green-100 transition-all duration-300">
-                        <svg class="-ml-1 mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="{{ route('prestataire.equipment.create') }}" class="w-full inline-flex items-center justify-center px-3 sm:px-4 py-1.5 sm:py-2 border border-green-200 text-xs font-semibold rounded-lg text-green-700 bg-green-50 hover:bg-green-100 transition-all duration-300">
+                        <svg class="-ml-1 mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
                         <span class="hidden sm:inline">Ajouter un équipement</span>
@@ -182,45 +193,45 @@
             </div>
 
             <!-- Mes annonces -->
-            <div class="dashboard-primary-card bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-6 lg:p-8 hover:shadow-xl transition-all duration-300 flex flex-col min-h-[350px] sm:min-h-[400px]">
-                <div class="flex items-center mb-4 sm:mb-6">
+            <div class="dashboard-primary-card bg-white rounded-lg shadow-md border border-gray-100 p-2 sm:p-4 lg:p-5 hover:shadow-lg transition-all duration-300 flex flex-col min-h-[250px] sm:min-h-[300px]">
+                <div class="flex items-center mb-3 sm:mb-4">
                     <div class="flex-shrink-0">
-                        <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-red-50 rounded-xl">
-                            <svg class="h-5 w-5 sm:h-6 sm:w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-red-50 rounded-lg">
+                            <svg class="h-4 w-4 sm:h-5 sm:w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
                     </div>
-                    <div class="ml-3 sm:ml-4">
-                        <h3 class="text-lg sm:text-xl font-bold text-gray-900">Mes annonces</h3>
-                        <p class="text-sm sm:text-base text-gray-600">Offres spéciales et promotions</p>
+                    <div class="ml-2 sm:ml-3">
+                        <h3 class="text-base sm:text-lg font-bold text-gray-900">Mes annonces</h3>
+                        <p class="text-xs sm:text-sm text-gray-600">Offres spéciales et promotions</p>
                     </div>
                 </div>
                 
                 <!-- Statistiques rapides -->
-                <div class="grid grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
+                <div class="grid grid-cols-2 gap-2 sm:gap-4 mb-3 sm:mb-4">
                     <div class="text-center">
-                        <div class="text-2xl sm:text-3xl font-bold text-red-600 mb-1">{{ $urgentSalesCount ?? 0 }}</div>
-                        <div class="text-xs sm:text-sm font-medium text-gray-600">Ventes actives</div>
+                        <div class="text-lg sm:text-xl font-bold text-red-600 mb-0.5">{{ $urgentSalesCount ?? 0 }}</div>
+                        <div class="text-xs font-medium text-gray-600">Ventes actives</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-2xl sm:text-3xl font-bold text-red-600 mb-1">{{ $urgentProductsCount ?? 0 }}</div>
-                        <div class="text-xs sm:text-sm font-medium text-gray-600">Produits en vente</div>
+                        <div class="text-lg sm:text-xl font-bold text-red-600 mb-0.5">{{ $urgentProductsCount ?? 0 }}</div>
+                        <div class="text-xs font-medium text-gray-600">Produits en vente</div>
                     </div>
                 </div>
                 
                 <div class="flex-grow"></div>
-                <div class="space-y-3 sm:space-y-4 mt-auto">
-                    <a href="{{ route('prestataire.urgent-sales.index') }}" class="w-full inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 border border-transparent text-sm sm:text-base font-semibold rounded-xl text-white bg-red-600 hover:bg-red-700 transition-all duration-300 shadow-sm hover:shadow-md">
-                        <svg class="-ml-1 mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="space-y-2 sm:space-y-3 mt-auto">
+                    <a href="{{ route('prestataire.urgent-sales.index') }}" class="w-full inline-flex items-center justify-center px-3 sm:px-4 py-1.5 sm:py-2 border border-transparent text-xs font-semibold rounded-lg text-white bg-red-600 hover:bg-red-700 transition-all duration-300 shadow-sm hover:shadow">
+                        <svg class="-ml-1 mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                         <span class="hidden sm:inline">Gérer mes annonces</span>
                         <span class="sm:hidden">Gérer</span>
                     </a>
-                    <a href="{{ route('prestataire.urgent-sales.create') }}" class="w-full inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 border border-red-200 text-sm sm:text-base font-semibold rounded-xl text-red-700 bg-red-50 hover:bg-red-100 transition-all duration-300">
-                        <svg class="-ml-1 mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="{{ route('prestataire.urgent-sales.create') }}" class="w-full inline-flex items-center justify-center px-3 sm:px-4 py-1.5 sm:py-2 border border-red-200 text-xs font-semibold rounded-lg text-red-700 bg-red-50 hover:bg-red-100 transition-all duration-300">
+                        <svg class="-ml-1 mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
                         <span class="hidden sm:inline">Ajouter une vente urgente</span>
@@ -231,36 +242,36 @@
         </div>
 
         <!-- Bloc secondaire : Carte fusionnée et profil/vérification -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
             <!-- Colonne 1 : Mes disponibilités et Agenda du jour (fusionnés) -->
-            <div class="dashboard-primary-card bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-6 lg:p-8 hover:shadow-xl transition-all duration-300 flex flex-col min-h-[350px] sm:min-h-[400px]">
+            <div class="dashboard-primary-card bg-white rounded-lg shadow-md border border-gray-100 p-2 sm:p-4 lg:p-5 hover:shadow-lg transition-all duration-300 flex flex-col min-h-[300px] sm:min-h-[350px]">
                 <!-- Section Mes disponibilités -->
-                <div class="mb-3">
-                    <div class="flex items-center mb-3">
+                <div class="mb-2">
+                    <div class="flex items-center mb-2">
                         <div class="flex-shrink-0">
-                            <div class="flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-lg">
-                                <svg class="h-3 w-3 sm:h-4 sm:w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div class="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 bg-green-50 rounded">
+                                <svg class="h-2.5 w-2.5 sm:h-3 sm:w-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
                         </div>
-                        <div class="ml-2 sm:ml-3">
-                            <h3 class="text-base sm:text-lg font-bold text-gray-900">Mes disponibilités</h3>
-                            <p class="text-xs sm:text-sm text-gray-600">Planning de travail</p>
+                        <div class="ml-1.5 sm:ml-2">
+                            <h3 class="text-sm sm:text-base font-bold text-gray-900">Mes disponibilités</h3>
+                            <p class="text-xs text-gray-600">Planning de travail</p>
                         </div>
                     </div>
                     
-                    <div class="text-center py-2">
+                    <div class="text-center py-1">
                         @if($prestataire->is_available ?? true)
-                            <div class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <div class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <svg class="w-3 h-3 mr-0.5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                                 </svg>
                                 Disponible
                             </div>
                         @else
-                            <div class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
-                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <div class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                <svg class="w-3 h-3 mr-0.5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
                                 </svg>
                                 Non disponible
@@ -268,9 +279,9 @@
                         @endif
                     </div>
                     
-                    <div class="mb-2">
-                        <a href="{{ route('prestataire.availability.index') }}" class="w-full inline-flex items-center justify-center px-2 sm:px-3 py-2 border border-transparent text-xs sm:text-sm font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700 transition-all duration-300 shadow-sm hover:shadow-md">
-                            <svg class="-ml-1 mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="mb-1.5">
+                        <a href="{{ route('prestataire.availability.index') }}" class="w-full inline-flex items-center justify-center px-2 py-1.5 border border-transparent text-xs font-semibold rounded-md text-white bg-green-600 hover:bg-green-700 transition-all duration-300 shadow-sm hover:shadow">
+                            <svg class="-ml-1 mr-1 h-2.5 w-2.5 sm:h-3 sm:w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 8a2 2 0 100-4 2 2 0 000 4zm6-6V7a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-3" />
                             </svg>
                             <span class="hidden sm:inline">Gérer mes disponibilités</span>
@@ -280,34 +291,34 @@
                 </div>
                 
                 <!-- Séparateur visuel -->
-                <div class="border-t border-gray-200 my-3"></div>
+                <div class="border-t border-gray-200 my-2"></div>
                 
                 <!-- Section Agenda du jour -->
                 <div class="flex-grow">
-                    <div class="flex items-center mb-3">
+                    <div class="flex items-center mb-2">
                         <div class="flex-shrink-0">
-                            <div class="flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-lg">
-                                <svg class="h-3 w-3 sm:h-4 sm:w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div class="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 bg-green-50 rounded">
+                                <svg class="h-2.5 w-2.5 sm:h-3 sm:w-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 8a2 2 0 100-4 2 2 0 000 4zm6-6V7a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-3" />
                                 </svg>
                             </div>
                         </div>
-                        <div class="ml-2 sm:ml-3">
-                            <h3 class="text-base sm:text-lg font-bold text-gray-900">Agenda du jour</h3>
-                            <p class="text-xs sm:text-sm text-gray-600">{{ now()->format('d/m/Y') }}</p>
+                        <div class="ml-1.5 sm:ml-2">
+                            <h3 class="text-sm sm:text-base font-bold text-gray-900">Agenda du jour</h3>
+                            <p class="text-xs text-gray-600">{{ now()->format('d/m/Y') }}</p>
                         </div>
                     </div>
                     
                     @if(isset($todayBookings) && count($todayBookings) > 0)
-                        <div class="space-y-2 mb-3">
+                        <div class="space-y-1.5 mb-2">
                             @foreach($todayBookings as $booking)
-                                <div class="border border-gray-200 rounded-lg p-2 hover:border-green-200 transition-all duration-300">
+                                <div class="border border-gray-200 rounded-md p-1.5 hover:border-green-200 transition-all duration-300">
                                     <div class="flex justify-between items-start">
                                         <div>
-                                            <h4 class="text-sm font-semibold text-gray-900 mb-1">{{ $booking->service->title ?? 'Prestation' }}</h4>
+                                            <h4 class="text-xs font-semibold text-gray-900 mb-0.5">{{ $booking->service->title ?? 'Prestation' }}</h4>
                                             <p class="text-xs text-gray-600">{{ $booking->start_datetime->format('H:i') }} - {{ $booking->client->user->name ?? 'Client' }}</p>
                                         </div>
-                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                             {{ ucfirst($booking->status) }}
                                         </span>
                                     </div>
@@ -315,19 +326,19 @@
                             @endforeach
                         </div>
                     @else
-                        <div class="text-center py-3">
-                            <div class="flex items-center justify-center w-10 h-10 mx-auto mb-2 bg-gray-50 rounded-lg">
-                                <svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="text-center py-2">
+                            <div class="flex items-center justify-center w-8 h-8 mx-auto mb-1 bg-gray-50 rounded">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
-                            <h3 class="text-sm font-semibold text-gray-900 mb-1">Aucune prestation prévue aujourd'hui</h3>
+                            <h3 class="text-xs font-semibold text-gray-900 mb-0.5">Aucune prestation prévue aujourd'hui</h3>
                             <p class="text-xs text-gray-500">Vos prochaines prestations apparaîtront ici</p>
                         </div>
                     @endif
                     
-                    <a href="{{ route('prestataire.agenda.index') }}" class="w-full inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 border border-transparent text-xs sm:text-sm font-medium rounded-xl text-white bg-green-600 hover:bg-green-700 transition-all duration-300 shadow-sm hover:shadow-lg mt-auto">
-                        <svg class="-ml-1 mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="{{ route('prestataire.agenda.index') }}" class="w-full inline-flex items-center justify-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 transition-all duration-300 shadow-sm hover:shadow mt-auto">
+                        <svg class="-ml-1 mr-1 h-2.5 w-2.5 sm:h-3 sm:w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 8a2 2 0 100-4 2 2 0 000 4zm6-6V7a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-3" />
                         </svg>
                         <span class="hidden sm:inline">Voir l'agenda complet</span>
@@ -337,18 +348,18 @@
             </div>
 
             <!-- Colonne 2 : Mon profil -->
-            <div class="dashboard-primary-card bg-white rounded-xl shadow-lg border border-gray-100 p-3 sm:p-4 md:p-6 lg:p-8 hover:shadow-xl transition-all duration-300 flex flex-col min-h-[300px] sm:min-h-[350px] md:min-h-[400px]">
+            <div class="dashboard-primary-card bg-white rounded-lg shadow-md border border-gray-100 p-2 sm:p-3 md:p-4 lg:p-5 hover:shadow-lg transition-all duration-300 flex flex-col min-h-[250px] sm:min-h-[300px] md:min-h-[350px]">
                 @if(session('success'))
-                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
-                        <p class="font-bold">Succès</p>
-                        <p>{{ session('success') }}</p>
+                    <div class="bg-green-100 border-l-2 border-green-500 text-green-700 p-2 mb-2" role="alert">
+                        <p class="font-bold text-xs">Succès</p>
+                        <p class="text-xs">{{ session('success') }}</p>
                     </div>
                 @endif
 
                 @if($errors->any())
-                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
-                        <p class="font-bold">Erreur</p>
-                        <ul>
+                    <div class="bg-red-100 border-l-2 border-red-500 text-red-700 p-2 mb-2" role="alert">
+                        <p class="font-bold text-xs">Erreur</p>
+                        <ul class="text-xs">
                             @foreach($errors->all() as $error)
                                 <li>{{ $error }}</li>
                             @endforeach
@@ -356,36 +367,36 @@
                     </div>
                 @endif
 
-                <div class="flex items-center justify-between mb-3 sm:mb-4 md:mb-6">
+                <div class="flex items-center justify-between mb-2 sm:mb-3">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
-                            <div class="flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 bg-purple-50 rounded-xl">
-                                <svg class="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div class="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 bg-purple-50 rounded-lg">
+                                <svg class="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
                             </div>
                         </div>
-                        <div class="ml-2 sm:ml-3 md:ml-4">
+                        <div class="ml-1.5 sm:ml-2 md:ml-3">
                             <h3 class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900">Mon profil</h3>
-                            <p class="text-xs sm:text-sm md:text-base text-gray-600">Progression de complétion</p>
+                            <p class="text-xs sm:text-sm text-gray-600">Progression de complétion</p>
                         </div>
                     </div>
                 </div>
                 
-                <div class="mb-3 sm:mb-4 md:mb-6">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-xs sm:text-sm font-medium text-gray-600">Profil complété</span>
-                        <span class="text-xs sm:text-sm font-bold text-purple-600">{{ $profileCompletion['percentage'] }}%</span>
+                <div class="mb-2 sm:mb-3">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-medium text-gray-600">Profil complété</span>
+                        <span class="text-xs font-bold text-purple-600">{{ $profileCompletion['percentage'] }}%</span>
                     </div>
-                    <div class="w-full bg-purple-100 rounded-full h-1.5 sm:h-2 md:h-2.5">
-                        <div class="bg-purple-600 h-1.5 sm:h-2 md:h-2.5 rounded-full" style="width: {{ $profileCompletion['percentage'] }}%"></div>
+                    <div class="w-full bg-purple-100 rounded-full h-1.5">
+                        <div class="bg-purple-600 h-1.5 rounded-full" style="width: {{ $profileCompletion['percentage'] }}%"></div>
                     </div>
                 </div>
 
-                <ul class="space-y-1.5 sm:space-y-2 md:space-y-3 mb-3 sm:mb-4 md:mb-6 text-xs sm:text-sm text-gray-600">
+                <ul class="space-y-1 mb-2 sm:mb-3 text-xs text-gray-600">
                     @foreach($profileCompletion['missing_fields'] as $field)
                         <li class="flex items-center">
-                            <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 text-red-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1 text-red-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                             <span class="truncate">{{ $field }}</span>
@@ -393,49 +404,49 @@
                     @endforeach
                     @if(empty($profileCompletion['missing_fields']))
                         <li class="flex items-center text-green-600">
-                            <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
                             <span>Votre profil est complet !</span>
                         </li>
                     @endif
                 </ul>
-                <a href="{{ route('prestataire.profile.edit') }}" class="w-full inline-flex items-center justify-center px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 border border-transparent text-xs sm:text-sm md:text-base font-semibold rounded-xl text-white bg-purple-600 hover:bg-purple-700 transition-all duration-300 shadow-sm hover:shadow-md mt-auto">
-                    <svg class="-ml-1 mr-1 sm:mr-2 md:mr-3 h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <a href="{{ route('prestataire.profile.edit') }}" class="w-full inline-flex items-center justify-center px-2 sm:px-3 py-1.5 sm:py-2 border border-transparent text-xs font-semibold rounded-lg text-white bg-purple-600 hover:bg-purple-700 transition-all duration-300 shadow-sm hover:shadow mt-auto">
+                    <svg class="-ml-1 mr-1 h-2.5 w-2.5 sm:h-3 sm:w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536a1 1 0 113.536 3.536L6.5 21.036H3v-3.5L16.732 3.732z" />
                     </svg>
                     <span class="hidden sm:inline">Compléter mon profil</span>
                     <span class="sm:hidden">Profil</span>
                 </a>
                 <!-- Section Gestion des vidéos -->
-                <div class="border-t border-gray-200 pt-4 sm:pt-5 md:pt-6 mb-4 sm:mb-5 md:mb-6">
-                    <div class="flex items-center mb-3 sm:mb-4">
+                <div class="border-t border-gray-200 pt-2 sm:pt-3 mb-2 sm:mb-3">
+                    <div class="flex items-center mb-2">
                         <div class="flex-shrink-0">
-                            <div class="flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 bg-purple-50 rounded-lg">
-                                <svg class="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div class="flex items-center justify-center w-5 h-5 sm:w-5 sm:h-5 md:w-6 md:h-6 bg-purple-50 rounded">
+                                <svg class="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-3.5 md:w-3.5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                 </svg>
                             </div>
                         </div>
                         <!-- Séparateur visuel -->
                 
-                        <div class="ml-2 sm:ml-3">
-                            <div class="border-t border-gray-200 my-2 sm:my-3 md:my-4"></div>
-                            <h4 class="text-sm sm:text-base md:text-lg font-semibold text-gray-900">Mes vidéos</h4>
-                            <p class="text-xs sm:text-sm text-gray-600">Gestion de vos contenus vidéo</p>
+                        <div class="ml-1.5 sm:ml-2">
+                            <div class="border-t border-gray-200 my-1 sm:my-1.5"></div>
+                            <h4 class="text-sm sm:text-base font-semibold text-gray-900">Mes vidéos</h4>
+                            <p class="text-xs text-gray-600">Gestion de vos contenus vidéo</p>
                         </div>
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-2 sm:gap-3 mb-3 sm:mb-4">
-                        <a href="#" class="inline-flex items-center justify-center px-2 sm:px-3 py-1.5 sm:py-2 border border-purple-200 text-xs sm:text-sm font-medium rounded-lg text-purple-700 bg-purple-50 hover:bg-purple-100 transition-all duration-300">
-                            <svg class="-ml-1 mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="grid grid-cols-2 gap-1.5 sm:gap-2 mb-2">
+                        <a href="#" class="inline-flex items-center justify-center px-2 py-1 border border-purple-200 text-xs font-medium rounded-md text-purple-700 bg-purple-50 hover:bg-purple-100 transition-all duration-300">
+                            <svg class="-ml-1 mr-1 h-2.5 w-2.5 sm:h-3 sm:w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                             </svg>
                             <span class="hidden sm:inline">Ajouter</span>
                             <span class="sm:hidden">+</span>
                         </a>
-                        <a href="#" class="inline-flex items-center justify-center px-2 sm:px-3 py-1.5 sm:py-2 border border-purple-200 text-xs sm:text-sm font-medium rounded-lg text-purple-700 bg-purple-50 hover:bg-purple-100 transition-all duration-300">
-                            <svg class="-ml-1 mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <a href="#" class="inline-flex items-center justify-center px-2 py-1 border border-purple-200 text-xs font-medium rounded-md text-purple-700 bg-purple-50 hover:bg-purple-100 transition-all duration-300">
+                            <svg class="-ml-1 mr-1 h-2.5 w-2.5 sm:h-3 sm:w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                             </svg>
                             <span class="hidden sm:inline">Gérer</span>
@@ -443,7 +454,7 @@
                         </a>
                     </div>
                     
-                    <div class="text-center py-1 sm:py-2">
+                    <div class="text-center py-1">
                         <p class="text-xs text-gray-500">
                             @if(isset($videosCount) && $videosCount > 0)
                                 {{ $videosCount }} vidéo(s) publiée(s)
@@ -459,19 +470,19 @@
             </div>
 
             <!-- Colonne 3 : Vérification de compte -->
-            <div class="dashboard-primary-card bg-white rounded-xl shadow-lg border border-gray-100 p-3 sm:p-4 md:p-6 lg:p-8 hover:shadow-xl transition-all duration-300 flex flex-col min-h-[300px] sm:min-h-[350px] md:min-h-[400px]">
-                <div class="flex items-center justify-between mb-3 sm:mb-4 md:mb-6">
+            <div class="dashboard-primary-card bg-white rounded-lg shadow-md border border-gray-100 p-2 sm:p-3 md:p-4 lg:p-5 hover:shadow-lg transition-all duration-300 flex flex-col min-h-[250px] sm:min-h-[300px] md:min-h-[350px]">
+                <div class="flex items-center justify-between mb-2 sm:mb-3">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
-                            <div class="flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 bg-blue-50 rounded-xl">
-                                <svg class="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div class="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 bg-blue-50 rounded-lg">
+                                <svg class="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
                         </div>
-                        <div class="ml-2 sm:ml-3 md:ml-4">
+                        <div class="ml-1.5 sm:ml-2 md:ml-3">
                             <h3 class="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900">Vérification de compte</h3>
-                            <p class="text-xs sm:text-sm md:text-base text-gray-600">
+                            <p class="text-xs sm:text-sm text-gray-600">
                                 @if(auth()->user()->prestataire->isVerified())
                                     <span class="text-orange-600 font-medium">Compte vérifié</span>
                                 @else
@@ -482,8 +493,8 @@
                     </div>
                     @if(auth()->user()->prestataire->isVerified())
                         <div class="flex-shrink-0 hidden sm:block">
-                            <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                                <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                                 </svg>
                                 Vérifié
@@ -493,30 +504,30 @@
                 </div>
                 
                 @if(auth()->user()->prestataire->isVerified())
-                    <div class="text-center py-3 sm:py-4 md:py-6">
-                        <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 mx-auto mb-2 sm:mb-3 md:mb-4 bg-orange-50 rounded-xl">
-                            <svg class="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                    <div class="text-center py-2 sm:py-3">
+                        <div class="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 lg:w-12 lg:h-12 mx-auto mb-1 sm:mb-2 bg-orange-50 rounded-lg">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                             </svg>
                         </div>
-                        <h3 class="text-xs sm:text-sm md:text-base font-semibold text-gray-900 mb-1">Félicitations !</h3>
-                        <p class="text-xs sm:text-sm text-gray-500 mb-2 sm:mb-3 md:mb-4">Votre compte est vérifié et bénéficie du badge "Prestataire Vérifié"</p>
+                        <h3 class="text-xs sm:text-sm font-semibold text-gray-900 mb-0.5">Félicitations !</h3>
+                        <p class="text-xs text-gray-500 mb-1 sm:mb-2">Votre compte est vérifié et bénéficie du badge "Prestataire Vérifié"</p>
                     </div>
                 @else
-                    <div class="text-center py-3 sm:py-4 md:py-6">
-                        <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 mx-auto mb-2 sm:mb-3 md:mb-4 bg-orange-50 rounded-xl">
-                            <svg class="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    <div class="text-center py-2 sm:py-3">
+                        <div class="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 lg:w-12 lg:h-12 mx-auto mb-1 sm:mb-2 bg-orange-50 rounded-lg">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z" />
                             </svg>
                         </div>
-                        <h3 class="text-xs sm:text-sm md:text-base font-semibold text-gray-900 mb-1">Vérifiez votre compte</h3>
-                        <p class="text-xs sm:text-sm text-gray-500 mb-2 sm:mb-3 md:mb-4">Obtenez le badge "Prestataire Vérifié" pour gagner la confiance des clients</p>
+                        <h3 class="text-xs sm:text-sm font-semibold text-gray-900 mb-0.5">Vérifiez votre compte</h3>
+                        <p class="text-xs text-gray-500 mb-1 sm:mb-2">Obtenez le badge "Prestataire Vérifié" pour gagner la confiance des clients</p>
                     </div>
                 @endif
                 
                 <div class="flex-grow"></div>
-                <a href="{{ route('prestataire.verification.index') }}" class="w-full inline-flex items-center justify-center px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 border border-transparent text-xs sm:text-sm md:text-base font-semibold rounded-xl text-white bg-orange-600 hover:bg-orange-700 transition-all duration-300 shadow-sm hover:shadow-md mt-auto">
-                    <svg class="-ml-1 mr-1 sm:mr-2 md:mr-3 h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <a href="{{ route('prestataire.verification.index') }}" class="w-full inline-flex items-center justify-center px-2 sm:px-3 py-1.5 sm:py-2 border border-transparent text-xs font-semibold rounded-lg text-white bg-orange-600 hover:bg-orange-700 transition-all duration-300 shadow-sm hover:shadow mt-auto">
+                    <svg class="-ml-1 mr-1 h-2.5 w-2.5 sm:h-3 sm:w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     @if(auth()->user()->prestataire->isVerified())

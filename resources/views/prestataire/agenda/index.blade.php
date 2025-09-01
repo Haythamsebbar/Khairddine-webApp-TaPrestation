@@ -168,6 +168,22 @@
                                                             {{ \Carbon\Carbon::parse($demand['start_date'])->format('d/m/Y') }}
                                                         @endif
                                                     </p>
+                                                    
+                                                    @if($demand['status'] === 'pending')
+                                                    <!-- Accept button for pending demands -->
+                                                    <div class="mt-2">
+                                                        <button 
+                                                            onclick="event.stopPropagation(); acceptDemand({{ $demand['id'] }}, '{{ $demand['type'] }}')" 
+                                                            class="inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-md
+                                                            @if($demand['type'] === 'service') bg-blue-500 text-white hover:bg-blue-600 @else bg-green-500 text-white hover:bg-green-600 @endif
+                                                            transition-colors duration-200 w-full">
+                                                            <svg class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                                            </svg>
+                                                            Accepter
+                                                        </button>
+                                                    </div>
+                                                    @endif
                                                 </div>
                                             </div>
                                             
@@ -182,45 +198,8 @@
                                         </div>
                                     </div>
                                     
-                                    <!-- Actions sur ordinateur (hover) -->
-                                    <div class="booking-actions absolute bottom-0 left-0 right-0 bg-gradient-to-t from-blue-800/90 to-blue-700/80 p-2 transform translate-y-full transition-transform duration-300 group-hover:translate-y-0 flex justify-around rounded-b-lg z-10">
-                                        @if($demand['can_confirm'])
-                                            <button onclick="event.stopPropagation(); acceptDemand({{ $demand['id'] }}, '{{ $demand['type'] }}')" 
-                                                    class="booking-action-btn flex items-center text-xs font-medium text-white bg-green-600 hover:bg-green-700 px-2 py-1 rounded transition-colors">
-                                                <svg class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                                </svg>
-                                                Accepter
-                                            </button>
-                                        @endif
-                                        
-                                        @if($demand['can_cancel'])
-                                            <button onclick="event.stopPropagation(); rejectDemand({{ $demand['id'] }}, '{{ $demand['type'] }}')" 
-                                                    class="booking-action-btn flex items-center text-xs font-medium text-white bg-red-600 hover:bg-red-700 px-2 py-1 rounded transition-colors">
-                                                <svg class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
-                                                Refuser
-                                            </button>
-                                        @endif
-                                        
-                                        <button onclick="event.stopPropagation(); showDemandDetails({{ $demand['id'] }}, '{{ $demand['type'] }}')" 
-                                                class="booking-action-btn flex items-center text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded transition-colors">
-                                            <svg class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                            Détails
-                                        </button>
-                                    </div>
-                                    
-                                    <!-- Bouton pour afficher les actions sur mobile -->
-                                    <button class="booking-toggle-actions p-1 rounded-full shadow-sm
-                                        @if($demand['type'] === 'service') bg-blue-100 text-blue-500 @else bg-green-100 text-green-500 @endif" 
-                                        onclick="event.stopPropagation(); toggleActions(this)">
-                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
-                                        </svg>
-                                    </button>
+
+
                                 </div>
                             </div>
                         @empty
@@ -677,131 +656,8 @@
     
     /* Improve touch target sizes for mobile */
     @media (max-width: 640px) {
-        .booking-action-btn {
-            min-height: 44px; /* Minimum touch target size */
-            min-width: 44px;
-            padding: 0.5rem 0.75rem;
-        }
-        
         .booking-toggle-actions {
-            min-height: 44px;
-            min-width: 44px;
-            padding: 0.5rem;
-        }
-    }
-    
-    /* Booking action buttons */
-    .booking-actions {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: linear-gradient(to top, rgba(30, 64, 175, 0.9), rgba(30, 64, 175, 0.7));
-        padding: 0.5rem;
-        transform: translateY(100%);
-        transition: transform 0.3s ease;
-        display: flex;
-        justify-content: space-around;
-        border-bottom-left-radius: 0.5rem;
-        border-bottom-right-radius: 0.5rem;
-        z-index: 10;
-    }
-    
-    .booking-item:hover .booking-actions {
-        transform: translateY(0);
-    }
-    
-    .booking-action-btn {
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        font-size: 0.75rem;
-        font-weight: 600;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 32px;
-    }
-    
-    .action-accept {
-        background-color: #10b981;
-        color: white;
-    }
-    
-    .action-accept:hover {
-        background-color: #059669;
-    }
-    
-    .action-reject {
-        background-color: #ef4444;
-        color: white;
-    }
-    
-    .action-reject:hover {
-        background-color: #dc2626;
-    }
-    
-    .action-details {
-        background-color: #6b7280;
-        color: white;
-    }
-    
-    .action-details:hover {
-        background-color: #4b5563;
-    }
-    
-    /* Mobile swipe actions */
-    .booking-item-wrapper {
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .booking-mobile-actions {
-        position: absolute;
-        right: -150px;
-        top: 0;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        transition: all 0.3s ease;
-        opacity: 0;
-    }
-    
-    .is-swiping .booking-mobile-actions {
-        right: 0;
-        opacity: 1;
-    }
-    
-    .mobile-action-btn {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        margin-right: 10px;
-    }
-    
-    /* Mobile toggle actions button */
-    .booking-toggle-actions {
-        position: absolute;
-        right: 8px;
-        bottom: 8px;
-        z-index: 2;
-        display: none;
-    }
-    
-    @media (max-width: 640px) {
-        .booking-toggle-actions {
-            display: block;
-        }
-        
-        .booking-actions {
-            transform: translateY(100%);
-        }
-        
-        .show-actions .booking-actions {
-            transform: translateY(0);
+            display: none;
         }
         
         /* Improve card padding and spacing on mobile */
@@ -857,11 +713,6 @@
         .booking-item {
             padding: 1rem;
         }
-        
-        .booking-action-btn {
-            padding: 0.5rem 0.75rem;
-            font-size: 0.875rem;
-        }
     }
     
     /* Ensure proper spacing on larger screens */
@@ -870,6 +721,8 @@
             padding: 1rem;
         }
     }
+    
+
     
     /* Active filter button styles */
     .filter-active {
@@ -950,16 +803,18 @@
                 const event = info.event;
                 const props = event.extendedProps;
                 
-                // Pour les locations d'équipement, montrer la modal avec les détails
-                if (props.itemType === 'equipment_rental') {
+                // Pour les locations d'équipement, rediriger vers la vue dédiée
+                if (props.itemType === 'equipment_rental' || props.type === 'equipment') {
                     // Extract the rental ID from the event ID (format: 'equipment_X')
                     const rentalId = event.id.replace('equipment_', '');
-                    showEquipmentRentalDetails(rentalId);
+                    window.location.href = `/prestataire/equipment-rental-requests/${rentalId}`;
                     return;
                 }
                 
-                // Pour les services, montrer la modal
-                showBookingDetails(props.id);
+                // Pour les services, rediriger vers la vue de réservation dédiée
+                if (props.id) {
+                    window.location.href = `/prestataire/bookings/${props.id}`;
+                }
             },
             eventDidMount: function(info) {
                 // Ajouter des tooltips
@@ -1091,11 +946,13 @@
     }
     
     function showEquipmentRentalDetails(rentalId) {
-        // Fetch and show rental details
+        // Redirect to the equipment rental request detail page
+        window.location.href = `/prestataire/equipment-rental-requests/${rentalId}`;
     }
     
     function showBookingDetails(bookingId) {
-        // Fetch and show booking details
+        // Redirect to the booking detail page
+        window.location.href = `/prestataire/bookings/${bookingId}`;
     }
     
     function showModal(title, content) {
@@ -1124,19 +981,32 @@
         // Show loading state
         const button = event.target.closest('button');
         const originalText = button.innerHTML;
-        button.innerHTML = '<svg class="animate-spin -ml-1 mr-1 h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Traitement...';
+        button.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 118-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Traitement...';
         button.disabled = true;
         
+        // Determine the correct API endpoint based on demand type
+        let apiUrl;
+        if (type === 'service') {
+            apiUrl = `/prestataire/bookings/${demandId}/accept`;
+        } else if (type === 'equipment') {
+            apiUrl = `/prestataire/equipment-rental-requests/${demandId}/accept`;
+        } else {
+            showNotification('Type de demande non reconnu', 'error');
+            button.innerHTML = originalText;
+            button.disabled = false;
+            return;
+        }
+        
         // Use the correct route pattern and ensure proper CSRF token
-        fetch(`/prestataire/bookings/${demandId}/accept`, {
-            method: 'PATCH', // Changed from POST to PATCH to match the route definition
+        fetch(apiUrl, {
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 'Accept': 'application/json'
             },
             body: JSON.stringify({
-                _method: 'PATCH', // Explicitly specify the method for better compatibility
+                _method: 'PATCH',
                 _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             })
         })
@@ -1166,10 +1036,24 @@
                 // Show success message
                 showNotification('Demande acceptée avec succès', 'success');
                 
-                // Remove the demand item from the list or update its status
+                // Update the demand item in the list to reflect the new status
                 const demandItem = document.querySelector(`[data-demand-id="${demandId}"]`);
                 if (demandItem) {
-                    demandItem.remove();
+                    // Remove the accept button
+                    const acceptButton = demandItem.querySelector('button');
+                    if (acceptButton) {
+                        acceptButton.closest('div').remove();
+                    }
+                    
+                    // Update the status badge
+                    const statusBadges = demandItem.querySelectorAll('[class*="bg-"]');
+                    statusBadges.forEach(badge => {
+                        // Remove existing status classes
+                        badge.classList.remove('bg-orange-100', 'text-orange-800', 'bg-green-100', 'text-green-800');
+                        // Add accepted status classes
+                        badge.classList.add('bg-green-100', 'text-green-800');
+                        badge.textContent = 'Acceptée';
+                    });
                 }
                 
                 // Refresh calendar events
@@ -1201,19 +1085,32 @@
         // Show loading state
         const button = event.target.closest('button');
         const originalText = button.innerHTML;
-        button.innerHTML = '<svg class="animate-spin -ml-1 mr-1 h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Traitement...';
+        button.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 118-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Traitement...';
         button.disabled = true;
         
+        // Determine the correct API endpoint based on demand type
+        let apiUrl;
+        if (type === 'service') {
+            apiUrl = `/prestataire/bookings/${demandId}/reject`;
+        } else if (type === 'equipment') {
+            apiUrl = `/prestataire/equipment-rental-requests/${demandId}/reject`;
+        } else {
+            showNotification('Type de demande non reconnu', 'error');
+            button.innerHTML = originalText;
+            button.disabled = false;
+            return;
+        }
+        
         // Use the correct route pattern and ensure proper CSRF token
-        fetch(`/prestataire/bookings/${demandId}/reject`, {
-            method: 'PATCH', // Changed from POST to PATCH to match the route definition
+        fetch(apiUrl, {
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 'Accept': 'application/json'
             },
             body: JSON.stringify({
-                _method: 'PATCH', // Explicitly specify the method for better compatibility
+                _method: 'PATCH',
                 _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             })
         })
@@ -1243,10 +1140,24 @@
                 // Show success message
                 showNotification('Demande refusée avec succès', 'success');
                 
-                // Remove the demand item from the list
+                // Update the demand item in the list to reflect the new status
                 const demandItem = document.querySelector(`[data-demand-id="${demandId}"]`);
                 if (demandItem) {
-                    demandItem.remove();
+                    // Remove the accept button
+                    const acceptButton = demandItem.querySelector('button');
+                    if (acceptButton) {
+                        acceptButton.closest('div').remove();
+                    }
+                    
+                    // Update the status badge
+                    const statusBadges = demandItem.querySelectorAll('[class*="bg-"]');
+                    statusBadges.forEach(badge => {
+                        // Remove existing status classes
+                        badge.classList.remove('bg-orange-100', 'text-orange-800', 'bg-red-100', 'text-red-800');
+                        // Add rejected status classes
+                        badge.classList.add('bg-red-100', 'text-red-800');
+                        badge.textContent = 'Refusée';
+                    });
                 }
                 
                 // Refresh calendar events
@@ -1271,154 +1182,21 @@
     }
     
     function showDemandDetails(demandId, type) {
-        // Show loading indicator
-        showNotification('Chargement des détails...', 'info');
-        
-        // Determine the correct endpoint based on the type
-        let endpoint = '';
+        // Redirect to the appropriate view based on the type
         if (type === 'service') {
-            endpoint = `/prestataire/bookings/${demandId}`;
+            window.location.href = `/prestataire/bookings/${demandId}`;
         } else if (type === 'equipment') {
-            endpoint = `/prestataire/equipment-rental-requests/${demandId}`;
+            window.location.href = `/prestataire/equipment-rental-requests/${demandId}`;
         } else {
             showNotification('Type de demande non reconnu', 'error');
-            return;
         }
-        
-        // Fetch demand details and show in modal
-        fetch(endpoint, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => {
-            // Check if response is OK and content type is JSON
-            if (!response.ok) {
-                if (response.status === 404) {
-                    throw new Error(`La demande avec l'ID ${demandId} n'existe pas ou a été supprimée`);
-                }
-                
-                return response.text().then(text => {
-                    try {
-                        return JSON.parse(text);
-                    } catch (e) {
-                        throw new Error(`HTTP ${response.status}: ${text}`);
-                    }
-                }).then(data => {
-                    throw new Error(data.message || `HTTP ${response.status}: ${response.statusText}`);
-                });
-            }
-            const contentType = response.headers.get('content-type');
-            if (!contentType || !contentType.includes('application/json')) {
-                return response.text().then(text => {
-                    throw new Error(`Expected JSON response but got: ${text.substring(0, 100)}...`);
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data && data.success) {
-                // Build modal content
-                let content = `
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-bold text-blue-900">${data.title || 'Détails de la demande'}</h3>
-                            <span class="px-2 py-1 rounded-full text-xs font-bold ${
-                                data.status === 'confirmed' || data.status === 'accepted' ? 'bg-green-100 text-green-800' :
-                                data.status === 'pending' ? 'bg-orange-100 text-orange-800' :
-                                data.status === 'completed' ? 'bg-blue-100 text-blue-800' :
-                                'bg-red-100 text-red-800'
-                            }">
-                                ${data.status_label || data.status || 'Inconnu'}
-                            </span>
-                        </div>
-                        
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <p class="text-sm text-gray-600">Client</p>
-                                <p class="font-medium">${data.client_name || 'Non spécifié'}</p>
-                            </div>
-                            
-                            <div>
-                                <p class="text-sm text-gray-600">Date</p>
-                                <p class="font-medium">${data.date || 'Non spécifié'}</p>
-                            </div>
-                            
-                            ${data.duration ? `
-                            <div>
-                                <p class="text-sm text-gray-600">Durée</p>
-                                <p class="font-medium">${data.duration}</p>
-                            </div>
-                            ` : ''}
-                            
-                            ${data.price ? `
-                            <div>
-                                <p class="text-sm text-gray-600">Prix</p>
-                                <p class="font-medium">${data.price}</p>
-                            </div>
-                            ` : ''}
-                        </div>
-                        
-                        ${data.description ? `
-                        <div>
-                            <p class="text-sm text-gray-600">Description</p>
-                            <p class="font-medium">${data.description}</p>
-                        </div>
-                        ` : ''}
-                        
-                        <div class="flex flex-wrap gap-2 pt-4">
-                            <button onclick="closeModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                                Fermer
-                            </button>
-                        </div>
-                    </div>
-                `;
-                
-                showModal('Détails de la demande', content);
-            } else {
-                throw new Error(data.message || 'Erreur lors du chargement des détails');
-            }
-        })
-        .catch(error => {
-            console.error('Error loading demand details:', error);
-            // Display a more user-friendly error message
-            const errorMessage = error.message.includes("n'existe pas") ? 
-                error.message : 
-                'Erreur lors du chargement des détails: ' + (error.message || 'Erreur inconnue');
-            
-            showNotification(errorMessage, 'error');
-            
-            // Show a simpler modal for the error case
-            const errorContent = `
-                <div class="space-y-4">
-                    <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
-                        <div class="flex items-center">
-                            <svg class="h-6 w-6 text-red-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <h3 class="text-base font-medium text-red-800">Impossible de charger les détails</h3>
-                        </div>
-                        <p class="mt-2 text-sm text-red-700">${errorMessage}</p>
-                    </div>
-                    <div class="flex justify-end">
-                        <button onclick="closeModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                            Fermer
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            showModal('Erreur', errorContent);
-        });
     }
     
+    // Function no longer needed as buttons are always visible
     function toggleActions(button) {
-        const itemWrapper = button.parentElement.parentElement;
-        const actions = itemWrapper.querySelector('.booking-actions');
-        actions.classList.toggle('show-actions');
+        // Keeping the function for backward compatibility
+        console.log("Action buttons are now always visible");
+        return;
     }
     
     // Function to show notifications
@@ -1431,22 +1209,35 @@
         
         // Create notification element
         const notification = document.createElement('div');
-        notification.className = `notification-popup fixed top-4 right-4 z-[100] px-4 py-3 rounded-lg shadow-lg text-white font-medium text-sm max-w-xs transform transition-transform duration-300 ${
-            type === 'success' ? 'bg-green-500' : 
-            type === 'error' ? 'bg-red-500' : 
-            type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+        notification.className = `notification-popup fixed top-4 right-4 z-[100] px-5 py-4 rounded-lg shadow-lg text-white font-medium text-sm max-w-md transform transition-transform duration-300 ${
+            type === 'success' ? 'bg-green-600' : 
+            type === 'error' ? 'bg-red-600' : 
+            type === 'warning' ? 'bg-yellow-600' : 'bg-blue-600'
         }`;
-        notification.textContent = message;
+        
+        // Add icon based on type
+        let icon = '';
+        if (type === 'success') {
+            icon = '<svg class="inline-block h-5 w-5 mr-2 -mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>';
+        } else if (type === 'error') {
+            icon = '<svg class="inline-block h-5 w-5 mr-2 -mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>';
+        } else if (type === 'warning') {
+            icon = '<svg class="inline-block h-5 w-5 mr-2 -mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>';
+        } else {
+            icon = '<svg class="inline-block h-5 w-5 mr-2 -mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>';
+        }
+        
+        notification.innerHTML = icon + message;
         
         // Add to document
         document.body.appendChild(notification);
         
-        // Auto remove after 3 seconds
+        // Auto remove after 4 seconds
         setTimeout(() => {
             notification.style.transform = 'translateX(100%)';
             setTimeout(() => {
                 notification.remove();
             }, 300);
-        }, 3000);
+        }, 4000);
     }
 </script>

@@ -52,7 +52,7 @@
                     </div>
                     <h3 class="text-xl font-semibold text-gray-700 mb-3">Aucun abonnement pour le moment</h3>
                     <p class="text-gray-500 mb-6 max-w-md mx-auto">Découvrez et suivez vos prestataires préférés pour rester informé de leurs dernières activités.</p>
-                    <a href="{{ route('client.prestataires.index') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center">
+                    <a href="{{ route('prestataires.index') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center">
                         <i class="fas fa-search mr-2"></i>
                         Découvrir des prestataires
                     </a>
@@ -103,19 +103,6 @@
                                     </div>
                                 </div>
                                 
-                                <!-- Compétences -->
-                                <div class="mb-4">
-                                    <div class="flex flex-wrap gap-1">
-                                        @foreach($prestataire->skills->take(3) as $skill)
-                                            <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">{{ $skill->name }}</span>
-                                        @endforeach
-                                        
-                                        @if($prestataire->skills->count() > 3)
-                                            <span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-600">+{{ $prestataire->skills->count() - 3 }}</span>
-                                        @endif
-                                    </div>
-                                </div>
-                                
                                 <!-- Description courte -->
                                 <p class="text-gray-600 text-sm mb-4 line-clamp-3">
                                     {{ Str::limit($prestataire->description, 150) }}
@@ -133,7 +120,7 @@
                                     <a href="{{ route('client.browse.prestataire', $prestataire->id) }}" class="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-center font-semibold text-white hover:bg-blue-700">
                                         Voir le profil
                                     </a>
-                                    <form action="{{ route('client.follows.destroy', $prestataire->id) }}" method="POST">
+                                    <form action="{{ route('client.prestataire-follows.unfollow', $prestataire->id) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="rounded-lg bg-gray-100 px-3 py-2 text-gray-700 hover:bg-gray-200">

@@ -129,13 +129,23 @@
                         <h2 class="text-xl font-bold text-green-800 border-b-2 border-green-200 pb-2">Informations du client</h2>
                     </div>
                     <div class="flex items-start space-x-6">
-                        <div class="w-20 h-20 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <span class="text-green-700 font-bold text-xl">
-                                {{ substr($request->client->first_name, 0, 1) }}{{ substr($request->client->last_name, 0, 1) }}
-                            </span>
+                        <div class="flex flex-col items-center">
+                            <div class="w-20 h-20 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden mb-2">
+                                @if($request->client && $request->client->photo)
+                                    <img src="{{ asset('storage/' . $request->client->photo) }}" alt="{{ $request->client->first_name }} {{ $request->client->last_name }}" class="w-full h-full object-cover">
+                                @else
+                                    <div class="w-full h-full bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
+                                        <span class="text-green-700 font-bold text-xl">
+                                            {{ substr($request->client->first_name ?? '', 0, 1) }}{{ substr($request->client->last_name ?? '', 0, 1) }}
+                                        </span>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="text-center">
+                                <h3 class="text-lg font-semibold text-green-900">{{ $request->client->first_name }} {{ $request->client->last_name }}</h3>
+                            </div>
                         </div>
                         <div class="flex-1">
-                            <h3 class="text-xl font-semibold text-green-900 mb-4">{{ $request->client->first_name }} {{ $request->client->last_name }}</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="space-y-4">
                                     <div class="bg-green-50 rounded-lg p-3 flex items-center space-x-3">
@@ -144,7 +154,7 @@
                                         </svg>
                                         <div>
                                             <div class="text-xs font-medium text-green-600 uppercase tracking-wide">Email</div>
-                                            <div class="text-sm font-semibold text-green-900">{{ $request->client->email }}</div>
+                                            <div class="text-sm font-semibold text-green-900">{{ $request->client->user->email ?? $request->client->email }}</div>
                                         </div>
                                     </div>
                                     @if($request->client->phone)
@@ -250,7 +260,7 @@
                     <div class="flex items-center space-x-3 mb-6">
                         <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
                             <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002-2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                             </svg>
                         </div>
                         <h2 class="text-xl font-bold text-green-800 border-b-2 border-green-200 pb-2">Détails de la demande</h2>
@@ -406,20 +416,20 @@
                         <div class="bg-green-50 rounded-lg p-4 border border-green-200">
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-green-600">Location ({{ $request->start_date->diffInDays($request->end_date) + 1 }} jours)</span>
-                                <span class="font-semibold text-green-900">{{ number_format($request->rental_amount ?? $request->total_amount, 2) }}€</span>
+                                <span class="font-semibold text-green-900">{{ number_format(abs($request->rental_amount ?? $request->total_amount ?? 0), 2, ',', ' ') }}€</span>
                             </div>
                             
                             @if($request->delivery_required && isset($request->delivery_cost) && $request->delivery_cost > 0)
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-green-600">Livraison</span>
-                                <span class="font-semibold text-green-900">{{ number_format($request->delivery_cost, 2) }}€</span>
+                                <span class="font-semibold text-green-900">{{ number_format(abs($request->delivery_cost), 2, ',', ' ') }}€</span>
                             </div>
                             @endif
                             
                             <div class="border-t border-green-300 pt-3 mt-3">
                                 <div class="flex justify-between items-center">
                                     <span class="font-semibold text-green-900">Total</span>
-                                    <span class="font-bold text-xl text-green-600">{{ number_format($request->total_amount, 2) }}€</span>
+                                    <span class="font-bold text-xl text-green-600">{{ number_format(abs($request->total_amount ?? 0), 2, ',', ' ') }}€</span>
                                 </div>
                             </div>
                         </div>
@@ -428,7 +438,7 @@
                         <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                             <div class="flex justify-between items-center">
                                 <span class="text-yellow-800 font-medium">Caution demandée</span>
-                                <span class="font-bold text-yellow-900">{{ number_format($request->deposit_amount, 2) }}€</span>
+                                <span class="font-bold text-yellow-900">{{ number_format(abs($request->deposit_amount), 2, ',', ' ') }}€</span>
                             </div>
                         </div>
                         @endif

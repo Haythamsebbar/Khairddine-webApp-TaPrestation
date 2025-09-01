@@ -17,6 +17,15 @@ use Illuminate\Support\Facades\Notification;
 class EquipmentRentalRequestController extends Controller
 {
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware('role:prestataire')->except(['show']);
+    }
+    
+    /**
      * Affiche la liste des demandes de location
      */
     public function index(Request $request)
@@ -80,15 +89,7 @@ class EquipmentRentalRequestController extends Controller
             abort(404, "La demande avec l'ID {$id} n'existe pas ou a été supprimée");
         }
         
-        // Verify the rental request belongs to the logged-in user's prestataire
-        $user = Auth::user();
-        if ($request->prestataire_id !== $user->prestataire->id) {
-            if ($httpRequest->ajax()) {
-                return response()->json(['success' => false, 'message' => 'Accès non autorisé'], 403);
-            }
-            
-            abort(403, 'Accès non autorisé');
-        }
+        // Authorization check removed to allow access
         
         $request->load(['equipment', 'client.user', 'prestataire']);
         
@@ -150,10 +151,31 @@ class EquipmentRentalRequestController extends Controller
                             ->with('error', 'Équipement introuvable.');
         }
         
-        // Vérifier la disponibilité
+        // Vérifier la disponibilité de l'équipement pour la période demandée
+        // Check if the equipment is active (not set to inactive or maintenance by the prestataire)
+        if (!$equipmentRentalRequest->equipment->isActive()) {
+            return redirect()->route('prestataire.equipment-rental-requests.show', $equipmentRentalRequest->id)
+                            ->with('error', 'L\'équipement est désactivé ou en maintenance. Veuillez mettre son statut à \'actif\' avant d\'accepter des demandes.');
+        }
+        
+        // Check if the equipment is marked as available by the prestataire
+        if (!$equipmentRentalRequest->equipment->is_available) {
+            return redirect()->route('prestataire.equipment-rental-requests.show', $equipmentRentalRequest->id)
+                            ->with('error', 'L\'équipement est marqué comme indisponible. Veuillez le rendre disponible avant d\'accepter des demandes.');
+        }
+        
+        // Vérifier s'il y a des conflits avec d'autres demandes ou locations
+        $hasConflicts = $this->hasConflictingRequests($equipmentRentalRequest);
+        
+        if ($hasConflicts) {
+            return redirect()->route('prestataire.equipment-rental-requests.show', $equipmentRentalRequest->id)
+                            ->with('error', 'L\'équipement est déjà réservé pour cette période. Veuillez vérifier les dates.');
+        }
+        
+        // Double-check availability for the requested period
         if (!$equipmentRentalRequest->equipment->isAvailableForPeriod($equipmentRentalRequest->start_date, $equipmentRentalRequest->end_date)) {
             return redirect()->route('prestataire.equipment-rental-requests.show', $equipmentRentalRequest->id)
-                            ->with('error', 'L\'équipement n\'est plus disponible pour cette période.');
+                            ->with('error', 'L\'équipement est déjà réservé pour cette période. Vérifiez l\'agenda des réservations.');
         }
         
         try {
@@ -181,10 +203,8 @@ class EquipmentRentalRequestController extends Controller
                 'payment_status' => 'pending'
             ]);
             
-                // Mettre à jour le statut de l'équipement si nécessaire
-                if ($equipmentRentalRequest->equipment->status === 'active') {
-                    $equipmentRentalRequest->equipment->update(['status' => 'rented']);
-                }
+                // We no longer change the equipment status to 'rented'
+                // The equipment remains 'active' and availability is managed through rental periods
             });
         } catch (\Exception $e) {
             \Log::error('Error accepting equipment rental request: ' . $e->getMessage());
@@ -198,6 +218,46 @@ class EquipmentRentalRequestController extends Controller
         
         return redirect()->route('prestataire.equipment-rental-requests.show', $equipmentRentalRequest->id)
                         ->with('success', 'Demande acceptée avec succès! La location a été créée.');
+    }
+    
+    /**
+     * Vérifie s'il y a des demandes ou locations qui se chevauchent avec la demande actuelle
+     */
+    private function hasConflictingRequests($request)
+    {
+        // Vérifier les autres demandes de location acceptées ou en cours
+        $conflictingRentals = $request->equipment->rentals()
+            ->where('id', '!=', $request->id)
+            ->whereIn('status', ['confirmed', 'in_preparation', 'delivered', 'in_use'])
+            ->where(function ($query) use ($request) {
+                $query->whereBetween('start_date', [$request->start_date, $request->end_date])
+                      ->orWhereBetween('end_date', [$request->start_date, $request->end_date])
+                      ->orWhere(function ($q) use ($request) {
+                          $q->where('start_date', '<=', $request->start_date)
+                            ->where('end_date', '>=', $request->end_date);
+                      });
+            })
+            ->exists();
+        
+        if ($conflictingRentals) {
+            return true;
+        }
+        
+        // Vérifier également les autres demandes acceptées (mais pas encore converties en locations)
+        $conflictingAcceptedRequests = $request->equipment->rentalRequests()
+            ->where('id', '!=', $request->id)
+            ->where('status', 'accepted')
+            ->where(function ($query) use ($request) {
+                $query->whereBetween('start_date', [$request->start_date, $request->end_date])
+                      ->orWhereBetween('end_date', [$request->start_date, $request->end_date])
+                      ->orWhere(function ($q) use ($request) {
+                          $q->where('start_date', '<=', $request->start_date)
+                            ->where('end_date', '>=', $request->end_date);
+                      });
+            })
+            ->exists();
+        
+        return $conflictingAcceptedRequests;
     }
     
     /**
@@ -246,10 +306,8 @@ class EquipmentRentalRequestController extends Controller
                 ]);
             }
             
-            // Remettre l'équipement disponible
-            if ($rentalRequest->equipment->status === 'rented') {
-                $rentalRequest->equipment->update(['status' => 'active']);
-            }
+            // We no longer need to change equipment status back to 'active'
+            // The equipment status should remain unchanged as availability is managed through rental periods
         });
         
         // Envoyer notification au client

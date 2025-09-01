@@ -65,6 +65,32 @@
             font-weight: 700;
             margin-left: 0.75rem;
         }
+        
+        /* Mobile responsive improvements */
+        @media (max-width: 640px) {
+            .dashboard-stat-card {
+                padding: 1rem;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .section-title {
+                margin-left: 0;
+                margin-top: 0.5rem;
+            }
+            
+            .stat-icon {
+                width: 2rem;
+                height: 2rem;
+            }
+            
+            .dashboard-primary-card {
+                padding: 1rem;
+            }
+        }
     </style>
 @endpush
 
@@ -77,7 +103,7 @@
                 <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-0"> 
                     <span>{{ $welcomeMessage }}</span>
                     @if(auth()->user()->isClient())
-                        <span class="sm:ml-4 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                        <span class="sm:ml-4 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 mt-2 sm:mt-0">
                             <svg class="-ml-0.5 mr-1.5 h-4 w-4 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                             </svg>
@@ -90,48 +116,37 @@
             
             <!-- Quick Stats -->
             <div class="flex justify-center mb-6 sm:mb-8">
-                <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-4xl w-full">
+                <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 max-w-4xl w-full">
                     <!-- Messages -->
-                    <a href="{{ route('messaging.index') }}" class="dashboard-stat-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 text-center hover:shadow-lg hover:border-blue-200 transition-all duration-300">
+                    <a href="{{ route('messaging.index') }}" class="dashboard-stat-card bg-white rounded-xl shadow-sm border border-gray-100 p-3 sm:p-6 text-center hover:shadow-lg hover:border-blue-200 transition-all duration-300">
                         <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 bg-blue-50 rounded-xl">
                             <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
                         </div>
-                        <div class="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">{{ $unreadMessages ?? 0 }}</div>
+                        <div class="text-xl sm:text-3xl font-bold text-gray-900 mb-1">{{ $unreadMessages ?? 0 }}</div>
                         <div class="text-xs sm:text-sm font-medium text-gray-600">Messages non lus</div>
                     </a>
 
-                    <!-- Demandes -->
-                    <a href="{{ route('client.equipment-rental-requests.index') }}" class="dashboard-stat-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 text-center hover:shadow-lg hover:border-green-200 transition-all duration-300">
-                        <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 bg-green-50 rounded-xl">
-                            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                            </svg>
-                        </div>
-                        <div class="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">{{ count($unifiedRequests ?? []) }}</div>
-                        <div class="text-xs sm:text-sm font-medium text-gray-600">Demandes</div>
-                    </a>
-
                     <!-- Abonnements -->
-                    <a href="{{ route('client.prestataire-follows.index') }}" class="dashboard-stat-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 text-center hover:shadow-lg hover:border-purple-200 transition-all duration-300">
+                    <a href="{{ route('client.prestataire-follows.index') }}" class="dashboard-stat-card bg-white rounded-xl shadow-sm border border-gray-100 p-3 sm:p-6 text-center hover:shadow-lg hover:border-purple-200 transition-all duration-300">
                         <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 bg-purple-50 rounded-xl">
                             <svg class="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                             </svg>
                         </div>
-                        <div class="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">{{ $recentFollowedPrestataires->count() ?? 0 }}</div>
+                        <div class="text-xl sm:text-3xl font-bold text-gray-900 mb-1">{{ $recentFollowedPrestataires->count() ?? 0 }}</div>
                         <div class="text-xs sm:text-sm font-medium text-gray-600">Abonnements</div>
                     </a>
 
                     <!-- Profil -->
-                    <a href="{{ route('client.profile.edit') }}" class="dashboard-stat-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 text-center hover:shadow-lg hover:border-orange-200 transition-all duration-300">
+                    <a href="{{ route('client.profile.edit') }}" class="dashboard-stat-card bg-white rounded-xl shadow-sm border border-gray-100 p-3 sm:p-6 text-center hover:shadow-lg hover:border-orange-200 transition-all duration-300">
                         <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 bg-orange-50 rounded-xl">
                             <svg class="w-5 h-5 sm:w-6 sm:h-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                         </div>
-                        <div class="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">
+                        <div class="text-xl sm:text-3xl font-bold text-gray-900 mb-1">
                             @if($client->avatar)
                                 <span class="text-sm">Profil</span>
                             @else
@@ -145,9 +160,9 @@
         </div>
 
         <!-- Shortcuts -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-8">
             @foreach($shortcuts as $shortcut)
-                <a href="{{ $shortcut['url'] }}" class="dashboard-primary-card p-4 sm:p-6 hover:border-blue-200 flex items-center gap-4">
+                <a href="{{ $shortcut['url'] }}" class="dashboard-primary-card p-3 sm:p-6 hover:border-blue-200 flex items-center gap-3 sm:gap-4">
                     <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 flex-shrink-0">
                         <i class="{{ $shortcut['icon'] }} text-sm sm:text-base lg:text-xl"></i>
                     </div>
@@ -159,11 +174,11 @@
             @endforeach
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
             <!-- Unified Recent Requests -->
             <div class="lg:col-span-2 space-y-6">
                 <!-- Mes demandes récentes -->
-                <div class="dashboard-primary-card p-4 sm:p-6">
+                <div class="dashboard-primary-card p-3 sm:p-6">
                     <div class="section-header">
                         <div class="stat-icon bg-blue-50">
                             <svg class="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -187,7 +202,7 @@
                                 <h3 class="text-lg font-semibold text-gray-900 mb-2">Aucune demande pour le moment</h3>
                                 <p class="text-sm text-gray-500 mb-4">Commencez votre parcours en explorant nos services disponibles.</p>
                                 <div class="flex flex-col sm:flex-row gap-2 justify-center">
-                                    <a href="{{ route('client.prestataires.index') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                                    <a href="{{ route('prestataires.index') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
                                         <svg class="-ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                         </svg>
@@ -294,7 +309,7 @@
                 </div>
                 
                 <!-- Mes abonnements -->
-                <div class="dashboard-primary-card p-4 sm:p-6">
+                <div class="dashboard-primary-card p-3 sm:p-6">
                     <div class="section-header">
                         <div class="stat-icon bg-purple-50">
                             <svg class="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -317,7 +332,7 @@
                                 </div>
                                 <h3 class="text-lg font-semibold text-gray-900 mb-2">Aucun abonnement pour le moment</h3>
                                 <p class="text-sm text-gray-500 mb-4">Découvrez et suivez des prestataires préférés pour rester informé de leurs dernières activités.</p>
-                                <a href="{{ route('client.prestataires.index') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700">
+                                <a href="{{ route('prestataires.index') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700">
                                     <svg class="-ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                     </svg>
@@ -395,7 +410,7 @@
             <!-- Right Column -->
             <div class="space-y-6">
                 <!-- Unread Messages -->
-                <div class="dashboard-primary-card p-4 sm:p-6">
+                <div class="dashboard-primary-card p-3 sm:p-6">
                     <div class="section-header">
                         <div class="stat-icon bg-blue-50">
                             <svg class="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -443,7 +458,7 @@
                 </div>
 
                 <!-- Dernières activités -->
-                <div class="dashboard-primary-card p-4 sm:p-6">
+                <div class="dashboard-primary-card p-3 sm:p-6">
                     <div class="section-header">
                         <div class="stat-icon bg-purple-50">
                             <svg class="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -466,7 +481,7 @@
                                 </div>
                                 <h3 class="text-lg font-semibold text-gray-900 mb-2">Aucune activité récente</h3>
                                 <p class="text-sm text-gray-500 mb-4">Suivez des prestataires pour voir leurs dernières activités et nouveaux services ici.</p>
-                                <a href="{{ route('client.prestataires.index') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700">
+                                <a href="{{ route('prestataires.index') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700">
                                     <svg class="-ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                     </svg>

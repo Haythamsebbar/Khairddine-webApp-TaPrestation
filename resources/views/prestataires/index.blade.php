@@ -2,13 +2,8 @@
 
 @section('content')
 <style>
-/* Enhanced blue color scheme and styling from bookings/create.blade.php */
+/* Enhanced blue color scheme and styling from services/index.blade.php */
 .filter-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
     background-color: #3b82f6;
     color: white;
     font-weight: 600;
@@ -69,34 +64,8 @@
     }
 }
 
-.input-with-icon {
-    position: relative;
-}
-
-.input-with-icon .icon {
-    position: absolute;
-    left: 1rem;
-    top: 2.7rem;
-    color: #6b7280;
-    z-index: 10;
-}
-
-.input-with-icon input,
-.input-with-icon select {
-    padding-left: 2.5rem;
-    border-radius: 0.75rem;
-    border: 2px solid #d1d5db;
-    transition: all 0.2s ease;
-}
-
-.input-with-icon input:focus,
-.input-with-icon select:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-}
-
 .filter-container {
-    background-color: #f0f9ff;
+    background-color: white;
     border-radius: 1rem;
     border: 1px solid #bfdbfe;
     box-shadow: 0 4px 6px rgba(59, 130, 246, 0.1);
@@ -238,59 +207,78 @@
             </button>
         </div>
         
-        <form action="{{ route('prestataires.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="filtersForm" style="display: none;">
-            <div class="input-with-icon">
-                <label for="name" class="block text-sm font-semibold text-blue-800 mb-2">Nom</label>
-                <span class="icon">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                    </svg>
-                </span>
-                <input type="text" name="name" id="name" value="{{ request('name') }}" 
-                    class="w-full text-base rounded-lg border-2 border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-200" placeholder="Rechercher par nom">
+        <form action="{{ route('prestataires.index') }}" method="GET" class="space-y-4 sm:space-y-6" id="filtersForm" style="display: none;">
+            <!-- Première ligne de filtres -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
+                <!-- Recherche par nom -->
+                <div>
+                    <label for="name" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Nom</label>
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                        <input type="text" name="name" id="name" value="{{ request('name') }}" 
+                            placeholder="Rechercher par nom" 
+                            class="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-sm sm:text-base">
+                    </div>
+                </div>
+                
+                <!-- Catégorie principale -->
+                <div>
+                    <label for="category" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Catégorie</label>
+                    <div class="relative">
+                        <i class="fas fa-tags absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                        <select name="category" id="category" 
+                            class="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-sm sm:text-base">
+                            <option value="">Toutes les catégories</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Sous-catégorie -->
+                <div>
+                    <label for="subcategory" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Sous-catégorie</label>
+                    <div class="relative">
+                        <i class="fas fa-tag absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                        <select name="subcategory" id="subcategory" 
+                            class="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-sm sm:text-base" 
+                            {{ !request('category') ? 'disabled' : '' }}>
+                            <option value="">Toutes les sous-catégories</option>
+                            @if(isset($subcategories))
+                                @foreach($subcategories as $subcategory)
+                                    <option value="{{ $subcategory->id }}" {{ request('subcategory') == $subcategory->id ? 'selected' : '' }}>
+                                        {{ $subcategory->name }}
+                                    </option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Ville -->
+                <div>
+                    <label for="city" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Ville</label>
+                    <div class="relative">
+                        <i class="fas fa-map-marker-alt absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                        <input type="text" name="city" id="city" value="{{ request('city') }}" 
+                            placeholder="Rechercher par ville" 
+                            class="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-sm sm:text-base">
+                    </div>
+                </div>
             </div>
             
-            <div class="input-with-icon">
-                <label for="secteur" class="block text-sm font-semibold text-blue-800 mb-2">Secteur d'activité</label>
-                <span class="icon">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                    </svg>
-                </span>
-                <input type="text" name="secteur" id="secteur" value="{{ request('secteur') }}" 
-                    class="w-full text-base rounded-lg border-2 border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-200" placeholder="Secteur d'activité">
-            </div>
-            
-            <div class="input-with-icon">
-                <label for="category" class="block text-sm font-semibold text-blue-800 mb-2">Catégorie de service</label>
-                <span class="icon">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-                    </svg>
-                </span>
-                <select name="category" id="category" 
-                    class="w-full text-base rounded-lg border-2 border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition duration-200">
-                    <option value="">Toutes les catégories</option>
-                    @foreach($categories as $category)
-                        <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
-                            {{ $category->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-end gap-3 sm:gap-0">
-                <button type="submit" class="filter-button w-full sm:w-auto px-5 py-3">
-                    <span class="icon">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
-                        </svg>
-                    </span>
-                    Filtrer
+            <!-- Boutons d'action -->
+            <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4 sm:pt-6 border-t-2 border-blue-200">
+                <button type="submit" class="flex-1 filter-button px-5 py-3">
+                    <i class="fas fa-search mr-2"></i>Filtrer
                 </button>
-                @if(request()->anyFilled(['name', 'secteur', 'category']))
-                    <a href="{{ route('prestataires.index') }}" class="sm:ml-3 text-center sm:text-left text-blue-600 hover:text-blue-800 font-semibold py-3 px-4 text-base rounded-lg bg-blue-100 hover:bg-blue-200 transition duration-200 flex items-center justify-center">
-                        Réinitialiser
+                
+                @if(request()->anyFilled(['name', 'category', 'subcategory', 'city']))
+                    <a href="{{ route('prestataires.index') }}" class="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition duration-200 flex items-center justify-center text-sm sm:text-base">
+                        <i class="fas fa-undo mr-2"></i>Réinitialiser
                     </a>
                 @endif
             </div>
@@ -411,7 +399,7 @@
                     @auth
                         @if(auth()->user()->isClient())
                             <div class="mt-3 pt-3 border-t border-gray-100 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                                <a href="{{ route('messaging.start', $prestataire) }}" class="action-button flex-1 inline-flex items-center justify-center px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-blue-700 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
+                                <a href="{{ route('client.messaging.start', $prestataire) }}" class="action-button flex-1 inline-flex items-center justify-center px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-blue-700 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
                                     <svg class="-ml-1 mr-1 h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                     </svg>
@@ -453,7 +441,7 @@
                 </div>
                 <h3 class="text-2xl font-bold text-blue-900 mb-2">Aucun prestataire trouvé</h3>
                 <p class="text-blue-800 mb-6">Aucun prestataire ne correspond à vos critères de recherche.</p>
-                @if(request()->anyFilled(['name', 'secteur', 'category']))
+                @if(request()->anyFilled(['name', 'category', 'subcategory', 'city']))
                     <a href="{{ route('prestataires.index') }}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 shadow-lg hover:shadow-xl">
                         Réinitialiser les filtres
                     </a>
@@ -478,6 +466,8 @@
         const filtersForm = document.getElementById('filtersForm');
         const buttonText = document.getElementById('filterButtonText');
         const chevron = document.getElementById('filterChevron');
+        const categorySelect = document.getElementById('category');
+        const subcategorySelect = document.getElementById('subcategory');
         
         let filtersVisible = false;
         
@@ -485,7 +475,7 @@
             filtersVisible = !filtersVisible;
             
             if (filtersVisible) {
-                filtersForm.style.display = 'grid';
+                filtersForm.style.display = 'block';
                 buttonText.textContent = 'Masquer les filtres';
                 chevron.classList.remove('fa-chevron-down');
                 chevron.classList.add('fa-chevron-up');
@@ -494,6 +484,35 @@
                 buttonText.textContent = 'Afficher les filtres';
                 chevron.classList.remove('fa-chevron-up');
                 chevron.classList.add('fa-chevron-down');
+            }
+        });
+        
+        // Handle category change to load subcategories
+        categorySelect.addEventListener('change', function() {
+            const categoryId = this.value;
+            
+            // Enable/disable subcategory select
+            if (categoryId) {
+                subcategorySelect.disabled = false;
+                subcategorySelect.innerHTML = '<option value="">Toutes les sous-catégories</option>';
+                
+                // Fetch subcategories via AJAX
+                fetch(`/api/categories/${categoryId}/subcategories`)
+                    .then(response => response.json())
+                    .then(subcategories => {
+                        subcategories.forEach(subcategory => {
+                            const option = document.createElement('option');
+                            option.value = subcategory.id;
+                            option.textContent = subcategory.name;
+                            subcategorySelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching subcategories:', error);
+                    });
+            } else {
+                subcategorySelect.disabled = true;
+                subcategorySelect.innerHTML = '<option value="">Toutes les sous-catégories</option>';
             }
         });
     });

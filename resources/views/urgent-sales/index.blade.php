@@ -3,24 +3,22 @@
 @section('title', 'Annonces - TaPrestation')
 
 @section('content')
-<div class="min-h-screen bg-gray-50">
+<div class="bg-red-50">
     <!-- Bannière d'en-tête -->
-    <div class="bg-red-600 text-white relative overflow-hidden">
-        <div class="absolute inset-0 opacity-10 bg-grid-pattern"></div>
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-16">
-            <div class="text-center">
-                
-                <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
+    <div class="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-6 sm:mb-8 text-center">
+                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-red-900 mb-2 leading-tight">
                     Annonces
                 </h1>
-                <p class="mt-4 text-lg sm:text-xl text-red-100 max-w-2xl mx-auto px-4">
+                <p class="text-base sm:text-lg text-red-700 max-w-2xl mx-auto">
                     Saisissez les meilleures affaires avant qu'il ne soit trop tard.
                 </p>
             </div>
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
         <!-- Section des filtres -->
         <div class="bg-white rounded-xl shadow-lg border border-red-200 p-4 sm:p-6 mb-8">
             <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

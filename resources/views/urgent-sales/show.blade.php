@@ -80,31 +80,36 @@
                     
                     @if($urgentSale->photos && count($urgentSale->photos ?? []) > 0)
                         <div class="relative">
-                            <!-- Image principale -->
+                            <!-- Image principale avec flèches de navigation -->
                             <div class="relative">
-                                <img id="mainImage" src="{{ Storage::url($urgentSale->photos[0]) }}" alt="{{ $urgentSale->title }}" class="w-full h-32 sm:h-40 lg:h-48 object-cover cursor-pointer rounded-t-lg" onclick="openImageModal(0)">
+                                <img id="mainImage" src="{{ Storage::url($urgentSale->photos[0]) }}" alt="{{ $urgentSale->title }}" class="w-full h-64 sm:h-80 lg:h-96 object-cover cursor-pointer rounded-t-lg" onclick="openImageModal(0)">
+                                
+                                <!-- Flèche gauche -->
+                                <button id="prevButton" onclick="navigateImage(-1)" class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full p-2 hover:bg-opacity-75 transition-all duration-200">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                    </svg>
+                                </button>
+                                
+                                <!-- Flèche droite -->
+                                <button id="nextButton" onclick="navigateImage(1)" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full p-2 hover:bg-opacity-75 transition-all duration-200">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </button>
+                                
+                                <!-- Indicateur d'image -->
+                                <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white bg-black bg-opacity-50 px-3 py-1 rounded-full text-sm">
+                                    <span id="imageCounter">1 / {{ count($urgentSale->photos) }}</span>
+                                </div>
                             </div>
                             
                             <div class="absolute top-2 right-2 bg-black/50 text-white px-2 py-1 rounded-full text-xs">
                                 État: {{ $urgentSale->condition_label }}
                             </div>
                         </div>
-                        
-                        <!-- Miniatures -->
-                        @if(count($urgentSale->photos ?? []) > 1)
-                            <div class="p-2 border-t">
-                                <div class="flex space-x-2 overflow-x-auto pb-1">
-                                    @foreach($urgentSale->photos as $index => $photo)
-                                        <button onclick="changeMainImage('{{ Storage::url($photo) }}', {{ $index }})"
-                                                class="flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-lg overflow-hidden border-2 {{ $index === 0 ? 'border-red-500' : 'border-gray-200' }} hover:border-red-500 transition duration-200">
-                                            <img src="{{ Storage::url($photo) }}" alt="Photo {{ $index + 1 }}" class="w-full h-full object-cover cursor-pointer" onclick="event.stopPropagation(); openImageModal({{ $index }})">
-                                        </button>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
                     @else
-                        <div class="h-32 sm:h-40 lg:h-48 bg-gray-200 flex items-center justify-center">
+                        <div class="h-64 sm:h-80 lg:h-96 bg-gray-200 flex items-center justify-center">
                             <div class="text-center">
                                 <svg class="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -236,7 +241,7 @@
                                     @if($urgentSale->prestataire->user->email)
                                         <div class="flex items-center">
                                             <svg class="w-3 h-3 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2v10a2 2 0 002 2z"></path>
                                             </svg>
                                             <span class="text-gray-700 truncate text-xs">{{ Str::limit($urgentSale->prestataire->user->email, 25) }}</span>
                                         </div>
@@ -363,7 +368,7 @@
                                     @else
                                         <div class="w-full h-full flex items-center justify-center">
                                             <svg class="w-6 h-6 md:w-8 md:h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 002 2z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 002 2v12a2 2 0 002 2z"></path>
                                             </svg>
                                         </div>
                                     @endif
@@ -399,14 +404,14 @@
         </button>
         
         <!-- Flèche gauche -->
-        <button id="prevButton" onclick="navigateImage(-1)" class="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 transition-colors bg-black bg-opacity-50 rounded-full p-3 hover:bg-opacity-70">
+        <button id="prevButtonModal" onclick="navigateImageModal(-1)" class="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 transition-colors bg-black bg-opacity-50 rounded-full p-3 hover:bg-opacity-70">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
             </svg>
         </button>
         
         <!-- Flèche droite -->
-        <button id="nextButton" onclick="navigateImage(1)" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 transition-colors bg-black bg-opacity-50 rounded-full p-3 hover:bg-opacity-70">
+        <button id="nextButtonModal" onclick="navigateImageModal(1)" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 transition-colors bg-black bg-opacity-50 rounded-full p-3 hover:bg-opacity-70">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
@@ -488,7 +493,7 @@
             });
         </script>
     @endif
-@endpush
+@endsection
 
 <!-- Modal de signalement -->
 <div id="reportModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
@@ -555,27 +560,31 @@ const saleImages = [
 
 let currentImageIndex = 0;
 
-function changeMainImage(src, index = null) {
-    document.getElementById('mainImage').src = src;
+// Fonction pour naviguer entre les images avec navigation circulaire
+function navigateImage(direction) {
+    if (saleImages.length <= 1) return;
     
-    if (index !== null) {
-        currentImageIndex = index;
+    // Calculer le nouvel index avec navigation circulaire
+    currentImageIndex += direction;
+    
+    if (currentImageIndex < 0) {
+        currentImageIndex = saleImages.length - 1; // Revenir à la dernière image
+    } else if (currentImageIndex >= saleImages.length) {
+        currentImageIndex = 0; // Revenir à la première image
     }
     
-    // Mettre à jour les bordures des miniatures
-    const buttons = document.querySelectorAll('.flex-shrink-0');
-    buttons.forEach((button, i) => {
-        const img = button.querySelector('img');
-        if (i === currentImageIndex) {
-            button.classList.add('border-red-500');
-            button.classList.remove('border-gray-200');
-        } else {
-            button.classList.remove('border-red-500');
-            button.classList.add('border-gray-200');
-        }
-    });
+    // Mettre à jour l'image principale
+    const mainImage = document.getElementById('mainImage');
+    const imageCounter = document.getElementById('imageCounter');
+    
+    if (mainImage && imageCounter) {
+        mainImage.src = saleImages[currentImageIndex].url;
+        mainImage.alt = saleImages[currentImageIndex].alt;
+        imageCounter.textContent = `${currentImageIndex + 1} / ${saleImages.length}`;
+    }
 }
 
+// Fonction pour ouvrir le modal d'image
 function openImageModal(index) {
     if (saleImages.length === 0) return;
     
@@ -583,8 +592,8 @@ function openImageModal(index) {
     const modal = document.getElementById('imageModal');
     const modalImage = document.getElementById('modalImage');
     const imageCounter = document.getElementById('imageCounter');
-    const prevButton = document.getElementById('prevButton');
-    const nextButton = document.getElementById('nextButton');
+    const prevButton = document.getElementById('prevButtonModal');
+    const nextButton = document.getElementById('nextButtonModal');
     
     if (modal && modalImage && imageCounter) {
         modalImage.src = saleImages[index].url;
@@ -608,21 +617,32 @@ function closeImageModal() {
     }
 }
 
-function navigateImage(direction) {
-    const newIndex = currentImageIndex + direction;
+// Fonction pour naviguer dans le modal (avec navigation circulaire)
+function navigateImageModal(direction) {
+    if (saleImages.length <= 1) return;
     
-    if (newIndex >= 0 && newIndex < saleImages.length) {
-        currentImageIndex = newIndex;
-        const modalImage = document.getElementById('modalImage');
-        const imageCounter = document.getElementById('imageCounter');
+    // Calculer le nouvel index avec navigation circulaire
+    currentImageIndex += direction;
+    
+    if (currentImageIndex < 0) {
+        currentImageIndex = saleImages.length - 1; // Revenir à la dernière image
+    } else if (currentImageIndex >= saleImages.length) {
+        currentImageIndex = 0; // Revenir à la première image
+    }
+    
+    const modalImage = document.getElementById('modalImage');
+    const imageCounter = document.getElementById('imageCounter');
+    
+    if (modalImage && imageCounter) {
+        modalImage.src = saleImages[currentImageIndex].url;
+        modalImage.alt = saleImages[currentImageIndex].alt;
+        imageCounter.textContent = `${currentImageIndex + 1} / ${saleImages.length}`;
         
-        if (modalImage && imageCounter) {
-            modalImage.src = saleImages[currentImageIndex].url;
-            modalImage.alt = saleImages[currentImageIndex].alt;
-            imageCounter.textContent = `${currentImageIndex + 1} / ${saleImages.length}`;
-            
-            // Mettre à jour l'image principale aussi
-            changeMainImage(saleImages[currentImageIndex].url, currentImageIndex);
+        // Mettre à jour l'image principale aussi
+        const mainImage = document.getElementById('mainImage');
+        if (mainImage) {
+            mainImage.src = saleImages[currentImageIndex].url;
+            mainImage.alt = saleImages[currentImageIndex].alt;
         }
     }
 }
@@ -672,9 +692,9 @@ document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape') {
             closeImageModal();
         } else if (event.key === 'ArrowLeft') {
-            navigateImage(-1);
+            navigateImageModal(-1);
         } else if (event.key === 'ArrowRight') {
-            navigateImage(1);
+            navigateImageModal(1);
         }
     }
 });
