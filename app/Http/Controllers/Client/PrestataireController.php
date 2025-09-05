@@ -143,7 +143,7 @@ class PrestataireController extends Controller
         $prestataire->load([
             'user',
             'services.category',
-            'reviews.client.user',
+            'reviews.client',
             'availabilities'
         ])
         ->loadCount('reviews')

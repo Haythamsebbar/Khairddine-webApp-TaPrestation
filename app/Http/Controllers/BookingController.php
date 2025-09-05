@@ -103,7 +103,9 @@ class BookingController extends Controller
         // Validate all selected slots
         $conflictingSlots = [];
         foreach ($selectedSlots as $start_datetime) {
-            $end_datetime = $start_datetime->copy()->addMinutes($service->duration_minutes);
+            // Use a default duration of 60 minutes if service duration is not set
+            $serviceDuration = $service->duration ?? 60;
+            $end_datetime = $start_datetime->copy()->addMinutes($serviceDuration);
             
             // Check for confirmed bookings only - pending bookings don't block new reservations
             $isBooked = Booking::where('prestataire_id', $prestataire->id)
@@ -129,7 +131,9 @@ class BookingController extends Controller
         $creationTime = now(); // Use the same timestamp for all bookings in the session
 
         foreach ($selectedSlots as $start_datetime) {
-            $end_datetime = $start_datetime->copy()->addMinutes($service->duration_minutes);
+            // Use a default duration of 60 minutes if service duration is not set
+            $serviceDuration = $service->duration ?? 60;
+            $end_datetime = $start_datetime->copy()->addMinutes($serviceDuration);
             
             // Create notes with session identifier for multi-slot bookings
             $notes = $request->client_notes;
@@ -410,7 +414,7 @@ class BookingController extends Controller
         }
 
         $request->validate([
-            'cancellation_reason' => 'required|string|max:500',
+            'cancellation_reason' => 'nullable|string|max:500',
         ]);
 
         // Check if this is part of a multi-slot session

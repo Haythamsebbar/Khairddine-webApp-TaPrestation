@@ -16,7 +16,7 @@ class ReviewController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Review::with(['client.user', 'prestataire', 'prestataire.user', 'moderator', 'service']);
+        $query = Review::with(['client', 'prestataire', 'prestataire.user', 'moderator', 'service']);
         
         // Filtrage par note
         if ($request->has('rating')) {
@@ -66,7 +66,7 @@ class ReviewController extends Controller
      */
     public function show($id)
     {
-        $review = Review::with(['client.user', 'prestataire', 'prestataire.user', 'moderator', 'service'])->findOrFail($id);
+        $review = Review::with(['client', 'prestataire', 'prestataire.user', 'moderator', 'service'])->findOrFail($id);
         
         return view('admin.reviews.show', [
             'review' => $review,

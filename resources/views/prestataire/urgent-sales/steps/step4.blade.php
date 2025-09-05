@@ -126,33 +126,46 @@
                                 <div class="space-y-2 sm:space-y-3">
                                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 sm:gap-4">
                                         <span class="text-xs sm:text-sm font-medium text-gray-600 flex-shrink-0">Titre :</span>
-                                        <span id="review-title" class="text-xs sm:text-sm text-gray-900 font-medium break-words">-</span>
+                                        <span id="review-title" class="text-xs sm:text-sm text-gray-900 font-medium break-words">{{ $step1Data['title'] ?? '-' }}</span>
                                     </div>
                                     
                                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 sm:gap-4">
                                         <span class="text-xs sm:text-sm font-medium text-gray-600 flex-shrink-0">Prix :</span>
-                                        <span id="review-price" class="text-xs sm:text-sm text-red-600 font-bold">-</span>
+                                        <span id="review-price" class="text-xs sm:text-sm text-red-600 font-bold">{{ isset($step1Data['price']) ? number_format($step1Data['price'], 2, ',', ' ') . ' €' : '-' }}</span>
                                     </div>
                                     
                                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 sm:gap-4">
                                         <span class="text-xs sm:text-sm font-medium text-gray-600 flex-shrink-0">État :</span>
-                                        <span id="review-condition" class="text-xs sm:text-sm text-gray-900">-</span>
+                                        <span id="review-condition" class="text-xs sm:text-sm text-gray-900">
+                                            @php
+                                                $conditionLabels = [
+                                                    'excellent' => 'Excellent',
+                                                    'very_good' => 'Très bon',
+                                                    'good' => 'Bon état',
+                                                    'fair' => 'État correct',
+                                                    'poor' => 'Mauvais état'
+                                                ];
+                                            @endphp
+                                            {{ $conditionLabels[$step1Data['condition']] ?? $step1Data['condition'] ?? '-' }}
+                                        </span>
                                     </div>
                                     
                                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 sm:gap-4">
                                         <span class="text-xs sm:text-sm font-medium text-gray-600 flex-shrink-0">Quantité :</span>
-                                        <span id="review-quantity" class="text-xs sm:text-sm text-gray-900">-</span>
+                                        <span id="review-quantity" class="text-xs sm:text-sm text-gray-900">{{ $step1Data['quantity'] ?? '1' }}</span>
                                     </div>
                                     
                                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 sm:gap-4">
                                         <span class="text-xs sm:text-sm font-medium text-gray-600 flex-shrink-0">Catégorie :</span>
-                                        <span id="review-category" class="text-xs sm:text-sm text-gray-900 break-words">-</span>
+                                        <span id="review-category" class="text-xs sm:text-sm text-gray-900 break-words">{{ $category->name ?? 'Non spécifiée' }}</span>
                                     </div>
                                     
-                                    <div id="review-subcategory-container" class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 sm:gap-4 hidden">
+                                    @if($subcategory)
+                                    <div id="review-subcategory-container" class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 sm:gap-4">
                                         <span class="text-xs sm:text-sm font-medium text-gray-600 flex-shrink-0">Sous-catégorie :</span>
-                                        <span id="review-subcategory" class="text-xs sm:text-sm text-gray-900 break-words">-</span>
+                                        <span id="review-subcategory" class="text-xs sm:text-sm text-gray-900 break-words">{{ $subcategory->name ?? '-' }}</span>
                                     </div>
+                                    @endif
                                 </div>
                             </div>
                             
@@ -165,7 +178,7 @@
                                 <div class="space-y-2 sm:space-y-3">
                                     <div>
                                         <span class="text-xs sm:text-sm font-medium text-gray-600 block mb-1">Adresse :</span>
-                                        <span id="review-location" class="text-xs sm:text-sm text-gray-900 block break-words">-</span>
+                                        <span id="review-location" class="text-xs sm:text-sm text-gray-900 block break-words">{{ $step2Data['location'] ?? '-' }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -178,7 +191,7 @@
                             </h3>
                             
                             <div class="bg-gray-50 rounded-lg p-3 sm:p-4">
-                                <p id="review-description" class="text-xs sm:text-sm text-gray-900 whitespace-pre-wrap break-words">-</p>
+                                <p id="review-description" class="text-xs sm:text-sm text-gray-900 whitespace-pre-wrap break-words">{{ $step3Data['description'] ?? '-' }}</p>
                             </div>
                         </div>
                         
@@ -189,12 +202,21 @@
                             </h3>
                             
                             <div id="review-photos" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4">
-                                <!-- Les photos seront ajoutées dynamiquement -->
-                            </div>
-                            
-                            <div id="no-photos" class="text-center py-6 sm:py-8 text-gray-500">
-                                <i class="fas fa-image text-2xl sm:text-3xl mb-2"></i>
-                                <p class="text-xs sm:text-sm">Aucune photo ajoutée</p>
+                                @if(isset($step3Data['temp_image_paths']) && count($step3Data['temp_image_paths']) > 0)
+                                    @foreach($step3Data['temp_image_paths'] as $index => $photoPath)
+                                        <div class="relative">
+                                            <img src="{{ asset('storage/' . $photoPath) }}" alt="Photo {{ $index + 1 }}" class="w-full h-24 object-cover rounded-lg">
+                                            <div class="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
+                                                Photo {{ $index + 1 }}
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <div class="text-center py-6 sm:py-8 text-gray-500 col-span-full">
+                                        <i class="fas fa-image text-2xl sm:text-3xl mb-2"></i>
+                                        <p class="text-xs sm:text-sm">Aucune photo ajoutée</p>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                         
@@ -277,82 +299,11 @@ function goToStep(step) {
     }
 }
 
-// Mettre à jour l'aperçu des photos
-function updatePhotoReview() {
-    const photosInput = document.getElementById('photos');
-    const reviewPhotos = document.getElementById('review-photos');
-    const noPhotos = document.getElementById('no-photos');
-    
-    reviewPhotos.innerHTML = '';
-    
-    if (photosInput && photosInput.files && photosInput.files.length > 0) {
-        noPhotos.classList.add('hidden');
-        reviewPhotos.classList.remove('hidden');
-        
-        Array.from(photosInput.files).forEach((file, index) => {
-            if (file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const div = document.createElement('div');
-                    div.className = 'relative';
-                    
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.className = 'w-full h-24 object-cover rounded-lg';
-                    div.appendChild(img);
-                    
-                    const label = document.createElement('div');
-                    label.className = 'absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded';
-                    label.textContent = `Photo ${index + 1}`;
-                    div.appendChild(label);
-                    
-                    reviewPhotos.appendChild(div);
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    } else {
-        noPhotos.classList.remove('hidden');
-        reviewPhotos.classList.add('hidden');
-    }
-}
-
 // Prevent form resubmission
 document.getElementById('urgentSaleStep4Form').addEventListener('submit', function() {
     const submitBtn = document.getElementById('final-publish-btn');
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Publication en cours...';
-});
-
-// Initialize review data when the page loads
-document.addEventListener('DOMContentLoaded', function() {
-    // Get data from session or form inputs
-    const title = document.querySelector('input[name="title"]')?.value || 'Titre de l\'annonce';
-    const price = document.querySelector('input[name="price"]')?.value || '0';
-    const condition = document.querySelector('select[name="condition"]')?.value || 'État non spécifié';
-    const quantity = document.querySelector('input[name="quantity"]')?.value || '1';
-    const category = document.querySelector('select[name="parent_category_id"]')?.selectedOptions[0]?.text || 'Catégorie non spécifiée';
-    const subcategory = document.querySelector('select[name="category_id"]')?.selectedOptions[0]?.text || '';
-    const location = document.querySelector('input[name="location"]')?.value || 'Localisation non spécifiée';
-    const description = document.querySelector('textarea[name="description"]')?.value || 'Description non fournie';
-    
-    // Update review elements
-    document.getElementById('review-title').textContent = title;
-    document.getElementById('review-price').textContent = `${price} €`;
-    document.getElementById('review-condition').textContent = condition;
-    document.getElementById('review-quantity').textContent = quantity;
-    document.getElementById('review-category').textContent = category;
-    
-    if (subcategory) {
-        document.getElementById('review-subcategory-container').classList.remove('hidden');
-        document.getElementById('review-subcategory').textContent = subcategory;
-    }
-    
-    document.getElementById('review-location').textContent = location;
-    document.getElementById('review-description').textContent = description;
-    
-    // Update photo review
-    updatePhotoReview();
 });
 </script>
 @endpush

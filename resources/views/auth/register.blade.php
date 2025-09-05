@@ -199,6 +199,113 @@
 .form-group {
     margin-bottom: 1.5rem;
 }
+
+/* Custom styles for consistent button styling */
+.submit-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    width: 100%;
+    background-color: #3b82f6;
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
+}
+
+.submit-button:hover {
+    background-color: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 8px -1px rgba(59, 130, 246, 0.3);
+}
+
+.submit-button:disabled {
+    background-color: #93c5fd;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.section-header {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.register-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.5rem;
+}
+
+.register-subtitle {
+    font-size: 1rem;
+    color: #6b7280;
+    margin-bottom: 2rem;
+}
+
+.reassurance-banner {
+    background-color: #dcfce7;
+    color: #166534;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.login-link a {
+    color: #3b82f6;
+    text-decoration: underline;
+    font-weight: 500;
+}
+
+.login-link a:hover {
+    color: #2563eb;
+}
+
+.error-container {
+    background-color: #fee2e2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.error-list {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+    margin: 0;
+}
+
+.error-list li {
+    margin-bottom: 0.25rem;
+}
+
+.error-list li:last-child {
+    margin-bottom: 0;
+}
 </style>
 @endpush
 
@@ -207,257 +314,290 @@
 @endpush
 
 @section('content')
-<div class="register-container">
-    <div class="reassurance-banner">
-        <i class="fas fa-check-circle"></i> <span id="reassurance-text">Choisissez votre type de compte pour commencer</span>
-    </div>
-    
-    <div class="register-card">
-        <div>
-            <h2 class="register-title">
-                Créer votre compte
-            </h2>
-            <p class="register-subtitle">
-                Rejoignez TaPrestation en tant que client ou prestataire
-            </p>
-        </div>
-        
-        <!-- Sélecteur de type d'utilisateur -->
-        <div class="user-type-selector">
-            <div class="user-type-option" data-type="client">
-                <div class="user-type-icon">
-                    <i class="fas fa-user"></i>
+<div class="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl w-full bg-white rounded-lg shadow-lg overflow-hidden">
+        <!-- Grid layout for register form and logo -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
+            <!-- Left side: Register form -->
+            <div class="p-8 sm:p-10 md:p-12 lg:p-16 flex flex-col justify-center">
+                <div>
+                    <h2 class="register-title">
+                        Créer votre compte
+                    </h2>
+                    <p class="register-subtitle">
+                        Rejoignez TaPrestation en tant que client ou prestataire
+                    </p>
                 </div>
-                <div class="user-type-title">Client</div>
-                <div class="user-type-description">Je cherche des services professionnels</div>
+                
+                <div class="reassurance-banner">
+                    <i class="fas fa-check-circle"></i> <span id="reassurance-text">Choisissez votre type de compte pour commencer</span>
+                </div>
+                
+                @if ($errors->any())
+                    <div class="error-container">
+                        <ul class="error-list">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                
+                <!-- Sélecteur de type d'utilisateur -->
+                <div class="user-type-selector">
+                    <div class="user-type-option" data-type="client">
+                        <div class="user-type-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="user-type-title">Client</div>
+                        <div class="user-type-description">Je cherche des services professionnels</div>
+                    </div>
+                    
+                    <div class="user-type-option" data-type="prestataire">
+                        <div class="user-type-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div class="user-type-title">Prestataire</div>
+                        <div class="user-type-description">Je propose mes services professionnels</div>
+                    </div>
+                </div>
+                
+                <!-- Formulaire Client -->
+                <div id="client-form" class="form-section">
+                    <form id="client-form-element" class="mt-8 space-y-6" action="{{ route('register') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <input type="hidden" name="user_type" value="client">
+                        
+                        <!-- Section: Informations de connexion -->
+                        <div class="mb-8">
+                            <h3 class="section-header">Informations de connexion</h3>
+                            
+                            <div class="space-y-4">
+                                <div class="form-group">
+                                    <label for="client_name" class="form-label">Nom complet</label>
+                                    <input id="client_name" name="name" type="text" autocomplete="name" required value="{{ old('name') }}" class="form-control" placeholder="Votre nom complet">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="client_email" class="form-label">E-mail</label>
+                                    <input id="client_email" name="email" type="email" autocomplete="email" required value="{{ old('email') }}" class="form-control" placeholder="votre@email.com">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="client_password" class="form-label">Mot de passe</label>
+                                    <input id="client_password" name="password" type="password" autocomplete="new-password" required class="form-control" placeholder="Minimum 8 caractères">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="client_password_confirmation" class="form-label">Confirmer le mot de passe</label>
+                                    <input id="client_password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" required class="form-control" placeholder="Confirmez votre mot de passe">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Section: Informations personnelles -->
+                        <div>
+                            <h3 class="section-header">Informations personnelles</h3>
+                            
+                            <div class="space-y-4">
+                                <div class="form-group">
+                                    <label for="location" class="form-label">Localisation *</label>
+                                    <div class="map-container">
+                                        <div id="clientRegistrationMap" class="h-64 rounded-lg border border-gray-300"></div>
+                                        <div class="mt-3">
+                                            <input type="text" id="selectedAddress" name="location" value="{{ old('location') }}" class="form-control" placeholder="Cliquez sur la carte pour sélectionner votre localisation" readonly>
+                                            <input type="hidden" id="selectedLatitude" name="latitude" value="{{ old('latitude') }}">
+                                            <input type="hidden" id="selectedLongitude" name="longitude" value="{{ old('longitude') }}">
+                                            <div class="flex gap-3 mt-3">
+                                                <button type="button" id="getCurrentLocationBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition duration-200">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    </svg>
+                                                    Ma position actuelle
+                                                </button>
+                                                <button type="button" id="clearLocationBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition duration-200">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                    Effacer
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p class="location-help-text">Cliquez sur la carte pour sélectionner votre localisation ou utilisez votre position actuelle</p>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="client_profile_photo" class="form-label">Photo de profil (optionnelle)</label>
+                                    <div class="file-input-wrapper">
+                                        <input id="client_profile_photo" name="client_profile_photo" type="file" class="form-control-file">
+                                        <div class="file-name-display"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="submit-button">
+                                <span class="button-text">S'inscrire en tant que Client</span>
+                                <span class="button-loader"></span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Formulaire Prestataire -->
+                <div id="prestataire-form" class="form-section">
+                    <form id="prestataire-form-element" class="mt-8 space-y-6" action="{{ route('register') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="user_type" value="prestataire">
+                        
+                        <!-- Section: Informations de connexion -->
+                        <div class="mb-8">
+                            <h3 class="section-header">Informations de connexion</h3>
+                            
+                            <div class="space-y-4">
+                                <div class="form-group">
+                                    <label for="prestataire_name" class="form-label">Identifiant</label>
+                                    <input id="prestataire_name" name="name" type="text" autocomplete="name" required value="{{ old('name') }}" class="form-control" placeholder="Votre identifiant">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="prestataire_email" class="form-label">E-mail</label>
+                                    <input id="prestataire_email" name="email" type="email" autocomplete="email" required value="{{ old('email') }}" class="form-control" placeholder="votre@email.com">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="prestataire_password" class="form-label">Mot de passe</label>
+                                    <input id="prestataire_password" name="password" type="password" autocomplete="new-password" required class="form-control" placeholder="Minimum 8 caractères">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="prestataire_password_confirmation" class="form-label">Confirmer le mot de passe</label>
+                                    <input id="prestataire_password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" required class="form-control" placeholder="Confirmez votre mot de passe">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Section: Informations professionnelles -->
+                        <div>
+                            <h3 class="section-header">Informations professionnelles</h3>
+                            
+                            <div class="space-y-4">
+                                <div class="form-group">
+                                    <label for="company_name" class="form-label">Nom de l'enseigne</label>
+                                    <input id="company_name" name="company_name" type="text" required value="{{ old('company_name') }}" class="form-control" placeholder="Nom de votre entreprise">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="phone" class="form-label">Téléphone</label>
+                                    <input id="phone" name="phone" type="tel" required value="{{ old('phone') }}" class="form-control" placeholder="Votre numéro de téléphone">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="prestataire_location" class="form-label">Localisation *</label>
+                                    <div class="map-container">
+                                        <div id="prestataireRegistrationMap" class="h-64 rounded-lg border border-gray-300"></div>
+                                        <div class="mt-3">
+                                            <input type="text" id="prestataireSelectedAddress" name="city" value="{{ old('city') }}" class="form-control" placeholder="Cliquez sur la carte pour sélectionner votre localisation" readonly>
+                                            <input type="hidden" id="prestataireSelectedLatitude" name="latitude" value="{{ old('latitude') }}">
+                                            <input type="hidden" id="prestataireSelectedLongitude" name="longitude" value="{{ old('longitude') }}">
+                                            <div class="flex gap-3 mt-3">
+                                                <button type="button" id="prestataireGetCurrentLocationBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition duration-200">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    </svg>
+                                                    Ma position actuelle
+                                                </button>
+                                                <button type="button" id="prestataireClearLocationBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition duration-200">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                    Effacer
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p class="location-help-text">Cliquez sur la carte pour sélectionner votre localisation ou utilisez votre position actuelle</p>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="prestataire_profile_photo" class="form-label">Photo de profil</label>
+                                    <div class="file-input-wrapper">
+                                        <input id="prestataire_profile_photo" name="prestataire_profile_photo" type="file" required class="form-control-file">
+                                        <div class="file-name-display"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="category_id" class="form-label">Catégorie principale *</label>
+                                    <select id="category_id" name="category_id" required class="form-control">
+                                        <option value="">Sélectionnez une catégorie principale</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group" id="subcategory-group" style="display: none;">
+                                    <label for="subcategory_id" class="form-label">Sous-catégorie</label>
+                                    <select id="subcategory_id" name="subcategory_id" class="form-control" disabled>
+                                        <option value="">Veuillez d'abord choisir une catégorie</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="description" class="form-label">Description courte du service</label>
+                                    <textarea id="description" name="description" rows="3" class="form-control" placeholder="Décrivez brièvement vos services...">{{ old('description') }}</textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="portfolio_url" class="form-label">Lien vers un portfolio ou site (optionnel)</label>
+                                    <input id="portfolio_url" name="portfolio_url" type="url" value="{{ old('portfolio_url') }}" class="form-control" placeholder="https://votre-site.com">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="submit-button">
+                                <span class="button-text">S'inscrire en tant que Prestataire</span>
+                                <span class="button-loader"></span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="login-link">
+                    Vous avez déjà un compte? <a href="{{ route('login') }}">Connectez-vous ici</a>
+                </div>
             </div>
             
-            <div class="user-type-option" data-type="prestataire">
-                <div class="user-type-icon">
-                    <i class="fas fa-briefcase"></i>
+            <!-- Right side: Logo/Visual element -->
+            <div class="hidden lg:flex items-center justify-center bg-gradient-to-br from-blue-50 to-white p-8 md:p-12 lg:p-16">
+                <!-- Logo container with enhanced styling -->
+                <div class="bg-gradient-to-br from-blue-50 to-white rounded-3xl p-8 w-full max-w-md flex items-center justify-center aspect-square relative">
+                    <!-- Halo effect behind the logo -->
+                    <div class="absolute inset-0 rounded-3xl bg-gradient-to-br from-blue-200/20 to-transparent blur-xl"></div>
+                    
+                    <div class="text-center relative z-10">
+                        <div class="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 mx-auto flex items-center justify-center mb-6">
+                            <!-- Circular background with gradient -->
+                            <div class="absolute w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 rounded-full bg-gradient-to-br from-blue-100 to-blue-50 opacity-80"></div>
+                            
+                            <!-- Main logo with floating effect -->
+                            <div class="relative w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center shadow-xl transform transition-transform duration-300">
+                                <i class="fas fa-handshake text-white text-4xl sm:text-5xl md:text-6xl"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">TaPrestation</h3>
+                        <p class="text-sm sm:text-base text-gray-600 max-w-xs mx-auto">
+                            Rejoignez notre communauté de professionnels et de clients
+                        </p>
+                    </div>
                 </div>
-                <div class="user-type-title">Prestataire</div>
-                <div class="user-type-description">Je propose mes services professionnels</div>
             </div>
         </div>
-        
-        @if ($errors->any())
-            <div class="error-container">
-                <ul class="error-list">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-        
-        <!-- Formulaire Client -->
-        <div id="client-form" class="form-section">
-            <form id="client-form-element" class="mt-8 space-y-6" action="{{ route('register') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <input type="hidden" name="user_type" value="client">
-                
-                <!-- Section: Informations de connexion -->
-                <div class="mb-8">
-                    <h3 class="section-header">Informations de connexion</h3>
-                    
-                    <div class="space-y-4">
-                        <div class="form-group">
-                            <label for="client_name" class="form-label">Nom complet</label>
-                            <input id="client_name" name="name" type="text" autocomplete="name" required value="{{ old('name') }}" class="form-control" placeholder="Votre nom complet">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="client_email" class="form-label">E-mail</label>
-                            <input id="client_email" name="email" type="email" autocomplete="email" required value="{{ old('email') }}" class="form-control" placeholder="votre@email.com">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="client_password" class="form-label">Mot de passe</label>
-                            <input id="client_password" name="password" type="password" autocomplete="new-password" required class="form-control" placeholder="Minimum 8 caractères">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="client_password_confirmation" class="form-label">Confirmer le mot de passe</label>
-                            <input id="client_password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" required class="form-control" placeholder="Confirmez votre mot de passe">
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Section: Informations personnelles -->
-                <div>
-                    <h3 class="section-header">Informations personnelles</h3>
-                    
-                    <div class="space-y-4">
-                        <div class="form-group">
-                            <label for="location" class="form-label">Localisation *</label>
-                            <div class="map-container">
-                                <div id="clientRegistrationMap" class="h-64 rounded-lg border border-gray-300"></div>
-                                <div class="mt-3">
-                                    <input type="text" id="selectedAddress" name="location" value="{{ old('location') }}" class="form-control" placeholder="Cliquez sur la carte pour sélectionner votre localisation" readonly>
-                                    <input type="hidden" id="selectedLatitude" name="latitude" value="{{ old('latitude') }}">
-                                    <input type="hidden" id="selectedLongitude" name="longitude" value="{{ old('longitude') }}">
-                                    <div class="flex gap-3 mt-3">
-                                        <button type="button" id="getCurrentLocationBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition duration-200">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            </svg>
-                                            Ma position actuelle
-                                        </button>
-                                        <button type="button" id="clearLocationBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition duration-200">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                            </svg>
-                                            Effacer
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <p class="location-help-text">Cliquez sur la carte pour sélectionner votre localisation ou utilisez votre position actuelle</p>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="client_profile_photo" class="form-label">Photo de profil (optionnelle)</label>
-                            <div class="file-input-wrapper">
-                                <input id="client_profile_photo" name="client_profile_photo" type="file" class="form-control-file">
-                                <div class="file-name-display"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <button type="submit" class="submit-button">
-                        <span class="button-text">S'inscrire en tant que Client</span>
-                        <span class="button-loader"></span>
-                    </button>
-                </div>
-            </form>
-        </div>
-        
-        <!-- Formulaire Prestataire -->
-        <div id="prestataire-form" class="form-section">
-            <form id="prestataire-form-element" class="mt-8 space-y-6" action="{{ route('register') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <input type="hidden" name="user_type" value="prestataire">
-                
-                <!-- Section: Informations de connexion -->
-                <div class="mb-8">
-                    <h3 class="section-header">Informations de connexion</h3>
-                    
-                    <div class="space-y-4">
-                        <div class="form-group">
-                            <label for="prestataire_name" class="form-label">Identifiant</label>
-                            <input id="prestataire_name" name="name" type="text" autocomplete="name" required value="{{ old('name') }}" class="form-control" placeholder="Votre identifiant">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="prestataire_email" class="form-label">E-mail</label>
-                            <input id="prestataire_email" name="email" type="email" autocomplete="email" required value="{{ old('email') }}" class="form-control" placeholder="votre@email.com">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="prestataire_password" class="form-label">Mot de passe</label>
-                            <input id="prestataire_password" name="password" type="password" autocomplete="new-password" required class="form-control" placeholder="Minimum 8 caractères">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="prestataire_password_confirmation" class="form-label">Confirmer le mot de passe</label>
-                            <input id="prestataire_password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" required class="form-control" placeholder="Confirmez votre mot de passe">
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Section: Informations professionnelles -->
-                <div>
-                    <h3 class="section-header">Informations professionnelles</h3>
-                    
-                    <div class="space-y-4">
-                        <div class="form-group">
-                            <label for="company_name" class="form-label">Nom de l'enseigne</label>
-                            <input id="company_name" name="company_name" type="text" required value="{{ old('company_name') }}" class="form-control" placeholder="Nom de votre entreprise">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="phone" class="form-label">Téléphone</label>
-                            <input id="phone" name="phone" type="tel" required value="{{ old('phone') }}" class="form-control" placeholder="Votre numéro de téléphone">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="prestataire_location" class="form-label">Localisation *</label>
-                            <div class="map-container">
-                                <div id="prestataireRegistrationMap" class="h-64 rounded-lg border border-gray-300"></div>
-                                <div class="mt-3">
-                                    <input type="text" id="prestataireSelectedAddress" name="city" value="{{ old('city') }}" class="form-control" placeholder="Cliquez sur la carte pour sélectionner votre localisation" readonly>
-                                    <input type="hidden" id="prestataireSelectedLatitude" name="latitude" value="{{ old('latitude') }}">
-                                    <input type="hidden" id="prestataireSelectedLongitude" name="longitude" value="{{ old('longitude') }}">
-                                    <div class="flex gap-3 mt-3">
-                                        <button type="button" id="prestataireGetCurrentLocationBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition duration-200">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            </svg>
-                                            Ma position actuelle
-                                        </button>
-                                        <button type="button" id="prestataireClearLocationBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition duration-200">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                            </svg>
-                                            Effacer
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <p class="location-help-text">Cliquez sur la carte pour sélectionner votre localisation ou utilisez votre position actuelle</p>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="prestataire_profile_photo" class="form-label">Photo de profil</label>
-                            <div class="file-input-wrapper">
-                                <input id="prestataire_profile_photo" name="prestataire_profile_photo" type="file" required class="form-control-file">
-                                <div class="file-name-display"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="category_id" class="form-label">Catégorie principale *</label>
-                            <select id="category_id" name="category_id" required class="form-control">
-                                <option value="">Sélectionnez une catégorie principale</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group" id="subcategory-group" style="display: none;">
-                            <label for="subcategory_id" class="form-label">Sous-catégorie</label>
-                            <select id="subcategory_id" name="subcategory_id" class="form-control" disabled>
-                                <option value="">Veuillez d'abord choisir une catégorie</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="description" class="form-label">Description courte du service</label>
-                            <textarea id="description" name="description" rows="3" class="form-control" placeholder="Décrivez brièvement vos services...">{{ old('description') }}</textarea>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="portfolio_url" class="form-label">Lien vers un portfolio ou site (optionnel)</label>
-                            <input id="portfolio_url" name="portfolio_url" type="url" value="{{ old('portfolio_url') }}" class="form-control" placeholder="https://votre-site.com">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <button type="submit" class="submit-button">
-                        <span class="button-text">S'inscrire en tant que Prestataire</span>
-                        <span class="button-loader"></span>
-                    </button>
-                </div>
-            </form>
-        </div>
-        
-        <div class="login-link">
-            Vous avez déjà un compte? <a href="/login">Connectez-vous ici</a>
-        </div>
+    </div>
+</div>
 
 <script src="{{ asset('js/register-form.js') }}"></script>
 
@@ -1011,6 +1151,4 @@ document.querySelectorAll('button[type="submit"]').forEach(button => {
 
 </script>
 
-    </div>
-</div>
 @endsection

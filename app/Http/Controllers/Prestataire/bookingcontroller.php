@@ -73,7 +73,8 @@ class BookingController extends Controller
                 }
             }
             
-            $allServiceBookings = $query->orderBy('start_datetime', 'desc')->get();
+            // Order by created_at to ensure proper mixing with other request types
+            $allServiceBookings = $query->orderBy('created_at', 'desc')->get();
             
             // Group bookings by session for display purposes
             $serviceBookings = $this->groupBookingsBySessions($allServiceBookings);
@@ -107,7 +108,7 @@ class BookingController extends Controller
 
         // Récupérer les annonces
         if ($showUrgentSales) {
-            $query = $prestataire->urgentSales();
+            $query = $prestataire->urgentSales()->with(['contacts.user.client']);
             
             if ($status) {
                 $query->where('status', $status);
@@ -209,7 +210,7 @@ class BookingController extends Controller
             abort(403, 'Accès non autorisé');
         }
         
-        $booking->load(['service', 'client.user', 'timeSlot']);
+        $booking->load(['service.category', 'client.user', 'timeSlot']);
         
         // For AJAX requests, return JSON data
         if ($request->ajax()) {

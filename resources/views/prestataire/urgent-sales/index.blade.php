@@ -226,12 +226,6 @@
                                 <i class="fas fa-edit mr-1"></i>Modifier
                             </a>
                             
-                            @if($sale->contacts_count > 0)
-                                <a href="{{ route('prestataire.urgent-sales.contacts', $sale) }}" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-3 rounded-lg text-sm transition duration-200 shadow-md hover:shadow-lg">
-                                    <i class="fas fa-envelope mr-1"></i>Contacts
-                                </a>
-                            @endif
-                            
                             <form action="{{ route('prestataire.urgent-sales.destroy', $sale) }}" method="POST" class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette vente ?')">
                                 @csrf
                                 @method('DELETE')

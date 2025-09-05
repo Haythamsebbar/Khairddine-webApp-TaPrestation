@@ -19,7 +19,7 @@ class ReviewController extends Controller
         // Default to null if no prestataire ID is provided
         $prestataireId = $request->query('prestataire_id');
         
-        $reviews = Review::with(['client.user', 'prestataire.user']);
+        $reviews = Review::with(['client', 'prestataire.user']);
         
         // Filter by prestataire if ID is provided
         if ($prestataireId) {
@@ -137,7 +137,7 @@ class ReviewController extends Controller
         // Default to null if no prestataire ID is provided
         $prestataireId = $request->query('prestataire_id');
         
-        $reviews = Review::with(['client.user', 'prestataire.user'])
+        $reviews = Review::with(['client', 'prestataire.user'])
             ->whereRaw("JSON_LENGTH(IFNULL(photos, '[]')) > 0");
             
         // Filter by prestataire if ID is provided
@@ -172,7 +172,7 @@ class ReviewController extends Controller
         $prestataireId = $request->query('prestataire_id');
         
         // Assuming certificates are reviews with high ratings (4 or 5)
-        $reviews = Review::with(['client.user', 'prestataire.user'])
+        $reviews = Review::with(['client', 'prestataire.user'])
             ->where('rating', '>=', 4);
             
         // Filter by prestataire if ID is provided

@@ -208,7 +208,7 @@ class ProfileController extends Controller
      */
     public function publicShow($id)
     {
-        $prestataire = Prestataire::with(['user', 'services', 'reviews.client.user'])
+        $prestataire = Prestataire::with(['user', 'services', 'reviews.client'])
             ->where('is_approved', true)
             ->findOrFail($id);
         

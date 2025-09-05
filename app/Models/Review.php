@@ -53,12 +53,11 @@ class Review extends Model
     /**
      * Get the client that wrote the review.
      * 
-     * Note: client_id dans la table reviews fait référence à users.id et non à clients.id
-     * Nous devons donc d'abord récupérer l'utilisateur, puis accéder au client associé.
+     * Note: client_id dans la table reviews fait référence à users.id
      */
     public function client(): BelongsTo
     {
-        return $this->belongsTo(Client::class, 'client_id', 'id');
+        return $this->belongsTo(User::class, 'client_id');
     }
 
     /**
@@ -124,8 +123,8 @@ class Review extends Model
      */
     public function getClientNameAttribute(): string
     {
-        // Since client() now returns a Client model, we need to access the user's name
-        return $this->client && $this->client->user ? $this->client->user->name : 'Client anonyme';
+        // Since client() now returns a User model, we can access the name directly
+        return $this->client ? $this->client->name : 'Client anonyme';
     }
 
     /**
@@ -175,7 +174,7 @@ class Review extends Model
      */
     public function getClientEmailAttribute(): ?string
     {
-        // Since client() now returns a User model, we need to access the email directly
+        // Since client() now returns a User model, we can access the email directly
         return $this->client ? $this->client->email : null;
     }
 

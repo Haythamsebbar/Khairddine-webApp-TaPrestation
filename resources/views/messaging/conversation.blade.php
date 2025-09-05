@@ -187,7 +187,7 @@ html, body {
                         
                     </div>
                     <div class="flex items-center space-x-3">
-                            <a href="{{ Auth::user()->hasRole('client') ? route('client.messaging.index') : (Auth::user()->hasRole('prestataire') ? route('prestataire.prestataire.messages.index') : '#') }}" class="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-800 hover:text-blue-900 transition-all duration-200">
+                            <a href="{{ Auth::user()->hasRole('client') ? route('messaging.index') : (Auth::user()->hasRole('prestataire') ? route('prestataire.prestataire.messages.index') : '#') }}" class="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-800 hover:text-blue-900 transition-all duration-200">
                                 <i class="fas fa-arrow-left text-base"></i>
                             </a>
                             
@@ -277,7 +277,7 @@ html, body {
 <!-- Formulaire d'envoi de message -->
 <div class="message-input-container bg-gray-50 border-t-2 border-blue-200 px-4 md:px-6 py-2 w-full">
                     <div class="w-full max-w-7xl mx-auto">
-                        <form id="message-form" action="{{ isset($otherUser) ? (Auth::user()->hasRole('client') ? route('client.messaging.store', $otherUser->id) : (Auth::user()->hasRole('prestataire') ? route('prestataire.prestataire.messages.store', $otherUser->id) : '#')) : '#' }}" method="POST" class="flex items-end space-x-2">
+                        <form id="message-form" action="{{ isset($otherUser) ? (Auth::user()->hasRole('client') ? route('messaging.store', $otherUser) : (Auth::user()->hasRole('prestataire') ? route('prestataire.prestataire.messages.store', $otherUser) : '#')) : '#' }}" method="POST" class="flex items-end space-x-2">
                             @csrf
                             <input type="hidden" name="receiver_id" value="{{ $otherUser->id ?? '' }}">
                             
@@ -329,7 +329,7 @@ html, body {
                     Cette action est irréversible. Tous les messages seront définitivement supprimés.
                 </p>
                 
-                <form id="deleteForm" method="POST" action="{{ isset($otherUser) ? (Auth::user()->hasRole('client') ? route('client.messaging.delete', $otherUser) : '#') : '#' }}">
+                <form id="deleteForm" method="POST" action="{{ isset($otherUser) ? (Auth::user()->hasRole('client') ? route('messaging.delete', $otherUser) : (Auth::user()->hasRole('prestataire') ? route('prestataire.prestataire.messages.show', $otherUser) : '#')) : '#' }}">
                     @csrf
                     @method('DELETE')
                     

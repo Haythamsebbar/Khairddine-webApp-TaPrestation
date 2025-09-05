@@ -36,16 +36,6 @@
                     </a>
                 @endif
                 
-                @if($urgentSale->status === 'active')
-                    <form action="{{ route('prestataire.urgent-sales.update-status', $urgentSale) }}" method="POST" class="inline">
-                        @csrf
-                        <input type="hidden" name="status" value="sold">
-                        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-200" onclick="return confirm('Marquer cette vente comme vendue ?')">
-                            <i class="fas fa-check mr-2"></i>Marquer comme vendu
-                        </button>
-                    </form>
-                @endif
-                
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-lg transition duration-200">
                         <i class="fas fa-ellipsis-v"></i>
@@ -201,30 +191,40 @@
                             </div>
                             
                             <div class="space-y-4 max-h-96 overflow-y-auto">
-                                @foreach($relatedMessages as $message)
+                                @foreach($relatedMessages as $contact)
                                     <div class="bg-white border border-red-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-200">
                                         <div class="flex justify-between items-start mb-3">
                                             <div class="flex items-center">
-                                                <div class="w-10 h-10 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center mr-3 shadow-sm">
-                                                    <i class="fas fa-user text-white text-sm"></i>
+                                                <div class="w-10 h-10 rounded-full flex items-center justify-center mr-3 shadow-sm overflow-hidden">
+                                                    @if($contact->user && ($contact->user->client && $contact->user->client->photo))
+                                                        <img src="{{ asset('storage/' . $contact->user->client->photo) }}" alt="{{ $contact->user->name }}" class="w-full h-full object-cover">
+                                                    @elseif($contact->user && $contact->user->avatar)
+                                                        <img src="{{ asset('storage/' . $contact->user->avatar) }}" alt="{{ $contact->user->name }}" class="w-full h-full object-cover">
+                                                    @else
+                                                        <div class="w-full h-full bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center">
+                                                            <i class="fas fa-user text-white text-sm"></i>
+                                                        </div>
+                                                    @endif
                                                 </div>
                                                 <div>
-                                                    <span class="font-semibold text-red-900 text-base">{{ $message->sender->name }}</span>
+                                                    <span class="font-semibold text-red-900 text-base">{{ $contact->user->name }}</span>
                                                     <div class="text-xs text-red-600 mt-1">
-                                                        <i class="fas fa-clock mr-1"></i>{{ $message->created_at->format('d/m/Y à H:i') }}
+                                                        <i class="fas fa-clock mr-1"></i>{{ $contact->created_at->format('d/m/Y à H:i') }}
                                                     </div>
                                                 </div>
                                             </div>
-                                            <span class="text-xs text-red-500 bg-red-100 px-2 py-1 rounded-full">{{ $message->created_at->diffForHumans() }}</span>
+                                            <span class="text-xs text-red-500 bg-red-100 px-2 py-1 rounded-full">{{ $contact->created_at->diffForHumans() }}</span>
                                         </div>
                                         <div class="bg-red-50 rounded-lg p-4 mb-4 border border-red-200">
-                                            <p class="text-red-800 leading-relaxed">{{ $message->content }}</p>
+                                            <p class="text-red-800 leading-relaxed">
+                                                Concernant votre vente urgente '{{ $urgentSale->title }}': {{ $contact->message }} (#Référence : {{ $contact->id }})
+                                            </p>
                                         </div>
                                         <div class="flex justify-between items-center">
                                             <div class="text-xs text-red-600">
-                                                <i class="fas fa-envelope mr-1"></i>Message reçu
+                                                <i class="fas fa-envelope mr-1"></i>Contact reçu
                                             </div>
-                                            <a href="#" 
+                                            <a href="{{ route('prestataire.prestataire.messages.show', $contact->user) }}" 
                                class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
                                 <i class="fas fa-reply mr-2"></i>Répondre
                             </a>
@@ -234,7 +234,7 @@
                             </div>
                             
                             <div class="mt-6 text-center">
-                                <a href="{{ route('messaging.index') }}" 
+                                <a href="{{ route('prestataire.prestataire.messages.index') }}" 
                                    class="inline-flex items-center px-6 py-3 bg-red-100 hover:bg-red-200 text-red-700 hover:text-red-900 font-medium rounded-lg transition-colors duration-200 border border-red-300 hover:border-red-400">
                                     <i class="fas fa-envelope mr-2"></i>Voir tous les messages
                                 </a>

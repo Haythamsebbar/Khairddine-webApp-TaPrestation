@@ -13,6 +13,7 @@
             </div>
             <form action="{{ route('bookings.cancel', $booking) }}" method="POST" class="mt-5">
                 @csrf
+                @method('PUT')
                 <div class="mb-5">
                     <label for="cancellation_reason" class="block text-sm font-medium text-gray-700 mb-2 text-left">Raison de l'annulation (optionnel)</label>
                     <textarea name="cancellation_reason" id="cancellation_reason" rows="3" 
@@ -51,7 +52,7 @@
                 @csrf
                 <div class="mb-5">
                     <label for="refusal_reason" class="block text-sm font-medium text-gray-700 mb-2 text-left">Raison du refus (optionnel)</label>
-                    <textarea name="cancellation_reason" id="refusal_reason" rows="3" 
+                    <textarea name="refusal_reason" id="refusal_reason" rows="3" 
                               class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition duration-200"
                               placeholder="Expliquez pourquoi vous refusez cette réservation..."></textarea>
                 </div>

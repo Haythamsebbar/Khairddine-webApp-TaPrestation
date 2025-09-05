@@ -100,7 +100,7 @@ class PrestataireController extends Controller
                 $query->latest();
             },
             'reviews' => function($query) {
-                $query->with(['client.user'])->latest();
+                $query->with(['client'])->latest();
             },
             'equipments' => function($query) {
                 $query->where('status', 'active')

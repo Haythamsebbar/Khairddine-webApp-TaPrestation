@@ -14,7 +14,9 @@
                 <i class="fas fa-calendar text-blue-500 mr-2 w-4 text-sm"></i>
                 <span class="text-gray-600 text-xs sm:text-sm">Date</span>
             </div>
-            <span class="font-medium text-gray-900 text-xs sm:text-sm">{{ $booking->booking_datetime->format('d/m/Y à H:i') }}</span>
+            <span class="font-medium text-gray-900 text-xs sm:text-sm">
+                {{ $booking->booking_datetime->isoFormat('dddd DD MMMM') }} à {{ $booking->booking_datetime->format('H:i') }} - {{ $booking->booking_datetime->copy()->addMinutes($booking->service->duration)->format('H:i') }}
+            </span>
         </div>
         
         <!-- Durée -->
@@ -24,15 +26,6 @@
                 <span class="text-gray-600 text-xs sm:text-sm">Durée</span>
             </div>
             <span class="font-medium text-gray-900 text-xs sm:text-sm">{{ $booking->service->duration }} min</span>
-        </div>
-        
-        <!-- Fin prévue -->
-        <div class="flex items-center justify-between py-2 border-b border-gray-100">
-            <div class="flex items-center">
-                <i class="fas fa-clock text-orange-500 mr-2 w-4 text-sm"></i>
-                <span class="text-gray-600 text-xs sm:text-sm">Fin prévue</span>
-            </div>
-            <span class="font-medium text-gray-900 text-xs sm:text-sm">{{ $booking->booking_datetime->copy()->addMinutes($booking->service->duration)->format('H:i') }}</span>
         </div>
         
         <!-- Prix -->

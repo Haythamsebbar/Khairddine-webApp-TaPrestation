@@ -223,7 +223,7 @@ class ServiceController extends Controller
      */
     public function show(Service $service)
     {
-        $service->load(['prestataire.user', 'categories', 'reviews.client.user', 'images']);
+        $service->load(['prestataire.user', 'categories', 'reviews.client', 'images']);
 
         // Incrémenter le compteur de vues
         $service->increment('views');

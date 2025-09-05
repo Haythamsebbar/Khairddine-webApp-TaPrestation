@@ -62,20 +62,10 @@ class UrgentSale extends Model
             $photos = is_array($decoded) ? $decoded : [];
         }
         
-        // Normaliser les chemins des photos
-        return array_map(function($photo) {
-            // Si c'est une URL complète, la retourner telle quelle
-            if (filter_var($photo, FILTER_VALIDATE_URL)) {
-                return $photo;
-            }
-            
-            // Si le chemin ne contient pas le préfixe du dossier, l'ajouter
-            if (strpos($photo, 'urgent-sales/') === false) {
-                return 'urgent-sales/' . $photo;
-            }
-            
-            return $photo;
-        }, $photos);
+        // Ne pas modifier les chemins - les laisser tels quels
+        // Les images sont déjà stockées avec le bon chemin et doivent être
+        // accessibles via Storage::url() dans les vues
+        return $photos;
     }
 
     protected $dates = [
@@ -217,7 +207,7 @@ class UrgentSale extends Model
     public function getFirstPhotoUrlAttribute()
     {
         if ($this->first_photo) {
-            return asset('storage/' . $this->first_photo);
+            return Storage::url($this->first_photo);
         }
         return asset('images/default-product.jpg');
     }

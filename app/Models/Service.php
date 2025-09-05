@@ -21,6 +21,7 @@ class Service extends Model
         'price',
         'price_type',
         'quantity',
+        'duration',
         'delivery_time',
         'status',
         'reservable',

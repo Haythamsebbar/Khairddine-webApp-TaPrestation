@@ -114,11 +114,15 @@
         // Ajouter les ventes urgentes
         if(isset($urgentSales) && $urgentSales->count() > 0) {
             foreach($urgentSales as $sale) {
+                // Get the latest contact for display purposes
+                $latestContact = $sale->contacts->first();
+                $clientName = $latestContact && $latestContact->user ? $latestContact->user->name : 'N/A';
+                
                 $allRequests->push((object)[
                     'id' => $sale->id,
                     'type' => 'urgent_sale',
                     'title' => $sale->title ?? 'Vente urgente',
-                    'client_name' => $sale->client->name ?? 'N/A',
+                    'client_name' => $clientName,
                     'status' => $sale->status,
                     'created_at' => $sale->created_at,
                     'image' => $sale->photos && count($sale->photos) > 0 
@@ -130,7 +134,8 @@
                     'route_show' => route('prestataire.urgent-sales.show', $sale->id),
                      'route_accept' => null, // Urgent sales don't have accept action
                      'route_reject' => null, // Urgent sales don't have reject action
-                    'original' => $sale
+                    'original' => $sale,
+                    'client' => $latestContact && $latestContact->user ? $latestContact->user : null
                 ]);
             }
         }
@@ -149,7 +154,7 @@
                         <span class="ml-2 bg-blue-100 text-blue-800 text-xs font-bold px-2 py-0.5 rounded-full">{{ $allRequests->count() }}</span>
                     </div>
                 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2 sm:gap-4">
                     @foreach($allRequests as $item)
                         <div class="booking-item bg-white border-2 
                             @if($item->type === 'service') border-blue-200 hover:border-blue-300
@@ -213,18 +218,90 @@
                                         <!-- Client avec photo -->
                                         <div class="flex items-center space-x-2">
                                             <div class="w-4 h-4 sm:w-5 sm:h-5 rounded-full overflow-hidden flex-shrink-0">
-                                                @if($item->type === 'service' && $item->original->client->user->avatar)
-                                                    <img src="{{ asset('storage/' . $item->original->client->user->avatar) }}" 
-                                                         alt="{{ $item->client_name }}" 
-                                                         class="w-full h-full object-cover">
-                                                @elseif($item->type === 'equipment' && $item->original->client->user->avatar)
-                                                    <img src="{{ asset('storage/' . $item->original->client->user->avatar) }}" 
-                                                         alt="{{ $item->client_name }}" 
-                                                         class="w-full h-full object-cover">
-                                                @elseif($item->type === 'urgent_sale' && $item->original->client && $item->original->client->avatar)
-                                                    <img src="{{ asset('storage/' . $item->original->client->avatar) }}" 
-                                                         alt="{{ $item->client_name }}" 
-                                                         class="w-full h-full object-cover">
+                                                @if($item->type === 'service' && $item->original->client->user)
+                                                    @if($item->original->client->user->profile_photo_url)
+                                                        <img src="{{ $item->original->client->user->profile_photo_url }}" 
+                                                             alt="{{ $item->client_name }}" 
+                                                             class="w-full h-full object-cover">
+                                                    @elseif($item->original->client->user->client && $item->original->client->user->client->photo)
+                                                        <img src="{{ asset('storage/' . $item->original->client->user->client->photo) }}" 
+                                                             alt="{{ $item->client_name }}" 
+                                                             class="w-full h-full object-cover">
+                                                    @elseif($item->original->client->user->avatar)
+                                                        <img src="{{ asset('storage/' . $item->original->client->user->avatar) }}" 
+                                                             alt="{{ $item->client_name }}" 
+                                                             class="w-full h-full object-cover">
+                                                    @else
+                                                        <div class="w-full h-full 
+                                                            @if($item->type === 'service') bg-blue-100
+                                                            @elseif($item->type === 'equipment') bg-green-100
+                                                            @else bg-red-100
+                                                            @endif
+                                                            flex items-center justify-center">
+                                                            <span class="text-xs font-medium
+                                                                @if($item->type === 'service') text-blue-600
+                                                                @elseif($item->type === 'equipment') text-green-600
+                                                                @else text-red-600
+                                                                @endif
+                                                                ">{{ substr($item->client_name, 0, 1) }}</span>
+                                                        </div>
+                                                    @endif
+                                                @elseif($item->type === 'equipment' && $item->original->client->user)
+                                                    @if($item->original->client->user->profile_photo_url)
+                                                        <img src="{{ $item->original->client->user->profile_photo_url }}" 
+                                                             alt="{{ $item->client_name }}" 
+                                                             class="w-full h-full object-cover">
+                                                    @elseif($item->original->client->user->client && $item->original->client->user->client->photo)
+                                                        <img src="{{ asset('storage/' . $item->original->client->user->client->photo) }}" 
+                                                             alt="{{ $item->client_name }}" 
+                                                             class="w-full h-full object-cover">
+                                                    @elseif($item->original->client->user->avatar)
+                                                        <img src="{{ asset('storage/' . $item->original->client->user->avatar) }}" 
+                                                             alt="{{ $item->client_name }}" 
+                                                             class="w-full h-full object-cover">
+                                                    @else
+                                                        <div class="w-full h-full 
+                                                            @if($item->type === 'service') bg-blue-100
+                                                            @elseif($item->type === 'equipment') bg-green-100
+                                                            @else bg-red-100
+                                                            @endif
+                                                            flex items-center justify-center">
+                                                            <span class="text-xs font-medium
+                                                                @if($item->type === 'service') text-blue-600
+                                                                @elseif($item->type === 'equipment') text-green-600
+                                                                @else text-red-600
+                                                                @endif
+                                                                ">{{ substr($item->client_name, 0, 1) }}</span>
+                                                        </div>
+                                                    @endif
+                                                @elseif($item->type === 'urgent_sale' && $item->client)
+                                                    @if($item->client->profile_photo_url)
+                                                        <img src="{{ $item->client->profile_photo_url }}" 
+                                                             alt="{{ $item->client_name }}" 
+                                                             class="w-full h-full object-cover">
+                                                    @elseif($item->client->client && $item->client->client->photo)
+                                                        <img src="{{ asset('storage/' . $item->client->client->photo) }}" 
+                                                             alt="{{ $item->client_name }}" 
+                                                             class="w-full h-full object-cover">
+                                                    @elseif($item->client->avatar)
+                                                        <img src="{{ asset('storage/' . $item->client->avatar) }}" 
+                                                             alt="{{ $item->client_name }}" 
+                                                             class="w-full h-full object-cover">
+                                                    @else
+                                                        <div class="w-full h-full 
+                                                            @if($item->type === 'service') bg-blue-100
+                                                            @elseif($item->type === 'equipment') bg-green-100
+                                                            @else bg-red-100
+                                                            @endif
+                                                            flex items-center justify-center">
+                                                            <span class="text-xs font-medium
+                                                                @if($item->type === 'service') text-blue-600
+                                                                @elseif($item->type === 'equipment') text-green-600
+                                                                @else text-red-600
+                                                                @endif
+                                                                ">{{ substr($item->client_name, 0, 1) }}</span>
+                                                        </div>
+                                                    @endif
                                                 @else
                                                     <div class="w-full h-full 
                                                         @if($item->type === 'service') bg-blue-100

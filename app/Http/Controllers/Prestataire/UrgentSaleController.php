@@ -375,13 +375,8 @@ class UrgentSaleController extends Controller
         
         $urgentSale->load(['category', 'contacts.user', 'reports']);
         
-        // Récupérer les messages liés à cette vente urgente
-        $relatedMessages = \App\Models\Message::where('receiver_id', Auth::id())
-            ->where('content', 'like', '%' . $urgentSale->title . '%')
-            ->with('sender')
-            ->latest()
-            ->limit(10)
-            ->get();
+        // Récupérer les contacts liés à cette vente urgente
+        $relatedMessages = $urgentSale->contacts()->with('user')->latest()->get();
         
         return view('prestataire.urgent-sales.show', compact('urgentSale', 'relatedMessages'));
     }
