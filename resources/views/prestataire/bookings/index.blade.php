@@ -64,24 +64,24 @@
                 $isMultiSlot = isset($booking->is_multi_slot) && $booking->is_multi_slot;
                 
                 $allRequests->push((object)[
-                    'id' => $booking->id,
+                    'id' => $booking->id ?? null,
                     'type' => 'service',
-                    'title' => $booking->service->title ?? 'Service',
-                    'client_name' => $booking->client->user->name ?? 'N/A',
-                    'status' => $booking->status,
-                    'created_at' => $booking->created_at,
-                    'image' => $booking->service && $booking->service->images && $booking->service->images->count() > 0 
+                    'title' => ($booking->service ? ($booking->service->title ?? $booking->service->name) : 'Service') ?? 'Service',
+                    'client_name' => ($booking->client && $booking->client->user) ? ($booking->client->user->name ?? 'N/A') : 'N/A',
+                    'status' => $booking->status ?? 'unknown',
+                    'created_at' => $booking->created_at ?? now(),
+                    'image' => ($booking->service && $booking->service->images && $booking->service->images->count() > 0) 
                         ? $booking->service->images->first()->image_path : null,
-                    'category' => $booking->service && $booking->service->category->first() 
+                    'category' => ($booking->service && $booking->service->category && $booking->service->category->first()) 
                         ? $booking->service->category->first()->name : null,
-                    'price' => $isMultiSlot ? $booking->total_session_price : ($booking->service->price ?? null),
-                    'price_type' => $booking->service->price_type ?? null,
-                    'route_show' => route('prestataire.bookings.show', $booking->id),
-                     'route_accept' => route('prestataire.bookings.accept', $booking),
-                     'route_reject' => route('prestataire.bookings.reject', $booking),
+                    'price' => $isMultiSlot ? ($booking->total_session_price ?? 0) : ($booking->service ? ($booking->service->price ?? null) : null),
+                    'price_type' => $booking->service ? ($booking->service->price_type ?? null) : null,
+                    'route_show' => $booking->id ? route('prestataire.bookings.show', $booking->id) : '#',
+                    'route_accept' => $booking->id ? route('prestataire.bookings.accept', $booking) : '#',
+                    'route_reject' => $booking->id ? route('prestataire.bookings.reject', $booking) : '#',
                     'is_multi_slot' => $isMultiSlot,
-                    'total_slots' => $isMultiSlot ? $booking->total_slots : 1,
-                    'session_duration' => $isMultiSlot ? $booking->session_duration : null,
+                    'total_slots' => $isMultiSlot ? ($booking->total_slots ?? 1) : 1,
+                    'session_duration' => $isMultiSlot ? ($booking->session_duration ?? 0) : null,
                     'original' => $booking
                 ]);
             }
@@ -91,21 +91,21 @@
         if(isset($equipmentRentalRequests) && $equipmentRentalRequests->count() > 0) {
             foreach($equipmentRentalRequests as $request) {
                 $allRequests->push((object)[
-                    'id' => $request->id,
+                    'id' => $request->id ?? null,
                     'type' => 'equipment',
-                    'title' => $request->equipment->name ?? 'Équipement',
-                    'client_name' => $request->client->user->name ?? 'N/A',
-                    'status' => $request->status,
-                    'created_at' => $request->created_at,
-                    'image' => $request->equipment && $request->equipment->main_photo 
-                        ? $request->equipment->main_photo : ($request->equipment && $request->equipment->photos && count($request->equipment->photos) > 0 ? $request->equipment->photos[0] : null),
-                    'category' => $request->equipment && $request->equipment->category 
-                        ? $request->equipment->category->name : ($request->equipment && $request->equipment->subcategory ? $request->equipment->subcategory->name : null),
+                    'title' => ($request->equipment ? ($request->equipment->name ?? 'Équipement') : 'Équipement') ?? 'Équipement',
+                    'client_name' => ($request->client && $request->client->user) ? ($request->client->user->name ?? 'N/A') : 'N/A',
+                    'status' => $request->status ?? 'unknown',
+                    'created_at' => $request->created_at ?? now(),
+                    'image' => ($request->equipment && $request->equipment->main_photo) 
+                        ? $request->equipment->main_photo : (($request->equipment && $request->equipment->photos && count($request->equipment->photos) > 0) ? $request->equipment->photos[0] : null),
+                    'category' => ($request->equipment && $request->equipment->category) 
+                        ? $request->equipment->category->name : (($request->equipment && $request->equipment->subcategory) ? $request->equipment->subcategory->name : null),
                     'start_date' => $request->start_date ?? null,
                     'end_date' => $request->end_date ?? null,
-                    'route_show' => route('prestataire.equipment-rental-requests.show', $request->id),
-                    'route_accept' => route('prestataire.equipment-rental-requests.accept', $request),
-                    'route_reject' => route('prestataire.equipment-rental-requests.reject', $request),
+                    'route_show' => $request->id ? route('prestataire.equipment-rental-requests.show', $request->id) : '#',
+                    'route_accept' => $request->id ? route('prestataire.equipment-rental-requests.accept', $request) : '#',
+                    'route_reject' => $request->id ? route('prestataire.equipment-rental-requests.reject', $request) : '#',
                     'original' => $request
                 ]);
             }
@@ -115,27 +115,27 @@
         if(isset($urgentSales) && $urgentSales->count() > 0) {
             foreach($urgentSales as $sale) {
                 // Get the latest contact for display purposes
-                $latestContact = $sale->contacts->first();
-                $clientName = $latestContact && $latestContact->user ? $latestContact->user->name : 'N/A';
+                $latestContact = $sale->contacts ? $sale->contacts->first() : null;
+                $clientName = ($latestContact && $latestContact->user) ? $latestContact->user->name : 'N/A';
                 
                 $allRequests->push((object)[
-                    'id' => $sale->id,
+                    'id' => $sale->id ?? null,
                     'type' => 'urgent_sale',
                     'title' => $sale->title ?? 'Vente urgente',
                     'client_name' => $clientName,
-                    'status' => $sale->status,
-                    'created_at' => $sale->created_at,
-                    'image' => $sale->photos && count($sale->photos) > 0 
+                    'status' => $sale->status ?? 'unknown',
+                    'created_at' => $sale->created_at ?? now(),
+                    'image' => ($sale->photos && count($sale->photos) > 0) 
                         ? $sale->photos[0] : null,
                     'category' => $sale->category ? $sale->category->name : null,
                     'price' => $sale->price ?? null,
                     'price_min' => $sale->price_min ?? null,
                     'price_max' => $sale->price_max ?? null,
-                    'route_show' => route('prestataire.urgent-sales.show', $sale->id),
-                     'route_accept' => null, // Urgent sales don't have accept action
-                     'route_reject' => null, // Urgent sales don't have reject action
+                    'route_show' => $sale->id ? route('prestataire.urgent-sales.show', $sale->id) : '#',
+                    'route_accept' => null, // Urgent sales don't have accept action
+                    'route_reject' => null, // Urgent sales don't have reject action
                     'original' => $sale,
-                    'client' => $latestContact && $latestContact->user ? $latestContact->user : null
+                    'client' => ($latestContact && $latestContact->user) ? $latestContact->user : null
                 ]);
             }
         }
@@ -218,7 +218,7 @@
                                         <!-- Client avec photo -->
                                         <div class="flex items-center space-x-2">
                                             <div class="w-4 h-4 sm:w-5 sm:h-5 rounded-full overflow-hidden flex-shrink-0">
-                                                @if($item->type === 'service' && $item->original->client->user)
+                                                @if($item->type === 'service' && $item->original->client && $item->original->client->user)
                                                     @if($item->original->client->user->profile_photo_url)
                                                         <img src="{{ $item->original->client->user->profile_photo_url }}" 
                                                              alt="{{ $item->client_name }}" 
@@ -246,7 +246,7 @@
                                                                 ">{{ substr($item->client_name, 0, 1) }}</span>
                                                         </div>
                                                     @endif
-                                                @elseif($item->type === 'equipment' && $item->original->client->user)
+                                                @elseif($item->type === 'equipment' && $item->original->client && $item->original->client->user)
                                                     @if($item->original->client->user->profile_photo_url)
                                                         <img src="{{ $item->original->client->user->profile_photo_url }}" 
                                                              alt="{{ $item->client_name }}" 
@@ -359,17 +359,17 @@
                                                         @endif
                                                     </div>
                                                 </div>
-                                                <p class="text-blue-700 truncate">Prix total: {{ number_format($item->price, 2, ',', ' ') }}€</p>
+                                                <p class="text-blue-700 truncate">Prix total: {{ number_format($item->price ?? 0, 2, ',', ' ') }}€</p>
                                             @elseif($item->price)
-                                                <p class="text-blue-700 truncate">Prix: {{ number_format($item->price, 0, ',', ' ') }}€{{ $item->price_type === 'per_hour' ? '/h' : ($item->price_type === 'per_day' ? '/jour' : '') }}</p>
+                                                <p class="text-blue-700 truncate">Prix: {{ number_format($item->price ?? 0, 0, ',', ' ') }}€{{ ($item->price_type ?? '') === 'per_hour' ? '/h' : (($item->price_type ?? '') === 'per_day' ? '/jour' : '') }}</p>
                                             @endif
                                         @elseif($item->type === 'equipment' && $item->start_date && $item->end_date)
                                             <p class="text-green-700 truncate">Période: {{ \Carbon\Carbon::parse($item->start_date)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($item->end_date)->format('d/m/Y') }}</p>
                                         @elseif($item->type === 'urgent_sale')
                                             @if($item->price_min && $item->price_max)
-                                                <p class="text-red-700 truncate">Prix: {{ number_format($item->price_min, 0, ',', ' ') }}€ - {{ number_format($item->price_max, 0, ',', ' ') }}€</p>
+                                                <p class="text-red-700 truncate">Prix: {{ number_format($item->price_min ?? 0, 0, ',', ' ') }}€ - {{ number_format($item->price_max ?? 0, 0, ',', ' ') }}€</p>
                                             @elseif($item->price)
-                                                <p class="text-red-700 truncate">Prix: {{ number_format($item->price, 0, ',', ' ') }}€</p>
+                                                <p class="text-red-700 truncate">Prix: {{ number_format($item->price ?? 0, 0, ',', ' ') }}€</p>
                                             @endif
                                         @endif
                                         
@@ -378,30 +378,32 @@
                                             @elseif($item->type === 'equipment') text-green-600
                                             @else text-red-600
                                             @endif
-                                            text-xs truncate">{{ $item->created_at->format('d/m/Y à H:i') }}</p>
+                                            text-xs truncate">{{ $item->created_at ? $item->created_at->format('d/m/Y à H:i') : 'N/A' }}</p>
                                     </div>
                                     
                                     <!-- Statut et actions -->
                                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-1.5 sm:space-y-0">
                                         <span class="inline-block px-2 py-0.5 text-xs font-bold rounded-full self-start
                                             @if($item->status === 'pending') bg-yellow-100 text-yellow-800
-                                            @elseif($item->status === 'accepted') bg-green-100 text-green-800
-                                            @elseif($item->status === 'rejected') bg-red-100 text-red-800
+                                            @elseif($item->status === 'accepted' || $item->status === 'confirmed') bg-green-100 text-green-800
+                                            @elseif($item->status === 'rejected' || $item->status === 'refused') bg-red-100 text-red-800
+                                            @else bg-gray-100 text-gray-800
                                             @endif">
                                             @if($item->status === 'pending') En attente
-                                            @elseif($item->status === 'accepted') Acceptée
-                                            @elseif($item->status === 'rejected') Refusée
+                                            @elseif($item->status === 'accepted' || $item->status === 'confirmed') Acceptée
+                                            @elseif($item->status === 'rejected' || $item->status === 'refused') Refusée
+                                            @else {{ ucfirst($item->status) }}
                                             @endif
                                         </span>
                                         
-                                        <button class="px-2 py-1.5 w-full sm:w-auto
+                                        <a href="{{ $item->route_show }}" class="px-2 py-1.5 w-full sm:w-auto
                                             @if($item->type === 'service') bg-blue-600 hover:bg-blue-700
                                             @elseif($item->type === 'equipment') bg-green-600 hover:bg-green-700
                                             @else bg-red-600 hover:bg-red-700
                                             @endif
                                             text-white rounded-md transition-colors duration-200 text-xs font-medium min-h-[36px] flex items-center justify-center">
                                             Voir détails
-                                        </button>
+                                        </a>
                                     </div>
                                 </div>
                             </a>
@@ -483,9 +485,11 @@ function filterByType(type) {
     });
     
     const activeBtn = document.getElementById('btn-' + type);
-    activeBtn.classList.add('active');
-    activeBtn.classList.remove('bg-gray-100', 'text-gray-700');
-    activeBtn.classList.add('bg-gray-600', 'text-white');
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+        activeBtn.classList.remove('bg-gray-100', 'text-gray-700');
+        activeBtn.classList.add('bg-gray-600', 'text-white');
+    }
     
     // Filtrer les éléments
     const bookingItems = document.querySelectorAll('.booking-item');
@@ -529,13 +533,18 @@ function applyStatusFilter() {
 
 function resetFilters() {
     currentFilter = 'all';
-    document.getElementById('statusFilter').value = 'all';
+    if (document.getElementById('statusFilter')) {
+        document.getElementById('statusFilter').value = 'all';
+    }
     filterByType('all');
 }
 
 // Écouter les changements du filtre de statut
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('statusFilter').addEventListener('change', applyStatusFilter);
+    const statusFilter = document.getElementById('statusFilter');
+    if (statusFilter) {
+        statusFilter.addEventListener('change', applyStatusFilter);
+    }
 });
 </script>
 @endsection

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Détails de la réservation #' . $booking->id)
+@section('title', 'Détails de la réservation #' . ($booking->id ?? 'N/A'))
 
 @section('content')
 @php
@@ -8,7 +8,7 @@
     $isMultiSlotSession = $isMultiSlotSession ?? false;
     $allBookings = $allBookings ?? collect([$booking]);
     $relatedBookings = $relatedBookings ?? collect();
-    $totalSessionPrice = $totalSessionPrice ?? $booking->total_price;
+    $totalSessionPrice = $totalSessionPrice ?? ($booking->total_price ?? 0);
     
     // Function to clean session ID from notes for display
     function cleanNotesForDisplay($notes) {
@@ -86,7 +86,7 @@
         <div class="max-w-4xl mx-auto">
             <div class="mb-8 text-center">
                 <h1 class="text-4xl font-extrabold text-blue-900 mb-2">Détails de la réservation</h1>
-                <p class="text-lg text-blue-700">Réservation #{{ $booking->booking_number }} - {{ $booking->service->name ?? 'Service supprimé' }}</p>
+                <p class="text-lg text-blue-700">Réservation #{{ $booking->booking_number ?? 'N/A' }} - {{ $booking->service->name ?? 'Service supprimé' }}</p>
             </div>
             
             <div class="flex justify-center mb-8">
@@ -112,27 +112,29 @@
         <div class="bg-white rounded-xl shadow-lg border border-blue-200 p-6 mb-8">
             <h2 class="text-2xl font-bold text-blue-800 mb-5 border-b-2 border-blue-200 pb-3">Statut de la réservation</h2>
             <span class="status-badge
-                @if($booking->status === 'pending') pending
-                @elseif($booking->status === 'confirmed') confirmed
-                @elseif($booking->status === 'completed') completed
-                @elseif($booking->status === 'cancelled') cancelled
-                @elseif($booking->status === 'refused') refused
+                @if(($booking->status ?? '') === 'pending') pending
+                @elseif(($booking->status ?? '') === 'confirmed') confirmed
+                @elseif(($booking->status ?? '') === 'completed') completed
+                @elseif(($booking->status ?? '') === 'cancelled') cancelled
+                @elseif(($booking->status ?? '') === 'refused') refused
                 @endif">
-                @if($booking->status === 'pending') 
+                @if(($booking->status ?? '') === 'pending') 
                     <i class="fas fa-clock"></i> En attente de confirmation
-                @elseif($booking->status === 'confirmed') 
+                @elseif(($booking->status ?? '') === 'confirmed') 
                     <i class="fas fa-check-circle"></i> Confirmée
-                @elseif($booking->status === 'completed') 
+                @elseif(($booking->status ?? '') === 'completed') 
                     <i class="fas fa-check-double"></i> Terminée
-                @elseif($booking->status === 'cancelled') 
+                @elseif(($booking->status ?? '') === 'cancelled') 
                     <i class="fas fa-times-circle"></i> Annulée
-                @elseif($booking->status === 'refused') 
+                @elseif(($booking->status ?? '') === 'refused') 
                     <i class="fas fa-ban"></i> Refusée
+                @else
+                    <i class="fas fa-question-circle"></i> Statut inconnu
                 @endif
             </span>
 
             <!-- Actions selon le statut -->
-            @if($booking->status === 'pending')
+            @if(($booking->status ?? '') === 'pending')
                 <div class="mt-6 flex flex-wrap gap-3">
                     <form method="POST" action="{{ route('prestataire.bookings.accept', $booking) }}" class="inline">
                         @csrf
@@ -147,7 +149,7 @@
                         <i class="fas fa-times mr-2"></i>Refuser
                     </button>
                 </div>
-            @elseif($booking->status === 'confirmed')
+            @elseif(($booking->status ?? '') === 'confirmed')
                 <div class="mt-6 flex flex-wrap gap-3">
                     <form method="POST" action="{{ route('prestataire.bookings.reject', $booking) }}" class="inline">
                         @csrf
@@ -178,7 +180,7 @@
                         <div class="flex flex-col items-center">
                             <div class="w-20 h-20 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden mb-2">
                                 @if($booking->client && $booking->client->photo)
-                                    <img src="{{ asset('storage/' . $booking->client->photo) }}" alt="{{ $booking->client->first_name }} {{ $booking->client->last_name }}" class="w-full h-full object-cover">
+                                    <img src="{{ asset('storage/' . $booking->client->photo) }}" alt="{{ $booking->client->first_name ?? '' }} {{ $booking->client->last_name ?? '' }}" class="w-full h-full object-cover">
                                 @else
                                     <div class="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
                                         <span class="text-blue-700 font-bold text-xl">
@@ -188,7 +190,7 @@
                                 @endif
                             </div>
                             <div class="text-center">
-                                <h3 class="text-lg font-semibold text-blue-900">{{ $booking->client->first_name }} {{ $booking->client->last_name }}</h3>
+                                <h3 class="text-lg font-semibold text-blue-900">{{ $booking->client->first_name ?? '' }} {{ $booking->client->last_name ?? '' }}</h3>
                             </div>
                         </div>
                         <div class="flex-1">
@@ -200,10 +202,10 @@
                                         </svg>
                                         <div>
                                             <div class="text-xs font-medium text-blue-600 uppercase tracking-wide">Email</div>
-                                            <div class="text-sm font-semibold text-blue-900">{{ $booking->client->user->email ?? $booking->client->email }}</div>
+                                            <div class="text-sm font-semibold text-blue-900">{{ ($booking->client && $booking->client->user) ? ($booking->client->user->email ?? $booking->client->email) : 'N/A' }}</div>
                                         </div>
                                     </div>
-                                    @if($booking->client->phone)
+                                    @if($booking->client && $booking->client->phone)
                                     <div class="bg-blue-50 rounded-lg p-3 flex items-center space-x-3">
                                         <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
@@ -216,7 +218,7 @@
                                     @endif
                                 </div>
                                 <div class="space-y-4">
-                                    @if($booking->client->address)
+                                    @if($booking->client && $booking->client->address)
                                     <div class="bg-blue-50 rounded-lg p-3 flex items-start space-x-3">
                                         <svg class="w-5 h-5 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
@@ -234,7 +236,7 @@
                                         </svg>
                                         <div>
                                             <div class="text-xs font-medium text-blue-600 uppercase tracking-wide">Membre depuis</div>
-                                            <div class="text-sm font-semibold text-blue-900">{{ $booking->client->created_at->format('F Y') }}</div>
+                                            <div class="text-sm font-semibold text-blue-900">{{ $booking->client && $booking->client->created_at ? $booking->client->created_at->format('F Y') : 'N/A' }}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -257,12 +259,12 @@
                         <div class="space-y-4">
                             <div class="bg-blue-50 rounded-lg p-3">
                                 <div class="text-xs font-medium text-blue-600 uppercase tracking-wide">Nom du service</div>
-                                <div class="text-lg font-bold text-blue-900 mt-1">{{ $booking->service->name }}</div>
+                                <div class="text-lg font-bold text-blue-900 mt-1">{{ $booking->service->name ?? 'Service non disponible' }}</div>
                             </div>
                             <div class="bg-blue-50 rounded-lg p-3">
                                 <div class="text-xs font-medium text-blue-600 uppercase tracking-wide">Catégorie</div>
                                 <div class="text-sm font-semibold text-blue-900 mt-1">
-                                    @if($booking->service->category)
+                                    @if($booking->service && $booking->service->category)
                                         {{ $booking->service->category->first()->name ?? 'Non spécifiée' }}
                                     @else
                                         Non spécifiée
@@ -273,15 +275,15 @@
                         <div class="space-y-4">
                             <div class="bg-blue-50 rounded-lg p-3">
                                 <div class="text-xs font-medium text-blue-600 uppercase tracking-wide">Prix</div>
-                                <div class="text-2xl font-bold text-blue-600 mt-1">{{ number_format($booking->total_price, 2, ',', ' ') }} €</div>
+                                <div class="text-2xl font-bold text-blue-600 mt-1">{{ number_format($booking->total_price ?? 0, 2, ',', ' ') }} €</div>
                             </div>
                             <div class="bg-blue-50 rounded-lg p-3">
                                 <div class="text-xs font-medium text-blue-600 uppercase tracking-wide">Durée</div>
-                                <div class="text-sm font-semibold text-blue-900 mt-1">{{ $booking->service->duration }} minutes</div>
+                                <div class="text-sm font-semibold text-blue-900 mt-1">{{ $booking->service->duration ?? 'N/A' }} minutes</div>
                             </div>
                         </div>
                     </div>
-                    @if($booking->service->description)
+                    @if($booking->service && $booking->service->description)
                     <div class="mt-6 bg-blue-50 rounded-lg p-4">
                         <div class="text-xs font-medium text-blue-600 uppercase tracking-wide mb-2">Description</div>
                         <div class="text-gray-700">{{ $booking->service->description }}</div>
@@ -303,15 +305,15 @@
                         <div class="space-y-4">
                             <div class="bg-blue-50 rounded-lg p-3">
                                 <div class="text-xs font-medium text-blue-600 uppercase tracking-wide">Date de début</div>
-                                <div class="text-lg font-bold text-blue-900 mt-1">{{ $booking->start_datetime->format('d/m/Y') }}</div>
-                                <div class="text-sm text-blue-700">{{ $booking->start_datetime->format('H:i') }}</div>
+                                <div class="text-lg font-bold text-blue-900 mt-1">{{ $booking->start_datetime ? $booking->start_datetime->format('d/m/Y') : 'N/A' }}</div>
+                                <div class="text-sm text-blue-700">{{ $booking->start_datetime ? $booking->start_datetime->format('H:i') : 'N/A' }}</div>
                             </div>
                         </div>
                         <div class="space-y-4">
                             <div class="bg-blue-50 rounded-lg p-3">
                                 <div class="text-xs font-medium text-blue-600 uppercase tracking-wide">Date de fin</div>
-                                <div class="text-lg font-bold text-blue-900 mt-1">{{ $booking->end_datetime->format('d/m/Y') }}</div>
-                                <div class="text-sm text-blue-700">{{ $booking->end_datetime->format('H:i') }}</div>
+                                <div class="text-lg font-bold text-blue-900 mt-1">{{ $booking->end_datetime ? $booking->end_datetime->format('d/m/Y') : 'N/A' }}</div>
+                                <div class="text-sm text-blue-700">{{ $booking->end_datetime ? $booking->end_datetime->format('H:i') : 'N/A' }}</div>
                             </div>
                         </div>
                     </div>
@@ -348,33 +350,34 @@
                     <div class="space-y-3">
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600">Numéro:</span>
-                            <span class="font-medium">#{{ $booking->booking_number }}</span>
+                            <span class="font-medium">#{{ $booking->booking_number ?? 'N/A' }}</span>
                         </div>
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600">Date de création:</span>
-                            <span class="font-medium">{{ $booking->created_at->format('d/m/Y') }}</span>
+                            <span class="font-medium">{{ $booking->created_at ? $booking->created_at->format('d/m/Y') : 'N/A' }}</span>
                         </div>
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600">Statut:</span>
                             <span class="font-medium
-                                @if($booking->status === 'pending') text-yellow-600
-                                @elseif($booking->status === 'confirmed') text-green-600
-                                @elseif($booking->status === 'completed') text-blue-600
-                                @elseif($booking->status === 'cancelled') text-red-600
-                                @elseif($booking->status === 'refused') text-red-600
+                                @if(($booking->status ?? '') === 'pending') text-yellow-600
+                                @elseif(($booking->status ?? '') === 'confirmed') text-green-600
+                                @elseif(($booking->status ?? '') === 'completed') text-blue-600
+                                @elseif(($booking->status ?? '') === 'cancelled') text-red-600
+                                @elseif(($booking->status ?? '') === 'refused') text-red-600
                                 @endif">
-                                @if($booking->status === 'pending') En attente
-                                @elseif($booking->status === 'confirmed') Confirmée
-                                @elseif($booking->status === 'completed') Terminée
-                                @elseif($booking->status === 'cancelled') Annulée
-                                @elseif($booking->status === 'refused') Refusée
+                                @if(($booking->status ?? '') === 'pending') En attente
+                                @elseif(($booking->status ?? '') === 'confirmed') Confirmée
+                                @elseif(($booking->status ?? '') === 'completed') Terminée
+                                @elseif(($booking->status ?? '') === 'cancelled') Annulée
+                                @elseif(($booking->status ?? '') === 'refused') Refusée
+                                @else Statut inconnu
                                 @endif
                             </span>
                         </div>
                         <hr class="border-gray-200 my-2">
                         <div class="flex justify-between text-lg font-bold">
                             <span>Total:</span>
-                            <span class="text-blue-600">{{ number_format($booking->total_price, 2, ',', ' ') }} €</span>
+                            <span class="text-blue-600">{{ number_format($booking->total_price ?? 0, 2, ',', ' ') }} €</span>
                         </div>
                     </div>
                 </div>
@@ -388,7 +391,8 @@
                         Communication
                     </h3>
                     <div class="space-y-3">
-                        <a href="{{ route('messaging.conversation', $booking->client->user->id) }}?message=Bonjour {{ $booking->client->user->name }}, concernant votre réservation #{{ $booking->booking_number }} du {{ $booking->start_datetime->format('d/m/Y à H:i') }}, je vous contacte pour..." 
+                        @if($booking->client && $booking->client->user)
+                        <a href="{{ route('messaging.conversation', $booking->client->user->id) }}?message=Bonjour {{ $booking->client->user->name ?? '' }}, concernant votre réservation #{{ $booking->booking_number ?? 'N/A' }} du {{ $booking->start_datetime ? $booking->start_datetime->format('d/m/Y à H:i') : 'N/A' }}, je vous contacte pour..." 
                            class="flex items-center p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition duration-200">
                             <svg class="w-5 h-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
@@ -403,10 +407,11 @@
                             <span class="text-green-800 font-medium">Appeler (urgence)</span>
                         </a>
                         @endif
+                        @else
+                        <div class="text-gray-500 italic">Informations de contact non disponibles</div>
+                        @endif
                     </div>
                 </div>
-                
-                
             </div>
         </div>
     </div>
