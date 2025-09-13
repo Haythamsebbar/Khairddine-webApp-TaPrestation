@@ -63,7 +63,8 @@ class ServiceImage extends Model
         parent::boot();
         
         static::deleting(function ($image) {
-            if (Storage::exists($image->image_path)) {
+            // Check if image_path exists and is not null before attempting to delete
+            if ($image->image_path && Storage::exists($image->image_path)) {
                 Storage::delete($image->image_path);
             }
         });

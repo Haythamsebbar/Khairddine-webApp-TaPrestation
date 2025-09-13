@@ -239,6 +239,22 @@
     padding: 0.75rem;
     text-align: center;
 }
+
+.pulse-highlight {
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    }
+}
 </style>
 
 <div class="bg-blue-50 min-h-screen">
@@ -326,13 +342,18 @@
                             
                             <!-- Évaluations -->
                             @php
-                                $totalReviews = $prestataire->reviews->count();
-                                $averageRating = $totalReviews > 0 ? $prestataire->reviews->avg('rating') : 0;
+                                $totalReviews = $allReviews->count();
+                                $averageRating = $totalReviews > 0 ? $allReviews->avg('rating') : 0;
                                 $roundedRating = round($averageRating, 1);
                             @endphp
                             
-                            <div class="rating-card">
-                                <h3 class="font-bold text-blue-900 mb-1 text-sm">Évaluations</h3>
+                            <div class="rating-card cursor-pointer" onclick="scrollToReviews(); return false;">
+                                <h3 class="font-bold text-blue-900 mb-1 text-sm flex items-center justify-between">
+                                    <span>Évaluations</span>
+                                    <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                                    </svg>
+                                </h3>
                                 @if($totalReviews > 0)
                                     <div class="text-center">
                                         <div class="text-xl font-bold text-blue-900 mb-0">{{ $roundedRating }}</div>
@@ -381,7 +402,7 @@
                                         Contacter
                                     </a>
                                     @if(auth()->user()->client && auth()->user()->client->isFollowing($prestataire->id))
-                                        <form action="{{ route('client.prestataire-follows.unfollow', $prestataire) }}" method="POST" class="flex-1">
+                                        <form action="{{ route('client.prestataire-follows.unfollow', $prestataire) }}" method="POST" class="flex-1 w-full">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="action-button w-full inline-flex items-center justify-center px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-semibold text-blue-700 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
@@ -392,7 +413,7 @@
                                             </button>
                                         </form>
                                     @else
-                                        <form action="{{ route('client.prestataire-follows.follow', $prestataire) }}" method="POST" class="flex-1">
+                                        <form action="{{ route('client.prestataire-follows.follow', $prestataire) }}" method="POST" class="flex-1 w-full">
                                             @csrf
                                             <button type="submit" class="action-button w-full inline-flex items-center justify-center px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-semibold text-blue-700 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
                                                 <svg class="-ml-1 mr-1 h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -709,12 +730,12 @@
                     @endauth
                     
                     <!-- Liste des avis reçus -->
-                    <div>
-                        <h3 class="text-xl font-bold text-blue-900 mb-5">Avis clients ({{ $prestataire->reviews->count() }})</h3>
+                    <div id="reviews-section">
+                        <h3 class="text-xl font-bold text-blue-900 mb-5">Avis clients ({{ $allReviews->count() }})</h3>
                         
-                        @if($prestataire->reviews->count() > 0)
+                        @if($allReviews->count() > 0)
                             <div class="space-y-4">
-                                @foreach($prestataire->reviews->sortByDesc('created_at') as $review)
+                                @foreach($allReviews as $review)
                                     <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
                                         <div class="flex items-start space-x-4">
                                             <!-- Avatar de l'auteur -->
@@ -766,6 +787,27 @@
                                                         {{ $review->comment }}
                                                     </p>
                                                 @endif
+                                                
+                                                <!-- Photos des avis -->
+                                                @if($review->photos && count($review->photos) > 0)
+                                                    <div class="mt-3">
+                                                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                                                            @foreach($review->photos as $index => $photo)
+                                                                <div class="relative group cursor-pointer" 
+                                                                     onclick="openReviewPhotoModal('{{ asset('storage/' . $photo) }}', 'Photo de l\'avis')">
+                                                                    <img src="{{ asset('storage/' . $photo) }}" 
+                                                                         alt="Photo de l'avis {{ $index + 1 }}"
+                                                                         class="w-full h-20 object-cover rounded-lg shadow-sm group-hover:shadow-md transition duration-200">
+                                                                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-lg transition duration-200 flex items-center justify-center">
+                                                                        <span class="text-white opacity-0 group-hover:opacity-100 transition duration-200 text-xs">
+                                                                            Voir
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
@@ -781,7 +823,6 @@
                      </div>
                 </div>
             </div>
-            
             <!-- Colonne droite (30%) - Vidéos -->
             <div class="lg:w-[30%] w-full">
                 <div class="lg:sticky lg:top-8 space-y-6">
@@ -902,6 +943,97 @@
 
 @push('scripts')
 <script>
+// Move scrollToReviews to global scope so it can be called from inline onclick handlers
+function scrollToReviews() {
+    console.log('scrollToReviews function called');
+    const reviewsSection = document.getElementById('reviews-section');
+    console.log('Reviews section found:', reviewsSection);
+    
+    if (reviewsSection) {
+        // Scroll to the reviews section
+        reviewsSection.scrollIntoView({ behavior: 'smooth' });
+        console.log('Scrolled to reviews section');
+        
+        // If user is authenticated and can leave a review, show the review form
+        const showReviewFormBtn = document.getElementById('show-review-form');
+        console.log('Show review form button found:', showReviewFormBtn);
+        
+        if (showReviewFormBtn) {
+            // Add a slight delay to ensure scrolling is complete before showing form
+            setTimeout(() => {
+                showReviewFormBtn.classList.add('pulse-highlight');
+                console.log('Added pulse highlight to review button');
+                // Remove highlight after 2 seconds
+                setTimeout(() => {
+                    showReviewFormBtn.classList.remove('pulse-highlight');
+                    console.log('Removed pulse highlight from review button');
+                }, 2000);
+            }, 500);
+        } else {
+            console.log('Review form button not found - user may have already reviewed or not interacted');
+            // Try to find any review-related elements to highlight
+            const reviewElements = document.querySelectorAll('.bg-yellow-50, .bg-green-50, .text-yellow-800, .text-green-800');
+            if (reviewElements.length > 0) {
+                console.log('Found', reviewElements.length, 'review-related elements to highlight');
+                // Highlight the first relevant element
+                const elementToHighlight = reviewElements[0];
+                elementToHighlight.classList.add('pulse-highlight');
+                setTimeout(() => {
+                    elementToHighlight.classList.remove('pulse-highlight');
+                }, 2000);
+            }
+        }
+    } else {
+        console.log('Reviews section not found');
+    }
+}
+
+// Fonction pour ouvrir le modal des photos d'avis - déplacée dans la portée globale
+function openReviewPhotoModal(imageSrc, caption) {
+    // Créer le modal s'il n'existe pas
+    let modal = document.getElementById('reviewPhotoModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'reviewPhotoModal';
+        modal.className = 'fixed inset-0 bg-black bg-opacity-75 hidden z-50 flex items-center justify-center';
+        modal.innerHTML = `
+            <div class="relative max-w-4xl max-h-full p-4">
+                <button onclick="closeReviewPhotoModal()" 
+                        class="absolute top-4 right-4 text-white text-2xl hover:text-gray-300 z-10 bg-black bg-opacity-50 rounded-full w-10 h-10 flex items-center justify-center">
+                    ×
+                </button>
+                <img id="reviewModalImage" src="" alt="" class="max-w-full max-h-full object-contain">
+                <div id="reviewModalCaption" class="text-white text-center mt-4"></div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+    
+    // Remplir le modal avec les données
+    const modalImage = document.getElementById('reviewModalImage');
+    const modalCaption = document.getElementById('reviewModalCaption');
+    
+    modalImage.src = imageSrc;
+    modalCaption.textContent = caption;
+    modal.classList.remove('hidden');
+    
+    // Fermer avec Escape
+    document.addEventListener('keydown', function closeOnEscape(e) {
+        if (e.key === 'Escape') {
+            closeReviewPhotoModal();
+            document.removeEventListener('keydown', closeOnEscape);
+        }
+    });
+}
+
+// Fonction pour fermer le modal des photos d'avis - déplacée dans la portée globale
+function closeReviewPhotoModal() {
+    const modal = document.getElementById('reviewPhotoModal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Gestion de l'affichage du formulaire d'avis
     const showFormBtn = document.getElementById('show-review-form');
@@ -1183,6 +1315,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 startAutoplay();
             }
         });
+    }
+    
+    // Check if we should automatically show the review form (e.g., from a link)
+    if (window.location.hash === '#review') {
+        scrollToReviews();
+    }
+    
+    // Add event listener to the rating card to ensure click is working
+    const ratingCard = document.querySelector('.rating-card.cursor-pointer');
+    if (ratingCard) {
+        console.log('Rating card found and clickable');
+        ratingCard.addEventListener('click', function(e) {
+            console.log('Rating card clicked');
+            scrollToReviews();
+        });
+    } else {
+        console.log('Rating card not found');
     }
 });
 </script>

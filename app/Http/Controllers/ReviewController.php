@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Review;
+use App\Models\Booking;
+use App\Models\Prestataire;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ReviewController extends Controller
 {
@@ -54,8 +57,14 @@ class ReviewController extends Controller
     {
         $prestataireId = $request->query('prestataire');
         $bookingId = $request->query('booking');
+        
+        // Fetch additional information if needed
+        $prestataire = null;
+        if ($prestataireId) {
+            $prestataire = \App\Models\Prestataire::find($prestataireId);
+        }
 
-        return view('reviews.create', compact('prestataireId', 'bookingId'));
+        return view('reviews.create', compact('prestataireId', 'bookingId', 'prestataire'));
     }
 
     /**
@@ -65,18 +74,54 @@ class ReviewController extends Controller
     {
         $request->validate([
             'rating' => 'required|integer|min:1|max:5',
+            'punctuality_rating' => 'nullable|integer|min:1|max:5',
+            'quality_rating' => 'nullable|integer|min:1|max:5',
+            'value_rating' => 'nullable|integer|min:1|max:5',
+            'communication_rating' => 'nullable|integer|min:1|max:5',
             'comment' => 'nullable|string|max:1000',
             'prestataire_id' => 'required|exists:prestataires,id',
+            'booking_id' => 'nullable|exists:bookings,id',
+            'photos.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        Review::create([
+        // Handle photo uploads
+        $photos = [];
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $photo) {
+                if ($photo->isValid()) {
+                    $filename = 'review_' . time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
+                    $photo->storeAs('reviews/photos', $filename, 'public');
+                    $photos[] = 'reviews/photos/' . $filename;
+                }
+            }
+        }
+
+        // Get service_id from booking if available
+        $serviceId = null;
+        if ($request->booking_id) {
+            $booking = Booking::find($request->booking_id);
+            $serviceId = $booking ? $booking->service_id : null;
+        }
+
+        $review = Review::create([
             'client_id' => Auth::user()->id,
             'prestataire_id' => $request->prestataire_id,
+            'service_id' => $serviceId,
+            'booking_id' => $request->booking_id,
             'rating' => $request->rating,
+            'punctuality_rating' => $request->punctuality_rating,
+            'quality_rating' => $request->quality_rating,
+            'value_rating' => $request->value_rating,
+            'communication_rating' => $request->communication_rating,
             'comment' => $request->comment,
+            'photos' => $photos,
+            'status' => 'approved', // Default status
         ]);
 
-        return redirect()->back()->with('success', 'Avis ajouté avec succès.');
+        // Update prestataire rating average
+        $this->updatePrestataireRating($request->prestataire_id);
+
+        return redirect()->route('client.dashboard')->with('success', 'Merci pour votre avis ! Votre évaluation a été enregistrée avec succès.');
     }
 
     /**
@@ -196,5 +241,25 @@ class ReviewController extends Controller
         ];
             
         return view('reviews.index', compact('reviews', 'stats', 'prestataireId'));
+    }
+    
+    /**
+     * Update prestataire rating average based on all approved reviews
+     */
+    private function updatePrestataireRating($prestataireId)
+    {
+        $prestataire = Prestataire::find($prestataireId);
+        if ($prestataire) {
+            $averageRating = Review::where('prestataire_id', $prestataireId)
+                ->where('status', 'approved')
+                ->avg('rating');
+            
+            $prestataire->update([
+                'rating_average' => $averageRating ?: 0,
+                'total_reviews' => Review::where('prestataire_id', $prestataireId)
+                    ->where('status', 'approved')
+                    ->count()
+            ]);
+        }
     }
 }

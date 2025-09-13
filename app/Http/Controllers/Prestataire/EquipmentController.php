@@ -287,8 +287,8 @@ class EquipmentController extends Controller
         // Validation de l'étape 4
         $step4Validated = $request->validate([
             'address' => 'nullable|string|max:255',
-            'city' => 'required|string|max:100',
-            'country' => 'required|string|max:100',
+            'city' => 'nullable|string|max:100',
+            'country' => 'nullable|string|max:100',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
         ]);
@@ -403,7 +403,7 @@ class EquipmentController extends Controller
             'category_id' => 'required|exists:categories,id',
             'subcategory_id' => 'nullable|exists:categories,id',
             'photos' => 'nullable|array|max:5',
-            'photos.*' => 'image|mimes:jpeg,png,webp|max:5120',
+            'photos.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'main_photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             
             // Détails techniques
@@ -431,9 +431,9 @@ class EquipmentController extends Controller
             
             // Localisation
             'address' => 'nullable|string|max:255',
-            'city' => 'required|string|max:100',
+            'city' => 'nullable|string|max:100',
             'postal_code' => 'nullable|string|max:10',
-            'country' => 'required|string|max:100',
+            'country' => 'nullable|string|max:100',
 
             
             // Conditions de location
@@ -468,18 +468,20 @@ class EquipmentController extends Controller
         
         // Gestion des photos de galerie
         if ($request->hasFile('photos')) {
-            // Supprimer les anciennes photos
-            if ($equipment->photos) {
-                foreach ($equipment->photos as $photo) {
-                    Storage::disk('public')->delete($photo);
-                }
+            // Get existing photos
+            $existingPhotos = $equipment->photos ?? [];
+            
+            // Process new photos
+            $newPhotos = [];
+            foreach ($request->file('photos') as $photo) {
+                $newPhotos[] = $photo->store('equipment_photos', 'public');
             }
             
-            $photos = [];
-            foreach ($request->file('photos') as $photo) {
-                $photos[] = $photo->store('equipment_photos', 'public');
-            }
-            $validated['photos'] = $photos;
+            // Merge existing and new photos (limit to 5 total)
+            $allPhotos = array_merge($existingPhotos, $newPhotos);
+            $allPhotos = array_slice($allPhotos, 0, 5); // Limit to 5 photos
+            
+            $validated['photos'] = $allPhotos;
         }
         
         // Les champs sont déjà des strings, pas de conversion nécessaire pour les accessoires
@@ -517,7 +519,9 @@ class EquipmentController extends Controller
         
         if ($equipment->photos) {
             foreach ($equipment->photos as $photo) {
-                Storage::disk('public')->delete($photo);
+                if ($photo && Storage::disk('public')->exists($photo)) {
+                    Storage::disk('public')->delete($photo);
+                }
             }
         }
         

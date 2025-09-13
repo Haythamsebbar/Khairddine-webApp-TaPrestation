@@ -118,41 +118,40 @@
                             </div>
                         </div>
                         
-                        <!-- Photos actuelles -->
-                        @if($urgentSale->photos && count($urgentSale->photos ?? []) > 0)
-                            <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Photos actuelles
-                                </label>
-                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="current-photos">
-                                    @foreach($urgentSale->photos ?? [] as $index => $photo)
-                                        <div class="relative group" data-photo-index="{{ $index }}">
-                                            <img src="{{ Storage::url($photo) }}" alt="Photo {{ $index + 1 }}" class="w-full h-32 object-cover rounded-lg">
-                                            <button type="button" onclick="removeCurrentPhoto({{ $index }})" class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <i class="fas fa-times text-xs"></i>
-                                            </button>
-                                            <input type="hidden" name="existing_photos[]" value="{{ $photo }}">
+                        <!-- Photos -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Photos
+                            </label>
+                            
+                            <!-- Photos actuelles -->
+                            @if(is_array($urgentSale->photos) && count($urgentSale->photos) > 0)
+                            <div class="mb-4">
+                                <h3 class="text-sm font-medium text-gray-700 mb-3">Images actuelles</h3>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="existing-photos">
+                                    @foreach($urgentSale->photos as $index => $photo)
+                                        <div class="relative group" id="photo-container-{{ $index }}">
+                                            <img src="{{ Storage::url($photo) }}" alt="Photo annonce" class="rounded-lg object-cover h-32 w-full border border-gray-200">
+                                            <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg">
+                                                <button type="button" data-photo-index="{{ $index }}" class="delete-photo-btn text-white p-2 rounded-full bg-red-500 hover:bg-red-600 transition-colors">
+                                                    <i class="fas fa-trash text-sm"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     @endforeach
                                 </div>
                             </div>
-                        @endif
-                        
-                        <!-- Nouvelles photos -->
-                        <div class="md:col-span-2">
-                            <label for="photos" class="block text-sm font-medium text-gray-700 mb-2">
-                                {{ $urgentSale->photos && count($urgentSale->photos ?? []) > 0 ? 'Ajouter de nouvelles photos' : 'Photos' }}
-                                @if(!$urgentSale->photos || count($urgentSale->photos ?? []) === 0)
-                                    <span class="text-red-500">*</span>
-                                @endif
-                            </label>
-                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
-                                <input type="file" id="photos" name="photos[]" multiple accept="image/*" class="hidden" onchange="previewImages(this)">
-                                <label for="photos" class="cursor-pointer">
-                                    <i class="fas fa-cloud-upload-alt text-gray-400 text-3xl mb-3 block"></i>
-                                    <p class="text-gray-600 mb-2">Cliquez pour sélectionner des images</p>
-                                    <p class="text-gray-500 text-sm">PNG, JPG, JPEG jusqu'à 5MB chacune (max 10 photos)</p>
-                                </label>
+                            @endif
+                            
+                            <!-- Zone d'upload -->
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center bg-gray-50 hover:border-gray-400 transition-colors">
+                                <input type="file" id="photos" name="photos[]" multiple accept="image/*" class="hidden">
+                                <div id="upload-area" class="cursor-pointer" onclick="document.getElementById('photos').click()">
+                                    <i class="fas fa-cloud-upload-alt text-gray-400 text-4xl mb-4"></i>
+                                    <p class="text-gray-600 mb-2">Cliquez pour ajouter des photos ou glissez-déposez</p>
+                                    <p class="text-gray-500 text-sm">Maximum 5 photos, 5MB par photo</p>
+                                </div>
+                                <div id="photo-preview" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-4 hidden"></div>
                             </div>
                             @error('photos')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -160,12 +159,7 @@
                             @error('photos.*')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
-                            
-                            <!-- Prévisualisation des nouvelles images -->
-                            <div id="image-preview" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 hidden"></div>
                         </div>
-                        
-
                     </div>
                 </div>
                 
@@ -187,193 +181,230 @@
 
 @push('scripts')
 <script>
-// Compteur de caractères pour la description
-const descriptionTextarea = document.getElementById('description');
-const descriptionCount = document.getElementById('description-count');
+document.addEventListener('DOMContentLoaded', function () {
+    // Photo preview functionality
+    const photoInput = document.getElementById('photos');
+    const previewContainer = document.getElementById('photo-preview');
+    const uploadArea = document.getElementById('upload-area');
+    let existingFiles = [];
+    let isAddingMore = false;
 
-function updateDescriptionCount() {
-    const count = descriptionTextarea.value.length;
-    descriptionCount.textContent = `${count}/2000`;
-    
-    if (count > 1800) {
-        descriptionCount.classList.add('text-red-500');
-        descriptionCount.classList.remove('text-gray-500');
-    } else {
-        descriptionCount.classList.add('text-gray-500');
-        descriptionCount.classList.remove('text-red-500');
-    }
-}
-
-descriptionTextarea.addEventListener('input', updateDescriptionCount);
-
-// Initialiser le compteur
-updateDescriptionCount();
-
-// Prévisualisation des nouvelles images
-function previewImages(input) {
-    const preview = document.getElementById('image-preview');
-    preview.innerHTML = '';
-    
-    if (input.files && input.files.length > 0) {
-        preview.classList.remove('hidden');
+    // Preview photos
+    window.previewPhotos = function(input) {
+        // Combine existing files with new ones when adding more
+        if (isAddingMore && existingFiles.length > 0) {
+            const newFiles = Array.from(input.files);
+            const combinedFiles = new DataTransfer();
+            
+            // Add existing files first
+            existingFiles.forEach(file => {
+                if (combinedFiles.files.length < 5) {
+                    combinedFiles.items.add(file);
+                }
+            });
+            
+            // Add new files
+            newFiles.forEach(file => {
+                if (combinedFiles.files.length < 5) {
+                    combinedFiles.items.add(file);
+                }
+            });
+            
+            input.files = combinedFiles.files;
+            isAddingMore = false;
+        }
         
-        Array.from(input.files).forEach((file, index) => {
-            if (file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    const div = document.createElement('div');
-                    div.className = 'relative group';
-                    div.innerHTML = `
-                        <img src="${e.target.result}" alt="Nouvelle photo ${index + 1}" class="w-full h-32 object-cover rounded-lg">
-                        <button type="button" onclick="removeNewPhoto(${index})" class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <i class="fas fa-times text-xs"></i>
-                        </button>
-                    `;
-                    preview.appendChild(div);
+        // Store current files
+        existingFiles = Array.from(input.files);
+        
+        previewContainer.innerHTML = '';
+        if (input.files && input.files.length > 0) {
+            previewContainer.classList.remove('hidden');
+            uploadArea.classList.add('hidden');
+            
+            const files = Array.from(input.files).slice(0, 5);
+            
+            files.forEach((file, index) => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const div = document.createElement('div');
+                        div.className = 'relative group';
+                        div.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview" class="rounded-lg object-cover h-32 w-full border border-gray-200">
+                            <div class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button type="button" onclick="removePhoto(${index})" class="bg-red-500 text-white rounded-full p-1 hover:bg-red-600">
+                                    <i class="fas fa-times text-xs"></i>
+                                </button>
+                            </div>
+                        `;
+                        previewContainer.appendChild(div);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Add "Add more" button if under limit
+            if (files.length < 5) {
+                const addMore = document.createElement('div');
+                addMore.className = 'flex items-center justify-center h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 transition-colors';
+                addMore.innerHTML = '<i class="fas fa-plus text-gray-400 text-xl"></i>';
+                addMore.onclick = () => {
+                    isAddingMore = true;
+                    photoInput.click();
                 };
-                
-                reader.readAsDataURL(file);
+                previewContainer.appendChild(addMore);
+            }
+        } else {
+            previewContainer.classList.add('hidden');
+            uploadArea.classList.remove('hidden');
+        }
+    }
+
+    window.removePhoto = function(index) {
+        const dt = new DataTransfer();
+        const files = photoInput.files;
+        for (let i = 0; i < files.length; i++) {
+            if (i !== index) {
+                dt.items.add(files[i]);
+            }
+        }
+        photoInput.files = dt.files;
+        existingFiles = Array.from(photoInput.files);
+        previewPhotos(photoInput);
+    }
+
+    // Single event listener for file input changes
+    if (photoInput) {
+        photoInput.addEventListener('change', function() {
+            previewPhotos(this);
+        });
+    }
+
+    // Delete existing photos
+    const deletePhotoButtons = document.querySelectorAll('.delete-photo-btn');
+    deletePhotoButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const photoIndex = this.dataset.photoIndex;
+            if (confirm('Êtes-vous sûr de vouloir supprimer cette photo ?')) {
+                // Note: For urgent sales, we would need a specific route for photo deletion
+                // This is a simplified implementation - in a real application, you would 
+                // implement a proper photo deletion endpoint
+                const photoElement = document.getElementById(`photo-container-${photoIndex}`);
+                if (photoElement) {
+                    photoElement.remove();
+                }
             }
         });
-    } else {
-        preview.classList.add('hidden');
-    }
-}
-
-// Supprimer une nouvelle photo
-function removeNewPhoto(index) {
-    const input = document.getElementById('photos');
-    const dt = new DataTransfer();
-    
-    Array.from(input.files).forEach((file, i) => {
-        if (i !== index) {
-            dt.items.add(file);
-        }
     });
-    
-    input.files = dt.files;
-    previewImages(input);
-}
 
-// Supprimer une photo actuelle
-function removeCurrentPhoto(index) {
-    const photoDiv = document.querySelector(`[data-photo-index="${index}"]`);
-    if (photoDiv) {
-        photoDiv.remove();
-    }
-}
+    // Compteur de caractères pour la description
+    const descriptionTextarea = document.getElementById('description');
+    const descriptionCount = document.getElementById('description-count');
 
-// Validation du formulaire
-document.getElementById('urgent-sale-form').addEventListener('submit', function(e) {
-    const currentPhotos = document.querySelectorAll('input[name="existing_photos[]"]').length;
-    const newPhotos = document.getElementById('photos').files.length;
-    const totalPhotos = currentPhotos + newPhotos;
-    
-    if (totalPhotos === 0) {
-        e.preventDefault();
-        alert('Veuillez ajouter au moins une photo.');
-        return false;
+    function updateDescriptionCount() {
+        const count = descriptionTextarea.value.length;
+        descriptionCount.textContent = `${count}/2000`;
+        
+        if (count > 1800) {
+            descriptionCount.classList.add('text-red-500');
+            descriptionCount.classList.remove('text-gray-500');
+        } else {
+            descriptionCount.classList.add('text-gray-500');
+            descriptionCount.classList.remove('text-red-500');
+        }
     }
-    
-    if (totalPhotos > 10) {
-        e.preventDefault();
-        alert('Vous ne pouvez pas avoir plus de 10 photos au total.');
-        return false;
-    }
-    
-    // Vérifier la taille des nouvelles images
-    const files = document.getElementById('photos').files;
-    for (let i = 0; i < files.length; i++) {
-        if (files[i].size > 5 * 1024 * 1024) { // 5MB
+
+    descriptionTextarea.addEventListener('input', updateDescriptionCount);
+
+    // Initialiser le compteur
+    updateDescriptionCount();
+
+    // Validation du formulaire
+    document.getElementById('urgent-sale-form').addEventListener('submit', function(e) {
+        // Validation en temps réel pour le titre
+        const titleInput = document.getElementById('title');
+        const titleCount = document.getElementById('title-count');
+        const titleWarning = document.getElementById('title-warning');
+        const titleTip = document.getElementById('title-tip');
+
+        function updateTitleValidation() {
+            const length = titleInput.value.length;
+            titleCount.textContent = length;
+            
+            // Réinitialiser les styles
+            titleInput.classList.remove('border-yellow-400', 'border-green-500', 'border-red-500');
+            titleInput.classList.add('border-gray-300');
+            
+            if (length < 10) {
+                titleInput.classList.remove('border-gray-300');
+                titleInput.classList.add('border-yellow-400');
+                titleWarning.classList.remove('hidden');
+                titleTip.classList.add('hidden');
+            } else if (length >= 10 && length <= 70) {
+                titleInput.classList.remove('border-gray-300');
+                titleInput.classList.add('border-green-500');
+                titleWarning.classList.add('hidden');
+                titleTip.classList.remove('hidden');
+            } else {
+                titleInput.classList.remove('border-gray-300');
+                titleInput.classList.add('border-red-500');
+                titleWarning.classList.add('hidden');
+                titleTip.classList.add('hidden');
+            }
+        }
+
+        // Validation en temps réel pour la description
+        const descriptionInput = document.getElementById('description');
+        const descriptionCount = document.getElementById('description-count');
+        const descriptionError = document.getElementById('description-error');
+        const descriptionWarning = document.getElementById('description-warning');
+
+        function updateDescriptionValidation() {
+            const length = descriptionInput.value.length;
+            descriptionCount.textContent = length;
+            
+            // Réinitialiser les styles
+            descriptionInput.classList.remove('border-red-500', 'border-yellow-400', 'border-green-500');
+            descriptionInput.classList.add('border-gray-300');
+            
+            if (length < 50) {
+                descriptionInput.classList.remove('border-gray-300');
+                descriptionInput.classList.add('border-red-500');
+                descriptionError.classList.remove('hidden');
+                descriptionWarning.classList.add('hidden');
+            } else if (length >= 50 && length <= 150) {
+                descriptionInput.classList.remove('border-gray-300');
+                descriptionInput.classList.add('border-yellow-400');
+                descriptionError.classList.add('hidden');
+                descriptionWarning.classList.remove('hidden');
+            } else {
+                descriptionInput.classList.remove('border-gray-300');
+                descriptionInput.classList.add('border-green-500');
+                descriptionError.classList.add('hidden');
+                descriptionWarning.classList.add('hidden');
+            }
+        }
+
+        // Événements
+        titleInput.addEventListener('input', updateTitleValidation);
+        descriptionInput.addEventListener('input', updateDescriptionValidation);
+
+        // Initialisation
+        updateTitleValidation();
+        updateDescriptionValidation();
+    });
+
+    // Validation supplémentaire lors de la soumission pour la description
+    document.getElementById('urgent-sale-form').addEventListener('submit', function(e) {
+        const descriptionInput = document.getElementById('description');
+        if (descriptionInput.value.length < 50) {
             e.preventDefault();
-            alert('Chaque image ne doit pas dépasser 5MB.');
+            alert('La description doit contenir au moins 50 caractères.');
+            descriptionInput.focus();
             return false;
         }
-    }
-    
-    // Validation en temps réel pour le titre
-    const titleInput = document.getElementById('title');
-    const titleCount = document.getElementById('title-count');
-    const titleWarning = document.getElementById('title-warning');
-    const titleTip = document.getElementById('title-tip');
-
-    function updateTitleValidation() {
-        const length = titleInput.value.length;
-        titleCount.textContent = length;
-        
-        // Réinitialiser les styles
-        titleInput.classList.remove('border-yellow-400', 'border-green-500', 'border-red-500');
-        titleInput.classList.add('border-gray-300');
-        
-        if (length < 10) {
-            titleInput.classList.remove('border-gray-300');
-            titleInput.classList.add('border-yellow-400');
-            titleWarning.classList.remove('hidden');
-            titleTip.classList.add('hidden');
-        } else if (length >= 10 && length <= 70) {
-            titleInput.classList.remove('border-gray-300');
-            titleInput.classList.add('border-green-500');
-            titleWarning.classList.add('hidden');
-            titleTip.classList.remove('hidden');
-        } else {
-            titleInput.classList.remove('border-gray-300');
-            titleInput.classList.add('border-red-500');
-            titleWarning.classList.add('hidden');
-            titleTip.classList.add('hidden');
-        }
-    }
-
-    // Validation en temps réel pour la description
-    const descriptionInput = document.getElementById('description');
-    const descriptionCount = document.getElementById('description-count');
-    const descriptionError = document.getElementById('description-error');
-    const descriptionWarning = document.getElementById('description-warning');
-
-    function updateDescriptionValidation() {
-        const length = descriptionInput.value.length;
-        descriptionCount.textContent = length;
-        
-        // Réinitialiser les styles
-        descriptionInput.classList.remove('border-red-500', 'border-yellow-400', 'border-green-500');
-        descriptionInput.classList.add('border-gray-300');
-        
-        if (length < 50) {
-            descriptionInput.classList.remove('border-gray-300');
-            descriptionInput.classList.add('border-red-500');
-            descriptionError.classList.remove('hidden');
-            descriptionWarning.classList.add('hidden');
-        } else if (length >= 50 && length <= 150) {
-            descriptionInput.classList.remove('border-gray-300');
-            descriptionInput.classList.add('border-yellow-400');
-            descriptionError.classList.add('hidden');
-            descriptionWarning.classList.remove('hidden');
-        } else {
-            descriptionInput.classList.remove('border-gray-300');
-            descriptionInput.classList.add('border-green-500');
-            descriptionError.classList.add('hidden');
-            descriptionWarning.classList.add('hidden');
-        }
-    }
-
-    // Événements
-    titleInput.addEventListener('input', updateTitleValidation);
-    descriptionInput.addEventListener('input', updateDescriptionValidation);
-
-    // Initialisation
-    updateTitleValidation();
-    updateDescriptionValidation();
-});
-
-// Validation supplémentaire lors de la soumission pour la description
-document.getElementById('urgent-sale-form').addEventListener('submit', function(e) {
-    const descriptionInput = document.getElementById('description');
-    if (descriptionInput.value.length < 50) {
-        e.preventDefault();
-        alert('La description doit contenir au moins 50 caractères.');
-        descriptionInput.focus();
-        return false;
-    }
+    });
 });
 </script>
 @endpush

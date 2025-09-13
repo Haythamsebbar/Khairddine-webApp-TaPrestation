@@ -218,7 +218,7 @@ class BookingController extends Controller
                 'success' => true,
                 'id' => $booking->id,
                 'title' => $booking->service->name ?? 'Service',
-                'client_name' => $booking->client->user->name ?? 'Client',
+                'client_name' => ($booking->client && $booking->client->user) ? $booking->client->user->name : 'Client',
                 'date' => $booking->start_datetime->format('d/m/Y à H:i'),
                 'duration' => $booking->start_datetime->diffInHours($booking->end_datetime) . ' heures',
                 'price' => number_format($booking->total_price, 2, ',', ' ') . ' €',

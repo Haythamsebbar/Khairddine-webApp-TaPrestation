@@ -233,6 +233,18 @@ class Equipment extends Model
     }
 
     /**
+     * Vérifie si un utilisateur est le propriétaire de cet équipement
+     */
+    public function isOwnedBy($user)
+    {
+        if (!$user || !$user->isPrestataire() || !$user->prestataire) {
+            return false;
+        }
+        
+        return $user->prestataire->id === $this->prestataire_id;
+    }
+
+    /**
      * Scope pour les équipements disponibles
      * Equipment is available if it's active (not inactive/maintenance) and marked as available
      */

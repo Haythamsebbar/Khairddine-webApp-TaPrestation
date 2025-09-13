@@ -109,6 +109,9 @@ class PrestataireController extends Controller
             }
         ]);
         
+        // Load all reviews without pagination to ensure we get all reviews for display
+        $allReviews = $prestataire->reviews()->with(['client'])->latest()->get();
+        
         // Récupérer les services similaires d'autres prestataires
         // Obtenir d'abord les IDs des services du prestataire
         $serviceIds = $prestataire->services->pluck('id')->toArray();
@@ -117,18 +120,24 @@ class PrestataireController extends Controller
         $categoryIds = \DB::table('service_category')
             ->whereIn('service_id', $serviceIds)
             ->pluck('category_id')
-            ->unique()
             ->toArray();
             
-        $similarServices = Service::whereHas('categories', function($query) use ($categoryIds) {
-            $query->whereIn('categories.id', $categoryIds);
-        })
-        ->where('prestataire_id', '!=', $prestataire->id)
-        ->with('prestataire.user')
-        ->take(4)
-        ->get();
-        
-        return view('prestataires.show', compact('prestataire', 'similarServices'));
+        // Obtenir les services similaires
+        $similarServices = Service::with(['prestataire.user', 'categories'])
+            ->where('prestataire_id', '!=', $prestataire->id)
+            ->whereHas('categories', function($query) use ($categoryIds) {
+                $query->whereIn('categories.id', $categoryIds);
+            })
+            ->where('status', 'active')
+            ->inRandomOrder()
+            ->limit(3)
+            ->get();
+
+        return view('prestataires.show', [
+            'prestataire' => $prestataire,
+            'allReviews' => $allReviews,
+            'similarServices' => $similarServices
+        ]);
     }
 
 

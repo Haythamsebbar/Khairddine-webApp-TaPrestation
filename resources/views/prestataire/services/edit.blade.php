@@ -65,7 +65,7 @@
                         <!-- Titre -->
                         <div>
                             <label for="title" class="block text-sm font-medium text-blue-700 mb-2">Titre du service *</label>
-                            <input type="text" id="title" name="title" value="{{ old('title', $service->title) }}" required maxlength="255" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('title') border-red-500 @enderror">
+                            <input type="text" id="title" name="title" value="{{ old('title', $service->title) }}" required class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('title') border-red-500 @enderror">
                             <div class="flex justify-between items-center mt-1">
                                 <div>
                                     @error('title')
@@ -74,14 +74,13 @@
                                     <p id="title-warning" class="text-yellow-600 text-sm hidden">Titre trop court, précisez l'usage ou le modèle</p>
                                     <p id="title-tip" class="text-blue-600 text-sm">Idéal : 5–9 mots, sans abréviations</p>
                                 </div>
-                                <p class="text-gray-500 text-sm"><span id="title-count">0</span>/70</p>
                             </div>
                         </div>
                         
                         <!-- Description -->
                         <div>
                             <label for="description" class="block text-sm font-medium text-blue-700 mb-2">Description détaillée *</label>
-                            <textarea id="description" name="description" required rows="6" maxlength="2000" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('description') border-red-500 @enderror" placeholder="Décrivez en détail votre service, vos compétences et ce qui vous différencie...">{{ old('description', $service->description) }}</textarea>
+                            <textarea id="description" name="description" required rows="6" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('description') border-red-500 @enderror" placeholder="Décrivez en détail votre service, vos compétences et ce qui vous différencie...">{{ old('description', $service->description) }}</textarea>
                             <div class="mt-1">
                                 @error('description')
                                     <p class="text-red-500 text-sm">{{ $message }}</p>
@@ -95,7 +94,6 @@
                                 </div>
                                 <div class="flex justify-between items-center mt-1">
                                     <p class="text-blue-600 text-sm">Recommandé : 150–600 caractères</p>
-                                    <p class="text-gray-500 text-sm"><span id="description-count">0</span> caractères</p>
                                 </div>
                             </div>
                         </div>
@@ -130,7 +128,7 @@
                         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="existing-images">
                             @foreach($service->images as $image)
                                 <div class="relative group" id="image-container-{{ $image->id }}">
-                                    <img src="{{ Storage::url($image->path) }}" alt="Service Image" class="rounded-lg object-cover h-32 w-full border border-blue-200">
+                                    <img src="{{ Storage::url($image->image_path) }}" alt="Service Image" class="rounded-lg object-cover h-32 w-full border border-blue-200">
                                     <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg">
                                         <button type="button" data-image-id="{{ $image->id }}" class="delete-image-btn text-white p-2 rounded-full bg-red-500 hover:bg-red-600 transition-colors">
                                             <i class="fas fa-trash text-sm"></i>
@@ -144,7 +142,7 @@
                     
                     <!-- Zone d'upload -->
                     <div class="border-2 border-dashed border-blue-300 rounded-lg p-6 text-center bg-blue-50 hover:border-blue-400 transition-colors">
-                        <input type="file" id="images" name="images[]" multiple accept="image/*" class="hidden" onchange="previewImages(this)">
+                        <input type="file" id="images" name="images[]" multiple accept="image/*" class="hidden">
                         <div id="upload-area" class="cursor-pointer" onclick="document.getElementById('images').click()">
                             <i class="fas fa-cloud-upload-alt text-blue-400 text-4xl mb-4"></i>
                             <p class="text-blue-600 mb-2">Cliquez pour ajouter des photos ou glissez-déposez</p>
@@ -348,8 +346,38 @@ document.addEventListener('DOMContentLoaded', function () {
     const imageInput = document.getElementById('images');
     const previewContainer = document.getElementById('image-preview');
     const uploadArea = document.getElementById('upload-area');
+    
+    // Variable to store existing files
+    let existingFiles = [];
+    let isAddingMore = false;
 
     window.previewImages = function(input) {
+        // Combine existing files with new ones when adding more
+        if (isAddingMore && existingFiles.length > 0) {
+            const newFiles = Array.from(input.files);
+            const combinedFiles = new DataTransfer();
+            
+            // Add existing files first
+            existingFiles.forEach(file => {
+                if (combinedFiles.files.length < 5) {
+                    combinedFiles.items.add(file);
+                }
+            });
+            
+            // Add new files
+            newFiles.forEach(file => {
+                if (combinedFiles.files.length < 5) {
+                    combinedFiles.items.add(file);
+                }
+            });
+            
+            input.files = combinedFiles.files;
+            isAddingMore = false;
+        }
+        
+        // Store current files
+        existingFiles = Array.from(input.files);
+        
         previewContainer.innerHTML = '';
         if (input.files && input.files.length > 0) {
             previewContainer.classList.remove('hidden');
@@ -379,7 +407,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 const addMore = document.createElement('div');
                 addMore.className = 'flex items-center justify-center h-24 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 transition-colors';
                 addMore.innerHTML = '<i class="fas fa-plus text-gray-400 text-xl"></i>';
-                addMore.onclick = () => imageInput.click();
+                addMore.onclick = () => {
+                    isAddingMore = true;
+                    imageInput.click();
+                };
                 previewContainer.appendChild(addMore);
             }
         } else {
@@ -397,8 +428,14 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
         imageInput.files = dt.files;
+        existingFiles = Array.from(imageInput.files);
         previewImages(imageInput);
     }
+
+    // Single event listener for file input changes
+    imageInput.addEventListener('change', function() {
+        previewImages(this);
+    });
 
     // Delete existing images
     const deleteButtons = document.querySelectorAll('.delete-image-btn');
@@ -439,13 +476,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Validation en temps réel pour le titre
     const titleInput = document.getElementById('title');
-    const titleCount = document.getElementById('title-count');
     const titleWarning = document.getElementById('title-warning');
     const titleTip = document.getElementById('title-tip');
 
     function updateTitleValidation() {
         const length = titleInput.value.length;
-        titleCount.textContent = length;
         
         // Réinitialiser les styles
         titleInput.classList.remove('border-yellow-400', 'border-green-500', 'border-red-500');
@@ -456,39 +491,27 @@ document.addEventListener('DOMContentLoaded', function () {
             titleInput.classList.add('border-yellow-400');
             titleWarning.classList.remove('hidden');
             titleTip.classList.add('hidden');
-        } else if (length >= 10 && length <= 70) {
+        } else {
             titleInput.classList.remove('border-blue-300');
             titleInput.classList.add('border-green-500');
             titleWarning.classList.add('hidden');
             titleTip.classList.remove('hidden');
-        } else {
-            titleInput.classList.remove('border-blue-300');
-            titleInput.classList.add('border-red-500');
-            titleWarning.classList.add('hidden');
-            titleTip.classList.add('hidden');
         }
     }
 
     // Validation en temps réel pour la description
     const descriptionInput = document.getElementById('description');
-    const descriptionCount = document.getElementById('description-count');
     const descriptionError = document.getElementById('description-error');
     const descriptionWarning = document.getElementById('description-warning');
 
     function updateDescriptionValidation() {
         const length = descriptionInput.value.length;
-        descriptionCount.textContent = length;
         
         // Réinitialiser les styles
         descriptionInput.classList.remove('border-red-500', 'border-yellow-400', 'border-green-500');
         descriptionInput.classList.add('border-blue-300');
         
         if (length < 50) {
-            descriptionInput.classList.remove('border-blue-300');
-            descriptionInput.classList.add('border-red-500');
-            descriptionError.classList.remove('hidden');
-            descriptionWarning.classList.add('hidden');
-        } else if (length >= 50 && length <= 150) {
             descriptionInput.classList.remove('border-blue-300');
             descriptionInput.classList.add('border-yellow-400');
             descriptionError.classList.add('hidden');
@@ -597,12 +620,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Validation lors de la soumission
     document.getElementById('serviceForm').addEventListener('submit', function(e) {
-        if (descriptionInput.value.length < 50) {
-            e.preventDefault();
-            alert('La description doit contenir au moins 50 caractères.');
-            descriptionInput.focus();
-            return false;
-        }
+        // Removed validation for description length since it's no longer required
     });
 });
 </script>
@@ -615,5 +633,3 @@ document.addEventListener('DOMContentLoaded', function () {
 }
 </style>
 @endpush
-
-@endsection

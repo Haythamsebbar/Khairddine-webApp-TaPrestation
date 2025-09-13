@@ -425,33 +425,6 @@
     @endif
 </div>
 
-<!-- Section suggestions/catégories populaires -->
-@if(!request()->hasAny(['search', 'location', 'category_id', 'max_price', 'availability']) && $categories && $categories->count() > 0)
-<div class="bg-gray-50 py-8 sm:py-12 lg:py-16">
-    <div class="container mx-auto px-4">
-        <div class="text-center mb-8 sm:mb-10 lg:mb-12">
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-4">Catégories populaires</h2>
-            <p class="text-sm sm:text-base text-gray-600">Découvrez les équipements les plus demandés</p>
-        </div>
-        
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 lg:gap-6">
-            @foreach($categories->take(6) as $category)
-            <a href="{{ route('equipment.index', ['category_id' => $category->id]) }}" 
-               class="bg-white rounded-lg p-3 sm:p-4 lg:p-6 text-center hover:shadow-md transition-shadow duration-200">
-                <div class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3">
-                    <svg class="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    </svg>
-                </div>
-                <h3 class="text-xs sm:text-sm lg:text-base font-medium text-gray-900 mb-1 truncate">{{ $category->name }}</h3>
-                <p class="text-xs sm:text-sm text-gray-500">{{ $category->equipment_count ?? 0 }} équipements</p>
-            </a>
-            @endforeach
-        </div>
-    </div>
-</div>
-@endif
 
 <script>
 // Fonction pour basculer l'affichage des filtres

@@ -41,9 +41,9 @@ return new class extends Migration
             
             // Localisation
             $table->string('address')->nullable();
-            $table->string('city');
+            $table->string('city')->nullable();
             $table->string('postal_code', 10)->nullable();
-            $table->string('country', 100)->default('France');
+            $table->string('country', 100)->nullable();
             $table->decimal('latitude', 10, 8)->nullable();
             $table->decimal('longitude', 11, 8)->nullable();
             $table->integer('delivery_radius')->default(0); // en km

@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
             NotificationsTableSeeder::class,
             MessagesTableSeeder::class,
             BookingsTableSeeder::class,
+            CompletedBookingsSeeder::class,
         ]);
     }
 }

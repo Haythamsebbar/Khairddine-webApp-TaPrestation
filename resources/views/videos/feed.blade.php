@@ -98,6 +98,13 @@ use Illuminate\Support\Facades\Storage;
                                         </svg>
                                     </button>
                                     
+                                    <!-- Bouton commentaire -->
+                                    <button class="comment-btn bg-black bg-opacity-50 rounded-full p-3 text-white hover:bg-opacity-70 transition-all" data-video-id="{{ $video->id }}">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                        </svg>
+                                    </button>
+                                    
                                     <!-- Bouton message -->
                                     <button class="message-btn bg-black bg-opacity-50 rounded-full p-3 text-white hover:bg-opacity-70 transition-all" data-prestataire-id="{{ $video->prestataire->id }}">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -156,11 +163,6 @@ use Illuminate\Support\Facades\Storage;
                         <div class="absolute top-4 left-4 right-4 pointer-events-none">
                             <div class="flex justify-between items-center text-white text-sm">
                                 <span>{{ $index + 1 }} / {{ $videos->count() }}</span>
-                                <a href="{{ route('home') }}" class="pointer-events-auto bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-70 transition-all">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                    </svg>
-                                </a>
                             </div>
                         </div>
                     </div>
@@ -437,6 +439,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         likeBtn.addEventListener('click', handleLike);
+        
+        // Bouton commentaire
+        const commentBtn = slide.querySelector('.comment-btn');
+        // Add a check to prevent duplicate event listeners
+        if (!commentBtn.hasAttribute('data-event-listener-added')) {
+            commentBtn.addEventListener('click', () => {
+                // Check if user is authenticated by checking if we're in an auth block
+                // This is a more reliable method than checking the follow button element type
+                const isAuthenticated = {{ Auth::check() ? 'true' : 'false' }};
+                if (!isAuthenticated) {
+                    // User is not authenticated, redirect to login
+                    window.location.href = '/login';
+                    return;
+                }
+                showCommentsOverlay(video.dataset.videoId, slide);
+            });
+            // Mark that we've added the event listener
+            commentBtn.setAttribute('data-event-listener-added', 'true');
+        }
         
         // Double-clic sur la vidéo pour liker
         let clickCount = 0;
@@ -791,11 +812,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json'
                     },
                     body: JSON.stringify({ comment: text })
                 })
-                .then(response => response.json())
+                .then(response => {
+                    // Check if the response is OK (2xx status)
+                    if (!response.ok) {
+                        // If it's a redirect to login page or authentication error, redirect the user
+                        if (response.status === 401) {
+                            window.location.href = '/login';
+                            return;
+                        }
+                        // For other errors, throw an error
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.success) {
                         // Recharger tous les commentaires pour avoir les données à jour
@@ -807,12 +841,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             commentsContent.scrollTop = commentsContent.scrollHeight;
                         }, 100);
                     } else {
-                        showNotification('Erreur lors de l\'envoi du commentaire', 'error');
+                        showNotification('Erreur lors de l\'envoi du commentaire: ' + (data.message || data.error || ''), 'error');
                     }
                 })
                 .catch(error => {
                     console.error('Erreur lors de l\'envoi du commentaire:', error);
-                    showNotification('Erreur lors de l\'envoi du commentaire', 'error');
+                    showNotification('Erreur lors de l\'envoi du commentaire. Veuillez réessayer.', 'error');
                 });
             }
         }
@@ -837,12 +871,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const commentsList = overlay.querySelector('.comments-list');
         
         fetch(`/videos/${videoId}/comments`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 // Vider le message de chargement
                 commentsList.innerHTML = '';
                 
-                if (data.comments && data.comments.length > 0) {
+                if (data.success && data.comments && data.comments.length > 0) {
                     data.comments.forEach(comment => {
                         const commentElement = document.createElement('div');
                         commentElement.className = 'comment-item';

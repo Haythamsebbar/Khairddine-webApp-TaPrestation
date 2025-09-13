@@ -733,9 +733,11 @@ class EquipmentController extends Controller
             
             // Localisation
             'address' => 'nullable|string|max:255',
-            'city' => 'required|string|max:100',
-            'postal_code' => 'nullable|string|max:10',
-            'country' => 'required|string|max:100',
+            'city' => 'nullable|string|max:100',
+            'postal_code' => 'nullable|string|max:20',
+            'country' => 'nullable|string|max:100',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
             
             // Conditions de location
             'minimum_rental_days' => 'nullable|integer|min:1',

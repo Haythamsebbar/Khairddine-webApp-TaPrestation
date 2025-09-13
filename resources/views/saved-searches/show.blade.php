@@ -247,7 +247,7 @@
                                             <a href="{{ route('prestataires.show', $prestataire) }}" class="px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
                                                 Voir le profil
                                             </a>
-                                            <a href="{{ Auth::user()->hasRole('client') ? route('messaging.show', $prestataire->user) : (Auth::user()->hasRole('prestataire') ? route('prestataire.prestataire.messages.show', $prestataire->user) : '#') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                            <a href="{{ Auth::user()->hasRole('client') ? route('client.messaging.show', $prestataire->user) : (Auth::user()->hasRole('prestataire') ? route('prestataire.messages.show', $prestataire->user) : '#') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                                                 Contacter
                                             </a>
                                         </div>

@@ -174,43 +174,29 @@ class AgendaController extends Controller
             'equipment_rental_requests' => $equipmentRentalRequests->count()
         ]);
         
-        // Mapper les réservations de services
-        $serviceEvents = $bookings->map(function ($booking) {
-            $eventType = 'service'; // Par défaut service
-            $icon = '🛠️'; // Icône service
-            $color = '#3b82f6'; // Bleu pour services
-            
-            // Déterminer le type et la couleur selon le contexte
-            if (str_contains(strtolower($booking->service->title ?? ''), 'équipement') || 
-                str_contains(strtolower($booking->service->title ?? ''), 'location')) {
-                $eventType = 'equipment';
-                $icon = '⚙️';
-                $color = '#10b981'; // Vert pour équipements
-            } elseif (str_contains(strtolower($booking->service->title ?? ''), 'urgent') || 
-                     str_contains(strtolower($booking->service->title ?? ''), 'vente')) {
-                $eventType = 'urgent_sale';
-                $icon = '⚡';
-                $color = '#ef4444'; // Rouge pour annonces
+        // Format the event data for FullCalendar
+        $formattedEvents = $bookings->map(function ($booking) {
+            // Extract session ID from notes if it exists
+            $sessionId = null;
+            if ($booking->client_notes && preg_match('/\[SESSION:([^\]]+)\]/', $booking->client_notes, $matches)) {
+                $sessionId = $matches[1];
             }
             
             return [
-                'id' => 'booking_' . $booking->id,
-                'title' => ($booking->service->title ?? 'Réservation'),
-                'start' => $booking->start_datetime->toISOString(),
-                'end' => $booking->end_datetime->toISOString(),
-                'backgroundColor' => $color,
-                'borderColor' => $color,
+                'id' => $booking->id,
+                'title' => ($booking->service ? $booking->service->name : 'Service') . ' - ' . ($booking->client ? $booking->client->user->name : 'Client'),
+                'start' => $booking->start_datetime->toIso8601String(),
+                'end' => $booking->end_datetime->toIso8601String(),
+                'backgroundColor' => $this->getStatusColor($booking->status),
+                'borderColor' => $this->getStatusColor($booking->status),
                 'textColor' => '#ffffff',
                 'extendedProps' => [
-                    'id' => $booking->id,
-                    'clientName' => $booking->client->user->name ?? 'N/A',
-                    'serviceName' => $booking->service->title ?? 'N/A',
-                    'status' => ucfirst($booking->status),
-                    'bookingUrl' => route('prestataire.bookings.show', $booking->id),
-                    'startTime' => $booking->start_datetime->format('H:i'),
-                    'type' => $eventType,
-                    'icon' => $icon,
-                    'itemType' => 'booking'
+                    'type' => 'booking',
+                    'status' => $booking->status,
+                    'clientName' => $booking->client ? $booking->client->user->name : 'Client',
+                    'serviceName' => $booking->service ? $booking->service->name : 'Service',
+                    'sessionId' => $sessionId,
+                    'url' => $booking->id ? url('/prestataire/bookings/' . $booking->id) : '#',
                 ]
             ];
         });
@@ -249,7 +235,7 @@ class AgendaController extends Controller
         });
         
         // Combiner tous les événements
-        $allEvents = $serviceEvents->concat($equipmentEvents);
+        $allEvents = $formattedEvents->concat($equipmentEvents);
         
         // Log the final events count
         \Log::info('Final events count', [

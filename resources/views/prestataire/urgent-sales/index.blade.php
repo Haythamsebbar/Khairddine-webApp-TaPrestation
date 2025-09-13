@@ -162,9 +162,9 @@
 
     <!-- Liste des ventes modernes -->
     @if($urgentSales->count() > 0)
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
             @foreach($urgentSales as $sale)
-                <div class="bg-white rounded-xl shadow-lg border border-red-200 hover:shadow-xl transition duration-200">
+                <div class="bg-white rounded-xl shadow-lg border border-red-200 hover:shadow-xl transition duration-200 flex flex-col h-full">
                     <!-- Image -->
                     <div class="relative">
                         @if($sale->photos && count($sale->photos ?? []) > 0)
@@ -198,7 +198,7 @@
                     </div>
                     
                     <!-- Contenu -->
-                    <div class="p-4">
+                    <div class="p-4 flex flex-col flex-grow">
                         <h3 class="font-semibold text-lg text-red-900 mb-2 line-clamp-2">{{ $sale->title }}</h3>
                         <p class="text-red-700 text-sm mb-3 line-clamp-2">{{ $sale->description }}</p>
                         
@@ -217,7 +217,7 @@
                         </div>
                         
                         <!-- Actions -->
-                        <div class="flex gap-2">
+                        <div class="mt-auto pt-4 border-t border-red-100 flex gap-2">
                             <a href="{{ route('prestataire.urgent-sales.show', $sale) }}" class="flex-1 bg-red-600 hover:bg-red-700 text-white text-center py-2 px-3 rounded-lg text-sm transition duration-200 shadow-md hover:shadow-lg">
                                 <i class="fas fa-eye mr-1"></i>Voir
                             </a>

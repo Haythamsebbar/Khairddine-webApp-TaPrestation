@@ -169,7 +169,7 @@
                         <!-- Quantité -->
                         <div class="md:col-span-2">
                             <label for="quantity" class="block text-xs sm:text-sm font-medium text-red-700 mb-1 sm:mb-2">Quantité *</label>
-                            <input type="number" id="quantity" name="quantity" value="{{ old('quantity', 1) }}" required min="1" class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('quantity') border-red-500 @enderror">
+                            <input type="number" id="quantity" name="quantity" value="{{ old('quantity') }}" required min="1" class="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('quantity') border-red-500 @enderror">
                             @error('quantity')
                                 <p class="text-red-500 text-xs sm:text-sm mt-1">{{ $message }}</p>
                             @enderror

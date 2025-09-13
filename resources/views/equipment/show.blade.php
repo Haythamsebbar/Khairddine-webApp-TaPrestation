@@ -539,35 +539,53 @@
                     
                     <!-- Boutons d'action -->
                     <div class="border-t border-green-200 pt-3 sm:pt-4 mt-3 sm:mt-4">
-                        <div class="flex gap-2">
-                            <!-- Bouton principal de réservation -->
-                            <a href="{{ route('equipment.reserve', $equipment) }}" 
-                               class="flex-1 bg-green-600 hover:bg-green-700 text-white px-2 py-2 rounded-lg transition duration-200 font-semibold shadow-lg hover:shadow-xl flex items-center justify-center text-center text-xs">
-                                <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0V6a2 2 0 012-2h4a2 2 0 012 2v1m-6 0h6m-6 0l-.5 3.5A2 2 0 003.5 13H20.5a2 2 0 002-2l-.5-3.5m-15 0h15"></path>
+                        @if(isset($isOwner) && $isOwner)
+                            <!-- Pour le propriétaire: un seul bouton Modifier -->
+                            <a href="{{ route('prestataire.equipment.edit', $equipment) }}" 
+                               class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg transition duration-200 font-semibold shadow-lg hover:shadow-xl flex items-center justify-center text-center">
+                                <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                 </svg>
-                                <span>Réserver</span>
+                                <span>Modifier l'équipement</span>
                             </a>
                             
-                            <!-- Bouton secondaire de contact -->
-                             <a href="{{ route('messaging.start', $equipment->prestataire) }}" 
-                                class="flex-1 bg-white hover:bg-gray-50 text-green-600 border border-green-600 px-2 py-2 rounded-lg transition duration-200 font-semibold flex items-center justify-center text-center text-xs">
-                                 <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9 8s9 3.582 9 8z"></path>
-                                 </svg>
-                                 <span>Contacter</span>
-                             </a>
-                             
-                             <!-- Bouton de signalement -->
-                             <button onclick="openReportModal()" 
-                                     class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 px-2 py-2 rounded-lg transition duration-200 font-medium flex items-center justify-center text-center text-xs">
-                                 <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                                 </svg>
-                                 <span>Signaler</span>
-                             </button>
-                         </div>
-                     </div>
+                            <!-- Bouton de suppression -->
+                            <button onclick="alert('Fonction de suppression à implémenter')" 
+                                    class="w-full mt-3 bg-red-100 hover:bg-red-200 text-red-700 border border-red-300 px-4 py-3 rounded-lg transition duration-200 font-medium flex items-center justify-center text-center">
+                                <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                                <span>Supprimer l'équipement</span>
+                            </button>
+                        @else
+                            <!-- Pour les autres utilisateurs: trois boutons -->
+                            <div class="flex gap-2">
+                                <a href="{{ route('equipment.reserve', $equipment) }}" 
+                                   class="flex-1 bg-green-600 hover:bg-green-700 text-white px-2 py-2 rounded-lg transition duration-200 font-semibold shadow-lg hover:shadow-xl flex items-center justify-center text-center text-xs">
+                                    <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0V6a2 2 0 012-2h4a2 2 0 012 2v1m-6 0h6m-6 0l-.5 3.5A2 2 0 003.5 13H20.5a2 2 0 002-2l-.5-3.5m-15 0h15"></path>
+                                    </svg>
+                                    <span>Réserver</span>
+                                </a>
+                                
+                                <a href="{{ route('messaging.start', $equipment->prestataire) }}" 
+                                   class="flex-1 bg-white hover:bg-gray-50 text-green-600 border border-green-600 px-2 py-2 rounded-lg transition duration-200 font-semibold flex items-center justify-center text-center text-xs">
+                                    <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9 8s9 3.582 9 8z"></path>
+                                    </svg>
+                                    <span>Contacter</span>
+                                </a>
+                                
+                                <button onclick="openReportModal()" 
+                                        class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 px-2 py-2 rounded-lg transition duration-200 font-medium flex items-center justify-center text-center text-xs">
+                                    <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                    </svg>
+                                    <span>Signaler</span>
+                                </button>
+                            </div>
+                        @endif
+                    </div>
 
                     <!-- Location Map -->
                     @if ($equipment->latitude && $equipment->longitude)

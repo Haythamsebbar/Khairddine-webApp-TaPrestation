@@ -355,122 +355,58 @@
         
         <!-- Liste des demandes -->
         @if($requests->count() > 0)
-            <div class="space-y-4">
+            <!-- Equipment Requests Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
                 @foreach($requests as $request)
-                    <div class="equipment-card bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl">
-                        <!-- Desktop Layout (≥1024px) -->
-                        <div class="hidden lg:flex items-start justify-between p-5 sm:p-6">
-                            <!-- Section principale avec avatar et infos -->
-                            <div class="flex items-start space-x-6 flex-1">
-                                <!-- Avatar de l'équipement -->
+                    <div class="equipment-card bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl flex flex-col h-full">
+                        <!-- Card Content -->
+                        <div class="p-5 flex flex-col flex-grow">
+                            <!-- Avatar and Info -->
+                            <div class="flex items-start space-x-4 mb-4">
+                                <!-- Avatar -->
                                 <div class="flex-shrink-0">
                                     @if($request->equipment->photos && count($request->equipment->photos) > 0)
-                                        <img class="h-16 w-16 rounded-xl object-cover shadow-lg" 
+                                        <img class="h-12 w-12 rounded-xl object-cover shadow-lg" 
                                              src="{{ Storage::url($request->equipment->photos[0]) }}" 
                                              alt="{{ $request->equipment->name }}">
                                     @else
-                                        <div class="h-16 w-16 rounded-xl bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center shadow-lg">
-                                            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center shadow-lg">
+                                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                                             </svg>
                                         </div>
                                     @endif
                                 </div>
                                 
-                                <!-- Bloc informations -->
-                                <div class="flex-1 space-y-3">
-                                    <!-- Titre et équipement -->
-                                    <div>
-                                        <h3 class="text-xl font-bold text-gray-900 mb-2 leading-tight">{{ $request->equipment->name }}</h3>
-                                        <p class="text-gray-700 font-medium text-lg">avec {{ $request->equipment->prestataire->company_name ?? $request->equipment->prestataire->first_name . ' ' . $request->equipment->prestataire->last_name }}</p>
-                                        <p class="text-gray-500 text-sm mt-1">Demande #{{ $request->id }}</p>
-                                    </div>
-                                    
-                                    <!-- Méta temporelles -->
-                                    <div class="flex items-center space-x-8 text-gray-600">
-                                        <div class="flex items-center">
-                                            <i class="fas fa-calendar-alt mr-3 text-green-500 text-lg"></i>
-                                            <span class="font-medium">
-                                                Du {{ $request->start_date->format('d/m/Y') }}
-                                                au {{ $request->end_date->format('d/m/Y') }}
-                                            </span>
-                                        </div>
-                                        <div class="flex items-center">
-                                            <i class="fas fa-clock mr-3 text-green-500 text-lg"></i>
-                                            <span class="font-medium">{{ $request->duration_days }} jour{{ $request->duration_days > 1 ? 's' : '' }}</span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Montant -->
-                                    <div class="flex items-center text-gray-600">
-                                        <i class="fas fa-euro-sign mr-3 text-green-500 text-lg"></i>
-                                        <span class="font-bold text-lg">{{ number_format($request->total_amount, 0) }}€</span>
-                                        @if($request->delivery_required && $request->delivery_cost > 0)
-                                            <span class="ml-2 text-sm text-gray-500">
-                                                (+ {{ number_format($request->delivery_cost, 0) }}€ livraison)
-                                            </span>
-                                        @endif
-                                    </div>
-
-                                    @if($request->client_notes)
-                                        <div class="mt-4">
-                                            <p class="text-sm text-gray-500 mb-1">Notes</p>
-                                            <p class="text-gray-700">{{ $request->client_notes }}</p>
-                                        </div>
-                                    @endif
+                                <!-- Title and Subtitle -->
+                                <div class="flex-grow min-w-0">
+                                    <h3 class="text-lg font-bold text-gray-900 truncate">
+                                        {{ $request->equipment->name }}
+                                    </h3>
+                                    <p class="text-gray-600 text-sm truncate">
+                                        avec {{ $request->equipment->prestataire->company_name ?? $request->equipment->prestataire->first_name . ' ' . $request->equipment->prestataire->last_name }}
+                                    </p>
+                                    <p class="text-gray-500 text-xs mt-1">
+                                        Demande #{{ $request->id }}
+                                    </p>
                                 </div>
                             </div>
                             
-                            <!-- Badge de statut en haut à droite -->
-                            <div class="ml-6">
-                                <span class="status-badge 
-                                    @if($request->status === 'pending') status-pending
-                                    @elseif($request->status === 'accepted') status-accepted
-                                    @elseif($request->status === 'rejected') status-rejected
-                                    @else status-pending
-                                    @endif">
-                                    @if($request->status === 'pending')
-                                        <i class="fas fa-clock mr-2"></i> En attente
-                                    @elseif($request->status === 'accepted')
-                                        <i class="fas fa-check-circle mr-2"></i> Acceptée
-                                    @elseif($request->status === 'rejected')
-                                        <i class="fas fa-times-circle mr-2"></i> Refusée
-                                    @else
-                                        {{ ucfirst($request->status) }}
-                                    @endif
-                                </span>
-                            </div>
-                        </div>
-                        
-                        <!-- Tablet Layout (768-1023px) -->
-                        <div class="hidden md:block lg:hidden p-5 sm:p-6">
-                            <div class="flex items-start justify-between mb-4">
-                                <div class="flex items-start space-x-4 flex-1">
-                                    <!-- Avatar -->
-                                    <div class="flex-shrink-0">
-                                        @if($request->equipment->photos && count($request->equipment->photos) > 0)
-                                            <img class="h-14 w-14 rounded-xl object-cover shadow-lg" 
-                                                 src="{{ Storage::url($request->equipment->photos[0]) }}" 
-                                                 alt="{{ $request->equipment->name }}">
-                                        @else
-                                            <div class="h-14 w-14 rounded-xl bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center shadow-lg">
-                                                <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                                                </svg>
-                                            </div>
-                                        @endif
-                                    </div>
-                                    
-                                    <!-- Titre et équipement -->
-                                    <div class="flex-1">
-                                        <h3 class="text-lg font-bold text-gray-900 mb-1 leading-tight">{{ $request->equipment->name }}</h3>
-                                        <p class="text-gray-700 font-medium">avec {{ $request->equipment->prestataire->company_name ?? $request->equipment->prestataire->first_name . ' ' . $request->equipment->prestataire->last_name }}</p>
-                                        <p class="text-gray-500 text-sm mt-1">Demande #{{ $request->id }}</p>
-                                    </div>
+                            <!-- Date and Duration -->
+                            <div class="mb-4">
+                                <div class="flex items-center text-gray-600 text-sm">
+                                    <i class="fas fa-calendar-alt mr-2 text-green-500"></i>
+                                    <span>{{ $request->start_date->format('d/m/Y') }}</span>
                                 </div>
-                                
-                                <!-- Badge de statut -->
-                                <span class="status-badge 
+                                <div class="flex items-center text-gray-600 text-sm mt-1">
+                                    <i class="fas fa-clock mr-2 text-green-500"></i>
+                                    <span>{{ $request->duration_days }} jour{{ $request->duration_days > 1 ? 's' : '' }}</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Status Badge -->
+                            <div class="mb-4">
+                                <span class="status-badge inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
                                     @if($request->status === 'pending') status-pending
                                     @elseif($request->status === 'accepted') status-accepted
                                     @elseif($request->status === 'rejected') status-rejected
@@ -488,131 +424,9 @@
                                 </span>
                             </div>
                             
-                            <!-- Méta temporelles sous le titre -->
-                            <div class="flex items-center space-x-6 text-gray-600 mb-4">
-                                <div class="flex items-center">
-                                    <i class="fas fa-calendar-alt mr-2 text-green-500"></i>
-                                    <span class="font-medium">
-                                        Du {{ $request->start_date->format('d/m/Y') }}
-                                        au {{ $request->end_date->format('d/m/Y') }}
-                                    </span>
-                                </div>
-                                <div class="flex items-center">
-                                    <i class="fas fa-clock mr-2 text-green-500"></i>
-                                    <span class="font-medium">{{ $request->duration_days }} jour{{ $request->duration_days > 1 ? 's' : '' }}</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Montant -->
-                            <div class="flex items-center text-gray-600 mb-4">
-                                <i class="fas fa-euro-sign mr-2 text-green-500"></i>
-                                <span class="font-bold">{{ number_format($request->total_amount, 0) }}€</span>
-                                @if($request->delivery_required && $request->delivery_cost > 0)
-                                    <span class="ml-2 text-sm text-gray-500">
-                                        (+ {{ number_format($request->delivery_cost, 0) }}€ livraison)
-                                    </span>
-                                @endif
-                            </div>
-                            
-                            @if($request->client_notes)
-                                <div class="mb-4">
-                                    <p class="text-sm text-gray-500 mb-1">Notes</p>
-                                    <p class="text-gray-700">{{ $request->client_notes }}</p>
-                                </div>
-                            @endif
-                        </div>
-                        
-                        <!-- Mobile Layout (<768px) -->
-                        <div class="block md:hidden p-5 sm:p-6">
-                            <div class="space-y-4">
-                                <!-- Titre -->
-                                <div>
-                                    <h3 class="text-lg font-bold text-gray-900 mb-1 leading-tight">{{ $request->equipment->name }}</h3>
-                                    <p class="text-gray-700 font-medium">avec {{ $request->equipment->prestataire->company_name ?? $request->equipment->prestataire->first_name . ' ' . $request->equipment->prestataire->last_name }}</p>
-                                    <p class="text-gray-500 text-sm mt-1">Demande #{{ $request->id }}</p>
-                                </div>
-                                
-                                <!-- Badge de statut -->
-                                <div class="flex justify-center">
-                                    <span class="status-badge 
-                                        @if($request->status === 'pending') status-pending
-                                        @elseif($request->status === 'accepted') status-accepted
-                                        @elseif($request->status === 'rejected') status-rejected
-                                        @else status-pending
-                                        @endif">
-                                        @if($request->status === 'pending')
-                                            <i class="fas fa-clock mr-2"></i> En attente
-                                        @elseif($request->status === 'accepted')
-                                            <i class="fas fa-check-circle mr-2"></i> Acceptée
-                                        @elseif($request->status === 'rejected')
-                                            <i class="fas fa-times-circle mr-2"></i> Refusée
-                                        @else
-                                            {{ ucfirst($request->status) }}
-                                        @endif
-                                    </span>
-                                </div>
-                                
-                                <!-- Méta temporelles -->
-                                <div class="space-y-2 text-gray-600">
-                                    <div class="flex items-center justify-center">
-                                        <i class="fas fa-calendar-alt mr-2 text-green-500"></i>
-                                        <span class="font-medium text-center">
-                                            Du {{ $request->start_date->format('d/m/Y') }}<br>
-                                            au {{ $request->end_date->format('d/m/Y') }}
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center justify-center">
-                                        <i class="fas fa-clock mr-2 text-green-500"></i>
-                                        <span class="font-medium">{{ $request->duration_days }} jour{{ $request->duration_days > 1 ? 's' : '' }}</span>
-                                    </div>
-                                </div>
-                                
-                                <!-- Montant -->
-                                <div class="flex items-center justify-center text-gray-600">
-                                    <i class="fas fa-euro-sign mr-2 text-green-500"></i>
-                                    <span class="font-bold">{{ number_format($request->total_amount, 0) }}€</span>
-                                    @if($request->delivery_required && $request->delivery_cost > 0)
-                                        <span class="ml-2 text-sm text-gray-500">
-                                            (+ {{ number_format($request->delivery_cost, 0) }}€ livraison)
-                                        </span>
-                                    @endif
-                                </div>
-                                
-                                @if($request->client_notes)
-                                    <div>
-                                        <p class="text-sm text-gray-500 mb-1">Notes</p>
-                                        <p class="text-gray-700">{{ $request->client_notes }}</p>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                        
-                        <!-- Actions - Responsive -->
-                        <div class="mt-6 pt-6 border-t border-gray-100 p-5 sm:p-6">
-                            <!-- Desktop & Tablet Actions -->
-                            <div class="hidden md:flex items-center justify-end space-x-4">
-                                <a href="{{ route('client.equipment-rental-requests.show', $request) }}" class="action-button inline-flex items-center justify-center px-4 py-2.5 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
-                                    <i class="fas fa-eye mr-2"></i> Voir détails
-                                </a>
-                                
-                                @if($request->status === 'pending')
-                                    <form method="POST" 
-                                          action="{{ route('client.equipment-rental-requests.destroy', $request) }}" 
-                                          class="inline"
-                                          onsubmit="return confirm('Êtes-vous sûr de vouloir annuler cette demande ?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" 
-                                                class="action-button inline-flex items-center justify-center px-4 py-2.5 border border-transparent rounded-lg shadow-sm text-base font-semibold text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-200">
-                                            <i class="fas fa-times mr-2"></i> Annuler
-                                        </button>
-                                    </form>
-                                @endif
-                            </div>
-                            
-                            <!-- Mobile Actions -->
-                            <div class="block md:hidden space-y-3">
-                                <a href="{{ route('client.equipment-rental-requests.show', $request) }}" class="action-button w-full inline-flex items-center justify-center px-4 py-2.5 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                            <!-- Actions - Always at the bottom -->
+                            <div class="mt-auto pt-4 border-t border-gray-100 flex flex-col space-y-2">
+                                <a href="{{ route('client.equipment-rental-requests.show', $request) }}" class="action-button w-full inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
                                     <i class="fas fa-eye mr-2"></i> Voir détails
                                 </a>
                                 
@@ -623,7 +437,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" 
-                                                class="action-button w-full inline-flex items-center justify-center px-4 py-2.5 border border-transparent rounded-lg shadow-sm text-base font-semibold text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-200">
+                                                class="action-button w-full inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-200">
                                             <i class="fas fa-times mr-2"></i> Annuler
                                         </button>
                                     </form>

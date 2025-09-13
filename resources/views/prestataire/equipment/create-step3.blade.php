@@ -118,41 +118,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Aperçu des informations précédentes -->
-                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 sm:p-4">
-                            <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">Récapitulatif de votre équipement</h3>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm">
-                                <div>
-                                    <p class="text-gray-600">Nom :</p>
-                                    <p class="font-medium text-gray-900">{{ session('equipment_step1.name', 'Non défini') }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-gray-600">Prix par jour :</p>
-                                    <p class="font-medium text-gray-900">{{ session('equipment_step2.price_per_day', 'Non défini') }}€</p>
-                                </div>
-                                <div>
-                                    <p class="text-gray-600">Caution :</p>
-                                    <p class="font-medium text-gray-900">{{ session('equipment_step2.security_deposit', 'Non défini') }}€</p>
-                                </div>
-                                <div>
-                                    <p class="text-gray-600">État :</p>
-                                    <p class="font-medium text-gray-900">
-                                        @php
-                                            $conditions = [
-                                                'excellent' => 'Excellent',
-                                                'very_good' => 'Très bon',
-                                                'good' => 'Bon',
-                                                'fair' => 'Correct',
-                                                'poor' => 'Mauvais'
-                                            ];
-                                            $condition = session('equipment_step2.condition');
-                                        @endphp
-                                        {{ $conditions[$condition] ?? 'Non défini' }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Actions -->

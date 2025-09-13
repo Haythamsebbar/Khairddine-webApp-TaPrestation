@@ -158,9 +158,9 @@
 
         <!-- Liste des services -->
         @if($services->count() > 0)
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
                 @foreach($services as $service)
-                    <div class="bg-white rounded-xl shadow-lg border border-blue-200 hover:shadow-xl transition duration-200 flex flex-col">
+                    <div class="bg-white rounded-xl shadow-lg border border-blue-200 hover:shadow-xl transition duration-200 flex flex-col h-full">
                         <!-- Image -->
                         <div class="relative">
                             @if($service->images->isNotEmpty())

@@ -76,7 +76,7 @@
                         ? $booking->service->category->first()->name : null,
                     'price' => $isMultiSlot ? ($booking->total_session_price ?? 0) : ($booking->service ? ($booking->service->price ?? null) : null),
                     'price_type' => $booking->service ? ($booking->service->price_type ?? null) : null,
-                    'route_show' => $booking->id ? route('prestataire.bookings.show', $booking->id) : '#',
+                    'route_show' => $booking->id ? url('/prestataire/bookings/' . $booking->id) : '#',
                     'route_accept' => $booking->id ? route('prestataire.bookings.accept', $booking) : '#',
                     'route_reject' => $booking->id ? route('prestataire.bookings.reject', $booking) : '#',
                     'is_multi_slot' => $isMultiSlot,
@@ -300,21 +300,6 @@
                                                                 @else text-red-600
                                                                 @endif
                                                                 ">{{ substr($item->client_name, 0, 1) }}</span>
-                                                        </div>
-                                                    @endif
-                                                @else
-                                                    <div class="w-full h-full 
-                                                        @if($item->type === 'service') bg-blue-100
-                                                        @elseif($item->type === 'equipment') bg-green-100
-                                                        @else bg-red-100
-                                                        @endif
-                                                        flex items-center justify-center">
-                                                        <span class="text-xs font-medium
-                                                            @if($item->type === 'service') text-blue-600
-                                                            @elseif($item->type === 'equipment') text-green-600
-                                                            @else text-red-600
-                                                            @endif
-                                                            ">{{ substr($item->client_name, 0, 1) }}</span>
                                                     </div>
                                                 @endif
                                             </div>
@@ -408,7 +393,6 @@
                                 </div>
                             </a>
                         </div>
-                    @endforeach
                     </div>
                 </div>
             </div>
@@ -538,6 +522,7 @@ function resetFilters() {
     }
     filterByType('all');
 }
+}
 
 // Écouter les changements du filtre de statut
 document.addEventListener('DOMContentLoaded', function() {
@@ -547,4 +532,3 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-@endsection

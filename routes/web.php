@@ -298,13 +298,15 @@ Route::get('/approve-all-videos', function () {
 });
 Route::get('/videos/{video}', [VideoController::class, 'show'])->name('videos.show');
 Route::post('/videos/{video}/like', [VideoController::class, 'like'])->name('videos.like');
-Route::post('/videos/{video}/comments', [VideoController::class, 'comment'])->name('videos.comment');
+Route::post('/videos/{video}/comments', [VideoController::class, 'comment'])->name('videos.comment')->middleware('auth');
 Route::get('/videos/{video}/comments', [VideoController::class, 'getComments'])->name('videos.comments.get');
 Route::post('/videos/{video}/increment-views', [VideoController::class, 'incrementViewCount'])->name('videos.increment-views');
 Route::post('/prestataires/{prestataire}/follow', [VideoController::class, 'follow'])->name('prestataires.follow');
 
 // Routes pour les avis
 Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
+Route::get('/reviews/create', [ReviewController::class, 'create'])->name('reviews.create');
+Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
 Route::get('/reviews/with-photos', [ReviewController::class, 'withPhotos'])->name('reviews.with-photos');
 Route::get('/reviews/certificates', [ReviewController::class, 'certificates'])->name('reviews.certificates');
 
@@ -476,7 +478,7 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
     Route::middleware(['role:prestataire'])->prefix('prestataire')->name('prestataire.')->group(function () {
         Route::put('availability/update-weekly', [\App\Http\Controllers\Prestataire\AvailabilityController::class, 'updateWeeklyAvailability'])->name('availability.updateWeekly');
         Route::resource('bookings', App\Http\Controllers\Prestataire\BookingController::class)->only(['index']);
-        Route::get('/bookings/{id}', [\App\Http\Controllers\Prestataire\BookingController::class, 'show'])->name('bookings.show');
+        Route::get('/bookings/{id}', [\App\Http\Controllers\Prestataire\BookingController::class, 'show'])->name('prestataire.bookings.show');
         Route::patch('/bookings/{booking}/accept', [\App\Http\Controllers\Prestataire\BookingController::class, 'accept'])->name('bookings.accept');
         Route::patch('/bookings/{booking}/reject', [\App\Http\Controllers\Prestataire\BookingController::class, 'reject'])->name('bookings.reject');
         Route::resource('agenda', App\Http\Controllers\Prestataire\AgendaController::class)->only(['index']);
@@ -560,6 +562,9 @@ Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->gr
             Route::get('/', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'index'])->name('index');
             Route::get('/create', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'create'])->name('create');
             Route::post('/', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'store'])->name('store');
+            
+            // Routes for equipment image management
+            Route::delete('/{equipment}/photos/{photoIndex}', [\App\Http\Controllers\Prestataire\EquipmentImageController::class, 'destroy'])->name('photos.destroy');
             
             // Routes pour la création multi-étapes d'équipement
             Route::get('/create/step1', [\App\Http\Controllers\Prestataire\EquipmentController::class, 'createStep1'])->name('create.step1');

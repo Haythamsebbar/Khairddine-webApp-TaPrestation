@@ -103,23 +103,25 @@ class VideoController extends Controller
 
     public function comment(Request $request, Video $video)
     {
+        // Ensure the user is authenticated
+        if (!Auth::check()) {
+            return response()->json(['error' => 'Non authentifié'], 401);
+        }
+        
         $request->validate([
             'comment' => 'required|string|max:500'
         ]);
 
         $user = Auth::user();
-        if (!$user) {
-            return response()->json(['error' => 'Non authentifié'], 401);
-        }
-
-        // Créer le commentaire
+        
+        // Create the comment
         $comment = VideoComment::create([
             'user_id' => $user->id,
             'video_id' => $video->id,
             'content' => $request->comment
         ]);
 
-        // Mettre à jour le compteur
+        // Update the counter
         $video->increment('comments_count');
 
         return response()->json([
@@ -137,24 +139,31 @@ class VideoController extends Controller
 
     public function getComments(Video $video)
     {
-        $comments = $video->comments()
-            ->with('user')
-            ->latest()
-            ->take(20)
-            ->get()
-            ->map(function ($comment) {
-                return [
-                    'id' => $comment->id,
-                    'content' => $comment->content,
-                    'user_name' => $comment->user->name,
-                    'created_at' => $comment->created_at->diffForHumans()
-                ];
-            });
+        try {
+            $comments = $video->comments()
+                ->with('user')
+                ->latest()
+                ->take(20)
+                ->get()
+                ->map(function ($comment) {
+                    return [
+                        'id' => $comment->id,
+                        'content' => $comment->content,
+                        'user_name' => $comment->user->name,
+                        'created_at' => $comment->created_at->diffForHumans()
+                    ];
+                });
 
-        return response()->json([
-            'success' => true,
-            'comments' => $comments
-        ]);
+            return response()->json([
+                'success' => true,
+                'comments' => $comments
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Erreur lors du chargement des commentaires'
+            ], 500);
+        }
     }
 
     public function incrementViewCount(Request $request, Video $video)

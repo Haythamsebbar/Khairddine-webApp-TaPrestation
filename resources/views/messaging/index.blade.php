@@ -52,7 +52,7 @@
                         @foreach($conversations as $conversation)
                             <div class="conversation-item border-b border-blue-100 last:border-b-0 hover:bg-blue-50 transition-colors cursor-pointer relative" 
                                  data-user-id="{{ $conversation['user']->id }}"
-                                 onclick="window.location.href='{{ Auth::user()->hasRole('client') ? route('messaging.show', $conversation['user']) : route('prestataire.prestataire.messages.show', $conversation['user']) }}'">
+                                 onclick="window.location.href='{{ Auth::user()->hasRole('client') ? route('client.messaging.show', $conversation['user']) : url('prestataire/messages/' . $conversation['user']->id) }}'">
                                 <div class="flex items-start p-6 space-x-4">
                                     <div class="conversation-avatar flex-shrink-0 relative">
                                         @if($conversation['user']->profile_photo_url)

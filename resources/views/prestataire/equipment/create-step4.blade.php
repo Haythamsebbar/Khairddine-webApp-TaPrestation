@@ -89,44 +89,42 @@
                         <!-- Localisation -->
                         <div>
                             <h3 class="text-base sm:text-lg font-semibold text-green-900 mb-3 sm:mb-4 border-b border-green-200 pb-2">Localisation</h3>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
-                                <div class="sm:col-span-2 lg:col-span-1">
-                                    <label for="address" class="block text-sm font-medium text-green-700 mb-2">Adresse</label>
-                                    <input type="text" name="address" id="address" value="{{ old('address') }}" class="w-full px-3 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-sm sm:text-base" placeholder="Ex: 123 Rue de Paris">
-                                </div>
-                                <div>
-                                    <label for="city" class="block text-sm font-medium text-green-700 mb-2">Ville *</label>
-                                    <input type="text" name="city" id="city" value="{{ old('city') }}" required class="w-full px-3 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 @error('city') border-red-500 @enderror text-sm sm:text-base" placeholder="Ex: Paris">
-                                    @error('city')
-                                        <p class="text-red-500 text-xs sm:text-sm mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                                <div>
-                                    <label for="country" class="block text-sm font-medium text-green-700 mb-2">Pays *</label>
-                                    <input type="text" name="country" id="country" value="{{ old('country') }}" required class="w-full px-3 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 @error('country') border-red-500 @enderror text-sm sm:text-base" placeholder="Ex: France">
-                                    @error('country')
-                                        <p class="text-red-500 text-xs sm:text-sm mt-1">{{ $message }}</p>
-                                    @enderror
+                            <div class="mb-3 sm:mb-4">
+                                <p class="text-xs sm:text-sm text-green-700 mb-2">
+                                    <i class="fas fa-info-circle mr-1 text-xs sm:text-sm"></i>
+                                    Indiquez où vous proposez cet équipement. Cela aidera les clients à vous trouver plus facilement.
+                                </p>
+                                <div class="bg-orange-50 p-2 sm:p-3 rounded-lg">
+                                    <h4 class="font-semibold text-orange-800 mb-1 sm:mb-2 text-xs sm:text-sm">Conseils pour la localisation :</h4>
+                                    <ul class="text-xs sm:text-sm text-orange-700 space-y-0.5 sm:space-y-1">
+                                        <li>• Sélectionnez l'emplacement principal où vous proposez cet équipement</li>
+                                        <li>• Vous pouvez proposer votre équipement dans un rayon autour de ce point</li>
+                                        <li>• Une localisation précise améliore votre visibilité</li>
+                                    </ul>
                                 </div>
                             </div>
                             
-                            <div class="mb-4">
-                                <div id="map" class="h-48 sm:h-64 lg:h-80 rounded-lg border border-gray-300"></div>
-                                <input type="hidden" id="latitude" name="latitude" value="{{ old('latitude') }}">
-                                <input type="hidden" id="longitude" name="longitude" value="{{ old('longitude') }}">
-                                @error('latitude')
-                                    <p class="text-red-500 text-xs sm:text-sm mt-1">{{ $message }}</p>
-                                @enderror
-                                @error('longitude')
-                                    <p class="text-red-500 text-xs sm:text-sm mt-1">{{ $message }}</p>
-                                @enderror
-                                <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-3">
-                                    <button type="button" id="getCurrentLocationBtn" class="bg-green-600 hover:bg-green-700 text-white px-3 sm:px-4 py-2 rounded-md transition duration-200 text-sm sm:text-base">
-                                        <i class="fas fa-location-arrow mr-2"></i><span class="hidden sm:inline">Ma position actuelle</span><span class="sm:hidden">Ma position</span>
-                                    </button>
-                                    <button type="button" id="clearLocationBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-3 sm:px-4 py-2 rounded-md transition duration-200 text-sm sm:text-base">
-                                        <i class="fas fa-times mr-2"></i><span class="hidden sm:inline">Effacer la localisation</span><span class="sm:hidden">Effacer</span>
-                                    </button>
+                            <div class="map-container">
+                                <div id="serviceMap" class="h-40 sm:h-48 lg:h-64 rounded-lg border border-green-300 shadow-inner"></div>
+                                <div class="mt-2 sm:mt-3 relative">
+                                    <input type="text" id="selectedAddress" name="address" value="{{ old('address') }}" class="w-full px-3 py-2 sm:py-2.5 text-sm sm:text-base border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 @error('address') border-red-500 @enderror" placeholder="Saisissez l'adresse ou cliquez sur la carte pour sélectionner une localisation" autocomplete="off">
+                                    <!-- Dropdown suggestions -->
+                                    <div id="address-suggestions" class="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-lg shadow-xl mt-1 z-[99999] hidden max-h-60 overflow-y-auto" style="z-index: 99999 !important; position: absolute !important;">
+                                        <!-- Suggestions will be populated here -->
+                                    </div>
+                                    <input type="hidden" id="latitude" name="latitude" value="{{ old('latitude') }}">
+                                    <input type="hidden" id="longitude" name="longitude" value="{{ old('longitude') }}">
+                                    @error('address')
+                                        <p class="text-red-500 text-xs sm:text-sm mt-1">{{ $message }}</p>
+                                    @enderror
+                                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-2 sm:mt-3">
+                                        <button type="button" id="getCurrentLocationBtn" class="bg-green-600 hover:bg-green-700 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-md transition duration-200 text-xs sm:text-sm lg:text-base flex items-center justify-center">
+                                            <i class="fas fa-location-arrow mr-1 sm:mr-2 text-xs sm:text-sm"></i><span class="hidden xs:inline">Ma position actuelle</span><span class="xs:hidden">Ma position</span>
+                                        </button>
+                                        <button type="button" id="clearLocationBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-md transition duration-200 text-xs sm:text-sm lg:text-base flex items-center justify-center">
+                                            <i class="fas fa-times mr-1 sm:mr-2 text-xs sm:text-sm"></i><span class="hidden xs:inline">Effacer la localisation</span><span class="xs:hidden">Effacer</span>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -142,7 +140,7 @@
                                     <div class="space-y-1 sm:space-y-2 text-xs sm:text-sm">
                                         <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
                                             <span class="text-gray-600 font-medium sm:font-normal">Nom :</span>
-                                            <span class="font-medium text-gray-900 break-words">{{ session('equipment_step1.name', 'Non défini') }}</span>
+                                            <span class="font-medium text-gray-900 break-words">{{ session('equipment_creation.step1.name', 'Non défini') }}</span>
                                         </div>
                                         <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
                                             <span class="text-gray-600 font-medium sm:font-normal">Catégorie :</span>
@@ -156,7 +154,7 @@
                                         @endif
                                         <div class="pt-1 sm:pt-2">
                                             <span class="text-gray-600 font-medium sm:font-normal">Description :</span>
-                                            <p class="text-gray-900 text-xs mt-1 break-words">{{ Str::limit(session('equipment_step1.description', 'Non définie'), 100) }}</p>
+                                            <p class="text-gray-900 text-xs mt-1 break-words">{{ Str::limit(session('equipment_creation.step1.description', 'Non définie'), 100) }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -167,16 +165,16 @@
                                     <div class="space-y-1 sm:space-y-2 text-xs sm:text-sm">
                                         <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
                                             <span class="text-gray-600 font-medium sm:font-normal">Prix par jour :</span>
-                                            <span class="font-medium text-green-600">{{ session('equipment_step2.price_per_day', 'Non défini') }}€</span>
+                                            <span class="font-medium text-green-600">{{ session('equipment_creation.step2.price_per_day', 'Non défini') }}€</span>
                                         </div>
                                         <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
                                             <span class="text-gray-600 font-medium sm:font-normal">Caution :</span>
-                                            <span class="font-medium text-gray-900">{{ session('equipment_step2.security_deposit', 'Non défini') }}€</span>
+                                            <span class="font-medium text-gray-900">{{ session('equipment_creation.step2.security_deposit', 'Non défini') }}€</span>
                                         </div>
-                                        @if(session('equipment_step2.price_per_hour'))
+                                        @if(session('equipment_creation.step2.price_per_hour'))
                                         <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
                                             <span class="text-gray-600 font-medium sm:font-normal">Prix par heure :</span>
-                                            <span class="font-medium text-gray-900">{{ session('equipment_step2.price_per_hour') }}€</span>
+                                            <span class="font-medium text-gray-900">{{ session('equipment_creation.step2.price_per_hour') }}€</span>
                                         </div>
                                         @endif
                                         <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
@@ -190,20 +188,20 @@
                                                         'fair' => 'Correct',
                                                         'poor' => 'Mauvais'
                                                     ];
-                                                    $condition = session('equipment_step2.condition');
+                                                    $condition = session('equipment_creation.step2.condition');
                                                 @endphp
                                                 {{ $conditions[$condition] ?? 'Non défini' }}
                                             </span>
                                         </div>
                                         <div class="pt-1 sm:pt-2">
                                             <div class="flex flex-wrap gap-1 sm:gap-2">
-                                                @if(session('equipment_step2.delivery_included'))
+                                                @if(session('equipment_creation.step2.delivery_included'))
                                                     <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Livraison incluse</span>
                                                 @endif
-                                                @if(session('equipment_step2.license_required'))
+                                                @if(session('equipment_creation.step2.license_required'))
                                                     <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Permis requis</span>
                                                 @endif
-                                                @if(session('equipment_step2.is_available'))
+                                                @if(session('equipment_creation.step2.is_available'))
                                                     <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Disponible immédiatement</span>
                                                 @endif
                                             </div>
@@ -213,11 +211,11 @@
                             </div>
 
                             <!-- Photos -->
-                            @if(session('equipment_step3.temp_image_paths') && count(session('equipment_step3.temp_image_paths')) > 0)
+                            @if(session('equipment_creation.step3.temp_image_paths') && count(session('equipment_creation.step3.temp_image_paths')) > 0)
                             <div class="mt-4 sm:mt-6">
-                                <h4 class="font-semibold text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">Photos de l'équipement ({{ count(session('equipment_step3.temp_image_paths')) }})</h4>
+                                <h4 class="font-semibold text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">Photos de l'équipement ({{ count(session('equipment_creation.step3.temp_image_paths')) }})</h4>
                                 <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                    @foreach(session('equipment_step3.temp_image_paths') as $imagePath)
+                                    @foreach(session('equipment_creation.step3.temp_image_paths') as $imagePath)
                                         <img src="{{ asset('storage/' . $imagePath) }}" alt="Photo de l'équipement" class="w-full h-24 sm:h-32 object-cover rounded-lg border-2 border-green-300">
                                     @endforeach
                                 </div>
@@ -249,87 +247,403 @@
 <script>
 let map, marker;
 
+// Map Initialization
 function initMap() {
-    const lat = parseFloat(document.getElementById('latitude').value) || 48.8566;
-    const lon = parseFloat(document.getElementById('longitude').value) || 2.3522;
+    const mapElement = document.getElementById('serviceMap');
+    if (!mapElement) {
+        console.error('Map element not found');
+        return;
+    }
+    
+    // Get initial coordinates from form fields or use defaults
+    const lat = parseFloat(document.getElementById('latitude').value) || 33.5731; // Default to Casablanca
+    const lon = parseFloat(document.getElementById('longitude').value) || -7.5898;
 
-    map = L.map('map').setView([lat, lon], 13);
+    // Initialize map
+    map = L.map('serviceMap').setView([lat, lon], 13);
 
+    // Add tile layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19
     }).addTo(map);
 
-    marker = L.marker([lat, lon], { draggable: true }).addTo(map);
+    // Create or update marker
+    if (marker) {
+        marker.setLatLng([lat, lon]);
+    } else {
+        marker = L.marker([lat, lon], { draggable: true }).addTo(map);
+        
+        // Attach drag event listener
+        marker.on('dragend', function(e) {
+            const latlng = marker.getLatLng();
+            updateLatLng(latlng.lat, latlng.lng);
+        });
+    }
 
+    // If we have coordinates, fetch the address
     if (document.getElementById('latitude').value && document.getElementById('longitude').value) {
         fetchAddress(lat, lon);
     }
 
+    // Map click event
     map.on('click', function(e) {
-        marker.setLatLng(e.latlng);
+        // Update marker position
+        if (marker) {
+            marker.setLatLng(e.latlng);
+        } else {
+            marker = L.marker(e.latlng, { draggable: true }).addTo(map);
+            marker.on('dragend', function(e) {
+                const latlng = marker.getLatLng();
+                updateLatLng(latlng.lat, latlng.lng);
+            });
+        }
         updateLatLng(e.latlng.lat, e.latlng.lng);
-    });
-
-    marker.on('dragend', function(e) {
-        const latlng = marker.getLatLng();
-        updateLatLng(latlng.lat, latlng.lng);
     });
 }
 
 function updateLatLng(lat, lng) {
-    document.getElementById('latitude').value = lat;
-    document.getElementById('longitude').value = lng;
+    // Update hidden form fields with higher precision
+    document.getElementById('latitude').value = lat.toFixed(6);
+    document.getElementById('longitude').value = lng.toFixed(6);
+    
+    // Fetch address information
     fetchAddress(lat, lng);
 }
 
 function fetchAddress(lat, lng) {
-    fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`)
-        .then(response => response.json())
+    // Use Nominatim for reverse geocoding
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&addressdetails=1`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
-            if (data.address) {
-                document.getElementById('address').value = data.address.road || '';
-                document.getElementById('city').value = data.address.city || data.address.town || data.address.village || '';
-                document.getElementById('country').value = data.address.country || '';
+            if (data && data.display_name) {
+                // Update the address field
+                document.getElementById('selectedAddress').value = data.display_name;
             }
         })
         .catch(error => {
             console.error('Erreur lors de la récupération de l\'adresse:', error);
+            // Fallback to coordinates if we can't get an address
+            document.getElementById('selectedAddress').value = `Lat: ${lat.toFixed(6)}, Lon: ${lng.toFixed(6)}`;
         });
 }
 
+// Autocomplete functionality
 document.addEventListener('DOMContentLoaded', function() {
     initMap();
 
+    // Autocomplete variables
+    let searchTimeout;
+    let currentFocus = -1;
+    const addressInput = document.getElementById('selectedAddress');
+    const suggestionsContainer = document.getElementById('address-suggestions');
+
+    // Initialize autocomplete functionality
+    if (addressInput && suggestionsContainer) {
+        // Handle input changes
+        addressInput.addEventListener('input', function() {
+            const query = this.value.trim();
+            
+            // Clear previous timeout
+            clearTimeout(searchTimeout);
+            
+            if (query.length < 2) {
+                hideSuggestions();
+                return;
+            }
+            
+            // Debounce the search to avoid too many API calls
+            searchTimeout = setTimeout(() => {
+                fetchLocationSuggestions(query);
+            }, 300);
+        });
+        
+        // Handle keyboard navigation
+        addressInput.addEventListener('keydown', function(e) {
+            const suggestions = suggestionsContainer.querySelectorAll('.suggestion-item');
+            
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                currentFocus++;
+                if (currentFocus >= suggestions.length) currentFocus = 0;
+                setActiveSuggestion(suggestions);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                currentFocus--;
+                if (currentFocus < 0) currentFocus = suggestions.length - 1;
+                setActiveSuggestion(suggestions);
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (currentFocus > -1 && suggestions[currentFocus]) {
+                    suggestions[currentFocus].click();
+                }
+            } else if (e.key === 'Escape') {
+                hideSuggestions();
+                currentFocus = -1;
+            }
+        });
+        
+        // Handle focus events
+        addressInput.addEventListener('focus', function() {
+            const query = this.value.trim();
+            if (query.length >= 2) {
+                fetchLocationSuggestions(query);
+            }
+        });
+        
+        // Close suggestions when clicking elsewhere
+        document.addEventListener('click', function(e) {
+            if (!addressInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+                hideSuggestions();
+                currentFocus = -1;
+            }
+        });
+    }
+
+    function fetchLocationSuggestions(query) {
+        console.log('Fetching suggestions for:', query);
+        fetch(`/api/public/geolocation/cities?search=${encodeURIComponent(query)}&limit=10`)
+            .then(response => {
+                console.log('API Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('API Data received:', data);
+                if (data.success && data.data && data.data.length > 0) {
+                    displaySuggestions(data.data, query);
+                } else {
+                    // Fallback to Nominatim if our API doesn't return results
+                    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=10&addressdetails=1`)
+                        .then(response => response.json())
+                        .then(fallbackData => {
+                            if (fallbackData && fallbackData.length > 0) {
+                                displayNominatimSuggestions(fallbackData, query);
+                            } else {
+                                hideSuggestions();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Fallback geocoding error:', error);
+                            hideSuggestions();
+                        });
+                }
+            })
+            .catch(error => {
+                console.error('Primary geocoding error:', error);
+                // Fallback to Nominatim
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=10&addressdetails=1`)
+                    .then(response => response.json())
+                    .then(fallbackData => {
+                        if (fallbackData && fallbackData.length > 0) {
+                            displayNominatimSuggestions(fallbackData, query);
+                        } else {
+                            hideSuggestions();
+                        }
+                    })
+                    .catch(fallbackError => {
+                        console.error('Fallback geocoding error:', fallbackError);
+                        hideSuggestions();
+                    });
+            });
+    }
+
+    function displaySuggestions(suggestions, query) {
+        if (!suggestionsContainer) return;
+        
+        suggestionsContainer.innerHTML = '';
+        currentFocus = -1;
+
+        suggestions.forEach((suggestion, index) => {
+            const div = document.createElement('div');
+            div.className = 'suggestion-item p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200 last:border-b-0 transition-colors';
+            
+            const highlightedText = suggestion.display_name.replace(
+                new RegExp(`(${query})`, 'gi'),
+                '<strong class="text-green-600">$1</strong>'
+            );
+            
+            div.innerHTML = `
+                <div class="font-medium text-gray-800">${highlightedText}</div>
+                <div class="text-sm text-gray-600 mt-1">${suggestion.country || 'France'}</div>
+            `;
+            
+            div.setAttribute('data-lat', suggestion.lat);
+            div.setAttribute('data-lon', suggestion.lon);
+            div.setAttribute('data-display-name', suggestion.display_name);
+            
+            div.addEventListener('click', () => selectLocationFromData(div));
+            
+            suggestionsContainer.appendChild(div);
+        });
+
+        // Show the container
+        suggestionsContainer.classList.remove('hidden');
+        suggestionsContainer.style.display = 'block';
+    }
+
+    function displayNominatimSuggestions(suggestions, query) {
+        if (!suggestionsContainer) return;
+        
+        suggestionsContainer.innerHTML = '';
+        currentFocus = -1;
+
+        suggestions.forEach((suggestion, index) => {
+            const div = document.createElement('div');
+            div.className = 'suggestion-item p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200 last:border-b-0 transition-colors';
+            
+            const highlightedText = suggestion.display_name.replace(
+                new RegExp(`(${query})`, 'gi'),
+                '<strong class="text-green-600">$1</strong>'
+            );
+            
+            div.innerHTML = `
+                <div class="font-medium text-gray-800">${highlightedText}</div>
+            `;
+            
+            div.setAttribute('data-lat', suggestion.lat);
+            div.setAttribute('data-lon', suggestion.lon);
+            div.setAttribute('data-display-name', suggestion.display_name);
+            
+            div.addEventListener('click', () => selectLocationFromData(div));
+            
+            suggestionsContainer.appendChild(div);
+        });
+
+        // Show the container
+        suggestionsContainer.classList.remove('hidden');
+        suggestionsContainer.style.display = 'block';
+    }
+
+    function selectLocationFromData(element) {
+        const lat = parseFloat(element.getAttribute('data-lat'));
+        const lon = parseFloat(element.getAttribute('data-lon'));
+        const displayName = element.getAttribute('data-display-name');
+        
+        console.log('Selecting location:', displayName, lat, lon);
+        
+        document.getElementById('selectedAddress').value = displayName;
+        document.getElementById('latitude').value = lat.toFixed(6);
+        document.getElementById('longitude').value = lon.toFixed(6);
+        
+        // Hide the suggestions dropdown
+        hideSuggestions();
+        
+        // Update map
+        if (map) {
+            map.setView([lat, lon], 15);
+            if (marker) map.removeLayer(marker);
+            marker = L.marker([lat, lon], { draggable: true }).addTo(map);
+            
+            marker.on('dragend', function(e) {
+                const latlng = marker.getLatLng();
+                updateLatLng(latlng.lat, latlng.lng);
+            });
+        }
+    }
+
+    function hideSuggestions() {
+        if (suggestionsContainer) {
+            suggestionsContainer.classList.add('hidden');
+            suggestionsContainer.style.display = 'none';
+        }
+    }
+
+    function setActiveSuggestion(suggestions) {
+        // Remove active class from all suggestions
+        suggestions.forEach(suggestion => suggestion.classList.remove('bg-gray-100'));
+        
+        // Add active class to current suggestion
+        if (currentFocus >= 0 && suggestions[currentFocus]) {
+            suggestions[currentFocus].classList.add('bg-gray-100');
+        }
+    }
+
     document.getElementById('getCurrentLocationBtn').addEventListener('click', function() {
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                const lat = position.coords.latitude;
-                const lng = position.coords.longitude;
-                const newLatLng = new L.LatLng(lat, lng);
-                marker.setLatLng(newLatLng);
-                map.setView(newLatLng, 13);
-                updateLatLng(lat, lng);
-            }, function() {
-                alert('Impossible de récupérer votre position.');
-            });
+            navigator.geolocation.getCurrentPosition(
+                // Success callback
+                function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    const newLatLng = new L.LatLng(lat, lng);
+                    
+                    // Update or create marker
+                    if (marker) {
+                        marker.setLatLng(newLatLng);
+                    } else {
+                        marker = L.marker(newLatLng, { draggable: true }).addTo(map);
+                        // Reattach drag event listener
+                        marker.on('dragend', function(e) {
+                            const latlng = marker.getLatLng();
+                            updateLatLng(latlng.lat, latlng.lng);
+                        });
+                    }
+                    
+                    // Center map on current location
+                    map.setView(newLatLng, 15);
+                    
+                    // Update form fields
+                    updateLatLng(lat, lng);
+                    
+                    // Reverse geocode to get address
+                    fetchAddress(lat, lng);
+                },
+                // Error callback
+                function(error) {
+                    let errorMessage = 'Impossible de récupérer votre position.';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = "L'utilisateur a refusé la demande de géolocalisation.";
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = "Les informations de localisation ne sont pas disponibles.";
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = "La demande de géolocalisation a expiré.";
+                            break;
+                        case error.UNKNOWN_ERROR:
+                            errorMessage = "Une erreur inconnue est survenue.";
+                            break;
+                    }
+                    // Display error in a more user-friendly way
+                    alert(errorMessage);
+                    console.error('Geolocation error:', error);
+                }
+            );
         } else {
             alert('La géolocalisation n\'est pas supportée par votre navigateur.');
         }
     });
 
     document.getElementById('clearLocationBtn').addEventListener('click', function() {
-        const defaultLat = 48.8566;
-        const defaultLon = 2.3522;
+        const defaultLat = 33.5731; // Casablanca
+        const defaultLon = -7.5898;
         const defaultLatLng = new L.LatLng(defaultLat, defaultLon);
         
-        marker.setLatLng(defaultLatLng);
-        map.setView(defaultLatLng, 5);
+        // Update or create marker
+        if (marker) {
+            marker.setLatLng(defaultLatLng);
+        } else {
+            marker = L.marker(defaultLatLng, { draggable: true }).addTo(map);
+            // Reattach drag event listener
+            marker.on('dragend', function(e) {
+                const latlng = marker.getLatLng();
+                updateLatLng(latlng.lat, latlng.lng);
+            });
+        }
         
+        // Center map
+        map.setView(defaultLatLng, 13);
+        
+        // Clear form fields
         document.getElementById('latitude').value = '';
         document.getElementById('longitude').value = '';
-        document.getElementById('address').value = '';
-        document.getElementById('city').value = '';
-        document.getElementById('country').value = '';
+        document.getElementById('selectedAddress').value = '';
     });
     
     // Prevent form resubmission

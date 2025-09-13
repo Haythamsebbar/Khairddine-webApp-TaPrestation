@@ -204,7 +204,10 @@ class EquipmentController extends Controller
         // Statistiques des avis
         $reviewStats = $equipment->getDetailedRatingStats();
         
-        return view('equipment.show', compact('equipment', 'similarEquipment', 'otherEquipment', 'reviewStats'));
+        // Vérifier si l'utilisateur actuel est le propriétaire de l'équipement
+        $isOwner = Auth::check() && $equipment->isOwnedBy(Auth::user());
+        
+        return view('equipment.show', compact('equipment', 'similarEquipment', 'otherEquipment', 'reviewStats', 'isOwner'));
     }
 
     /**

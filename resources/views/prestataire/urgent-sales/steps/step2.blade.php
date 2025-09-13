@@ -41,8 +41,8 @@
                             <div class="w-6 h-6 sm:w-8 sm:h-8 bg-red-600 text-white rounded-full flex items-center justify-center text-xs sm:text-sm font-bold">
                                 2
                             </div>
-                            <span class="ml-1 sm:ml-2 text-xs sm:text-sm font-medium text-red-600 hidden sm:inline">Détails</span>
-                            <span class="ml-1 text-xs font-medium text-red-600 sm:hidden">Détails</span>
+                            <span class="ml-1 sm:ml-2 text-xs sm:text-sm font-medium text-red-600 hidden sm:inline">Localisation</span>
+                            <span class="ml-1 text-xs font-medium text-red-600 sm:hidden">Lieu</span>
                         </div>
                         <div class="flex-1 h-1 bg-gray-200 rounded min-w-4">
                             <div class="h-1 bg-gray-200 rounded" style="width: 0%"></div>
@@ -61,8 +61,8 @@
                             <div class="w-6 h-6 sm:w-8 sm:h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold">
                                 4
                             </div>
-                            <span class="ml-1 sm:ml-2 text-xs sm:text-sm font-medium text-gray-500 hidden sm:inline">Localisation</span>
-                            <span class="ml-1 text-xs font-medium text-gray-500 sm:hidden">Lieu</span>
+                            <span class="ml-1 sm:ml-2 text-xs sm:text-sm font-medium text-gray-500 hidden sm:inline">Détails</span>
+                            <span class="ml-1 text-xs font-medium text-gray-500 sm:hidden">Détails</span>
                         </div>
                     </div>
                 </div>

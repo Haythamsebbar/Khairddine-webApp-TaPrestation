@@ -494,7 +494,21 @@ class ServiceController extends Controller
      */
     private function handleImageUpload($images, $service)
     {
-        foreach ($images as $image) {
+        // Check if we would exceed the 5 image limit
+        $currentImageCount = $service->images()->count();
+        $newImagesCount = count($images);
+        
+        // If adding these images would exceed the limit, only add as many as needed
+        $allowedNewImages = min($newImagesCount, 5 - $currentImageCount);
+        
+        if ($allowedNewImages <= 0) {
+            return; // Already at the limit
+        }
+        
+        // Only process the allowed number of images
+        $imagesToProcess = array_slice($images, 0, $allowedNewImages);
+        
+        foreach ($imagesToProcess as $image) {
             $fileName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
             $path = $image->storeAs('services', $fileName, 'public');
 

@@ -283,7 +283,7 @@
                                 <div class="grid grid-cols-2 gap-2">
                                     <div>
                                         <label for="city" class="block text-sm font-medium text-green-700 mb-2">Ville *</label>
-                                        <input type="text" name="city" id="city" value="{{ old('city', $equipment->city) }}" required 
+                                        <input type="text" name="city" id="city" value="{{ old('city', $equipment->city) }}" 
                                                class="w-full px-3 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                                     </div>
 
@@ -296,7 +296,7 @@
 
                                 <div>
                                     <label for="country" class="block text-sm font-medium text-green-700 mb-2">Pays *</label>
-                                    <input type="text" name="country" id="country" value="{{ old('country', $equipment->country) }}" required 
+                                    <input type="text" name="country" id="country" value="{{ old('country', $equipment->country) }}" 
                                            class="w-full px-3 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                                 </div>
                             </div>

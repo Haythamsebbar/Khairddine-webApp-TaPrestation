@@ -114,6 +114,54 @@
                 <p class="text-lg sm:text-xl text-gray-600 px-4">Heureux de vous revoir, {{ $client->user->name ?? 'Client' }} ! Gérez toutes vos activités depuis votre espace personnel</p>
             </div>
             
+            <!-- Flash Messages -->
+            @if(session('success'))
+                <div id="success-message" class="mb-6 sm:mb-8">
+                    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg max-w-4xl mx-auto" role="alert">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="font-medium">{{ session('success') }}</span>
+                        </div>
+                    </div>
+                </div>
+            @endif
+            
+            @if(session('error'))
+                <div id="error-message" class="mb-6 sm:mb-8">
+                    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg max-w-4xl mx-auto" role="alert">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="font-medium">{{ session('error') }}</span>
+                        </div>
+                    </div>
+                </div>
+            @endif
+            
+            @if(session('success') || session('error'))
+                <script>
+                    setTimeout(function() {
+                        const successMessage = document.getElementById('success-message');
+                        const errorMessage = document.getElementById('error-message');
+                        
+                        if (successMessage) {
+                            successMessage.style.transition = 'opacity 0.5s ease';
+                            successMessage.style.opacity = '0';
+                            setTimeout(() => successMessage.remove(), 500);
+                        }
+                        
+                        if (errorMessage) {
+                            errorMessage.style.transition = 'opacity 0.5s ease';
+                            errorMessage.style.opacity = '0';
+                            setTimeout(() => errorMessage.remove(), 500);
+                        }
+                    }, 5000); // 5 seconds
+                </script>
+            @endif
+            
             <!-- Quick Stats -->
             <div class="flex justify-center mb-6 sm:mb-8">
                 <div class="grid grid-cols-3 gap-2 sm:gap-6 max-w-4xl w-full">

@@ -160,9 +160,9 @@
 
         <!-- Liste des équipements -->
         @if($equipment->count() > 0)
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
                 @foreach($equipment as $item)
-                    <div class="bg-white rounded-xl shadow-lg border border-green-200 hover:shadow-xl transition duration-200 flex flex-col">
+                    <div class="bg-white rounded-xl shadow-lg border border-green-200 hover:shadow-xl transition duration-200 flex flex-col h-full">
                         <!-- Image -->
                         <div class="relative">
                             @if($item->main_photo)
@@ -213,7 +213,7 @@
                         <!-- Actions -->
                         <div class="p-4 bg-green-50 rounded-b-xl border-t border-green-200">
                             <div class="flex gap-2">
-                                <a href="{{ route('prestataire.equipment.show', $item) }}" class="flex-1 bg-green-600 hover:bg-green-700 text-white text-center py-2 rounded-lg transition duration-200 text-sm shadow-md hover:shadow-lg">
+                                <a href="{{ route('equipment.show', $item) }}" class="flex-1 bg-green-600 hover:bg-green-700 text-white text-center py-2 rounded-lg transition duration-200 text-sm shadow-md hover:shadow-lg">
                                     <i class="fas fa-eye mr-1"></i>Voir
                                 </a>
                                 <a href="{{ route('prestataire.equipment.edit', $item) }}" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white text-center py-2 rounded-lg transition duration-200 text-sm shadow-md hover:shadow-lg">
